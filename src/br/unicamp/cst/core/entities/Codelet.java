@@ -1,0 +1,610 @@
+/*******************************************************************************
+ * Copyright (c) 2012 K. Raizer, A. L. O. Paraense, R. R. Gudwin.
+ * All rights reserved. This program and the accompanying materials
+ * are made available under the terms of the GNU Lesser Public License v2.1
+ * which accompanies this distribution, and is available at
+ * http://www.gnu.org/licenses/old-licenses/gpl-2.0.html
+ * 
+ * Contributors:
+ *     K. Raizer, A. L. O. Paraense, R. R. Gudwin - initial API and implementation
+ ******************************************************************************/
+/**
+ * 
+ */
+package br.unicamp.cst.core.entities;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReentrantLock;
+
+import br.unicamp.cst.core.exceptions.CodeletActivationBoundsException;
+import br.unicamp.cst.core.exceptions.CodeletThresholdBoundsException;
+
+
+
+/**
+ *  According to the Baars-Franklin architecture, consciousness is the emergence
+ * of a serial stream on top of a parallel set of interacting devices. 
+ * In the Baars-Franklin architectures, such devices are called "codelets",
+ * which are small pieces of code specialized in performing simple tasks.
+ * 
+ * @author andre.paraense
+ * @author klaus.raizer
+ */
+public abstract class Codelet implements Runnable 
+{	
+	/**
+	 * Activation level of the Codelet. Ranges from 0.0 to 1.0d.
+	 */
+	private double activation=0.0d;
+
+	/**
+	 * Threshold of the codelet, which is used to decide if it runs or not. If activation is equal or
+	 * greater than activation, codelet runs proc().Ranges from 0.0 to 1.0d.
+	 */
+	private double threshold=0.0d;
+	/**
+	 * Input memory objects, the ones that are read.
+	 */
+	private List<MemoryObject> inputs=new ArrayList<MemoryObject>();
+	/**
+	 * Output memory objetcs, the ones that are written.
+	 */
+	private List<MemoryObject> outputs=new ArrayList<MemoryObject>();
+	/**
+	 * Input memory objects, the ones that were broadcasted.
+	 */
+	private List<MemoryObject> broadcast=new ArrayList<MemoryObject>();
+	/** defines if proc() should be automatically called in a loop */
+	private boolean loop=true; // 
+	/** The time step for the aforementioned loop. We are setting 1ms as standard */
+	private int timeStep=1; //
+	/** Defines if we are using a true thread or a pseudo thread */
+	boolean trueThread=true; // 
+	/** A codelet is a priori enabled to run its proc(). However, if it tries to read from a given output and fails, it becomes not able to do so.*/
+	private boolean enabled=true; 
+	/** Must be zero for this codelet to be enabled*/
+	private int enable_count=0;
+	/** Gives this codelet a name, mainly for debugging purposes */
+	private String name=Thread.currentThread().getName();
+	/** Safe lock for multithread access */
+	public Lock lock= new ReentrantLock();
+
+	/** 
+	 * This abstract method must be implemented by the user. Here, the user must get the inputs and outputs it needs to perform proc.
+	 */
+	public abstract void accessMemoryObjects();
+
+	/** 
+	 * This abstract method must be implemented by the user. Here, the user must calculate the activation of the codelet before it does what it 
+	 * is supposed to do in proc();
+	 */
+	public abstract void calculateActivation();
+
+	/**
+	 * Main Codelet function, implemented in each subclass.
+	 */
+	public abstract void proc();
+
+	/**
+	 * When first activated, the thread containing this codelet runs the proc() method 
+	 */
+	public void run() 
+	{ 
+
+		do
+		{
+			this.accessMemoryObjects();//tries to connect to memory objects			
+
+			if (enable_count==0)
+			{
+				this.calculateActivation();
+				if(activation>=threshold)
+					proc(); 				
+			}else
+			{
+				System.out.println("This codelet thread could not find a memory object it needs (thread ID):"+Thread.currentThread().getId());
+			}
+			enable_count=0;
+
+			long timeMarker = System.currentTimeMillis();
+
+			while(System.currentTimeMillis() < timeMarker + this.getTimeStep() )
+			{}		
+
+		}while(this.shouldLoop());
+	}
+
+	public synchronized void start()
+	//TODO ele soh roda em uma nova thread se fizermos isso?
+	{ 
+		if(trueThread)
+		{
+
+			Thread t = new Thread(this);
+			//t.setDaemon(true); //Setting Codelets as daemon threads because we want JVM to end them once CodeRack shutsDown
+			t.start();
+
+		}
+	}
+
+	/**
+	 * Tells this codelet to stop looping (stops running)
+	 */
+	public synchronized void stop()
+	{
+		if(trueThread)
+		{
+			this.setLoop(false);
+		}
+
+	}
+
+
+
+
+	/**
+	 * Safe access to other Codelets through reentrant locks
+	 * 
+	 * @param accesing
+	 * @return
+	 */
+	public boolean impendingAccess(Codelet accesing)
+	{
+		Boolean myLock = false;
+		Boolean yourLock = false;
+		try
+		{
+			myLock = lock.tryLock();
+			yourLock = accesing.lock.tryLock();
+		} finally
+		{
+			if (!(myLock && yourLock))
+			{
+				if (myLock)
+				{
+					lock.unlock();
+				}
+				if (yourLock)
+				{
+					accesing.lock.unlock();
+				}
+			}
+		}
+		return myLock && yourLock;
+	}
+	/**
+	 * Safe access to MemoryBuffers through reentrant locks
+	 * 
+	 * @param accesing
+	 * @return
+	 */
+	public boolean impendingAccessBuffer(MemoryBuffer accesing)
+	{
+
+		Boolean myLock = false;
+		Boolean yourLock = false;
+		try
+		{
+			myLock = lock.tryLock();
+			yourLock = accesing.lock.tryLock();
+		} finally
+		{
+			if (!(myLock && yourLock))
+			{
+				if (myLock)
+				{
+					lock.unlock();
+				}
+				if (yourLock)
+				{
+					accesing.lock.unlock();
+				}
+			}
+		}
+		return myLock && yourLock;
+	}	
+
+	/**
+	 * @return the loop
+	 */
+	public boolean shouldLoop() {
+		return loop;
+	}
+	/**
+	 * @param loop the loop to set
+	 */
+	public void setLoop(boolean loop) {
+		this.loop = loop;
+	}	
+
+	/**
+	 * @return the name
+	 */
+	public String getName() {
+		return name;
+	}
+	/**
+	 * @param name the name to set
+	 */
+	public void setName(String name) {
+		this.name = name;
+	}
+
+
+	/**
+	 * @return the timeStep
+	 */
+	public int getTimeStep() {
+		return timeStep;
+	}
+	/**
+	 * @param timeStep the timeStep to set
+	 */
+	public void setTimeStep(int timeStep) {
+		this.timeStep = timeStep;
+	}
+	/**
+	 * @return the loop
+	 */
+	public boolean isLoop() {
+		return loop;
+	}
+
+	/**
+	 * @return the activation
+	 */
+	public synchronized double getActivation()
+	{
+		return activation;
+	}
+
+	/**
+	 * @param activation the activation to set
+	 * @throws CodeletActivationBoundsException 
+	 */
+	public synchronized void setActivation(double activation) throws CodeletActivationBoundsException
+	{
+		if(activation>1.0d)
+		{
+			this.activation = 1.0d;
+			throw (new CodeletActivationBoundsException("Codelet activation set to value > 1.0"));
+		}else if(activation<0.0d)
+		{
+			this.activation = 0.0d;
+			throw (new CodeletActivationBoundsException("Codelet activation set to value < 0.0"));
+		}else
+		{
+			this.activation = activation;
+		}		
+	}
+
+	/**
+	 * @return the inputs
+	 */
+	public synchronized List<MemoryObject> getInputs()
+	{
+		return inputs;
+	}
+
+	/**
+	 * @return a string list with input info
+	 */
+
+	public synchronized ArrayList<String> getInputsInfo()
+	{
+		ArrayList<String> inputsInfo=new ArrayList<String>();   
+		for(MemoryObject input:inputs){
+			inputsInfo.add(input.getInfo());
+		}
+
+		return inputsInfo;
+	}
+
+	/**
+	 * @param inputs the inputs to set
+	 */
+	public synchronized void setInputs(List<MemoryObject> inputs)
+	{
+		this.inputs = inputs;
+	}
+	/**
+	 * @param adds one input to set
+	 */
+	public synchronized void addInput(MemoryObject input)//TODO:  how should we deal with an attempt to add an existing MO?
+	{
+		this.inputs.add(input);
+	}
+	public synchronized void pushInput(MemoryObject input)//TODO:  how should we deal with an attempt to add an existing MO?
+	{
+		addInput(input);
+	}
+	/**
+	 * @param adds a list of inputs
+	 */
+	public synchronized void pushInputs(List<MemoryObject> inputs)//TODO:  how should we deal with an attempt to add an existing MO?
+	{
+		this.inputs.addAll(inputs);
+	}
+	/**
+	 * @param adds one output to set
+	 */
+	public synchronized void addOutput(MemoryObject output)
+	{
+		this.outputs.add(output);
+	}
+	public synchronized void pushOutput(MemoryObject output)
+	{
+		addOutput(output);
+	}
+	/**
+	 * Removes a given memory object from output list
+	 * @param output
+	 */
+	public synchronized void removesOutput(MemoryObject output){
+		this.outputs.remove(output);
+	}
+	/**
+	 * Removes a given memory object from input list
+	 * @param output
+	 */
+	public synchronized void removesInput(MemoryObject input){
+		this.inputs.remove(input);
+	}
+
+	public synchronized void removeFromOutput(List<MemoryObject> outputs)
+	{
+		this.outputs.removeAll(outputs);
+	}
+	public synchronized void removeFromInput(List<MemoryObject> inputs)
+	{
+		this.inputs.removeAll(inputs);
+	}
+	public synchronized void pushOutputs(List<MemoryObject> outputs)
+	{
+		this.outputs.addAll(outputs);
+	}
+	/**
+	 * @return the outputs
+	 */
+	public synchronized List<MemoryObject> getOutputs()
+	{
+		return outputs;
+	}
+
+	/**
+	 * @param type
+	 * @return list of all memory objects in output of a given type
+	 */
+	private synchronized ArrayList<MemoryObject> getOutputsOfType(MemoryObjectType type) {
+		ArrayList<MemoryObject> outputsOfType = new ArrayList<MemoryObject>();
+		for(MemoryObject mo:this.outputs){
+			if(mo.getType().equals(type)){
+				outputsOfType.add(mo);
+			}
+		}
+		return outputsOfType;
+	}
+
+	/**
+	 * @param type
+	 * @return list of memory objects in input of a given type
+	 */
+	public synchronized ArrayList<MemoryObject> getInputsOfType(MemoryObjectType type) {
+		ArrayList<MemoryObject> inputsOfType = new ArrayList<MemoryObject>();
+		for(MemoryObject mo:this.inputs){
+			if(mo.getType().equals(type)){
+				inputsOfType.add(mo);
+			}
+		}
+		return inputsOfType;
+	}
+
+
+	/**
+	 * @param outputs the outputs to set
+	 */
+	public synchronized void setOutputs(List<MemoryObject> outputs)
+	{
+		this.outputs = outputs;
+	}
+
+	/**
+	 * @return the broadcast
+	 */
+	public synchronized List<MemoryObject> getBroadcast()
+	{
+		return broadcast;
+	}
+
+
+	/**
+	 * @param broadcast the broadcast to set
+	 */
+	public synchronized void setBroadcast(List<MemoryObject> broadcast)
+	{
+		this.broadcast = broadcast;
+	}
+
+	public synchronized MemoryObject getBroadcast(String name) {
+		for (MemoryObject mo : broadcast) {
+			if (mo.name.equalsIgnoreCase(name)) return mo;
+		}
+		return null;
+	}
+
+	/**
+	 * @param b one input to set
+	 */
+	 public synchronized void addBroadcast(MemoryObject b)//TODO:  how should we deal with an attempt to add an existing MO?
+	 {
+		 this.broadcast.add(b);
+	 }
+
+	 public synchronized void pushBroadcast(MemoryObject b)//TODO:  how should we deal with an attempt to add an existing MO?
+	 {
+		 addBroadcast(b);
+	 }
+	 /**
+	  * 
+	  * @return The name of the thread running this Codelet
+	  */
+	 public synchronized String getThreadName(){
+		 return Thread.currentThread().getName();
+	 }
+	 /**
+	  * @return the trueThread
+	  */
+	 public synchronized boolean isTrueThread() {
+		 return trueThread;
+	 }
+	 /**
+	  * @param trueThread the trueThread to set
+	  */
+	 public synchronized void setTrueThread(boolean trueThread) {
+		 this.trueThread = trueThread;
+	 }
+
+	 /* (non-Javadoc)
+	  * @see java.lang.Object#toString()
+	  */
+	 @Override
+	 public synchronized String toString()
+	 {
+		 final int maxLen = 10;
+		 return "Codelet [activation=" + activation + ", " + "name=" + name + ", " +(broadcast != null ? "broadcast=" + broadcast.subList(0, Math.min(broadcast.size(), maxLen)) + ", " : "") + (inputs != null ? "inputs=" + inputs.subList(0, Math.min(inputs.size(), maxLen)) + ", " : "") + (outputs != null ? "outputs=" + outputs.subList(0, Math.min(outputs.size(), maxLen)) : "") + "]";
+	 }
+
+	 /**
+	  * This method returns an input memory object from its input list.
+	  * If it couldn't find the given MO, it sets this codelet as not able to perform proc(), and keeps trying to find it.
+	  * 
+	  * @param type type of memory object it needs
+	  * @param index position of memory object in the sublist
+	  * @return memory object of type at position 
+	  */
+	 public synchronized MemoryObject getInput(MemoryObjectType type, int index){
+		 MemoryObject inputMO = null;
+		 ArrayList<MemoryObject> listMO=new ArrayList<MemoryObject>();
+
+		 for(MemoryObject mo:inputs){
+			 if(mo.getType().equals(type)){
+				 listMO.add(mo);
+			 }
+		 }
+
+		 if(listMO.size()>=index+1){
+			 inputMO=listMO.get(index);
+			 this.enabled=true;
+		 }else{
+			 this.enabled=false; //It must not run proc yet, for it still needs to find this mo it wants
+			 enable_count++;
+		 }
+
+		 return inputMO;
+	 }
+
+	 public synchronized MemoryObject getInput(String name) {
+		 for (MemoryObject mo : inputs) {
+			 if (mo.name.equalsIgnoreCase(name)) return mo;
+		 }
+		 return null;
+	 }
+
+	 /**
+	  * This method returns an output memory object from its output list.
+	  * If it couldn't find the given MO, it sets this codelet as not able to perform proc(), and keeps trying to find it.
+	  * 
+	  * @param type type of memory object it needs
+	  * @param position position of memory object in the sublist
+	  * @return memory object of type at position 
+	  */
+	 public synchronized MemoryObject getOutput(MemoryObjectType type, int index)
+	 {
+		 MemoryObject outputMO = null;
+		 ArrayList<MemoryObject> listMO=new ArrayList<MemoryObject>();
+
+		 for(MemoryObject mo:outputs){
+			 if(mo.getType().equals(type)){
+				 listMO.add(mo);
+			 }
+		 }
+
+		 if(listMO.size()>=index+1){
+			 outputMO=listMO.get(index);
+			 this.enabled=true;
+		 }else{
+			 this.enabled=false; //It must not run proc yet, for it still needs to find this mo it wants
+			 enable_count++;
+		 }
+
+		 return outputMO;
+	 }
+
+	 public synchronized MemoryObject getOutput(String name) {
+		 for (MemoryObject mo : outputs) {
+			 if (mo.name.equalsIgnoreCase(name)) return mo;
+		 }
+		 return null;
+	 }
+
+	 /**
+	  * 
+	  * @param type
+	  * @param index
+	  * @return
+	  */
+	 public synchronized MemoryObject getBroadcast(MemoryObjectType type, int index)
+	 {
+		 MemoryObject broadcastMO = null;
+		 ArrayList<MemoryObject> listMO=new ArrayList<MemoryObject>();
+
+		 if(broadcast!=null&&broadcast.size()>0)
+		 {
+			 for(MemoryObject mo:broadcast)
+			 {
+				 if(mo.getType().equals(type))
+				 {
+					 listMO.add(mo);
+				 }
+			 }
+		 }		
+
+		 if(listMO.size()>=index+1)
+		 {
+			 broadcastMO=listMO.get(index);
+		 }
+
+		 return broadcastMO;
+	 }
+
+	 /**
+	  * @return the threshold
+	  */
+	 public synchronized double getThreshold() 
+	 {
+		 return threshold;
+	 }
+
+	 /**
+	  * 
+	  * @param threshold
+	  * @throws CodeletThresholdBoundsException
+	  */
+	 public synchronized void setThreshold(double threshold) throws CodeletThresholdBoundsException 
+	 {		
+		 if(threshold>1.0d)
+		 {
+			 this.threshold = 1.0d;
+			 throw (new CodeletThresholdBoundsException("Codelet threshold set to value > 1.0"));
+		 }else if(threshold<0.0d)
+		 {
+			 this.threshold = 0.0d;
+			 throw (new CodeletThresholdBoundsException("Codelet threshold set to value < 0.0"));
+		 }else
+		 {
+			 this.threshold = threshold;
+		 }
+	 }	
+}
