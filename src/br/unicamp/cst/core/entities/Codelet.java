@@ -58,8 +58,8 @@ public abstract class Codelet implements Runnable
 	private List<MemoryObject> broadcast=new ArrayList<MemoryObject>();
 	/** defines if proc() should be automatically called in a loop */
 	private boolean loop=true; // 
-	/** The time step for the aforementioned loop. We are setting 1ms as standard */
-	private int timeStep=1; //
+	/** The time step for the aforementioned loop.*/
+	private int timeStep=0; //
 	/** Defines if we are using a true thread or a pseudo thread */
 	boolean trueThread=true; // 
 	/** A codelet is a priori enabled to run its proc(). However, if it tries to read from a given output and fails, it becomes not able to do so.*/
@@ -108,10 +108,13 @@ public abstract class Codelet implements Runnable
 			}
 			enable_count=0;
 
-			long timeMarker = System.currentTimeMillis();
+			if(this.getTimeStep() > 0)
+			{
+				long timeMarker = System.currentTimeMillis();
 
-			while(System.currentTimeMillis() < timeMarker + this.getTimeStep() )
-			{}		
+				while(System.currentTimeMillis() < timeMarker + this.getTimeStep() )
+				{}	
+			}	
 
 		}while(this.shouldLoop());
 	}
