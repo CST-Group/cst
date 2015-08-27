@@ -49,7 +49,7 @@ public class Mind
 		MemoryObject mo = null;
 
 		if(rawMemory!=null)
-			rawMemory.createMemoryObject(type, info);
+			mo = rawMemory.createMemoryObject(type, info);
 
 		return mo;
 
@@ -66,7 +66,7 @@ public class Mind
 		MemoryObject mo = null;
 
 		if(rawMemory!=null)
-			rawMemory.createMemoryObject(name, type, info);
+			mo = rawMemory.createMemoryObject(name, type, info);
 
 		return mo;
 	}

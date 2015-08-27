@@ -236,13 +236,15 @@ public abstract class Codelet implements Runnable
 	/**
 	 * @param timeStep the timeStep to set
 	 */
-	public void setTimeStep(int timeStep) {
+	public void setTimeStep(int timeStep) 
+	{
 		this.timeStep = timeStep;
 	}
 	/**
 	 * @return the loop
 	 */
-	public boolean isLoop() {
+	public boolean isLoop() 
+	{
 		return loop;
 	}
 
@@ -289,9 +291,12 @@ public abstract class Codelet implements Runnable
 	public synchronized ArrayList<String> getInputsInfo()
 	{
 		ArrayList<String> inputsInfo=new ArrayList<String>();   
-		for(MemoryObject input:inputs){
-			inputsInfo.add(input.getInfo());
-		}
+		
+		if(inputs!=null)
+			for(MemoryObject input:inputs)
+			{
+				inputsInfo.add(input.getInfo());
+			}
 
 		return inputsInfo;
 	}
@@ -371,13 +376,18 @@ public abstract class Codelet implements Runnable
 	 * @param type
 	 * @return list of all memory objects in output of a given type
 	 */
-	private synchronized ArrayList<MemoryObject> getOutputsOfType(MemoryObjectType type) {
+	private synchronized ArrayList<MemoryObject> getOutputsOfType(MemoryObjectType type) 
+	{
 		ArrayList<MemoryObject> outputsOfType = new ArrayList<MemoryObject>();
-		for(MemoryObject mo:this.outputs){
-			if(mo.getType().equals(type)){
-				outputsOfType.add(mo);
+		
+		if(outputs!=null&&outputs.size()>0)
+			for(MemoryObject mo:this.outputs)
+			{
+				if(mo.getType()!=null && mo.getType().equals(type))
+				{
+					outputsOfType.add(mo);
+				}
 			}
-		}
 		return outputsOfType;
 	}
 
@@ -385,13 +395,19 @@ public abstract class Codelet implements Runnable
 	 * @param type
 	 * @return list of memory objects in input of a given type
 	 */
-	public synchronized ArrayList<MemoryObject> getInputsOfType(MemoryObjectType type) {
+	public synchronized ArrayList<MemoryObject> getInputsOfType(MemoryObjectType type) 
+	{
 		ArrayList<MemoryObject> inputsOfType = new ArrayList<MemoryObject>();
-		for(MemoryObject mo:this.inputs){
-			if(mo.getType().equals(type)){
-				inputsOfType.add(mo);
+		
+		if(inputs!=null&&inputs.size()>0)
+			for(MemoryObject mo:this.inputs)
+			{
+				if(mo.getType()!=null && mo.getType().equals(type))
+				{
+					inputsOfType.add(mo);
+				}
 			}
-		}
+		
 		return inputsOfType;
 	}
 
@@ -421,10 +437,14 @@ public abstract class Codelet implements Runnable
 		this.broadcast = broadcast;
 	}
 
-	public synchronized MemoryObject getBroadcast(String name) {
-		for (MemoryObject mo : broadcast) {
-			if (mo.name.equalsIgnoreCase(name)) return mo;
-		}
+	public synchronized MemoryObject getBroadcast(String name) 
+	{
+		if(broadcast!=null&&broadcast.size()>0)
+			for (MemoryObject mo : broadcast) 
+			{
+				if (mo.name!=null && mo.name.equalsIgnoreCase(name)) 
+					return mo;
+			}
 		return null;
 	}
 
@@ -466,15 +486,19 @@ public abstract class Codelet implements Runnable
 	  * @param index position of memory object in the sublist
 	  * @return memory object of type at position 
 	  */
-	 public synchronized MemoryObject getInput(MemoryObjectType type, int index){
+	 public synchronized MemoryObject getInput(MemoryObjectType type, int index)
+	 {
 		 MemoryObject inputMO = null;
 		 ArrayList<MemoryObject> listMO=new ArrayList<MemoryObject>();
 
-		 for(MemoryObject mo:inputs){
-			 if(mo.getType().equals(type)){
-				 listMO.add(mo);
+		 if(inputs!=null&&inputs.size()>0)
+			 for(MemoryObject mo:inputs)
+			 {
+				 if(mo.getType()!=null && mo.getType().equals(type))
+				 {
+					 listMO.add(mo);
+				 }
 			 }
-		 }
 
 		 if(listMO.size()>=index+1){
 			 inputMO=listMO.get(index);
@@ -487,10 +511,15 @@ public abstract class Codelet implements Runnable
 		 return inputMO;
 	 }
 
-	 public synchronized MemoryObject getInput(String name) {
-		 for (MemoryObject mo : inputs) {
-			 if (mo.name.equalsIgnoreCase(name)) return mo;
-		 }
+	 public synchronized MemoryObject getInput(String name) 
+	 {
+		 if(inputs!=null&&inputs.size()>0)
+			 for (MemoryObject mo : inputs) 
+			 {
+				 if (mo.name!=null && mo.name.equalsIgnoreCase(name)) 
+					 return mo;
+			 }
+		 
 		 return null;
 	 }
 
@@ -507,16 +536,21 @@ public abstract class Codelet implements Runnable
 		 MemoryObject outputMO = null;
 		 ArrayList<MemoryObject> listMO=new ArrayList<MemoryObject>();
 
-		 for(MemoryObject mo:outputs){
-			 if(mo.getType().equals(type)){
-				 listMO.add(mo);
+		 if(outputs!=null&&outputs.size()>0)
+			 for(MemoryObject mo:outputs)
+			 {
+				 if(mo!=null && type!=null && mo.getType()!=null && mo.getType().equals(type))
+				 {
+					 listMO.add(mo);
+				 }
 			 }
-		 }
 
-		 if(listMO.size()>=index+1){
+		 if(listMO.size()>=index+1)
+		 {
 			 outputMO=listMO.get(index);
 			 this.enabled=true;
-		 }else{
+		 }else
+		 {
 			 this.enabled=false; //It must not run proc yet, for it still needs to find this mo it wants
 			 enable_count++;
 		 }
@@ -524,10 +558,15 @@ public abstract class Codelet implements Runnable
 		 return outputMO;
 	 }
 
-	 public synchronized MemoryObject getOutput(String name) {
-		 for (MemoryObject mo : outputs) {
-			 if (mo.name.equalsIgnoreCase(name)) return mo;
-		 }
+	 public synchronized MemoryObject getOutput(String name) 
+	 {
+		 if(outputs!=null&&outputs.size()>0)
+			 for (MemoryObject mo : outputs) 
+			 {
+				 if (mo.name!=null && mo.name.equalsIgnoreCase(name)) 
+					 return mo;
+			 }
+		 
 		 return null;
 	 }
 
@@ -540,13 +579,14 @@ public abstract class Codelet implements Runnable
 	 public synchronized MemoryObject getBroadcast(MemoryObjectType type, int index)
 	 {
 		 MemoryObject broadcastMO = null;
+		 
 		 ArrayList<MemoryObject> listMO=new ArrayList<MemoryObject>();
 
 		 if(broadcast!=null&&broadcast.size()>0)
 		 {
 			 for(MemoryObject mo:broadcast)
 			 {
-				 if(mo.getType().equals(type))
+				 if(mo.getType()!=null && mo.getType().equals(type))
 				 {
 					 listMO.add(mo);
 				 }
