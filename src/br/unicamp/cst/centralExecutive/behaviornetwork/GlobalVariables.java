@@ -15,7 +15,8 @@ package br.unicamp.cst.centralExecutive.behaviornetwork;
  *
  */
 
-public class GlobalVariables {
+public class GlobalVariables 
+{
 	//Global variables 
 	private volatile double theta; // Threshold for becoming active
 	private volatile double thetaTemp; //Threshold for becoming active that starts as theta but gets reduced by a percentage in case no behavior is selected
@@ -31,7 +32,9 @@ public class GlobalVariables {
 	/**
 	 * Default Constructor
 	 */
-	private GlobalVariables(){ //TODO how about automatically defining these variables with an optimization algorithm?
+	public GlobalVariables()
+	{ 
+		//TODO how about automatically defining these variables with an optimization algorithm?
 		//Initial states
 		this.theta=1; 
 		this.thetaTemp=this.theta;
@@ -44,31 +47,16 @@ public class GlobalVariables {
 		this.decreaseRate=0.01;
 		this.worldStateInHashMap=true;
 	}
-	public synchronized boolean isWorldStateInHashMap() {
+	public synchronized boolean isWorldStateInHashMap() 
+	{
 		return worldStateInHashMap;
 	}
 
-	public synchronized void setWorldStateInHashMap(boolean worldStateInHashMap) {
+	public synchronized void setWorldStateInHashMap(boolean worldStateInHashMap) 
+	{
 		this.worldStateInHashMap = worldStateInHashMap;
 	}
-	/**
-	 * Singleton instance
-	 */
-	private static GlobalVariables instance;
 
-	/**
-	 * 
-	 * @return the singleton instance of WorldModel
-	 */
-	public synchronized static GlobalVariables getInstance()
-	{
-		if(instance==null)
-		{
-			instance = new GlobalVariables();         
-		}
-
-		return instance;
-	}
 
 	/**
 	 * 

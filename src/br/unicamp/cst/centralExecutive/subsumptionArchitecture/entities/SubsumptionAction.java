@@ -29,25 +29,31 @@ public abstract class SubsumptionAction extends Codelet
 	
 	private String name;
 	
+	private CodeRack codeRack;
+	
 	/**
 	 * @param subsumptioArchitecture
 	 */
-	public SubsumptionAction(SubsumptionArchitecture subsumptioArchitecture, String name) 
+	public SubsumptionAction(SubsumptionArchitecture subsumptioArchitecture, String name,CodeRack codeRack) 
 	{
 		super();
 		this.subsumptionArchitecture = subsumptioArchitecture;
 		this.name=name;
-		CodeRack.getInstance().insertCodelet(this);
+		this.codeRack = codeRack;
+		if(codeRack!=null)
+			codeRack.insertCodelet(this);
 	}
 	
 	/**
 	 * @param subsumptionArchitecture
 	 */
-	public SubsumptionAction(SubsumptionArchitecture subsumptionArchitecture) 
+	public SubsumptionAction(SubsumptionArchitecture subsumptionArchitecture,CodeRack codeRack) 
 	{
 		super();
 		this.subsumptionArchitecture = subsumptionArchitecture;
-		CodeRack.getInstance().insertCodelet(this);
+		this.codeRack = codeRack;
+		if(codeRack!=null)
+			codeRack.insertCodelet(this);
 	}
 	
 	/**

@@ -26,32 +26,17 @@ import br.unicamp.cst.memory.WorkingStorage;
  * @author klaus
  *
  */
-public class BgBComLayer {
+public class BgBComLayer 
+{
 	private ArrayList<MemoryObject> bgToBehaviors = new ArrayList<MemoryObject>();
 	private ArrayList<MemoryObject> behaviorsToBg = new ArrayList<MemoryObject>();
 	private boolean debugMode=false;
-	public BgBComLayer(){
-//		System.out.println("BgBComLayer empty constructor");
-	}
 	
+	private RawMemory rawMemory;
 	
-	/**
-	* Singleton instance
-	*/
-	private static BgBComLayer instance;
-
-	/**
-	* 
-	* @return the singleton instance of Working Storage
-	*/
-	public synchronized static BgBComLayer getInstance()
+	public BgBComLayer(RawMemory rawMemory)
 	{
-	  if(instance==null)
-	  {
-	     instance = new BgBComLayer();         
-	  }
-
-	  return instance;
+		this.rawMemory = rawMemory;
 	}
 
 	/**
@@ -95,16 +80,22 @@ public class BgBComLayer {
 				}
 			}
 			
-			if(alreadyThere && sameInfo){// Remove MO from raw memory and discard it
-				RawMemory.getInstance().destroyMemoryObject(bs);
-			}else if(alreadyThere && !sameInfo){//Update info from old MO and discard de unused new one
+			if(alreadyThere && sameInfo)
+			{// Remove MO from raw memory and discard it
+				if(rawMemory!=null)
+					rawMemory.destroyMemoryObject(bs);
+			}else if(alreadyThere && !sameInfo){
+				//Update info from old MO and discard de unused new one
 				oldMO.setInfo(bs.getInfo());  //TODO I might need to change this in the future in case we implement a memory decay based on time
-				RawMemory.getInstance().destroyMemoryObject(bs);
-			}else{//Simply add it to the list
+				if(rawMemory!=null)
+					rawMemory.destroyMemoryObject(bs);
+			}else
+			{//Simply add it to the list
 				this.behaviorsToBg.add(bs);
 			}
 		
-		} catch (JSONException e1) {
+		} catch (JSONException e1) 
+		{
 			// TODO Auto-generated catch block
 			e1.printStackTrace();
 		}
@@ -144,12 +135,17 @@ public class BgBComLayer {
 //				}
 			}
 			
-			if(alreadyThere && sameInfo){// Remove MO from raw memory and discard it
-				RawMemory.getInstance().destroyMemoryObject(bgI);
-			}else if(alreadyThere && !sameInfo){//Update info from old MO and discard de unused new one
+			if(alreadyThere && sameInfo)
+			{// Remove MO from raw memory and discard it
+				if(rawMemory!=null)
+					rawMemory.destroyMemoryObject(bgI);
+			}else if(alreadyThere && !sameInfo)
+			{//Update info from old MO and discard de unused new one
 				oldMO.setInfo(bgI.getInfo());  //TODO I might need to change this in the future in case we implement a memory decay based on time
-				RawMemory.getInstance().destroyMemoryObject(bgI);
-			}else{//Simply add it to the list
+				if(rawMemory!=null)
+					rawMemory.destroyMemoryObject(bgI);
+			}else
+			{//Simply add it to the list
 				this.bgToBehaviors.add(bgI);
 			}
 		

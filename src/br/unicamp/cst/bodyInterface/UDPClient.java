@@ -9,8 +9,11 @@
  *     K. Raizer, A. L. O. Paraense, R. R. Gudwin - initial API and implementation
  ******************************************************************************/
 package br.unicamp.cst.bodyInterface;
-import java.io.*; 
-import java.net.*; 
+import java.io.IOException;
+import java.net.DatagramPacket;
+import java.net.DatagramSocket;
+import java.net.InetAddress;
+import java.net.SocketException;
 
 /**
  * UDP communication via socket. Client side.

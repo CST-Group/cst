@@ -4,6 +4,8 @@
 package br.unicamp.cst.centralExecutive.glas;
 
 import br.unicamp.cst.core.entities.CodeRack;
+import br.unicamp.cst.core.entities.RawMemory;
+import br.unicamp.cst.memory.WorkingStorage;
 
 /**
  * Cognit is the implementation of GLAS - Gated Learning Action Selection - algorithm inside LibreCog cognitive architecture.
@@ -15,20 +17,30 @@ import br.unicamp.cst.core.entities.CodeRack;
  * @author klaus
  *
  */
-public class Cognit {
+public class Cognit 
+{
 	private ActionSelectionCodelet action_selection_codelet;
 	private SequenceBuilderCodelet sequence_builder_codelet;
 	private LearnerCodelet learner_codelet;
 
+	private RawMemory rawMemory;
+	
+	private CodeRack codeRack;
 
-	public Cognit(int nStimuli, int nActions){
+	public Cognit(int nStimuli, int nActions,CodeRack codeRack,RawMemory rawMemory, WorkingStorage ws)
+	{
+		this.codeRack = codeRack;
+		this.rawMemory = rawMemory;
 		//GLAS Codelets
-				action_selection_codelet = new ActionSelectionCodelet();
-				CodeRack.getInstance().insertCodelet(action_selection_codelet);				
-				sequence_builder_codelet = new SequenceBuilderCodelet();
-				CodeRack.getInstance().insertCodelet(sequence_builder_codelet);
-				learner_codelet = new LearnerCodelet(nStimuli, nActions);
-				CodeRack.getInstance().insertCodelet(learner_codelet);
+		action_selection_codelet = new ActionSelectionCodelet(rawMemory,ws);
+		if(codeRack!=null)
+			codeRack.insertCodelet(action_selection_codelet);				
+		sequence_builder_codelet = new SequenceBuilderCodelet(rawMemory,ws);
+		if(codeRack!=null)
+			codeRack.insertCodelet(sequence_builder_codelet);
+		learner_codelet = new LearnerCodelet(nStimuli, nActions,rawMemory,ws);
+		if(codeRack!=null)
+			codeRack.insertCodelet(learner_codelet);
 	}
 	
 

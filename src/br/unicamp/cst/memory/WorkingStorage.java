@@ -35,9 +35,8 @@ import br.unicamp.cst.core.entities.Subject;
  * @author klaus raizer
  */
 
-public class WorkingStorage  implements Subject{
-
-
+public class WorkingStorage  implements Subject
+{
 	private HashMap<Codelet,HashMap<MemoryObjectType,List<MemoryObject>>> what_ws_sent_to_codelets_inputs = new HashMap<Codelet, HashMap<MemoryObjectType,List<MemoryObject>>>();
 	private HashMap<Codelet,HashMap<MemoryObjectType,List<MemoryObject>>> what_ws_sent_to_codelets_outputs = new HashMap<Codelet, HashMap<MemoryObjectType,List<MemoryObject>>>();
 
@@ -49,28 +48,14 @@ public class WorkingStorage  implements Subject{
 	private ArrayList<MemoryObject> workingStorageContentList = new ArrayList<MemoryObject>();
 	private int maxCapacity;
 	private boolean useHashMap=false;
+	
+	private RawMemory rawMemory;
 
-	private WorkingStorage(int maxCapacity){
+	public WorkingStorage(int maxCapacity,RawMemory rawMemory)
+	{
+		this.rawMemory = rawMemory;
 		setMaxCapacity(maxCapacity);
 
-	}
-
-	/**
-	 * Singleton instance
-	 */
-	private static WorkingStorage instance;
-
-	/**
-	 * 
-	 * @return the singleton instance of Working Storage
-	 */
-	public synchronized static WorkingStorage getInstance()
-	{
-		if(instance==null)
-		{
-			instance = new WorkingStorage(1000);   //default      
-		}
-		return instance;
 	}
 
 	/**
@@ -354,9 +339,11 @@ public class WorkingStorage  implements Subject{
 	 * @param bpMo
 	 */
 
-	public synchronized void removeFromWorkingStorageWithDelete(MemoryObject bpMo) {
+	public synchronized void removeFromWorkingStorageWithDelete(MemoryObject bpMo) 
+	{
 		workingStorageContentList.remove(bpMo);
-		RawMemory.getInstance().destroyMemoryObject(bpMo);
+		if(rawMemory!=null)
+			rawMemory.destroyMemoryObject(bpMo);
 
 	}
 
@@ -364,11 +351,13 @@ public class WorkingStorage  implements Subject{
 	 * Removes all memory objects from Working Memory and delete them from raw memory.
 	 * Be careful when using this method!
 	 */
-	public void clearWithDelete() {
-
-		for(MemoryObject mo: workingStorageContentList){
-			RawMemory.getInstance().destroyMemoryObject(mo);
-		}
+	public void clearWithDelete() 
+	{
+		if(rawMemory!=null && workingStorageContentList!=null)
+			for(MemoryObject mo: workingStorageContentList)
+			{	
+				rawMemory.destroyMemoryObject(mo);
+			}
 		this.workingStorageContentList.clear();
 
 	}

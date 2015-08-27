@@ -39,20 +39,32 @@ public class ActionSelectionCodelet extends Codelet{
 	private double exp_factor=0; //Exploratory factor
 	private double solution_tree_fitness = Double.NEGATIVE_INFINITY;
 	private boolean dynamicExplorationOn=false;
+	
+	private RawMemory rawMemory;
+	
+	private WorkingStorage ws;
 
-	public ActionSelectionCodelet(){
-
-		WorkingStorage.getInstance().registerCodelet(this,MemoryObjectTypesGlas.SOLUTION_TREE, 0);
-		WorkingStorage.getInstance().registerCodelet(this,MemoryObjectTypesGlas.STIMULUS, 0);
-		//		WorkingStorage.getInstance().registerCodelet(this,MemoryObjectTypesGlas.ACTION, 1);
-		ACTION_MO=RawMemory.getInstance().createMemoryObject(MemoryObjectTypesGlas.ACTION, "");
-		WorkingStorage.getInstance().putMemoryObject(ACTION_MO);
-
-		WorkingStorage.getInstance().registerCodelet(this,MemoryObjectTypesGlas.NEW_STIM, 0);
-		WorkingStorage.getInstance().registerCodelet(this,MemoryObjectTypesGlas.NEW_ACTION, 0);
-		WorkingStorage.getInstance().registerCodelet(this,MemoryObjectTypesGlas.NEW_REWARD, 0);
-
-		//		WorkingStorage.getInstance().registerCodelet(this,MemoryObjectTypesGlas.NEW_EVENT_DETECTED, 0);
+	public ActionSelectionCodelet(RawMemory rawMemory,WorkingStorage ws)
+	{
+		this.rawMemory = rawMemory;
+		this.ws=ws;
+		if(ws!=null)
+		{
+			ws.registerCodelet(this,MemoryObjectTypesGlas.SOLUTION_TREE, 0);
+			ws.registerCodelet(this,MemoryObjectTypesGlas.STIMULUS, 0);
+			ws.putMemoryObject(ACTION_MO);
+			ws.registerCodelet(this,MemoryObjectTypesGlas.NEW_STIM, 0);
+			ws.registerCodelet(this,MemoryObjectTypesGlas.NEW_ACTION, 0);
+			ws.registerCodelet(this,MemoryObjectTypesGlas.NEW_REWARD, 0);
+//			ws.registerCodelet(this,MemoryObjectTypesGlas.ACTION, 1);
+//			ws.registerCodelet(this,MemoryObjectTypesGlas.NEW_EVENT_DETECTED, 0);
+		}
+			
+		
+		if(rawMemory!=null)
+			ACTION_MO = rawMemory.createMemoryObject(MemoryObjectTypesGlas.ACTION, "");
+		
+		
 
 		for(int i=0; i<empty_solution_tree.length;i++){
 			current_solution_tree_jsonarray.put(empty_solution_tree[i]);
@@ -63,9 +75,10 @@ public class ActionSelectionCodelet extends Codelet{
 	}
 
 	@Override
-	public void accessMemoryObjects() {		
+	public void accessMemoryObjects() 
+	{		
 		SOLUTION_TREE_MO=this.getInput(MemoryObjectTypesGlas.SOLUTION_TREE, 0);
-		ArrayList<MemoryObject> teste = WorkingStorage.getInstance().getAllOfType(MemoryObjectTypesGlas.SOLUTION_TREE);
+		ArrayList<MemoryObject> teste = ws!=null ? ws.getAllOfType(MemoryObjectTypesGlas.SOLUTION_TREE) : null;
 		STIMULUS_MO=this.getInput(MemoryObjectTypesGlas.STIMULUS, 0);
 		//		System.out.println("(STIMULUS_MO.getInfo() (antes): "+STIMULUS_MO.getInfo());
 		//		ACTION_MO=this.getOutput(MemoryObjectTypesGlas.ACTION, 0);

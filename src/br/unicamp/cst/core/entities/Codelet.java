@@ -56,18 +56,22 @@ public abstract class Codelet implements Runnable
 	 * Input memory objects, the ones that were broadcasted.
 	 */
 	private List<MemoryObject> broadcast=new ArrayList<MemoryObject>();
+	
 	/** defines if proc() should be automatically called in a loop */
-	private boolean loop=true; // 
+	private boolean loop=true; //
+	
 	/** The time step for the aforementioned loop.*/
 	private int timeStep=0; //
-	/** Defines if we are using a true thread or a pseudo thread */
-	boolean trueThread=true; // 
+	
 	/** A codelet is a priori enabled to run its proc(). However, if it tries to read from a given output and fails, it becomes not able to do so.*/
 	private boolean enabled=true; 
+	
 	/** Must be zero for this codelet to be enabled*/
 	private int enable_count=0;
+	
 	/** Gives this codelet a name, mainly for debugging purposes */
 	private String name=Thread.currentThread().getName();
+	
 	/** Safe lock for multithread access */
 	public Lock lock= new ReentrantLock();
 
@@ -120,16 +124,9 @@ public abstract class Codelet implements Runnable
 	}
 
 	public synchronized void start()
-	//TODO ele soh roda em uma nova thread se fizermos isso?
 	{ 
-		if(trueThread)
-		{
-
-			Thread t = new Thread(this);
-			//t.setDaemon(true); //Setting Codelets as daemon threads because we want JVM to end them once CodeRack shutsDown
-			t.start();
-
-		}
+		Thread t = new Thread(this);			
+		t.start();		
 	}
 
 	/**
@@ -137,15 +134,8 @@ public abstract class Codelet implements Runnable
 	 */
 	public synchronized void stop()
 	{
-		if(trueThread)
-		{
-			this.setLoop(false);
-		}
-
+		this.setLoop(false);
 	}
-
-
-
 
 	/**
 	 * Safe access to other Codelets through reentrant locks
@@ -212,7 +202,8 @@ public abstract class Codelet implements Runnable
 	/**
 	 * @return the loop
 	 */
-	public boolean shouldLoop() {
+	public boolean shouldLoop() 
+	{
 		return loop;
 	}
 	/**
@@ -455,18 +446,6 @@ public abstract class Codelet implements Runnable
 	  */
 	 public synchronized String getThreadName(){
 		 return Thread.currentThread().getName();
-	 }
-	 /**
-	  * @return the trueThread
-	  */
-	 public synchronized boolean isTrueThread() {
-		 return trueThread;
-	 }
-	 /**
-	  * @param trueThread the trueThread to set
-	  */
-	 public synchronized void setTrueThread(boolean trueThread) {
-		 this.trueThread = trueThread;
 	 }
 
 	 /* (non-Javadoc)

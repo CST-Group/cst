@@ -11,13 +11,16 @@ import br.unicamp.cst.core.entities.Codelet;
  * @author Klaus
  *
  */
-public class BehaviorsWTA extends Codelet {
+public class BehaviorsWTA extends Codelet 
+{
 	private ArrayList<Behavior> behaviorList = new ArrayList<Behavior>();
 	private ConcurrentHashMap<Codelet,Double> codeletsActivation = new ConcurrentHashMap<Codelet, Double>();
 	private ConcurrentHashMap<Codelet,Boolean> codeletsActive = new ConcurrentHashMap<Codelet, Boolean>();
-	private GlobalVariables globalVariables  = GlobalVariables.getInstance();
+
 	private ArrayList<Behavior> behaviorsStillActive=new ArrayList<Behavior>();
 	private Behavior chosenBehavior=null;
+	
+	private GlobalVariables globalVariables;
 
 	/**
 	 * Iterate over all behaviors.
@@ -29,8 +32,9 @@ public class BehaviorsWTA extends Codelet {
 	 * I should only try to choose another one once they are all INACTIVE.
 	 * 
 	 */
-	public BehaviorsWTA(){
-
+	public BehaviorsWTA(GlobalVariables globalVariables)
+	{
+		this.globalVariables=globalVariables;
 	}
 
 	@Override
@@ -324,7 +328,7 @@ public class BehaviorsWTA extends Codelet {
 //	
 ////	System.out.println("WorldBeliefState: ");
 ////	ArrayList<MemoryObject> wbs = new ArrayList<MemoryObject>();
-////	wbs.addAll(WorkingStorage.getInstance().getAllOfType(MemoryObjectTypesCore.WORLD_STATE));
+////	wbs.addAll(ws.getAllOfType(MemoryObjectTypesCore.WORLD_STATE));
 ////	
 ////	for(MemoryObject mo: wbs){
 ////		System.out.println(mo.getInfo());

@@ -22,34 +22,19 @@ import br.unicamp.cst.core.entities.Codelet;
  * @author klaus.raizer
  */
 
-public class PerceptionProxy {
-   
+public class PerceptionProxy 
+{  
    private List<Codelet> listInterpreters;
    
-   
-   /**
-    * Singleton instance
-    */
-   private static PerceptionProxy instance;
-   
-   public PerceptionProxy()
+   private CodeRack codeRack;
+     
+   public PerceptionProxy(CodeRack codeRack)
    {
+	   this.codeRack = codeRack;
+	   
 	   listInterpreters = new ArrayList<Codelet>();     
    }
    
-   /**
-    * 
-    * @return the singleton instance of BodyProxy
-    */
-   public synchronized static PerceptionProxy getInstance()
-   {
-      if(instance==null)
-      {
-         instance = new PerceptionProxy();         
-      }
-
-      return instance;
-   }
    /**
     * Starts all interpreters in this proxy
     */
@@ -83,9 +68,11 @@ public class PerceptionProxy {
     * Removes the given codelet from this proxy and destroys it in code rack.
     * @param co
     */
-   public void removeWithDelete(Codelet co){
+   public void removeWithDelete(Codelet co)
+   {
 	   this.listInterpreters.remove(co);
-	   CodeRack.getInstance().destroyCodelet(co);
+	   if(codeRack!=null)
+		   codeRack.destroyCodelet(co);
    }
    /**
     * Removes the given codelet from this proxy but keepts it in CodeRack.

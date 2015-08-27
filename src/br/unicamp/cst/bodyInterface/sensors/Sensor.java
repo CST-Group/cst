@@ -11,20 +11,25 @@ import br.unicamp.cst.memory.WorkingStorage;
  */
 public abstract class Sensor extends Codelet
 {
-	private WorkingStorage ws= WorkingStorage.getInstance();
-	public Sensor()
+	private WorkingStorage ws;
+	
+	public Sensor(WorkingStorage ws)
 	{
-		
+		this.ws=ws;
 	}
 	
 	@Override
-	public synchronized void pushOutput(MemoryObject mo){
+	public synchronized void pushOutput(MemoryObject mo)
+	{
 		this.getOutputs().add(mo);
-		ws.putMemoryObject(mo);
+		if(ws!=null)
+			ws.putMemoryObject(mo);
 	}
 	@Override
-	public synchronized void removesOutput(MemoryObject mo){
+	public synchronized void removesOutput(MemoryObject mo)
+	{
 		this.getOutputs().remove(mo);
-		ws.removeFromWorkingStorageWithoutDelete(mo);		
+		if(ws!=null)
+			ws.removeFromWorkingStorageWithoutDelete(mo);		
 	}
 }

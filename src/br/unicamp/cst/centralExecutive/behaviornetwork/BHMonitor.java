@@ -26,13 +26,18 @@ import br.unicamp.cst.core.entities.Codelet;
  * @author Klaus
  *
  */
-public class BHMonitor extends Codelet {
+public class BHMonitor extends Codelet 
+{
 	private XYSeriesCollection dataset;
 	private BehaviorNetwork behaviorNetwork;
 	private double initialTime=Calendar.getInstance().getTimeInMillis();
 	private ArrayList<String> behaviorsIWantShownInGraphics=null;
+	
+	private GlobalVariables globalVariables;
 
-	public BHMonitor(BehaviorNetwork behaviorNetwork,ArrayList<String> behaviorsIWantShownInGraphics) {
+	public BHMonitor(BehaviorNetwork behaviorNetwork,ArrayList<String> behaviorsIWantShownInGraphics,GlobalVariables globalVariables) 
+	{
+		this.globalVariables = globalVariables;
 		this.behaviorsIWantShownInGraphics=behaviorsIWantShownInGraphics;
 		this.dataset = new XYSeriesCollection();
 		this.behaviorNetwork=behaviorNetwork;
@@ -114,7 +119,8 @@ public class BHMonitor extends Codelet {
 				}
 			}
 			double instant=Calendar.getInstance().getTimeInMillis()-initialTime;
-			dataset.getSeries("Temp Theta").add(instant, GlobalVariables.getInstance().getThetaTemp());
+			if(globalVariables!=null)
+				dataset.getSeries("Temp Theta").add(instant, globalVariables.getThetaTemp());
 
 		}
 

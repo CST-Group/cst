@@ -12,12 +12,8 @@ package br.unicamp.cst.core.entities;
 
 import java.io.Serializable;
 import java.sql.Timestamp;
+import java.util.Date;
 
-//import javax.persistence.Entity;
-//import javax.persistence.GeneratedValue;
-//import javax.persistence.GenerationType;
-//import javax.persistence.Id;
-//import javax.persistence.SequenceGenerator;
 
 /**
  * 
@@ -26,15 +22,11 @@ import java.sql.Timestamp;
  * @author andre.paraense
  * @author klaus.raizer
  */
-//@Entity
 public class MemoryObject implements Serializable
 {
    
    private static final long serialVersionUID = 1L;
    
-//   @Id
-//   @SequenceGenerator(name = "memoryobject_idmemoryobject_generator", sequenceName = "idmemoryobject")
-//   @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "memoryobject_idmemoryobject_generator")
    private Long idmemoryobject;
    
    /**
@@ -144,8 +136,9 @@ public class MemoryObject implements Serializable
     */
    public synchronized void updateInfo(String info)
    {
-	  RawMemory.getInstance().updateInfo(this, info);
-
+	   setInfo(info);
+	   Date date = new Date(); 
+	   setTimestamp(new Timestamp(date.getTime()));    
    } 
    
    /**

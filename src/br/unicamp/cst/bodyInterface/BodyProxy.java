@@ -11,7 +11,6 @@
 package br.unicamp.cst.bodyInterface;
 
 import java.util.ArrayList;
-import java.util.List;
 
 import br.unicamp.cst.core.entities.Codelet;
 /**
@@ -28,29 +27,11 @@ public class BodyProxy
 
 	private ArrayList<Codelet> listActuators;
 
-	/**
-	 * Singleton instance
-	 */
-	private static BodyProxy instance;
 
-	private BodyProxy()
+	public BodyProxy()
 	{
 		listSensors = new ArrayList<Codelet>();
 		listActuators = new ArrayList<Codelet>();           
-	}
-
-	/**
-	 * 
-	 * @return the singleton instance of BodyProxy
-	 */
-	public synchronized static BodyProxy getInstance()
-	{
-		if(instance==null)
-		{
-			instance = new BodyProxy();         
-		}
-
-		return instance;
 	}
 
 	public synchronized void startSenses()

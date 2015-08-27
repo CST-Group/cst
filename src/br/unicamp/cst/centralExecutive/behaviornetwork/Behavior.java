@@ -70,7 +70,7 @@ public abstract class Behavior extends Codelet
 	private ArrayList<String> listOfWorldBeliefStates=new ArrayList<String>();
 	private ArrayList<String> listOfPreviousWorldBeliefStates=new ArrayList<String>();
 
-	private GlobalVariables globalVariables = GlobalVariables.getInstance(); //Behavior network global variables
+	private GlobalVariables globalVariables; //Behavior network global variables
 
 	private boolean executable; //Defines if this behavior is executable or not
 	private boolean active; //Defines if this behavior is active at the moment
@@ -81,15 +81,20 @@ public abstract class Behavior extends Codelet
 	private ArrayList<String> resourceList=new ArrayList<String>();
 	private boolean setToZeroWhenActivated=true;
 	private double activationMA=0;
+	
+	private WorkingStorage ws;
 
-	public Behavior()
+	public Behavior(WorkingStorage ws,GlobalVariables globalVariables)
 	{
+		this.ws = ws;
+		this.globalVariables = globalVariables;
+		
 		//All behaviors subscribe their input list to receive news from Working Storage about WORLD_STATE, and goals memory objects.
 		int io=0; //Input list
-		WorkingStorage.getInstance().registerCodelet(this, MemoryObjectTypesCore.WORLD_STATE, io);
-		WorkingStorage.getInstance().registerCodelet(this, MemoryObjectTypesCore.ONCE_ONLY_GOAL, io);
-		WorkingStorage.getInstance().registerCodelet(this, MemoryObjectTypesCore.PERMANENT_GOAL, io);
-		WorkingStorage.getInstance().registerCodelet(this, MemoryObjectTypesCore.PERMANENT_GOAL, io);
+		ws.registerCodelet(this, MemoryObjectTypesCore.WORLD_STATE, io);
+		ws.registerCodelet(this, MemoryObjectTypesCore.ONCE_ONLY_GOAL, io);
+		ws.registerCodelet(this, MemoryObjectTypesCore.PERMANENT_GOAL, io);
+		ws.registerCodelet(this, MemoryObjectTypesCore.PERMANENT_GOAL, io);
 
 		this.setExecutable(false); // Every competence starts as non-executable
 		this.setActive(false); // Every competence starts as inactive
@@ -106,9 +111,9 @@ public abstract class Behavior extends Codelet
 		if(this.getName().equals("")||this.getName().equals(null)){
 			this.setName( this.getClass().getName()); //If the user did not set a name, lets use the name of the Class
 		}
-		if(this.isTrueThread()){
-			Thread.currentThread().setName(this.getName());// If this behavior has a name, let's rename this thread's name
-		}
+
+		Thread.currentThread().setName(this.getName());// If this behavior has a name, let's rename this thread's name
+		
 	}
 
 	/**
@@ -320,7 +325,8 @@ public abstract class Behavior extends Codelet
 		boolean resourceConflict=false;
 		ArrayList<MemoryObject> allOfType=new ArrayList<MemoryObject>();
 
-		allOfType.addAll(WorkingStorage.getInstance().getAllOfType(MemoryObjectTypesCore.BEHAVIOR_PROPOSITION));
+		if(ws!=null)
+			allOfType.addAll(ws.getAllOfType(MemoryObjectTypesCore.BEHAVIOR_PROPOSITION));
 
 		ArrayList<String> usedResources=new ArrayList<String>();
 
@@ -429,9 +435,10 @@ public abstract class Behavior extends Codelet
 			// decay();//TODO Decay process that scales the mean level of energy to pi  
 
 
-			//		//		activation=activation-GlobalVariables.getInstance().getDecay(); //TODO Test with subtractive decay
+			//		//		activation=activation-globalVariables.getDecay(); //TODO Test with subtractive decay
 			//
-			activation=activation*GlobalVariables.getInstance().getDecay(); //TODO test with multiplicative decay
+			if(globalVariables!=null)
+				activation=activation*globalVariables.getDecay(); //TODO test with multiplicative decay
 
 
 			if (activation < 0)

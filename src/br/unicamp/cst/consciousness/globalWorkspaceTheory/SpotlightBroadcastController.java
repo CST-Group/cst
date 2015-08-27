@@ -21,32 +21,18 @@ import br.unicamp.cst.core.exceptions.CodeletActivationBoundsException;
  */
 public class SpotlightBroadcastController extends Codelet 
 {
-
-private Codelet consciousCodelet;
-	
-	/** Singleton instance*/
-	private static SpotlightBroadcastController instance;   
+	private Codelet consciousCodelet; 
 	
 	/** access to all codelets, so the broadcast can be made*/
 	private CodeRack codeRack;
 	
 	private double thresholdActivation = 0.9d;
 	
-	private SpotlightBroadcastController()
+	public SpotlightBroadcastController(CodeRack codeRack)
 	{
 		this.setName("SpotlightBroadcastController");
-		codeRack = CodeRack.getInstance();		
+		this.codeRack = codeRack;		
 		consciousCodelet = null;
-	}
-	
-	public synchronized static SpotlightBroadcastController getInstance()
-	{
-		if(instance==null)
-		{
-			instance = new SpotlightBroadcastController();			
-		}
-
-		return instance;
 	}
 
 	/* (non-Javadoc)
@@ -86,55 +72,61 @@ private Codelet consciousCodelet;
 			{			
 				consciousCodelet = null;
 			}
-		}		
+		}	
 		
-		//first, select the coalition with greater activation to gain consciousness
-		List<Codelet> allCodeletsList = codeRack.getAllCodelets();    
-				
-		for (Codelet codelet: allCodeletsList)
-		{ 
-			if(consciousCodelet == null)
-			{
-				if(codelet.getActivation() > thresholdActivation)
-				{					
-					consciousCodelet = codelet;
-				}
-			}else
-			{
-				if(codelet.getActivation() > consciousCodelet.getActivation())
-				{
-					consciousCodelet = codelet;
-				}
-			}			
-		}
-				
-		//then, broadcast its information to all codelets
-		
-		if(consciousCodelet!=null)
-		{											
-			List<MemoryObject> memoryObjectsToBeBroadcasted  = consciousCodelet.getOutputs();
-			if(memoryObjectsToBeBroadcasted!=null)
+		if(codeRack!=null)
+		{
+			//first, select the coalition with greater activation to gain consciousness
+			List<Codelet> allCodeletsList = codeRack.getAllCodelets();    
+			
+			if(allCodeletsList!=null)
 			{
 				for (Codelet codelet: allCodeletsList)
 				{ 
-					if(!codelet.getName().equalsIgnoreCase(consciousCodelet.getName()))
-						codelet.setBroadcast(memoryObjectsToBeBroadcasted);
-					else
-						codelet.setBroadcast(new ArrayList<MemoryObject>());
+					if(consciousCodelet == null)
+					{
+						if(codelet.getActivation() > thresholdActivation)
+						{					
+							consciousCodelet = codelet;
+						}
+					}else
+					{
+						if(codelet.getActivation() > consciousCodelet.getActivation())
+						{
+							consciousCodelet = codelet;
+						}
+					}			
 				}
-			}else
-			{
-				for (Codelet codelet: allCodeletsList)
-				{ 					
-					codelet.setBroadcast(new ArrayList<MemoryObject>());
+						
+				//then, broadcast its information to all codelets
+				
+				if(consciousCodelet!=null)
+				{											
+					List<MemoryObject> memoryObjectsToBeBroadcasted  = consciousCodelet.getOutputs();
+					if(memoryObjectsToBeBroadcasted!=null)
+					{
+						for (Codelet codelet: allCodeletsList)
+						{ 
+							if(!codelet.getName().equalsIgnoreCase(consciousCodelet.getName()))
+								codelet.setBroadcast(memoryObjectsToBeBroadcasted);
+							else
+								codelet.setBroadcast(new ArrayList<MemoryObject>());
+						}
+					}else
+					{
+						for (Codelet codelet: allCodeletsList)
+						{ 					
+							codelet.setBroadcast(new ArrayList<MemoryObject>());
+						}
+					}
+				}else
+				{
+					for (Codelet codelet: allCodeletsList)
+					{ 					
+						codelet.setBroadcast(new ArrayList<MemoryObject>());
+					}						
 				}
 			}
-		}else
-		{
-			for (Codelet codelet: allCodeletsList)
-			{ 					
-				codelet.setBroadcast(new ArrayList<MemoryObject>());
-			}						
-		}
+		}	
 	}
 }

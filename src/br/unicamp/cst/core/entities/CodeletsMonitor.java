@@ -23,20 +23,22 @@ import org.jfree.data.xy.XYSeriesCollection;
  *
  */
 
-public class CodeletsMonitor implements Runnable{
+public class CodeletsMonitor implements Runnable
+{
 	private double initialTime=Calendar.getInstance().getTimeInMillis();
 	private List<Codelet> listOfCodelets=new ArrayList<Codelet>();
 	private long refreshPeriod;
 
-	public CodeletsMonitor(List<Codelet> listOfCodelets,long refreshPeriod){
+	public CodeletsMonitor(List<Codelet> listOfCodelets,long refreshPeriod)
+	{
 		this.listOfCodelets=listOfCodelets;
 		this.refreshPeriod=refreshPeriod;
 	}
 
 
-
 	@Override
-	public void run() {
+	public void run() 
+	{
 		
 		XYSeriesCollection dataset = new XYSeriesCollection();
 

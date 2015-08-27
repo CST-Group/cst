@@ -21,9 +21,8 @@ import br.unicamp.cst.memory.WorkingStorage;
  * @author klaus
  *
  */
-public class LearnerCodelet extends Codelet {
-
-
+public class LearnerCodelet extends Codelet 
+{
 	ArrayList<Individual> indi_list = new ArrayList<Individual>();
 
 	private static int maxEventsSequenceLenght = Integer.MAX_VALUE; // Defines a maximum number of events that can be stored in EVENTS_SEQUENCE_MO (used mostly for experiments and debug purposes)
@@ -58,16 +57,22 @@ public class LearnerCodelet extends Codelet {
 
 	private int minNumberOfNodes=2;
 
+	private RawMemory rawMemory;
 
-	public LearnerCodelet(int nStimuli, int nActions){
+	public LearnerCodelet(int nStimuli, int nActions, RawMemory rawMemory, WorkingStorage ws)
+	{
 		this.nStimuli = nStimuli;
 		this.nActions = nActions;
 		
+		this.rawMemory = rawMemory;
+		
 		//this.setTimeStep(0); // No waiting between reruns?
 
-		this.SOLUTION_TREE_MO=RawMemory.getInstance().createMemoryObject(MemoryObjectTypesGlas.SOLUTION_TREE, "");
+		if(rawMemory!=null)
+		this.SOLUTION_TREE_MO=rawMemory.createMemoryObject(MemoryObjectTypesGlas.SOLUTION_TREE, "");
 		this.pushOutput(this.SOLUTION_TREE_MO);
-		WorkingStorage.getInstance().putMemoryObject(this.SOLUTION_TREE_MO);
+		if(ws!=null)
+			ws.putMemoryObject(this.SOLUTION_TREE_MO);
 
 
 		GlasOptProblem gop = new GlasOptProblem(nNodes, nStimuli, nActions);
@@ -88,7 +93,8 @@ public class LearnerCodelet extends Codelet {
 
 
 		//		[0,1,1,2,3,4,5,0,1,2,3,4,5,6,0,1,1,1,1,2,2]
-		WorkingStorage.getInstance().registerCodelet(this, MemoryObjectTypesGlas.EVENTS_SEQUENCE, 0);
+		if(ws!=null)
+			ws.registerCodelet(this, MemoryObjectTypesGlas.EVENTS_SEQUENCE, 0);
 
 	}
 

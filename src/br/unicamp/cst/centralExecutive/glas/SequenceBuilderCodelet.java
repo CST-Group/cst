@@ -20,8 +20,8 @@ import br.unicamp.cst.memory.WorkingStorage;
  * @author klaus
  *
  */
-public class SequenceBuilderCodelet extends Codelet{
-
+public class SequenceBuilderCodelet extends Codelet
+{
 	private  boolean enabled = true;
 	private MemoryObject STIMULUS_MO;
 	private MemoryObject ACTION_MO;
@@ -39,41 +39,67 @@ public class SequenceBuilderCodelet extends Codelet{
 	private MemoryObject NEW_STIM_MO;
 	private MemoryObject NEW_ACTION_MO;
 	private MemoryObject NEW_REWARD_MO;
+	
+	private RawMemory rawMemory;
 
-	public SequenceBuilderCodelet(){
-		WorkingStorage.getInstance().registerCodelet(this,MemoryObjectTypesGlas.SOLUTION_TREE, 0);
-		WorkingStorage.getInstance().registerCodelet(this,MemoryObjectTypesGlas.STIMULUS, 0);
-		WorkingStorage.getInstance().registerCodelet(this,MemoryObjectTypesGlas.ACTION, 0);
-		WorkingStorage.getInstance().registerCodelet(this,MemoryObjectTypesGlas.REWARD, 0);
+	public SequenceBuilderCodelet(RawMemory rawMemory,WorkingStorage ws)
+	{
+		this.rawMemory = rawMemory;
+		
+		if(ws!=null)
+		{
+			ws.registerCodelet(this,MemoryObjectTypesGlas.SOLUTION_TREE, 0);
+			ws.registerCodelet(this,MemoryObjectTypesGlas.STIMULUS, 0);
+			ws.registerCodelet(this,MemoryObjectTypesGlas.ACTION, 0);
+			ws.registerCodelet(this,MemoryObjectTypesGlas.REWARD, 0);
+		}
 
-		EVENTS_SEQUENCE_MO=RawMemory.getInstance().createMemoryObject(MemoryObjectTypesGlas.EVENTS_SEQUENCE, "");
+		if(rawMemory!=null)
+			EVENTS_SEQUENCE_MO=rawMemory.createMemoryObject(MemoryObjectTypesGlas.EVENTS_SEQUENCE, "");
 		this.pushOutput(EVENTS_SEQUENCE_MO);
-		WorkingStorage.getInstance().putMemoryObject(EVENTS_SEQUENCE_MO);
+		if(ws!=null)
+			ws.putMemoryObject(EVENTS_SEQUENCE_MO);
 
-		NEW_EVENT_DETECTED_MO=RawMemory.getInstance().createMemoryObject(MemoryObjectTypesGlas.NEW_EVENT_DETECTED, "FALSE");
+		if(rawMemory!=null)
+			NEW_EVENT_DETECTED_MO=rawMemory.createMemoryObject(MemoryObjectTypesGlas.NEW_EVENT_DETECTED, "FALSE");
 		this.pushOutput(NEW_EVENT_DETECTED_MO);
-		WorkingStorage.getInstance().putMemoryObject(NEW_EVENT_DETECTED_MO);
+		if(ws!=null)
+			ws.putMemoryObject(NEW_EVENT_DETECTED_MO);
 
 
+		if(rawMemory!=null)
+		{
+			NEW_STIM_MO = rawMemory.createMemoryObject(MemoryObjectTypesGlas.NEW_STIM, String.valueOf(false));
+			NEW_ACTION_MO = rawMemory.createMemoryObject(MemoryObjectTypesGlas.NEW_ACTION, String.valueOf(false));
+			NEW_REWARD_MO = rawMemory.createMemoryObject(MemoryObjectTypesGlas.NEW_REWARD, String.valueOf(false));
 
-		NEW_STIM_MO = RawMemory.getInstance().createMemoryObject(MemoryObjectTypesGlas.NEW_STIM, String.valueOf(false));
-		NEW_ACTION_MO = RawMemory.getInstance().createMemoryObject(MemoryObjectTypesGlas.NEW_ACTION, String.valueOf(false));
-		NEW_REWARD_MO = RawMemory.getInstance().createMemoryObject(MemoryObjectTypesGlas.NEW_REWARD, String.valueOf(false));
-
+		}
+		
 		this.pushOutput(NEW_STIM_MO);
 		this.pushOutput(NEW_ACTION_MO);
 		this.pushOutput(NEW_REWARD_MO);
 
-		WorkingStorage.getInstance().putMemoryObject(NEW_STIM_MO);
-		WorkingStorage.getInstance().putMemoryObject(NEW_ACTION_MO);
-		WorkingStorage.getInstance().putMemoryObject(NEW_REWARD_MO);
+		if(ws!=null)
+		{
+			ws.putMemoryObject(NEW_STIM_MO);
+			ws.putMemoryObject(NEW_ACTION_MO);
+			ws.putMemoryObject(NEW_REWARD_MO);
+		}	
 
-		STIMULUS_MO = RawMemory.getInstance().createMemoryObject(MemoryObjectTypesGlas.STIMULUS, "");
-		PREVIOUS_REWARD_MO = RawMemory.getInstance().createMemoryObject(MemoryObjectTypesGlas.REWARD, ""); //reward for i-1 s,a pair
+		if(rawMemory!=null)
+		{
+			STIMULUS_MO = rawMemory.createMemoryObject(MemoryObjectTypesGlas.STIMULUS, "");
+			PREVIOUS_REWARD_MO = rawMemory.createMemoryObject(MemoryObjectTypesGlas.REWARD, ""); //reward for i-1 s,a pair
+		}
+		
 		this.pushInput(STIMULUS_MO);
 		this.pushInput(PREVIOUS_REWARD_MO);
-		WorkingStorage.getInstance().putMemoryObject(STIMULUS_MO);
-		WorkingStorage.getInstance().putMemoryObject(PREVIOUS_REWARD_MO);
+		if(ws!=null)
+		{
+			ws.putMemoryObject(STIMULUS_MO);
+			ws.putMemoryObject(PREVIOUS_REWARD_MO);
+		}
+		
 
 	}
 

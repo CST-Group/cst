@@ -47,26 +47,19 @@ import br.unicamp.cst.core.entities.Subject;
  */
 public class LongTermMemory
 {
-
-	//   private MemoryObject[] memoryObject;
-
-	
-	
-//	private ConcurrentHashMap<String,MemoryObject> learnedPropositions;
 	private ArrayList<MemoryObject> ltmMOs = new ArrayList<MemoryObject>();
 
-	/**
-	 * Singleton instance
-	 */
-	private static LongTermMemory instance;
 	private static String path = "LongTermMemory/";
+	
+	private RawMemory rawMemory;
 
 	/**
 	 * Default constructor
 	 */
-	private LongTermMemory()
+	public LongTermMemory(RawMemory rawMemory)
 	{
 
+		this.rawMemory = rawMemory;
 //		learnedPropositions = new ConcurrentHashMap<String,MemoryObject>();
 		boolean success = (new File("LongTermMemory")).mkdirs();
 
@@ -107,19 +100,6 @@ public class LongTermMemory
 		// Close the input stream and return bytes
 		is.close();
 		return bytes;
-	}
-
-	/**
-	 * 
-	 * @return the singleton instance of LongTermMemory
-	 */
-	public synchronized static LongTermMemory getInstance()
-	{
-		if (instance == null)
-		{
-			instance = new LongTermMemory();
-		}
-		return instance;
 	}
 
 	//---------------
@@ -194,8 +174,10 @@ public class LongTermMemory
 				}
 			}
 		} 
-		if(ltmMO!=null){
-			RawMemory.getInstance().addMemoryObject(ltmMO);
+		if(ltmMO!=null)
+		{
+			if(rawMemory!=null)
+				rawMemory.addMemoryObject(ltmMO);
 		}
 		
 		}

@@ -20,8 +20,8 @@ import br.unicamp.cst.memory.WorkingStorage;
  * @author Klaus Raizer
  *
  */
-public abstract class Perception extends Codelet{
-
+public abstract class Perception extends Codelet
+{
 	private HashMap<MemoryObject, Boolean> world_state_log = new HashMap<MemoryObject, Boolean>();
 	private ArrayList<MemoryObject> list_of_true_world_states=new ArrayList<MemoryObject>();
 	private ArrayList<MemoryObject> list_of_false_world_states=new ArrayList<MemoryObject>();
@@ -29,12 +29,19 @@ public abstract class Perception extends Codelet{
 	private ArrayList<MemoryObject> known_percepts=new ArrayList<MemoryObject>();//list of all known percepts (only grows with time)
 	private ArrayList<MemoryObject> detected_percepts=new ArrayList<MemoryObject>();//list of all percepts that were detected by the codelet (is reset after uptadeOutputWithPercepts is called)
 	
+	private WorkingStorage localWS;
+	
+	public Perception(WorkingStorage localWS)
+	{
+		this.localWS = localWS;
+	}
 	/**
 	 * This method pushes a memory object representing a percept detected in the world into a list, so this perception codelet knows what is true.
 	 * Important: Remember to call uptadeOutputWithPercepts() in order to keep pushed percepts into this codelet's output list.
 	 * @param pe
 	 */
-	public synchronized void pushDetectedPercept(MemoryObject pe){
+	public synchronized void pushDetectedPercept(MemoryObject pe)
+	{
 		if(!this.detected_percepts.contains(pe)){
 			this.detected_percepts.add(pe);
 		}
@@ -125,7 +132,6 @@ public abstract class Perception extends Codelet{
 //				}
 	}
 	
-	@Override
 	public synchronized void pushOutput(MemoryObject output)
 	{
 		this.getOutputs().add(output);
@@ -135,8 +141,7 @@ public abstract class Perception extends Codelet{
 		
 		this.synchWithWorkingStorage();
 	}
-	
-	@Override
+
 	public synchronized void removesOutput(MemoryObject output)
 	{	
 		this.getOutputs().remove(output);
@@ -150,10 +155,10 @@ public abstract class Perception extends Codelet{
  * Makes sure what this perception codelet perceives as true, remains in working storage, while what it perceives as being false does not.
  * This method resets the list of detected percepts.
  */
-	private void synchWithWorkingStorage(){
+	private void synchWithWorkingStorage()
+	{
 		//TODO Remember to acquire lock!
 		ArrayList<MemoryObject> alreadyInWorkingStorage = new ArrayList<MemoryObject>();
-		WorkingStorage localWS=WorkingStorage.getInstance();
 		alreadyInWorkingStorage.addAll(localWS.getAll());
 //		alreadyInWorkingStorage.retainAll(this.getOutputs());
 		

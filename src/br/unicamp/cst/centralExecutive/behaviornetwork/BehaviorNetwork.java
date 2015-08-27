@@ -17,6 +17,7 @@ import java.util.List;
 import javax.security.auth.callback.UnsupportedCallbackException;
 
 
+
 import br.unicamp.cst.core.entities.CodeRack;
 import br.unicamp.cst.core.entities.Codelet;
 import br.unicamp.cst.core.entities.MemoryBuffer;
@@ -33,7 +34,8 @@ import br.unicamp.cst.memory.WorkingStorage;
  * @author klaus
  */
 
-public class BehaviorNetwork {
+public class BehaviorNetwork 
+{
 
 	private ArrayList<Behavior> behaviors=new ArrayList<Behavior>(); //List of Competence codelets
 	//TODO this list of all available competences should be given to the consciousness module so it can return a coalition list of relevant codelets
@@ -42,39 +44,69 @@ public class BehaviorNetwork {
 	private boolean singleCodeletBN=false; //if set true, this behavior network starts a single thread to take care of executing all behaviors, instead of one thread for each one.
 
 	private BehaviorsWTA kwta=null;
+	
 	private Codelet monitor=null;
+	
+	private CodeRack codeRack;
+	
+	private WorkingStorage ws;
+	
+	private GlobalVariables globalVariables;
 
-	public BehaviorNetwork(){
-		kwta = (BehaviorsWTA) CodeRack.getInstance().insertCodelet(new BehaviorsWTA());
+	public BehaviorNetwork(CodeRack codeRack,WorkingStorage ws)
+	{
+		this.ws=ws;
+		
+		globalVariables = new GlobalVariables();
+		
+		if(codeRack!=null)
+		{
+			this.codeRack = codeRack;
+			kwta = (BehaviorsWTA) codeRack.insertCodelet(new BehaviorsWTA(globalVariables));
+		}
+		
 	}
 
 	/**
 	 * Creates a new graphic, showing all behaviors and its activations along time. And destroys any previous running graphics of this instance.
 	 */
-	public void showGraphics(){
-		if(monitor!=null){
-			CodeRack.getInstance().destroyCodelet(monitor);
+	public void showGraphics()
+	{
+		if(codeRack!=null)
+		{
+			if(monitor!=null)
+			{			
+				codeRack.destroyCodelet(monitor);
+			}
+			monitor = codeRack.insertCodelet(new BHMonitor(this));
+			monitor.start();
 		}
-		monitor = CodeRack.getInstance().insertCodelet(new BHMonitor(this));
-		monitor.start();
 	}
 	
-	public void showGraphics(ArrayList<String> behaviorsIWantShownInGraphics) {
-		if(monitor!=null){
-			CodeRack.getInstance().destroyCodelet(monitor);
+	public void showGraphics(ArrayList<String> behaviorsIWantShownInGraphics) 
+	{
+		if(codeRack!=null)
+		{
+			if(monitor!=null)
+			{
+				codeRack.destroyCodelet(monitor);
+			}
+			monitor = codeRack.insertCodelet(new BHMonitor(this,behaviorsIWantShownInGraphics,globalVariables));
+			monitor.start();
 		}
-		monitor = CodeRack.getInstance().insertCodelet(new BHMonitor(this,behaviorsIWantShownInGraphics));
-		monitor.start();
 	}
 	
 	/**
 	 *  Starts all competences threads
 	 */
-	public void startCodelets() {
-
-		if(CodeRack.getInstance().isTrueThread()){
-			if(!singleCodeletBN){
-				for(Codelet oneCompetence:this.behaviors){
+	public void startCodelets() 
+	{
+		if(codeRack!=null)
+		{
+			if(!singleCodeletBN)
+			{
+				for(Codelet oneCompetence:this.behaviors)
+				{
 					oneCompetence.start();
 				}
 			}else{
@@ -83,8 +115,10 @@ public class BehaviorNetwork {
 				singleCodelet.start();
 			}
 
-		}else{
-			for(Codelet oneCompetence:this.behaviors){
+		}else
+		{
+			for(Codelet oneCompetence:this.behaviors)
+			{
 				oneCompetence.start();//TODO This should have no effect, should I remove it?
 			}
 
@@ -160,9 +194,11 @@ public class BehaviorNetwork {
 	/**
 	 * @param behaviors the competences to set
 	 */
-	public void addCodelet(Codelet codelet) {
+	public void addCodelet(Codelet codelet) 
+	{
 		//Every new godelet's input list gets registered at working storage for WORLD_STATE memory objects
-		WorkingStorage.getInstance().registerCodelet(codelet, MemoryObjectTypesCore.WORLD_STATE,0); //TODO How about putting this inside Behavior.java?
+		if(ws!=null)
+			ws.registerCodelet(codelet, MemoryObjectTypesCore.WORLD_STATE,0); //TODO How about putting this inside Behavior.java?
 		Behavior be = (Behavior)codelet;
 		this.behaviors.add(be);
 		kwta.addBehavior(be);
@@ -174,18 +210,15 @@ public class BehaviorNetwork {
 	/**
 	 * @param behaviors the competences to set
 	 */
-	public void removeCodelet(Codelet codelet) {
-		
-		WorkingStorage.getInstance().unregisterCodelet(codelet, MemoryObjectTypesCore.WORLD_STATE,0); //TODO How about putting this inside Behavior.java?
+	public void removeCodelet(Codelet codelet) 
+	{
+		if(ws!=null)
+			ws.unregisterCodelet(codelet, MemoryObjectTypesCore.WORLD_STATE,0); //TODO How about putting this inside Behavior.java?
 		Behavior be = (Behavior)codelet;
 		this.behaviors.remove(be);
 		kwta.removeBehavior(be);
 		
 		setBehaviorsInsideCodelets();
-	}
-
-	public GlobalVariables getGlobalVariables(){
-		return GlobalVariables.getInstance();
 	}
 
 	/**

@@ -28,13 +28,16 @@ import java.util.concurrent.locks.ReentrantLock;
  * @author klaus.raizer
  */
 
-public class MemoryBuffer {
-
+public class MemoryBuffer 
+{
 	//Using CopyOnWriteArrayList in this case is not ideal because we have many writes compared to the number of reads..
 	private ArrayList<MemoryObject>  memoryObjects; //A memory buffer is essentially a fifo list of MO
 	private int maxcapacity;
 	// Safe lock for multithread access
 	public volatile Lock lock= new ReentrantLock();
+	
+	private RawMemory rawMemory;
+	
 	/**
 	 * Safe access through reentrant locks
 	 * 
@@ -71,11 +74,13 @@ public class MemoryBuffer {
 	 * @param maxcapacity maximum number of elements this buffer holds at a given time
 	 * @param rawMemory singleton instance of the system's raw memory
 	 */
-	public MemoryBuffer(int maxcapacity)//, RawMemory rawMemory)
+	public MemoryBuffer(int maxcapacity, RawMemory rawMemory)
 	{
 		memoryObjects=new ArrayList<MemoryObject>();
 		this.maxcapacity=maxcapacity;
 		//	      this.lock = new ReentrantLock();
+		
+		this.rawMemory = rawMemory;
 	}
 
 
@@ -104,8 +109,10 @@ public class MemoryBuffer {
 	public synchronized void put(MemoryObject content)
 	{
 
-		if(memoryObjects.size()==maxcapacity){
-			RawMemory.getInstance().destroyMemoryObject(memoryObjects.get(0));//Gets rid of older content and deletes it from raw memory
+		if(memoryObjects.size()==maxcapacity)
+		{
+			if(rawMemory!=null)
+				rawMemory.destroyMemoryObject(memoryObjects.get(0));//Gets rid of older content and deletes it from raw memory
 			memoryObjects.remove(0);
 		}
 
@@ -192,8 +199,10 @@ public class MemoryBuffer {
 	 * @param mo memory object to be removed
 	 * @return result of of the removal process
 	 */
-	public synchronized boolean remove(MemoryObject mo){
-		RawMemory.getInstance().destroyMemoryObject(mo);//removes this mo form RawMemory
+	public synchronized boolean remove(MemoryObject mo)
+	{
+		if(rawMemory!=null)
+			rawMemory.destroyMemoryObject(mo);//removes this mo form RawMemory
 
 		return memoryObjects.remove(mo);//removes this mo from this buffer;
 
@@ -202,11 +211,14 @@ public class MemoryBuffer {
 	/**
 	 * Clears all memory objects from this buffer
 	 */
-	public synchronized void clear() {
+	public synchronized void clear() 
+	{
 		//			memoryObjects.clear();		
 
-		for(int i=0;i<memoryObjects.size();i++){
-			RawMemory.getInstance().destroyMemoryObject(memoryObjects.get(i)); 
+		if(rawMemory!=null)
+		for(int i=0;i<memoryObjects.size();i++)
+		{			
+			rawMemory.destroyMemoryObject(memoryObjects.get(i)); 
 		}
 		memoryObjects.clear();
 	}
@@ -218,5 +230,3 @@ public class MemoryBuffer {
 
 	}
 }
-
-

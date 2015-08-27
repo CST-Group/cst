@@ -19,9 +19,6 @@ import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 
-//import br.unicamp.cogsys.core.memoryMechanisms.RawMemoryLoader;
-
-
 /**
  * 
  * The Raw Memory contains all memory objects in the system.
@@ -36,54 +33,14 @@ public class RawMemory
     * List of all memory objects in the system
     */
    private List<MemoryObject> allMemoryObjects;
-
-   /**
-    * Singleton instance
-    */
-   private static RawMemory instance;
    
    /**
     * Default constructor
     */
-   private RawMemory()
+   public RawMemory()
    {
       allMemoryObjects =  Collections.synchronizedList(new ArrayList<MemoryObject>());
    }
-
-   /**
-    * 
-    * @return the singleton instance of RawMemory
-    */
-   public synchronized static RawMemory getInstance()
-   {
-	   //TODO: Desabilitei o load raw memory temporariamente para testes.
-      if(instance==null)
-      {
-         instance = new RawMemory();
-//         instance.loadRawMemory();
-      }
-
-      return instance;
-   }
-   
-//   /**
-//    * Executed the first time RawMemory is created, when application starts. Loads the memory objects from long-term memory
-//    */
-//   private void loadRawMemory()
-//   {
-//      try
-//      {
-//         RawMemoryLoader rawMemoryLoader = new RawMemoryLoader();
-//         rawMemoryLoader.loadMemoryObjects();
-//         List<MemoryObject> memoryObjectList = rawMemoryLoader.getMemoryObjectList();
-//         
-//         instance.setAllMemoryObjects(memoryObjectList);
-//         
-//      } catch (Exception e)
-//      {
-//         e.printStackTrace();
-//      }
-//   }
 
    /**
     * @return the allMemoryObjects
@@ -154,7 +111,6 @@ public class RawMemory
    {
 	   synchronized(allMemoryObjects)
 	   {
-//			  System.out.println("Adding to rawmemory: "+mo);
 		      allMemoryObjects.add(mo);
 	   }     
    }
@@ -235,18 +191,7 @@ public class RawMemory
 	   }     
    }
    
-   /**
-    * This method sets this memory object's info with the given 
-    * string and updates its timestamp.
-    * Important: If you only need to set the info, use setInfo() from MemoryObject instead.
-    * @param info
-    */
-   public synchronized void updateInfo(MemoryObject mo, String info)
-   {
-      mo.setInfo(info);
-      Date date = new Date(); 
-      mo.setTimestamp(new Timestamp(date.getTime()));      
-   }
+
    /**
     * Removes all memory objects from RawMemory. Sets all memory objects to null;
     */

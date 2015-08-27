@@ -11,24 +11,28 @@ import br.unicamp.cst.memory.WorkingStorage;
  *
  */
 
-public abstract class Actuator extends Codelet{
-
-	private WorkingStorage ws= WorkingStorage.getInstance();
-	public Actuator(){
-		
-	}
-
+public abstract class Actuator extends Codelet
+{
+	private WorkingStorage ws;
 	
+	public Actuator(WorkingStorage ws)
+	{
+		this.ws=ws;
+	}
 	
 	@Override
-	public void pushInput(MemoryObject mo){
+	public void pushInput(MemoryObject mo)
+	{
 		this.getInputs().add(mo);
-		ws.putMemoryObject(mo);
+		if(ws!=null)
+			ws.putMemoryObject(mo);
 	}
 	@Override
-	public void removesInput(MemoryObject mo){
+	public void removesInput(MemoryObject mo)
+	{
 		this.getInputs().remove(mo);
-		ws.removeFromWorkingStorageWithoutDelete(mo);		
+		if(ws!=null)
+			ws.removeFromWorkingStorageWithoutDelete(mo);		
 	}
 	
 }
