@@ -1,9 +1,9 @@
 /*******************************************************************************
- * Copyright (c) 2012 K. Raizer, A. L. O. Paraense, R. R. Gudwin.
+ * Copyright (c) 2012  DCA-FEEC-UNICAMP
  * All rights reserved. This program and the accompanying materials
- * are made available under the terms of the GNU Lesser Public License v2.1
+ * are made available under the terms of the GNU Lesser Public License v3
  * which accompanies this distribution, and is available at
- * http://www.gnu.org/licenses/old-licenses/gpl-2.0.html
+ * http://www.gnu.org/licenses/lgpl.html
  * 
  * Contributors:
  *     K. Raizer, A. L. O. Paraense, R. R. Gudwin - initial API and implementation
@@ -11,7 +11,6 @@
 package br.unicamp.cst.behavior.bn;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Enumeration;
 import java.util.Hashtable;
 import java.util.List;
@@ -24,9 +23,7 @@ import br.unicamp.cst.core.entities.Codelet;
 import br.unicamp.cst.core.entities.MemoryObject;
 import br.unicamp.cst.core.entities.MemoryObjectType;
 import br.unicamp.cst.core.entities.MemoryObjectTypesCore;
-import br.unicamp.cst.core.entities.RawMemory;
 import br.unicamp.cst.core.exceptions.CodeletActivationBoundsException;
-import br.unicamp.cst.memory.LongTermMemory;
 import br.unicamp.cst.memory.WorkingStorage;
 
 /**

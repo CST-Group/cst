@@ -1,16 +1,20 @@
+/*******************************************************************************
+ * Copyright (c) 2012  DCA-FEEC-UNICAMP
+ * All rights reserved. This program and the accompanying materials
+ * are made available under the terms of the GNU Lesser Public License v3
+ * which accompanies this distribution, and is available at
+ * http://www.gnu.org/licenses/lgpl.html
+ * 
+ * Contributors:
+ *     K. Raizer, A. L. O. Paraense, R. R. Gudwin - initial API and implementation
+ ******************************************************************************/
+
 package br.unicamp.cst.behavior.glas.tests;
 
-import static org.junit.Assert.*;
 
 import org.junit.Test;
-import org.opt4j.core.Individual;
-import org.opt4j.core.genotype.DoubleGenotype;
-import org.opt4j.core.optimizer.Archive;
-import org.opt4j.core.start.Opt4JTask;
-import org.opt4j.optimizers.de.DifferentialEvolutionModule;
 
 import br.unicamp.cst.behavior.glas.GlasEvent;
-import br.unicamp.cst.behavior.glas.GlasOptModule;
 import br.unicamp.cst.behavior.glas.GlasLearner;
 import br.unicamp.cst.behavior.glas.GlasSequence;
 
