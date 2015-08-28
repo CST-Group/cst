@@ -61,7 +61,7 @@ public abstract class Codelet implements Runnable
 	private boolean loop=true; //
 	
 	/** The time step for the aforementioned loop.*/
-	private int timeStep=0; //
+	protected long timeStep=0; //
 	
 	/** A codelet is a priori enabled to run its proc(). However, if it tries to read from a given output and fails, it becomes not able to do so.*/
 	private boolean enabled=true; 
@@ -233,20 +233,7 @@ public abstract class Codelet implements Runnable
 		this.name = name;
 	}
 
-
-	/**
-	 * @return the timeStep
-	 */
-	public int getTimeStep() {
-		return timeStep;
-	}
-	/**
-	 * @param timeStep the timeStep to set
-	 */
-	public void setTimeStep(int timeStep) 
-	{
-		this.timeStep = timeStep;
-	}
+	
 	/**
 	 * @return the loop
 	 */
@@ -635,5 +622,19 @@ public abstract class Codelet implements Runnable
 		 {
 			 this.threshold = threshold;
 		 }
-	 }	
+	 }
+
+	/**
+	 * @return the timeStep
+	 */
+	public synchronized long getTimeStep() {
+		return timeStep;
+	}
+
+	/**
+	 * @param timeStep the timeStep to set
+	 */
+	public synchronized void setTimeStep(long timeStep) {
+		this.timeStep = timeStep;
+	}	
 }
