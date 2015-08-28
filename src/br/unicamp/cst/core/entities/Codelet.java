@@ -59,7 +59,7 @@ public abstract class Codelet implements Runnable
 	private boolean loop=true; //
 	
 	/** The time step for the aforementioned loop.*/
-	private int timeStep=0; //
+	protected long timeStep=0; //
 	
 	/** A codelet is a priori enabled to run its proc(). However, if it tries to read from a given output and fails, it becomes not able to do so.*/
 	private boolean enabled=true; 
@@ -97,27 +97,34 @@ public abstract class Codelet implements Runnable
 
 		do
 		{
-			this.accessMemoryObjects();//tries to connect to memory objects			
+			try
+			{
+				this.accessMemoryObjects();//tries to connect to memory objects			
 
-			if (enable_count==0)
+				if (enable_count==0)
+				{
+					this.calculateActivation();
+					if(activation>=threshold)
+						proc(); 				
+				}else
+				{
+					System.out.println("This codelet thread could not find a memory object it needs (thread ID):"+Thread.currentThread().getId());
+				}
+				enable_count=0;
+
+				if(timeStep > 0)
+				{
+									
+					long timeMarker = System.currentTimeMillis();
+
+					while(System.currentTimeMillis() < timeMarker + timeStep){}
+				}	
+				
+			}catch(Exception e)
 			{
-				this.calculateActivation();
-				if(activation>=threshold)
-					proc(); 				
-			}else
-			{
-				System.out.println("This codelet thread could not find a memory object it needs (thread ID):"+Thread.currentThread().getId());
+				e.printStackTrace();
 			}
-			enable_count=0;
-
-			if(this.getTimeStep() > 0)
-			{
-				long timeMarker = System.currentTimeMillis();
-
-				while(System.currentTimeMillis() < timeMarker + this.getTimeStep() )
-				{}	
-			}	
-
+		
 		}while(this.shouldLoop());
 	}
 
@@ -224,20 +231,7 @@ public abstract class Codelet implements Runnable
 		this.name = name;
 	}
 
-
-	/**
-	 * @return the timeStep
-	 */
-	public int getTimeStep() {
-		return timeStep;
-	}
-	/**
-	 * @param timeStep the timeStep to set
-	 */
-	public void setTimeStep(int timeStep) 
-	{
-		this.timeStep = timeStep;
-	}
+	
 	/**
 	 * @return the loop
 	 */
@@ -626,5 +620,19 @@ public abstract class Codelet implements Runnable
 		 {
 			 this.threshold = threshold;
 		 }
-	 }	
+	 }
+
+	/**
+	 * @return the timeStep
+	 */
+	public synchronized long getTimeStep() {
+		return timeStep;
+	}
+
+	/**
+	 * @param timeStep the timeStep to set
+	 */
+	public synchronized void setTimeStep(long timeStep) {
+		this.timeStep = timeStep;
+	}	
 }
