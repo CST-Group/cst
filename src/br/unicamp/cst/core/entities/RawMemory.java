@@ -143,13 +143,13 @@ public class RawMemory
     * @param info memory object info
     * @return mo created MemoryObject
     */
-   public synchronized MemoryObject createMemoryObject(String name, Class<Object> type, Object info)
+   public synchronized MemoryObject createMemoryObject(String name, Object info)
    {
 	   // memory object to be added to rawmemory
        MemoryObject mo = new MemoryObject();
        Date date = new Date();         
        mo.setI(info);
-       mo.setT(type);
+       //mo.setT(type);
        mo.setInfo("");
        mo.setTimestamp(new Timestamp(date.getTime()));
        mo.setEvaluation(0.5d);
@@ -161,7 +161,7 @@ public class RawMemory
    }
    
    public synchronized MemoryObject createMemoryObject(String name) {
-       return createMemoryObject(name, Object.class, null);
+       return createMemoryObject(name, null);
    }
    
    

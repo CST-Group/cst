@@ -68,19 +68,19 @@ public class Mind
 	 * @param info memory object info
 	 * @return mo created MemoryObject
 	 */
-	public synchronized MemoryObject createMemoryObject(String name, Class<Object> type, Object info)
+	public synchronized MemoryObject createMemoryObject(String name, Object info)
 	{
 		MemoryObject mo = null;
 
 		if(rawMemory!=null)
-			mo = rawMemory.createMemoryObject(name, type, info);
+			mo = rawMemory.createMemoryObject(name, info);
 
 		return mo;
 	}
 
 	public synchronized MemoryObject createMemoryObject(String name) 
 	{
-		return createMemoryObject(name, Object.class, null);
+		return createMemoryObject(name, null);
 	}
 
 	public Codelet insertCodelet(Codelet co)

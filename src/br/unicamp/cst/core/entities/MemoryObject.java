@@ -51,7 +51,7 @@ public class MemoryObject implements Serializable
    private volatile Double evaluation;
    
    private Object I;
-   private Class<Object> T;
+   //private Class<Object> T;
    public String name;
    
    public MemoryObject()
@@ -113,23 +113,23 @@ public class MemoryObject implements Serializable
       this.I = info;
    }
    
-   /**
-    * 
-    * @return
-    */
-   public synchronized Class<Object> getT()
-   {
-      return this.T;
-   }
+//   /**
+//    * 
+//    * @return
+//    */
+//   public synchronized Class<Object> getT()
+//   {
+//      return this.T;
+//   }
    
-   /**
-    *  Sets the type of memory object - Java style. 
-    * @param nclass
-    */
-   public synchronized void setT(Class<Object> nclass)
-   {
-      this.T = nclass;
-   }
+//   /**
+//    *  Sets the type of memory object - Java style. 
+//    * @param nclass
+//    */
+//   public synchronized void setT(Class<Object> nclass)
+//   {
+//      this.T = nclass;
+//   }
    
    /**
     *  Updates the info in memory object.  And in the process, updates the time stamp.
