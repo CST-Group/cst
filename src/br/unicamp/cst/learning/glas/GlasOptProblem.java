@@ -9,7 +9,7 @@
  *     K. Raizer, A. L. O. Paraense, R. R. Gudwin - initial API and implementation
  ******************************************************************************/
 
-package br.unicamp.cst.behavior.glas;
+package br.unicamp.cst.learning.glas;
 
 import java.util.Random;
 

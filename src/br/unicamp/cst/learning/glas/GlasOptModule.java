@@ -9,11 +9,13 @@
  *     K. Raizer, A. L. O. Paraense, R. R. Gudwin - initial API and implementation
  ******************************************************************************/
 
-package br.unicamp.cst.behavior.glas;
+package br.unicamp.cst.learning.glas;
 import org.opt4j.core.problem.ProblemModule;
 import org.opt4j.core.start.Constant;
 
 import com.google.inject.Provides;
+
+import br.unicamp.cst.behavior.glas.GlasSequence;
 
 /**
  * http://kaskavalci.com/?p=231

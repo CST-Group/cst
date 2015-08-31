@@ -13,6 +13,7 @@ package br.unicamp.cst.behavior.glas;
 
 import br.unicamp.cst.core.entities.CodeRack;
 import br.unicamp.cst.core.entities.RawMemory;
+import br.unicamp.cst.learning.glas.LearnerCodelet;
 import br.unicamp.cst.memory.WorkingStorage;
 
 /**
