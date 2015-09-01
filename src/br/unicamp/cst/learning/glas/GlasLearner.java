@@ -9,7 +9,7 @@
  *     K. Raizer, A. L. O. Paraense, R. R. Gudwin - initial API and implementation
  ******************************************************************************/
 
-package br.unicamp.cst.behavior.glas;
+package br.unicamp.cst.learning.glas;
 
 
 import org.opt4j.core.Individual;
@@ -18,6 +18,8 @@ import org.opt4j.core.optimizer.Archive;
 import org.opt4j.core.start.Opt4JTask;
 import org.opt4j.optimizers.sa.SimulatedAnnealingModule;
 import org.opt4j.viewer.ViewerModule;
+
+import br.unicamp.cst.behavior.glas.GlasSequence;
 
 
 

@@ -9,7 +9,7 @@
  *     K. Raizer, A. L. O. Paraense, R. R. Gudwin - initial API and implementation
  ******************************************************************************/
 
-package br.unicamp.cst.behavior.glas;
+package br.unicamp.cst.learning.glas;
 import java.util.ArrayList;
 
 import org.opt4j.core.Objective.Sign;
@@ -18,6 +18,9 @@ import org.opt4j.core.problem.Evaluator;
 
 import com.google.inject.Inject;
 import com.google.inject.Provider;
+
+import br.unicamp.cst.behavior.glas.GlasSequence;
+import br.unicamp.cst.behavior.glas.Individual;
 
 /**
  * http://kaskavalci.com/?p=231
