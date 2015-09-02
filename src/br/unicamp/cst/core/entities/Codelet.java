@@ -108,7 +108,8 @@ public abstract class Codelet implements Runnable
 						proc(); 				
 				}else
 				{
-					System.out.println("This codelet thread could not find a memory object it needs (thread ID):"+Thread.currentThread().getId());
+					//System.out.println("This codelet thread could not find a memory object it needs (thread ID):"+Thread.currentThread().getId());
+                                        System.out.println("This codelet thread could not find a memory object it needs (Class):"+this.getClass().getCanonicalName());
 				}
 				enable_count=0;
 

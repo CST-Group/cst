@@ -11,6 +11,7 @@
 
 package br.unicamp.cst.behavior.subsumption;
 
+import br.unicamp.cst.core.entities.Mind;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -31,13 +32,15 @@ public class SubsumptionArchitecture
 	private List<SubsumptionBehaviourLayer> behaviourLayers;	
 	private Map<SubsumptionAction,List<SubsumptionAction>> suppressorActionsMapList;
 	private Map<SubsumptionAction,List<SubsumptionAction>> inhibitorActionsMapList;
+        public Mind m;
 
 	/**
 	 * Constructor
 	 */
-	public SubsumptionArchitecture() 
+	public SubsumptionArchitecture(Mind nm) 
 	{
 		super();
+                m = nm;
 		behaviourLayers = new ArrayList<SubsumptionBehaviourLayer>();
 		suppressorActionsMapList = new HashMap<SubsumptionAction, List<SubsumptionAction>>();
 		inhibitorActionsMapList = new HashMap<SubsumptionAction, List<SubsumptionAction>>();
