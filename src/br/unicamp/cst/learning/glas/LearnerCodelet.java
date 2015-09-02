@@ -9,7 +9,7 @@
  *     K. Raizer, A. L. O. Paraense, R. R. Gudwin - initial API and implementation
  ******************************************************************************/
 
-package br.unicamp.cst.behavior.glas;
+package br.unicamp.cst.learning.glas;
 
 import java.util.ArrayList;
 
@@ -17,7 +17,11 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-
+import br.unicamp.cst.behavior.glas.GlasEvent;
+import br.unicamp.cst.behavior.glas.GlasSequence;
+import br.unicamp.cst.behavior.glas.GlasSequenceElements;
+import br.unicamp.cst.behavior.glas.Individual;
+import br.unicamp.cst.behavior.glas.MemoryObjectTypesGlas;
 import br.unicamp.cst.core.entities.Codelet;
 import br.unicamp.cst.core.entities.MemoryObject;
 import br.unicamp.cst.core.entities.RawMemory;
