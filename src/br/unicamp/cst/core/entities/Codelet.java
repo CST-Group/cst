@@ -22,10 +22,25 @@ import br.unicamp.cst.core.exceptions.CodeletThresholdBoundsException;
 
 
 /**
- *  According to the Baars-Franklin architecture, consciousness is the emergence
+ * The <b><i>Codelet</i></b> class, together with the <b><i>MemoryObject</i></b> class and the 
+ * <b><i>Mind</i></b> class is one of the most important classes in the CST toolkit.  
+ * According to the Baars-Franklin architecture, consciousness is the emergence
  * of a serial stream on top of a parallel set of interacting devices. 
  * In the Baars-Franklin architectures, such devices are called "codelets",
- * which are small pieces of code specialized in performing simple tasks.
+ * which are small pieces of code specialized in performing simple tasks. In a CST-built
+ * cognitive architecture, everything is either a <b><i>Codelet</i></b> or a <b><i>MemoryObject</i></b>. Codelets are used
+ * to implement every kind of processing in the architecture. 
+ * 
+ * Codelets have two kinds of inputs: standard inputs and broadcast inputs. Standard inputs are
+ * used to convey access to MemoryObjects. Broadcast inputs come from consciousness, and can
+ * also be used. Nevertheless, Standard inputs are usually fixed (but can be changed through
+ * learning mechanisms), and Broadcast inputs change all the time, due to the consciousness 
+ * mechanism. Codelets also have outputs. Outputs are used for the Codelets to write or generate
+ * new MemoryObjects. Codelets also have an Activation level, which can be used in some
+ * situations. 
+ * 
+ * @see MemoryObject 
+ * @see Mind
  * 
  * @author andre.paraense
  * @author klaus.raizer
@@ -58,7 +73,10 @@ public abstract class Codelet implements Runnable
 	/** defines if proc() should be automatically called in a loop */
 	private boolean loop=true; //
 	
-	/** The time step for the aforementioned loop.*/
+	/** If the proc() method is set to be called automatically in a loop, this
+         * variable stores the time step for such a loop. A timeStep of value 0 means
+         * that the proc() method should be called continuously, without interval.
+         */
 	protected long timeStep=0; //
 	
 	/** A codelet is a priori enabled to run its proc(). However, if it tries to read from a given output and fails, it becomes not able to do so.*/
@@ -70,11 +88,13 @@ public abstract class Codelet implements Runnable
 	/** Gives this codelet a name, mainly for debugging purposes */
 	private String name=Thread.currentThread().getName();
 	
-	/** Safe lock for multithread access */
+	/** This variable is a safe lock for multithread access */
 	public Lock lock= new ReentrantLock();
 
 	/** 
-	 * This abstract method must be implemented by the user. Here, the user must get the inputs and outputs it needs to perform proc.
+	 * This method is used in every Codelet to capture input, broadcast and output MemoryObjects
+         * which shall be used in the proc() method. 
+         * This abstract method must be implemented by the user. Here, the user must get the inputs and outputs it needs to perform proc.
 	 */
 	public abstract void accessMemoryObjects();
 
@@ -85,7 +105,7 @@ public abstract class Codelet implements Runnable
 	public abstract void calculateActivation();
 
 	/**
-	 * Main Codelet function, implemented in each subclass.
+	 * Main Codelet function, to be implemented in each subclass.
 	 */
 	public abstract void proc();
 
@@ -108,7 +128,8 @@ public abstract class Codelet implements Runnable
 						proc(); 				
 				}else
 				{
-					System.out.println("This codelet thread could not find a memory object it needs (thread ID):"+Thread.currentThread().getId());
+					//System.out.println("This codelet thread could not find a memory object it needs (thread ID):"+Thread.currentThread().getId());
+                                        System.out.println("This codelet thread could not find a memory object it needs (Class):"+this.getClass().getCanonicalName());
 				}
 				enable_count=0;
 
