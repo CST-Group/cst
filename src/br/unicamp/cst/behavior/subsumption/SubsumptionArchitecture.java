@@ -11,11 +11,12 @@
 
 package br.unicamp.cst.behavior.subsumption;
 
-import br.unicamp.cst.core.entities.Mind;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
+import br.unicamp.cst.core.entities.Mind;
 
 
 /**
@@ -32,7 +33,7 @@ public class SubsumptionArchitecture
 	private List<SubsumptionBehaviourLayer> behaviourLayers;	
 	private Map<SubsumptionAction,List<SubsumptionAction>> suppressorActionsMapList;
 	private Map<SubsumptionAction,List<SubsumptionAction>> inhibitorActionsMapList;
-        public Mind m;
+	private Mind mind;
 
 	/**
 	 * Constructor
@@ -40,7 +41,7 @@ public class SubsumptionArchitecture
 	public SubsumptionArchitecture(Mind nm) 
 	{
 		super();
-                m = nm;
+		mind = nm;
 		behaviourLayers = new ArrayList<SubsumptionBehaviourLayer>();
 		suppressorActionsMapList = new HashMap<SubsumptionAction, List<SubsumptionAction>>();
 		inhibitorActionsMapList = new HashMap<SubsumptionAction, List<SubsumptionAction>>();
@@ -143,4 +144,12 @@ public class SubsumptionArchitecture
 			inhibitorActionList.add(inhibitorAction);
 		}	
 	}
+
+	/**
+	 * @return the mind
+	 */
+	public synchronized Mind getMind() {
+		return mind;
+	}
+	
 }
