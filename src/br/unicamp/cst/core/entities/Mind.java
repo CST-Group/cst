@@ -100,11 +100,12 @@ public class Mind
 			codeRack.start();
 	}
         
-        /**
-        * Destroys all codelets. Stops CodeRack's thread.
-        */
+	/**
+	 * Stops codelets thread.
+	 */
 	public void shutDown()
 	{
-	    codeRack.shutDown();
+		if(codeRack!=null)
+			codeRack.shutDown();
 	}
 }

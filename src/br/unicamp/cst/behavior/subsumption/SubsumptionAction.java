@@ -11,7 +11,6 @@
 
 package br.unicamp.cst.behavior.subsumption;
 
-import br.unicamp.cst.core.entities.CodeRack;
 import br.unicamp.cst.core.entities.Codelet;
 import br.unicamp.cst.core.entities.Mind;
 
@@ -37,19 +36,21 @@ public abstract class SubsumptionAction extends Codelet
 	
 	private String name;
 	
-	//private CodeRack codeRack;
-        private Mind m;
+	private Mind mind;
 	
 	/**
-	 * @param subsumptioArchitecture
+	 * @param subsumptionArchitecture
 	 */
-	public SubsumptionAction(SubsumptionArchitecture subsumptioArchitecture, String name) 
+	public SubsumptionAction(SubsumptionArchitecture subsumptionArchitecture, String name) 
 	{
 		super();
-		this.subsumptionArchitecture = subsumptioArchitecture;
+		this.subsumptionArchitecture = subsumptionArchitecture;
 		this.name=name;
-                this.m = subsumptionArchitecture.m;
-		m.insertCodelet(this);
+		if(subsumptionArchitecture!=null)
+		{
+			this.mind = subsumptionArchitecture.getMind();
+			mind.insertCodelet(this);
+		}
 	}
 	
 	/**
@@ -59,8 +60,11 @@ public abstract class SubsumptionAction extends Codelet
 	{
 		super();
 		this.subsumptionArchitecture = subsumptionArchitecture;
-		this.m = subsumptionArchitecture.m;
-		m.insertCodelet(this);
+		if(subsumptionArchitecture!=null)
+		{
+			this.mind = subsumptionArchitecture.getMind();
+			mind.insertCodelet(this);
+		}
 	}
 	
 	/**

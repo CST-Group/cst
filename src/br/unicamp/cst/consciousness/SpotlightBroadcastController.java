@@ -41,6 +41,7 @@ public class SpotlightBroadcastController extends Codelet
 		this.setName("SpotlightBroadcastController");
 		this.codeRack = codeRack;		
 		consciousCodelet = null;
+		this.timeStep = 300l;
 	}
 
 	/* (non-Javadoc)
