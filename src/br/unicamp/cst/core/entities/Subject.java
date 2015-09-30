@@ -22,7 +22,7 @@ public interface Subject {
 	 * @param type Type of memory objects being observed
 	 * @param io Which list to register: 0 - input and 1 - output
 	 */
-	public void registerCodelet(Codelet co, MemoryObjectType type, int io);
+	public void registerCodelet(Codelet co, String type, int io);
 	
 	/**
 	 * Removes a codelet's io from the subject registered list
@@ -30,7 +30,7 @@ public interface Subject {
 	 * @param type
 	 * @param io
 	 */
-	public void unregisterCodelet(Codelet co, MemoryObjectType type, int io);
+	public void unregisterCodelet(Codelet co, String type, int io);
 	
 	public void notifyCodelets();
 }

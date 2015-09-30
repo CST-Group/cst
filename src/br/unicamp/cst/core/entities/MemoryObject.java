@@ -33,7 +33,7 @@ public class MemoryObject implements Serializable
    /**
 	 * Information contained in the memory object.
 	 */
-   private volatile String info;
+   //private volatile String info;
    
    /**
 	 * Date when the data was "created".
@@ -43,7 +43,7 @@ public class MemoryObject implements Serializable
    /**
 	 * Type of the information in the memory object.
 	 */
-   private MemoryObjectType type;
+   //private MemoryObjectType type;
    
    /**
     * An evaluation of this memory object based on inner references
@@ -81,19 +81,19 @@ public class MemoryObject implements Serializable
     * 
     * @return
     */
-   public synchronized String getInfo()
-   {
-      return this.info;
-   }
+//   public synchronized String getInfo()
+//   {
+//      return this.info;
+//   }
    
    /**
     *  Sets the info in memory object. 
     * @param info
     */
-   public synchronized void setInfo(String info)
-   {
-      this.info = info;
-   } 
+//   public synchronized void setInfo(String info)
+//   {
+//      this.info = info;
+//   } 
    
    /**
     * 
@@ -135,9 +135,9 @@ public class MemoryObject implements Serializable
     *  Updates the info in memory object.  And in the process, updates the time stamp.
     * @param info
     */
-   public synchronized void updateInfo(String info)
+   public synchronized void updateI(Object info)
    {
-	   setInfo(info);
+	   setI(info);
 	   Date date = new Date(); 
 	   setTimestamp(new Timestamp(date.getTime()));    
    } 
@@ -163,18 +163,18 @@ public class MemoryObject implements Serializable
    /**
     * @return the type
     */
-   public synchronized MemoryObjectType getType()
+   public synchronized String getName()
    {
-      return type;
+      return name;
    }
 
    
    /**
     * @param type the type to set
     */
-   public synchronized void setType(MemoryObjectType type)
+   public synchronized void setType(String name)
    {
-      this.type = type;
+      this.name = name;
    }
 
    
@@ -201,7 +201,7 @@ public class MemoryObject implements Serializable
    @Override
    public String toString()
    {
-      return "MemoryObject [" + (idmemoryobject != null ? "idmemoryobject=" + idmemoryobject + ", " : "") + (info != null ? "info=" + info + ", " : "") + (timestamp != null ? "timestamp=" + timestamp + ", " : "") + (type != null ? "type=" + type + ", " : "") + (evaluation != null ? "evaluation=" + evaluation : "") + "]";
+      return "MemoryObject [" + (idmemoryobject != null ? "idmemoryobject=" + idmemoryobject + ", " : "") + (timestamp != null ? "timestamp=" + timestamp + ", " : "") + (name != null ? "type=" + name + ", " : "") + (evaluation != null ? "evaluation=" + evaluation : "") + "]";
    }
 
    /* (non-Javadoc)
@@ -215,9 +215,9 @@ public class MemoryObject implements Serializable
 	   + ((evaluation == null) ? 0 : evaluation.hashCode());
 	   result = prime * result
 	   + ((idmemoryobject == null) ? 0 : idmemoryobject.hashCode());
-	   result = prime * result + ((info == null) ? 0 : info.hashCode());
+//	   result = prime * result + ((info == null) ? 0 : info.hashCode());
 	   result = prime * result + ((timestamp == null) ? 0 : timestamp.hashCode());
-	   result = prime * result + ((type == null) ? 0 : type.hashCode());
+	   result = prime * result + ((name == null) ? 0 : name.hashCode());
 	   return result;
    }
 
@@ -243,20 +243,20 @@ public class MemoryObject implements Serializable
 			   return false;
 	   } else if (!idmemoryobject.equals(other.idmemoryobject))
 		   return false;
-	   if (info == null) {
-		   if (other.info != null)
-			   return false;
-	   } else if (!info.equals(other.info))
-		   return false;
+//	   if (info == null) {
+//		   if (other.info != null)
+//			   return false;
+//	   } else if (!info.equals(other.info))
+//		   return false;
 	   if (timestamp == null) {
 		   if (other.timestamp != null)
 			   return false;
 	   } else if (!timestamp.equals(other.timestamp))
 		   return false;
-	   if (type == null) {
-		   if (other.type != null)
+	   if (name == null) {
+		   if (other.name != null)
 			   return false;
-	   } else if (!type.equals(other.type))
+	   } else if (!name.equals(other.name))
 		   return false;
 	   return true;
    }

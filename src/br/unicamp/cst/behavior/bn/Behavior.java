@@ -21,8 +21,6 @@ import org.json.JSONObject;
 
 import br.unicamp.cst.core.entities.Codelet;
 import br.unicamp.cst.core.entities.MemoryObject;
-import br.unicamp.cst.core.entities.MemoryObjectType;
-import br.unicamp.cst.core.entities.MemoryObjectTypesCore;
 import br.unicamp.cst.core.exceptions.CodeletActivationBoundsException;
 import br.unicamp.cst.memory.WorkingStorage;
 
@@ -64,8 +62,8 @@ public abstract class Behavior extends Codelet
 	private ArrayList<MemoryObject> protectedGoals = new ArrayList<MemoryObject>();
 	private ArrayList<MemoryObject> goals = new ArrayList<MemoryObject>();
 	private ArrayList<MemoryObject> worldState = new ArrayList<MemoryObject>();
-	private ArrayList<String> listOfWorldBeliefStates=new ArrayList<String>();
-	private ArrayList<String> listOfPreviousWorldBeliefStates=new ArrayList<String>();
+	private ArrayList<Object> listOfWorldBeliefStates=new ArrayList<Object>();
+	private ArrayList<Object> listOfPreviousWorldBeliefStates=new ArrayList<Object>();
 
 	private GlobalVariables globalVariables; //Behavior network global variables
 
@@ -88,10 +86,10 @@ public abstract class Behavior extends Codelet
 		
 		//All behaviors subscribe their input list to receive news from Working Storage about WORLD_STATE, and goals memory objects.
 		int io=0; //Input list
-		ws.registerCodelet(this, MemoryObjectTypesCore.WORLD_STATE, io);
-		ws.registerCodelet(this, MemoryObjectTypesCore.ONCE_ONLY_GOAL, io);
-		ws.registerCodelet(this, MemoryObjectTypesCore.PERMANENT_GOAL, io);
-		ws.registerCodelet(this, MemoryObjectTypesCore.PERMANENT_GOAL, io);
+		ws.registerCodelet(this, "WORLD_STATE", io);
+		ws.registerCodelet(this, "ONCE_ONLY_GOAL", io);
+		ws.registerCodelet(this, "PERMANENT_GOAL", io);
+		ws.registerCodelet(this, "PERMANENT_GOAL", io);
 
 		this.setExecutable(false); // Every competence starts as non-executable
 		this.setActive(false); // Every competence starts as inactive
@@ -169,12 +167,12 @@ public abstract class Behavior extends Codelet
 	private synchronized void retrieveState()
 	{
 		worldState.clear();
-		MemoryObjectType moType;
+		String moType;
 		for (MemoryObject mo : getInputs())
 		{
 			if(mo!=null){
-				moType = mo.getType();
-				if (moType == MemoryObjectTypesCore.WORLD_STATE)
+				moType = mo.getName();
+				if (moType.equalsIgnoreCase("WORLD_STATE"))
 
 				{
 					worldState.add(mo);
@@ -274,21 +272,21 @@ public abstract class Behavior extends Codelet
 		onceOnlyGoals.clear();
 		permanentGoals.clear();
 		protectedGoals.clear();
-		MemoryObjectType moType;
+		String moType;
 
 		ArrayList<MemoryObject> my_inputs=new ArrayList<MemoryObject>();
 		my_inputs.addAll(getInputs());
 		for (MemoryObject mo : my_inputs)
 		{
 			if(mo!=null){
-				moType = mo.getType();
-				if (moType == MemoryObjectTypesCore.ONCE_ONLY_GOAL)
+				moType = mo.getName();
+				if (moType.equalsIgnoreCase("ONCE_ONLY_GOAL"))
 				{
 					onceOnlyGoals.add(mo);
-				} else if (moType == MemoryObjectTypesCore.PROTECTED_GOAL)
+				} else if (moType.equalsIgnoreCase("PROTECTED_GOAL"))
 				{
 					protectedGoals.add(mo);
-				} else if (moType == MemoryObjectTypesCore.PERMANENT_GOAL)
+				} else if (moType.equalsIgnoreCase("PERMANENT_GOAL"))
 				{
 					permanentGoals.add(mo);
 				}
@@ -305,8 +303,8 @@ public abstract class Behavior extends Codelet
 	}
 
 	public synchronized boolean changedWorldBeliefState() {
-		ArrayList<String> temp1= new ArrayList<String>();
-		ArrayList<String> temp2= new ArrayList<String>();
+		ArrayList<Object> temp1= new ArrayList<Object>();
+		ArrayList<Object> temp2= new ArrayList<Object>();
 
 		temp1.addAll(listOfWorldBeliefStates);
 		temp2.addAll(listOfPreviousWorldBeliefStates);
@@ -323,7 +321,7 @@ public abstract class Behavior extends Codelet
 		ArrayList<MemoryObject> allOfType=new ArrayList<MemoryObject>();
 
 		if(ws!=null)
-			allOfType.addAll(ws.getAllOfType(MemoryObjectTypesCore.BEHAVIOR_PROPOSITION));
+			allOfType.addAll(ws.getAllOfType("BEHAVIOR_PROPOSITION"));
 
 		ArrayList<String> usedResources=new ArrayList<String>();
 
@@ -332,7 +330,7 @@ public abstract class Behavior extends Codelet
 
 			for(MemoryObject bp:allOfType){
 				try {
-					JSONObject jsonBp=new JSONObject(bp.getInfo());
+					JSONObject jsonBp=new JSONObject(bp.getI());
 					//System.out.println("=======> bp.getInfo(): "+bp.getInfo());
 					boolean performed=jsonBp.getBoolean("PERFORMED");
 					if(!performed){//otherwise it is not consuming those resources
@@ -366,9 +364,9 @@ public abstract class Behavior extends Codelet
 	 */
 	private boolean checkIfExecutable()
 	{
-		listOfWorldBeliefStates = new ArrayList<String>();
-		for(MemoryObject mo:this.getInputsOfType(MemoryObjectTypesCore.WORLD_STATE)){
-			listOfWorldBeliefStates.add(mo.getInfo());
+		listOfWorldBeliefStates = new ArrayList<Object>();
+		for(MemoryObject mo:this.getInputsOfType("WORLD_STATE")){
+			listOfWorldBeliefStates.add(mo.getI());
 			//				System.out.println("###########adding world state");
 		}
 		ArrayList<MemoryObject> tempPreconList=new ArrayList<MemoryObject>();
@@ -377,8 +375,8 @@ public abstract class Behavior extends Codelet
 
 		for(MemoryObject precon:preconList){ 
 
-			for(String ws:listOfWorldBeliefStates){
-				if(precon.getInfo().equals(ws)){
+			for(Object ws:listOfWorldBeliefStates){
+				if(precon.getI().equals(ws)){
 					tempPreconList.remove(precon);
 					break;
 				}
@@ -1218,10 +1216,10 @@ public abstract class Behavior extends Codelet
 		//		System.out.println(B);
 		//		System.out.println(B.get(0));
 		//Gives preference to returning PROPOSITIONs
-		if(A.get(0).getType().equals(MemoryObjectTypesCore.PROPOSITION)){
+		if(A.get(0).getName().equalsIgnoreCase("PROPOSITION")){
 			currentList.addAll(B);
 			intersection.addAll(A);	
-		}else if((B.get(0).getType().equals(MemoryObjectTypesCore.PROPOSITION))){ 
+		}else if((B.get(0).getName().equalsIgnoreCase("PROPOSITION"))){ 
 			currentList.addAll(A);
 			intersection.addAll(B);
 		}else{
@@ -1235,17 +1233,17 @@ public abstract class Behavior extends Codelet
 		{
 			MemoryObject mo = intersection.get(i);
 
-			if (!removeByInfo(currentList,mo.getInfo()))
-				removeByInfo(intersection,mo.getInfo());
+			if (!removeByInfo(currentList,mo.getI()))
+				removeByInfo(intersection,mo.getI());
 		}
 		return intersection;
 	}
 
-	public boolean removeByInfo(ArrayList<MemoryObject> moList, String target){
+	public boolean removeByInfo(ArrayList<MemoryObject> moList, Object target){
 		boolean removed=false;
 		MemoryObject mustRemove=null;
 		for(MemoryObject mo:moList){
-			if(mo.getInfo().equals(target)){
+			if(mo.getI().equals(target)){
 				mustRemove=mo;
 				break;
 			}

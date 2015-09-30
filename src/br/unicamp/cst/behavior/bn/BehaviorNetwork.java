@@ -21,7 +21,6 @@ import java.util.Iterator;
 
 import br.unicamp.cst.core.entities.CodeRack;
 import br.unicamp.cst.core.entities.Codelet;
-import br.unicamp.cst.core.entities.MemoryObjectTypesCore;
 import br.unicamp.cst.memory.WorkingStorage;
 
 /**
@@ -195,7 +194,7 @@ public class BehaviorNetwork
 	{
 		//Every new godelet's input list gets registered at working storage for WORLD_STATE memory objects
 		if(ws!=null)
-			ws.registerCodelet(codelet, MemoryObjectTypesCore.WORLD_STATE,0); //TODO How about putting this inside Behavior.java?
+			ws.registerCodelet(codelet, "WORLD_STATE",0); //TODO How about putting this inside Behavior.java?
 		Behavior be = (Behavior)codelet;
 		this.behaviors.add(be);
 		kwta.addBehavior(be);
@@ -210,7 +209,7 @@ public class BehaviorNetwork
 	public void removeCodelet(Codelet codelet) 
 	{
 		if(ws!=null)
-			ws.unregisterCodelet(codelet, MemoryObjectTypesCore.WORLD_STATE,0); //TODO How about putting this inside Behavior.java?
+			ws.unregisterCodelet(codelet, "WORLD_STATE",0); //TODO How about putting this inside Behavior.java?
 		Behavior be = (Behavior)codelet;
 		this.behaviors.remove(be);
 		kwta.removeBehavior(be);

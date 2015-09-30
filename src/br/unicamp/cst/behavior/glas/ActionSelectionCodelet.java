@@ -58,19 +58,19 @@ public class ActionSelectionCodelet extends Codelet{
 		this.ws=ws;
 		if(ws!=null)
 		{
-			ws.registerCodelet(this,MemoryObjectTypesGlas.SOLUTION_TREE, 0);
-			ws.registerCodelet(this,MemoryObjectTypesGlas.STIMULUS, 0);
+			ws.registerCodelet(this,"SOLUTION_TREE", 0);
+			ws.registerCodelet(this,"STIMULUS", 0);
 			ws.putMemoryObject(ACTION_MO);
-			ws.registerCodelet(this,MemoryObjectTypesGlas.NEW_STIM, 0);
-			ws.registerCodelet(this,MemoryObjectTypesGlas.NEW_ACTION, 0);
-			ws.registerCodelet(this,MemoryObjectTypesGlas.NEW_REWARD, 0);
+			ws.registerCodelet(this,"NEW_STIM", 0);
+			ws.registerCodelet(this,"NEW_ACTION", 0);
+			ws.registerCodelet(this,"NEW_REWARD", 0);
 //			ws.registerCodelet(this,MemoryObjectTypesGlas.ACTION, 1);
 //			ws.registerCodelet(this,MemoryObjectTypesGlas.NEW_EVENT_DETECTED, 0);
 		}
 			
 		
 		if(rawMemory!=null)
-			ACTION_MO = rawMemory.createMemoryObject(MemoryObjectTypesGlas.ACTION, "");
+			ACTION_MO = rawMemory.createMemoryObject("ACTION", "");
 		
 		
 
@@ -85,18 +85,18 @@ public class ActionSelectionCodelet extends Codelet{
 	@Override
 	public void accessMemoryObjects() 
 	{		
-		SOLUTION_TREE_MO=this.getInput(MemoryObjectTypesGlas.SOLUTION_TREE, 0);
-		ArrayList<MemoryObject> teste = ws!=null ? ws.getAllOfType(MemoryObjectTypesGlas.SOLUTION_TREE) : null;
-		STIMULUS_MO=this.getInput(MemoryObjectTypesGlas.STIMULUS, 0);
+		SOLUTION_TREE_MO=this.getInput("SOLUTION_TREE", 0);
+		ArrayList<MemoryObject> teste = ws!=null ? ws.getAllOfType("SOLUTION_TREE") : null;
+		STIMULUS_MO=this.getInput("STIMULUS", 0);
 		//		System.out.println("(STIMULUS_MO.getInfo() (antes): "+STIMULUS_MO.getInfo());
 		//		ACTION_MO=this.getOutput(MemoryObjectTypesGlas.ACTION, 0);
 
 		//		NEW_EVENT_DETECTED_MO = this.getInput(MemoryObjectTypesGlas.NEW_EVENT_DETECTED,0);
 
 		int index=0;
-		NEW_STIM_MO = this.getInput(MemoryObjectTypesGlas.NEW_STIM, index);
-		NEW_ACTION_MO = this.getInput(MemoryObjectTypesGlas.NEW_ACTION, index);
-		NEW_REWARD_MO = this.getInput(MemoryObjectTypesGlas.NEW_REWARD, index);
+		NEW_STIM_MO = this.getInput("NEW_STIM", index);
+		NEW_ACTION_MO = this.getInput("NEW_ACTION", index);
+		NEW_REWARD_MO = this.getInput("NEW_REWARD", index);
 	}
 
 	@Override
@@ -110,7 +110,7 @@ public class ActionSelectionCodelet extends Codelet{
 
 
 			//Update Solution Tree if needed
-			String new_solution_tree_string = SOLUTION_TREE_MO.getInfo();
+			Object new_solution_tree_string = SOLUTION_TREE_MO.getI();
 			if(!new_solution_tree_string.equals(this.current_solution_tree_jsonarray.toString())){
 				//			System.out.println("Action Selection Found a new Solution Tree: "+new_solution_tree_string);
 				JSONArray new_solution_tree_jsonarray;
@@ -140,13 +140,13 @@ public class ActionSelectionCodelet extends Codelet{
 
 			//Selects action based on stimulus
 
-			boolean new_stim=(NEW_STIM_MO.getInfo().equals(String.valueOf(true)));
-			boolean new_action=(NEW_ACTION_MO.getInfo().equals(String.valueOf(true)));
-			boolean new_reward=(NEW_REWARD_MO.getInfo().equals(String.valueOf(true)));
+			boolean new_stim=(NEW_STIM_MO.getI().equals(String.valueOf(true)));
+			boolean new_action=(NEW_ACTION_MO.getI().equals(String.valueOf(true)));
+			boolean new_reward=(NEW_REWARD_MO.getI().equals(String.valueOf(true)));
 
-			if(!STIMULUS_MO.getInfo().equals("") && new_stim && !new_action && !new_reward){
+			if(!STIMULUS_MO.getI().equals("") && new_stim && !new_action && !new_reward){
 
-				int[] stimulus = {Integer.valueOf(STIMULUS_MO.getInfo())};
+				int[] stimulus = {Integer.valueOf((String)STIMULUS_MO.getI())};
 				int[] selected_action = sm.runStimuli(stimulus); //TODO Ugly solution
 
 
@@ -162,14 +162,14 @@ public class ActionSelectionCodelet extends Codelet{
 				}
 
 
-				ACTION_MO.updateInfo(Integer.toString(selected_action[0])); //TODO is [0] correct?
+				ACTION_MO.updateI(Integer.toString(selected_action[0])); //TODO is [0] correct?
 				//			System.out.println("ACTION_MO.updateInfo("+selected_action[0]+")");
 
 				new_action=true;
 				//			System.out.println("new_action=true;");
 			}
 
-			NEW_ACTION_MO.updateInfo(String.valueOf(new_action));
+			NEW_ACTION_MO.updateI(String.valueOf(new_action));
 
 		}//end if(enabled)
 	}// end proc()

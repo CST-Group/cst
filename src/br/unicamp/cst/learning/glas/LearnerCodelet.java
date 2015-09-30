@@ -21,7 +21,6 @@ import br.unicamp.cst.behavior.glas.GlasEvent;
 import br.unicamp.cst.behavior.glas.GlasSequence;
 import br.unicamp.cst.behavior.glas.GlasSequenceElements;
 import br.unicamp.cst.behavior.glas.Individual;
-import br.unicamp.cst.behavior.glas.MemoryObjectTypesGlas;
 import br.unicamp.cst.core.entities.Codelet;
 import br.unicamp.cst.core.entities.MemoryObject;
 import br.unicamp.cst.core.entities.RawMemory;
@@ -80,7 +79,7 @@ public class LearnerCodelet extends Codelet
 		//this.setTimeStep(0); // No waiting between reruns?
 
 		if(rawMemory!=null)
-		this.SOLUTION_TREE_MO=rawMemory.createMemoryObject(MemoryObjectTypesGlas.SOLUTION_TREE, "");
+		this.SOLUTION_TREE_MO=rawMemory.createMemoryObject("SOLUTION_TREE", "");
 		this.pushOutput(this.SOLUTION_TREE_MO);
 		if(ws!=null)
 			ws.putMemoryObject(this.SOLUTION_TREE_MO);
@@ -100,12 +99,12 @@ public class LearnerCodelet extends Codelet
 			initial_solution_tree_json.put(initial_solution_tree_int[i]);
 		}
 
-		this.SOLUTION_TREE_MO.updateInfo(initial_solution_tree_json.toString());
+		this.SOLUTION_TREE_MO.updateI(initial_solution_tree_json.toString());
 
 
 		//		[0,1,1,2,3,4,5,0,1,2,3,4,5,6,0,1,1,1,1,2,2]
 		if(ws!=null)
-			ws.registerCodelet(this, MemoryObjectTypesGlas.EVENTS_SEQUENCE, 0);
+			ws.registerCodelet(this,"EVENTS_SEQUENCE", 0);
 
 	}
 
@@ -116,7 +115,7 @@ public class LearnerCodelet extends Codelet
 	@Override
 	public void accessMemoryObjects() {
 
-		EVENTS_SEQUENCE_MO = this.getInput(MemoryObjectTypesGlas.EVENTS_SEQUENCE, 0);
+		EVENTS_SEQUENCE_MO = this.getInput("EVENTS_SEQUENCE", 0);
 
 	}
 
@@ -143,12 +142,12 @@ public class LearnerCodelet extends Codelet
 
 
 
-			if( (first_run || (SOLUTION_TREE_MO.getEvaluation()<this.getGoal_fitness())) && !EVENTS_SEQUENCE_MO.getInfo().isEmpty()){
+			if( (first_run || (SOLUTION_TREE_MO.getEvaluation()<this.getGoal_fitness())) && !((String)EVENTS_SEQUENCE_MO.getI()).isEmpty()){
 
 				//			System.out.println("Init proc ... ");
 
 				try {
-					JSONArray sequence_json = new JSONArray(EVENTS_SEQUENCE_MO.getInfo());
+					JSONArray sequence_json = new JSONArray(EVENTS_SEQUENCE_MO.getI());
 
 					System.out.print(".");
 					int sequence_lenght = sequence_json.length();
@@ -182,7 +181,7 @@ public class LearnerCodelet extends Codelet
 
 
 
-						JSONArray solution_tree_phenotype_jsonarray = new JSONArray(SOLUTION_TREE_MO.getInfo());
+						JSONArray solution_tree_phenotype_jsonarray = new JSONArray(SOLUTION_TREE_MO.getI());
 						int[] solution_tree_phenotype_int = new int[solution_tree_phenotype_jsonarray.length()];
 						for(int i=0; i<solution_tree_phenotype_jsonarray.length();i++){
 							solution_tree_phenotype_int[i]=solution_tree_phenotype_jsonarray.getInt(i);
@@ -272,7 +271,7 @@ public class LearnerCodelet extends Codelet
 												
 						
 						
-						SOLUTION_TREE_MO.updateInfo(best_solution_tree.toString()); 
+						SOLUTION_TREE_MO.updateI(best_solution_tree.toString()); 
 //						SOLUTION_TREE_MO.setEvaluation(best_found_fit);
 						SOLUTION_TREE_MO.setEvaluation(normalized_fitness);						
 						first_run=false;
@@ -312,7 +311,7 @@ public class LearnerCodelet extends Codelet
 
 
 
-						sequence_json = new JSONArray(EVENTS_SEQUENCE_MO.getInfo());
+						sequence_json = new JSONArray(EVENTS_SEQUENCE_MO.getI());
 						last_number_of_events=sequence_json.length();
 
 						//						System.out.println("##########################################");

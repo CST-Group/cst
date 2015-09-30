@@ -17,7 +17,6 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import br.unicamp.cst.core.entities.MemoryObject;
-import br.unicamp.cst.core.entities.MemoryObjectTypesCore;
 import br.unicamp.cst.core.entities.RawMemory;
 
 /**
@@ -56,19 +55,19 @@ public class BgBComLayer
 	 */
 	public synchronized void writeBehaviorState(MemoryObject bs){
 		try {
-			JSONObject bsInfo = new JSONObject(bs.getInfo());
+			JSONObject bsInfo = new JSONObject(bs.getI());
 			MemoryObject oldMO=new MemoryObject();
 			
 			boolean alreadyThere=false;
 			boolean sameInfo=false;
 			for(MemoryObject mo:this.behaviorsToBg){
 				try {
-					JSONObject moInfo = new JSONObject(mo.getInfo());
+					JSONObject moInfo = new JSONObject(mo.getI());
 					
 					if(moInfo.get("NAME").equals(bsInfo.get("NAME"))){
 						alreadyThere=true;
 						oldMO=mo;
-						if(mo.getInfo().equals(bs.getInfo())){
+						if(mo.getI().equals(bs.getI())){
 							sameInfo=true;
 						}
 						break;
@@ -86,7 +85,7 @@ public class BgBComLayer
 					rawMemory.destroyMemoryObject(bs);
 			}else if(alreadyThere && !sameInfo){
 				//Update info from old MO and discard de unused new one
-				oldMO.setInfo(bs.getInfo());  //TODO I might need to change this in the future in case we implement a memory decay based on time
+				oldMO.setI(bs.getI());  //TODO I might need to change this in the future in case we implement a memory decay based on time
 				if(rawMemory!=null)
 					rawMemory.destroyMemoryObject(bs);
 			}else
@@ -94,7 +93,7 @@ public class BgBComLayer
 				this.behaviorsToBg.add(bs);
 			}
 		
-		} catch (JSONException e1) 
+		} catch (Exception e1) 
 		{
 			// TODO Auto-generated catch block
 			e1.printStackTrace();
@@ -120,10 +119,10 @@ public class BgBComLayer
 //				try {
 //					JSONObject moInfo = new JSONObject(mo.getInfo());
 //					
-					if((mo.getType().equals(bgI.getType()))&&(mo.getInfo().equals(bgI.getInfo()))){
+					if((mo.getName().equalsIgnoreCase(bgI.getName()))&&(mo.getI().equals(bgI.getI()))){
 						alreadyThere=true;
 						oldMO=mo;
-						if(mo.getInfo().equals(bgI.getInfo())){
+						if(mo.getI().equals(bgI.getI())){
 							sameInfo=true;
 						}
 						break;
@@ -141,7 +140,7 @@ public class BgBComLayer
 					rawMemory.destroyMemoryObject(bgI);
 			}else if(alreadyThere && !sameInfo)
 			{//Update info from old MO and discard de unused new one
-				oldMO.setInfo(bgI.getInfo());  //TODO I might need to change this in the future in case we implement a memory decay based on time
+				oldMO.setI(bgI.getI());  //TODO I might need to change this in the future in case we implement a memory decay based on time
 				if(rawMemory!=null)
 					rawMemory.destroyMemoryObject(bgI);
 			}else
@@ -165,7 +164,7 @@ public class BgBComLayer
 		List<MemoryObject> behaviorStateList=new ArrayList<MemoryObject>();
 
 		for(MemoryObject mo:this.behaviorsToBg){
-			if(mo.getType()==MemoryObjectTypesCore.BEHAVIOR_STATE){
+			if(mo.getName().equalsIgnoreCase("BEHAVIOR_STATE")){
 				behaviorStateList.add(mo);
 			}
 		}

@@ -55,20 +55,20 @@ public class SequenceBuilderCodelet extends Codelet
 		
 		if(ws!=null)
 		{
-			ws.registerCodelet(this,MemoryObjectTypesGlas.SOLUTION_TREE, 0);
-			ws.registerCodelet(this,MemoryObjectTypesGlas.STIMULUS, 0);
-			ws.registerCodelet(this,MemoryObjectTypesGlas.ACTION, 0);
-			ws.registerCodelet(this,MemoryObjectTypesGlas.REWARD, 0);
+			ws.registerCodelet(this,"SOLUTION_TREE", 0);
+			ws.registerCodelet(this,"STIMULUS", 0);
+			ws.registerCodelet(this,"ACTION", 0);
+			ws.registerCodelet(this,"REWARD", 0);
 		}
 
 		if(rawMemory!=null)
-			EVENTS_SEQUENCE_MO=rawMemory.createMemoryObject(MemoryObjectTypesGlas.EVENTS_SEQUENCE, "");
+			EVENTS_SEQUENCE_MO=rawMemory.createMemoryObject("EVENTS_SEQUENCE", "");
 		this.pushOutput(EVENTS_SEQUENCE_MO);
 		if(ws!=null)
 			ws.putMemoryObject(EVENTS_SEQUENCE_MO);
 
 		if(rawMemory!=null)
-			NEW_EVENT_DETECTED_MO=rawMemory.createMemoryObject(MemoryObjectTypesGlas.NEW_EVENT_DETECTED, "FALSE");
+			NEW_EVENT_DETECTED_MO=rawMemory.createMemoryObject("NEW_EVENT_DETECTED", "FALSE");
 		this.pushOutput(NEW_EVENT_DETECTED_MO);
 		if(ws!=null)
 			ws.putMemoryObject(NEW_EVENT_DETECTED_MO);
@@ -76,9 +76,9 @@ public class SequenceBuilderCodelet extends Codelet
 
 		if(rawMemory!=null)
 		{
-			NEW_STIM_MO = rawMemory.createMemoryObject(MemoryObjectTypesGlas.NEW_STIM, String.valueOf(false));
-			NEW_ACTION_MO = rawMemory.createMemoryObject(MemoryObjectTypesGlas.NEW_ACTION, String.valueOf(false));
-			NEW_REWARD_MO = rawMemory.createMemoryObject(MemoryObjectTypesGlas.NEW_REWARD, String.valueOf(false));
+			NEW_STIM_MO = rawMemory.createMemoryObject("NEW_STIM", String.valueOf(false));
+			NEW_ACTION_MO = rawMemory.createMemoryObject("NEW_ACTION", String.valueOf(false));
+			NEW_REWARD_MO = rawMemory.createMemoryObject("NEW_REWARD", String.valueOf(false));
 
 		}
 		
@@ -95,8 +95,8 @@ public class SequenceBuilderCodelet extends Codelet
 
 		if(rawMemory!=null)
 		{
-			STIMULUS_MO = rawMemory.createMemoryObject(MemoryObjectTypesGlas.STIMULUS, "");
-			PREVIOUS_REWARD_MO = rawMemory.createMemoryObject(MemoryObjectTypesGlas.REWARD, ""); //reward for i-1 s,a pair
+			STIMULUS_MO = rawMemory.createMemoryObject("STIMULUS", "");
+			PREVIOUS_REWARD_MO = rawMemory.createMemoryObject("REWARD", ""); //reward for i-1 s,a pair
 		}
 		
 		this.pushInput(STIMULUS_MO);
@@ -113,7 +113,7 @@ public class SequenceBuilderCodelet extends Codelet
 	@Override
 	public void accessMemoryObjects() {
 		//		STIMULUS_MO=this.getInput(MemoryObjectTypesGlas.STIMULUS, 0);
-		ACTION_MO=this.getInput(MemoryObjectTypesGlas.ACTION, 0);
+		ACTION_MO=this.getInput("ACTION", 0);
 		//		PREVIOUS_REWARD_MO=this.getInput(MemoryObjectTypesGlas.REWARD, 0);		
 
 		//		int index=0;
@@ -135,27 +135,27 @@ public class SequenceBuilderCodelet extends Codelet
 		if(enabled){
 
 
-			boolean new_stim=(NEW_STIM_MO.getInfo().equals(String.valueOf(true)));
-			boolean new_action=(NEW_ACTION_MO.getInfo().equals(String.valueOf(true)));
-			boolean new_reward=(NEW_REWARD_MO.getInfo().equals(String.valueOf(true)));
+			boolean new_stim=(NEW_STIM_MO.getI().equals(String.valueOf(true)));
+			boolean new_action=(NEW_ACTION_MO.getI().equals(String.valueOf(true)));
+			boolean new_reward=(NEW_REWARD_MO.getI().equals(String.valueOf(true)));
 
 			if(new_stim && new_action && new_reward){ //OK to snapshot an event!
 
 
 				try{
-					sensed_stimulus=Integer.valueOf(STIMULUS_MO.getInfo());
+					sensed_stimulus=Integer.valueOf((String) STIMULUS_MO.getI());
 				}catch(NumberFormatException e){
 					sensed_stimulus=0;
 				}
 
 				try{
-					expected_action=Integer.valueOf(ACTION_MO.getInfo());
+					expected_action=Integer.valueOf((String) ACTION_MO.getI());
 				}catch(NumberFormatException e){
 					expected_action=0;
 				}
 
 				try{
-					reward_received=Double.valueOf(PREVIOUS_REWARD_MO.getInfo());
+					reward_received=Double.valueOf((String) PREVIOUS_REWARD_MO.getI());
 				}catch(NumberFormatException e){
 					reward_received=0.0;
 				}
@@ -180,13 +180,13 @@ public class SequenceBuilderCodelet extends Codelet
 					e.printStackTrace();
 				}
 
-				EVENTS_SEQUENCE_MO.updateInfo(sequence.toString());
+				EVENTS_SEQUENCE_MO.updateI(sequence.toString());
 
 				//----------
 
-				NEW_STIM_MO.updateInfo(String.valueOf(false));
-				NEW_ACTION_MO.updateInfo(String.valueOf(false));
-				NEW_REWARD_MO.updateInfo(String.valueOf(false));
+				NEW_STIM_MO.updateI(String.valueOf(false));
+				NEW_ACTION_MO.updateI(String.valueOf(false));
+				NEW_REWARD_MO.updateI(String.valueOf(false));
 
 			}//if enable
 		}// proc()
@@ -199,7 +199,7 @@ public class SequenceBuilderCodelet extends Codelet
 	public void printSequence() {
 		System.out.println("------------------------------------");
 		try {
-			JSONArray es = new JSONArray(EVENTS_SEQUENCE_MO.getInfo());
+			JSONArray es = new JSONArray(EVENTS_SEQUENCE_MO.getI());
 
 			for(int i=0; i<es.length();i++){
 				JSONObject ev = es.getJSONObject(i);

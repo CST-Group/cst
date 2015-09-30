@@ -22,22 +22,8 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutput;
 import java.io.ObjectOutputStream;
 import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.concurrent.ConcurrentHashMap;
-
-import br.unicamp.cst.core.entities.CodeRack;
-import br.unicamp.cst.core.entities.Codelet;
 import br.unicamp.cst.core.entities.MemoryObject;
-import br.unicamp.cst.core.entities.MemoryObjectType;
-import br.unicamp.cst.core.entities.MemoryObjectTypesCore;
-import br.unicamp.cst.core.entities.Observer;
 import br.unicamp.cst.core.entities.RawMemory;
-import br.unicamp.cst.core.entities.Subject;
 
 
 
@@ -122,12 +108,12 @@ public class LongTermMemory
 	 * @param string
 	 */
 	public void learn(MemoryObject mo) {
-		MemoryObject hasMemory=this.checksIfMemoryExists(mo.getType(),mo.getInfo());
+		MemoryObject hasMemory=this.checksIfMemoryExists(mo.getName(),mo.getI());
 
 		if(hasMemory==null){ //doesn't exist yet
-			int endIndex = mo.getInfo().length();
+			int endIndex = ((String)mo.getI()).length();
 			if(endIndex>8){endIndex=8;}
-			String filename=mo.getType()+"_"+mo.getInfo().substring(0, endIndex)+"_"+mo.getTimestamp().toString().replace(":", "-");
+			String filename=mo.getName()+"_"+((String)mo.getI()).substring(0, endIndex)+"_"+mo.getTimestamp().toString().replace(":", "-");
 			String extension=".mo";
 			//SERIALIZE
 	
@@ -159,7 +145,7 @@ public class LongTermMemory
 	 * @param mo
 	 * @return the existing memory object, or null if there aren't any.
 	 */
-	private MemoryObject checksIfMemoryExists(MemoryObjectType type, String info) {
+	private MemoryObject checksIfMemoryExists(String type, Object info) {
 		MemoryObject ltmMO=null;
 		File pathName = new File(path); // gets the element at the index of the List 
 		String[] fileNames = pathName.list();  // lists all files in the directory
@@ -169,7 +155,7 @@ public class LongTermMemory
 			if (!f.isDirectory()) { 
 				//             System.out.println(f.getCanonicalPath()); 
 				MemoryObject recoveredMO=this.deserializeMO(f);
-				if(type.equals(recoveredMO.getType()) && info.equals(recoveredMO.getInfo())){
+				if(type.equalsIgnoreCase(recoveredMO.getName()) && info.equals(recoveredMO.getI())){
 					ltmMO=recoveredMO;
 					break;
 				}
@@ -226,12 +212,12 @@ public class LongTermMemory
 	 * @param info
 	 * @return
 	 */
-	public MemoryObject retrieve(MemoryObjectType type, String info) {
+	public MemoryObject retrieve(String type, String info) {
 		MemoryObject retrievedMO=null;
 		boolean isInRAM=false;
 		//Check if has already been loaded
 		for(MemoryObject ramMO:this.ltmMOs){
-			if(ramMO.getType().equals(type) && ramMO.getInfo().equals(info)){
+			if(ramMO.getName().equalsIgnoreCase(type) && ramMO.getI().equals(info)){
 				retrievedMO=ramMO;
 				isInRAM=true;
 				break;

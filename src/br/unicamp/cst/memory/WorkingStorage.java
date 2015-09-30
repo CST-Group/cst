@@ -19,7 +19,6 @@ import java.util.Map;
 
 import br.unicamp.cst.core.entities.Codelet;
 import br.unicamp.cst.core.entities.MemoryObject;
-import br.unicamp.cst.core.entities.MemoryObjectType;
 import br.unicamp.cst.core.entities.RawMemory;
 import br.unicamp.cst.core.entities.Subject;
 
@@ -36,14 +35,14 @@ import br.unicamp.cst.core.entities.Subject;
 
 public class WorkingStorage  implements Subject
 {
-	private HashMap<Codelet,HashMap<MemoryObjectType,List<MemoryObject>>> what_ws_sent_to_codelets_inputs = new HashMap<Codelet, HashMap<MemoryObjectType,List<MemoryObject>>>();
-	private HashMap<Codelet,HashMap<MemoryObjectType,List<MemoryObject>>> what_ws_sent_to_codelets_outputs = new HashMap<Codelet, HashMap<MemoryObjectType,List<MemoryObject>>>();
+	private HashMap<Codelet,HashMap<String,List<MemoryObject>>> what_ws_sent_to_codelets_inputs = new HashMap<Codelet, HashMap<String,List<MemoryObject>>>();
+	private HashMap<Codelet,HashMap<String,List<MemoryObject>>> what_ws_sent_to_codelets_outputs = new HashMap<Codelet, HashMap<String,List<MemoryObject>>>();
 
-	private HashMap<MemoryObjectType, List<Codelet>>  codelet_input_registry_by_type = new HashMap<MemoryObjectType,List<Codelet>>();
-	private HashMap<MemoryObjectType, List<Codelet>>  codelet_output_registry_by_type = new HashMap<MemoryObjectType,List<Codelet>>();
+	private HashMap<String, List<Codelet>>  codelet_input_registry_by_type = new HashMap<String,List<Codelet>>();
+	private HashMap<String, List<Codelet>>  codelet_output_registry_by_type = new HashMap<String,List<Codelet>>();
 
 
-	private HashMap<MemoryObjectType,ArrayList<MemoryObject>> workingStorageContents = new HashMap<MemoryObjectType, ArrayList<MemoryObject>>();
+	private HashMap<String,ArrayList<MemoryObject>> workingStorageContents = new HashMap<String, ArrayList<MemoryObject>>();
 	private ArrayList<MemoryObject> workingStorageContentList = new ArrayList<MemoryObject>();
 	private int maxCapacity;
 	private boolean useHashMap=false;
@@ -70,7 +69,7 @@ public class WorkingStorage  implements Subject
 	 * @param type of the wished memory objects
 	 * @return list of memory objects to be returned
 	 */
-	public synchronized ArrayList<MemoryObject> getAllOfType(MemoryObjectType type){
+	public synchronized ArrayList<MemoryObject> getAllOfType(String type){
 		ArrayList<MemoryObject> allOfType=new ArrayList<MemoryObject>();
 		if(useHashMap){
 
@@ -81,7 +80,7 @@ public class WorkingStorage  implements Subject
 		}else{
 
 			for(MemoryObject mo:workingStorageContentList){
-				if(mo.getType().equals(type)){
+				if(mo.getName().equalsIgnoreCase(type)){
 					allOfType.add(mo);
 				}
 			}
@@ -108,9 +107,9 @@ public class WorkingStorage  implements Subject
 	public synchronized void printStatus() {
 
 		ArrayList<MemoryObject> allMOs=this.getAll();
-		HashMap<MemoryObjectType,ArrayList<MemoryObject>> organizedMOs= new HashMap<MemoryObjectType,ArrayList<MemoryObject>>();
+		HashMap<String,ArrayList<MemoryObject>> organizedMOs= new HashMap<String,ArrayList<MemoryObject>>();
 		for(MemoryObject mo : allMOs){
-			MemoryObjectType key = mo.getType();
+			String key = mo.getName();
 			if(organizedMOs.containsKey(key)){
 				organizedMOs.get(key).add(mo);
 			}else{
@@ -152,7 +151,7 @@ public class WorkingStorage  implements Subject
 
 	public synchronized boolean contains(MemoryObject mo) {
 
-		MemoryObjectType type = mo.getType();
+		String type = mo.getName();
 		ArrayList<MemoryObject> allOfType = this.getAllOfType(type);
 
 		boolean contains=false;
@@ -193,7 +192,7 @@ public class WorkingStorage  implements Subject
 
 				//In update, I must check if this type of mo should be sent to any registered codelet
 				// if so, I need to take note at what_ws_sent_to_codelets
-				MemoryObjectType type = mo.getType();
+				String type = mo.getName();
 
 				if(codelet_input_registry_by_type.containsKey(type)){
 					List<Codelet> setOfCodelets = codelet_input_registry_by_type.get(type);
@@ -211,7 +210,7 @@ public class WorkingStorage  implements Subject
 	}
 
 
-	private synchronized void updateCodeletsList(List<Codelet> setOfCodelets,MemoryObjectType type, int io) {
+	private synchronized void updateCodeletsList(List<Codelet> setOfCodelets,String type, int io) {
 		//TODO remember to acquire lock!
 		List<MemoryObject> sentLista=null;
 
@@ -221,12 +220,12 @@ public class WorkingStorage  implements Subject
 			if(io==0){//update inputs
 				lista=co.getInputs();
 				if(what_ws_sent_to_codelets_inputs.containsKey(co)){
-					HashMap<MemoryObjectType, List<MemoryObject>> listOfTypes = what_ws_sent_to_codelets_inputs.get(co);
+					HashMap<String, List<MemoryObject>> listOfTypes = what_ws_sent_to_codelets_inputs.get(co);
 					if(listOfTypes.containsKey(type)){
 						sentLista = what_ws_sent_to_codelets_inputs.get(co).get(type);
 					}
 				}else{
-					HashMap<MemoryObjectType, List<MemoryObject>> listOfTypes = new HashMap<MemoryObjectType, List<MemoryObject>>();
+					HashMap<String, List<MemoryObject>> listOfTypes = new HashMap<String, List<MemoryObject>>();
 					sentLista = new ArrayList<MemoryObject>();
 					listOfTypes.put(type, sentLista);
 					what_ws_sent_to_codelets_inputs.put(co, listOfTypes);
@@ -236,12 +235,12 @@ public class WorkingStorage  implements Subject
 			}else if(io==1){//update outputs
 				lista=co.getOutputs();
 				if(what_ws_sent_to_codelets_outputs.containsKey(co)){
-					HashMap<MemoryObjectType, List<MemoryObject>> listOfTypes = what_ws_sent_to_codelets_outputs.get(co);
+					HashMap<String, List<MemoryObject>> listOfTypes = what_ws_sent_to_codelets_outputs.get(co);
 					if(listOfTypes.containsKey(type)){
 						sentLista = what_ws_sent_to_codelets_outputs.get(co).get(type);
 					}
 				}else{
-					HashMap<MemoryObjectType, List<MemoryObject>> listOfTypes = new HashMap<MemoryObjectType, List<MemoryObject>>();
+					HashMap<String, List<MemoryObject>> listOfTypes = new HashMap<String, List<MemoryObject>>();
 					sentLista = new ArrayList<MemoryObject>();
 					listOfTypes.put(type, sentLista);
 					what_ws_sent_to_codelets_outputs.put(co, listOfTypes);
@@ -288,7 +287,7 @@ public class WorkingStorage  implements Subject
 		//Only then should I remove it from the codelet's IO list
 		// (if it was not in what_ws_sent_to_codelets, then it is not my responsibility to remove it)
 
-		MemoryObjectType type=mo.getType();
+		String type=mo.getName();
 
 		if(codelet_input_registry_by_type.containsKey(type)){
 			List<Codelet> codelets = codelet_input_registry_by_type.get(type);
@@ -302,7 +301,7 @@ public class WorkingStorage  implements Subject
 
 			for(Codelet co :codelets){
 				if(what_ws_sent_to_codelets_inputs.containsKey(co)){
-					HashMap<MemoryObjectType, List<MemoryObject>> listOfTypes = what_ws_sent_to_codelets_inputs.get(co);
+					HashMap<String, List<MemoryObject>> listOfTypes = what_ws_sent_to_codelets_inputs.get(co);
 					if(listOfTypes.containsKey(type)){
 						List<MemoryObject> mos = listOfTypes.get(type);		
 						List<MemoryObject> tempMo= new ArrayList<MemoryObject>();
@@ -318,7 +317,7 @@ public class WorkingStorage  implements Subject
 
 			for(Codelet co :codelets){
 				if(what_ws_sent_to_codelets_outputs.containsKey(co)){
-					HashMap<MemoryObjectType, List<MemoryObject>> listOfTypes = what_ws_sent_to_codelets_outputs.get(codelets);
+					HashMap<String, List<MemoryObject>> listOfTypes = what_ws_sent_to_codelets_outputs.get(codelets);
 					if(listOfTypes!=null && listOfTypes.containsKey(type)){
 						List<MemoryObject> mos = listOfTypes.get(type);		
 						List<MemoryObject> tempMo= new ArrayList<MemoryObject>();
@@ -369,7 +368,7 @@ public class WorkingStorage  implements Subject
 
 
 	@Override
-	public void registerCodelet(Codelet co, MemoryObjectType type, int io) {
+	public void registerCodelet(Codelet co, String type, int io) {
 		//		IO ioList;
 
 		if(io==0){
@@ -420,7 +419,7 @@ public class WorkingStorage  implements Subject
 			allOfType.removeAll(co.getInputs());
 			co.pushInputs(allOfType); //Adding to codelet
 			if(what_ws_sent_to_codelets_inputs.containsKey(co)){
-				HashMap<MemoryObjectType, List<MemoryObject>> temp = what_ws_sent_to_codelets_inputs.get(co);
+				HashMap<String, List<MemoryObject>> temp = what_ws_sent_to_codelets_inputs.get(co);
 				if(temp.containsKey(type)){
 					List<MemoryObject> temp2 = temp.get(type);
 					temp2.addAll(allOfType);
@@ -430,7 +429,7 @@ public class WorkingStorage  implements Subject
 					temp.put(type,temp2);
 				}
 			}else{
-				HashMap<MemoryObjectType, List<MemoryObject>> temp = new HashMap<MemoryObjectType, List<MemoryObject>>();
+				HashMap<String, List<MemoryObject>> temp = new HashMap<String, List<MemoryObject>>();
 				List<MemoryObject> temp2 = new ArrayList<MemoryObject>();
 				temp2.addAll(allOfType);
 				temp.put(type,temp2);
@@ -442,7 +441,7 @@ public class WorkingStorage  implements Subject
 			allOfType.removeAll(co.getOutputs());//TODO WEIRD!!  It is removing something that doesn't exist!
 			co.pushOutputs(allOfType); //Adding to codelet
 			if(what_ws_sent_to_codelets_outputs.containsKey(co)){
-				HashMap<MemoryObjectType, List<MemoryObject>> temp = what_ws_sent_to_codelets_outputs.get(co);
+				HashMap<String, List<MemoryObject>> temp = what_ws_sent_to_codelets_outputs.get(co);
 				if(temp.containsKey(type)){
 					List<MemoryObject> temp2 = temp.get(type);
 					temp2.addAll(allOfType);
@@ -452,7 +451,7 @@ public class WorkingStorage  implements Subject
 					temp.put(type,temp2);
 				}
 			}else{
-				HashMap<MemoryObjectType, List<MemoryObject>> temp = new HashMap<MemoryObjectType, List<MemoryObject>>();
+				HashMap<String, List<MemoryObject>> temp = new HashMap<String, List<MemoryObject>>();
 				List<MemoryObject> temp2 = new ArrayList<MemoryObject>();
 				temp2.addAll(allOfType);
 				temp.put(type,temp2);
@@ -477,12 +476,12 @@ public class WorkingStorage  implements Subject
 	}
 
 	@Override
-	public void unregisterCodelet(Codelet co, MemoryObjectType type, int io) {
+	public void unregisterCodelet(Codelet co, String type, int io) {
 		if(io==0){
 			//			ioList = IO.INPUT;
 			if(codelet_input_registry_by_type.containsKey(type)){
 				codelet_input_registry_by_type.get(type).remove(co);
-				HashMap<MemoryObjectType, List<MemoryObject>> reg0 = what_ws_sent_to_codelets_inputs.get(co);
+				HashMap<String, List<MemoryObject>> reg0 = what_ws_sent_to_codelets_inputs.get(co);
 				List<MemoryObject> setOfInputMOs = reg0.get(type);
 
 				co.removeFromInput((List<MemoryObject>) setOfInputMOs);
@@ -495,7 +494,7 @@ public class WorkingStorage  implements Subject
 			//			ioList = IO.OUTPUT;
 			if(codelet_output_registry_by_type.containsKey(type)){
 				what_ws_sent_to_codelets_outputs.get(type).remove(co);
-				HashMap<MemoryObjectType, List<MemoryObject>> reg1 = what_ws_sent_to_codelets_outputs.get(co);
+				HashMap<String, List<MemoryObject>> reg1 = what_ws_sent_to_codelets_outputs.get(co);
 				List<MemoryObject> setOfOutputMOs = reg1.get(type);
 
 				co.removeFromInput((List<MemoryObject>) setOfOutputMOs);
@@ -508,8 +507,8 @@ public class WorkingStorage  implements Subject
 		}
 
 		//Now i must check if what was sent has nothing inside co, if so, remove co as well
-		HashMap<MemoryObjectType, List<MemoryObject>> reg0 = what_ws_sent_to_codelets_inputs.get(co);
-		HashMap<MemoryObjectType, List<MemoryObject>> reg1 = what_ws_sent_to_codelets_outputs.get(co);
+		HashMap<String, List<MemoryObject>> reg0 = what_ws_sent_to_codelets_inputs.get(co);
+		HashMap<String, List<MemoryObject>> reg1 = what_ws_sent_to_codelets_outputs.get(co);
 
 		List<MemoryObject> t0 = reg0.get(type);
 		List<MemoryObject> t1 = reg1.get(type);

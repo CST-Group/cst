@@ -300,18 +300,18 @@ public abstract class Codelet implements Runnable
 	 * @return a string list with input info
 	 */
 
-	public synchronized ArrayList<String> getInputsInfo()
-	{
-		ArrayList<String> inputsInfo=new ArrayList<String>();   
-		
-		if(inputs!=null)
-			for(MemoryObject input:inputs)
-			{
-				inputsInfo.add(input.getInfo());
-			}
-
-		return inputsInfo;
-	}
+//	public synchronized ArrayList<String> getInputsInfo()
+//	{
+//		ArrayList<String> inputsInfo=new ArrayList<String>();   
+//		
+//		if(inputs!=null)
+//			for(MemoryObject input:inputs)
+//			{
+//				inputsInfo.add(input.getInfo());
+//			}
+//
+//		return inputsInfo;
+//	}
 
 	/**
 	 * @param inputs the inputs to set
@@ -388,14 +388,14 @@ public abstract class Codelet implements Runnable
 	 * @param type
 	 * @return list of all memory objects in output of a given type
 	 */
-	private synchronized ArrayList<MemoryObject> getOutputsOfType(MemoryObjectType type) 
+	private synchronized ArrayList<MemoryObject> getOutputsOfType(String type) 
 	{
 		ArrayList<MemoryObject> outputsOfType = new ArrayList<MemoryObject>();
 		
 		if(outputs!=null&&outputs.size()>0)
 			for(MemoryObject mo:this.outputs)
 			{
-				if(mo.getType()!=null && mo.getType().equals(type))
+				if(mo.getName()!=null && mo.getName().equalsIgnoreCase(type))
 				{
 					outputsOfType.add(mo);
 				}
@@ -407,14 +407,14 @@ public abstract class Codelet implements Runnable
 	 * @param type
 	 * @return list of memory objects in input of a given type
 	 */
-	public synchronized ArrayList<MemoryObject> getInputsOfType(MemoryObjectType type) 
+	public synchronized ArrayList<MemoryObject> getInputsOfType(String type) 
 	{
 		ArrayList<MemoryObject> inputsOfType = new ArrayList<MemoryObject>();
 		
 		if(inputs!=null&&inputs.size()>0)
 			for(MemoryObject mo:this.inputs)
 			{
-				if(mo.getType()!=null && mo.getType().equals(type))
+				if(mo.getName()!=null && mo.getName().equalsIgnoreCase(type))
 				{
 					inputsOfType.add(mo);
 				}
@@ -498,7 +498,7 @@ public abstract class Codelet implements Runnable
 	  * @param index position of memory object in the sublist
 	  * @return memory object of type at position 
 	  */
-	 public synchronized MemoryObject getInput(MemoryObjectType type, int index)
+	 public synchronized MemoryObject getInput(String type, int index)
 	 {
 		 MemoryObject inputMO = null;
 		 ArrayList<MemoryObject> listMO=new ArrayList<MemoryObject>();
@@ -506,7 +506,7 @@ public abstract class Codelet implements Runnable
 		 if(inputs!=null&&inputs.size()>0)
 			 for(MemoryObject mo:inputs)
 			 {
-				 if(mo.getType()!=null && mo.getType().equals(type))
+				 if(mo.getName()!=null && mo.getName().equalsIgnoreCase(type))
 				 {
 					 listMO.add(mo);
 				 }
@@ -543,7 +543,7 @@ public abstract class Codelet implements Runnable
 	  * @param position position of memory object in the sublist
 	  * @return memory object of type at position 
 	  */
-	 public synchronized MemoryObject getOutput(MemoryObjectType type, int index)
+	 public synchronized MemoryObject getOutput(String type, int index)
 	 {
 		 MemoryObject outputMO = null;
 		 ArrayList<MemoryObject> listMO=new ArrayList<MemoryObject>();
@@ -551,7 +551,7 @@ public abstract class Codelet implements Runnable
 		 if(outputs!=null&&outputs.size()>0)
 			 for(MemoryObject mo:outputs)
 			 {
-				 if(mo!=null && type!=null && mo.getType()!=null && mo.getType().equals(type))
+				 if(mo!=null && type!=null && mo.getName()!=null && mo.getName().equalsIgnoreCase(type))
 				 {
 					 listMO.add(mo);
 				 }
@@ -588,7 +588,7 @@ public abstract class Codelet implements Runnable
 	  * @param index
 	  * @return
 	  */
-	 public synchronized MemoryObject getBroadcast(MemoryObjectType type, int index)
+	 public synchronized MemoryObject getBroadcast(String type, int index)
 	 {
 		 MemoryObject broadcastMO = null;
 		 
@@ -598,7 +598,7 @@ public abstract class Codelet implements Runnable
 		 {
 			 for(MemoryObject mo:broadcast)
 			 {
-				 if(mo.getType()!=null && mo.getType().equals(type))
+				 if(mo.getName()!=null && mo.getName().equalsIgnoreCase(type))
 				 {
 					 listMO.add(mo);
 				 }

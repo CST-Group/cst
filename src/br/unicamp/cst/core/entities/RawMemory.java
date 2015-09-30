@@ -55,7 +55,7 @@ public class RawMemory
  * @param type of memory object
  * @return list of MOs of a given type
  */
-   public synchronized List<MemoryObject> getAllOfType(int type)
+   public synchronized List<MemoryObject> getAllOfType(String type)
    {
 	   List<MemoryObject> listOfType=new ArrayList<MemoryObject>();
 	   
@@ -63,7 +63,7 @@ public class RawMemory
 	   {
 		   for(MemoryObject mo:this.allMemoryObjects)
 		   {
-			   if(mo.getType().equals(type))
+			   if(mo.getName().equalsIgnoreCase(type))
 			   {
 				   listOfType.add(mo);
 			   }
@@ -120,22 +120,22 @@ public class RawMemory
     * @param info memory object info
     * @return mo created MemoryObject
     */
-   public synchronized MemoryObject createMemoryObject(MemoryObjectType type, String info)
-   {
-	   // memory object to be added to rawmemory
-       MemoryObject mo = new MemoryObject();
-       Date date = new Date();         
-       mo.setInfo(info);
-       mo.setType(type);
-       mo.setTimestamp(new Timestamp(date.getTime()));
-       mo.setEvaluation(0.5d);
-       mo.name = "";
-
-       // adding the new object to raw memory
-       this.addMemoryObject(mo);
-       return mo;
-      
-   }
+//   public synchronized MemoryObject createMemoryObject(MemoryObjectType type, String info)
+//   {
+//	   // memory object to be added to rawmemory
+//       MemoryObject mo = new MemoryObject();
+//       Date date = new Date();         
+//       mo.setInfo(info);
+//       mo.setType(type);
+//       mo.setTimestamp(new Timestamp(date.getTime()));
+//       mo.setEvaluation(0.5d);
+//       mo.name = "";
+//
+//       // adding the new object to raw memory
+//       this.addMemoryObject(mo);
+//       return mo;
+//      
+//   }
    /**
     * Creates a new MemoryObject (Java style) and adds it to the Raw Memory, using provided info and type
     * 
@@ -150,7 +150,7 @@ public class RawMemory
        Date date = new Date();         
        mo.setI(info);
        //mo.setT(type);
-       mo.setInfo("");
+       //mo.setInfo("");
        mo.setTimestamp(new Timestamp(date.getTime()));
        mo.setEvaluation(0.5d);
        mo.name = name;
@@ -161,7 +161,7 @@ public class RawMemory
    }
    
    public synchronized MemoryObject createMemoryObject(String name) {
-       return createMemoryObject(name, null);
+       return createMemoryObject(name, "");
    }
    
    
