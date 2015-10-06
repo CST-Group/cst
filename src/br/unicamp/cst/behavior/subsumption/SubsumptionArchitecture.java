@@ -115,7 +115,7 @@ public class SubsumptionArchitecture
 	public void addSuppressedAction(SubsumptionAction suppressorAction, SubsumptionAction suppressedAction) 
 	{
 		suppressorAction.setSuppressedAction(suppressedAction);
-		suppressorAction.pushOutputs(suppressedAction.getOutputs());
+		suppressorAction.addOutputs(suppressedAction.getOutputs());
 		
 		List<SubsumptionAction> suppressorActionList = suppressorActionsMapList.get(suppressedAction);
 		if(suppressorActionList==null)

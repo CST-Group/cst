@@ -30,7 +30,7 @@ public abstract class Sensor extends Codelet
 	}
 	
 	@Override
-	public synchronized void pushOutput(MemoryObject mo)
+	public synchronized void addOutput(MemoryObject mo)
 	{
 		this.getOutputs().add(mo);
 		if(ws!=null)

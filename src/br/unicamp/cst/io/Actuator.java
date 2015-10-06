@@ -32,7 +32,7 @@ public abstract class Actuator extends Codelet
 	}
 	
 	@Override
-	public void pushInput(MemoryObject mo)
+	public void addInput(MemoryObject mo)
 	{
 		this.getInputs().add(mo);
 		if(ws!=null)

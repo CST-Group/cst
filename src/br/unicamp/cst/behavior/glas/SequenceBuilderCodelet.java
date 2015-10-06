@@ -63,13 +63,13 @@ public class SequenceBuilderCodelet extends Codelet
 
 		if(rawMemory!=null)
 			EVENTS_SEQUENCE_MO=rawMemory.createMemoryObject("EVENTS_SEQUENCE", "");
-		this.pushOutput(EVENTS_SEQUENCE_MO);
+		this.addOutput(EVENTS_SEQUENCE_MO);
 		if(ws!=null)
 			ws.putMemoryObject(EVENTS_SEQUENCE_MO);
 
 		if(rawMemory!=null)
 			NEW_EVENT_DETECTED_MO=rawMemory.createMemoryObject("NEW_EVENT_DETECTED", "FALSE");
-		this.pushOutput(NEW_EVENT_DETECTED_MO);
+		this.addOutput(NEW_EVENT_DETECTED_MO);
 		if(ws!=null)
 			ws.putMemoryObject(NEW_EVENT_DETECTED_MO);
 
@@ -82,9 +82,9 @@ public class SequenceBuilderCodelet extends Codelet
 
 		}
 		
-		this.pushOutput(NEW_STIM_MO);
-		this.pushOutput(NEW_ACTION_MO);
-		this.pushOutput(NEW_REWARD_MO);
+		this.addOutput(NEW_STIM_MO);
+		this.addOutput(NEW_ACTION_MO);
+		this.addOutput(NEW_REWARD_MO);
 
 		if(ws!=null)
 		{
@@ -99,8 +99,8 @@ public class SequenceBuilderCodelet extends Codelet
 			PREVIOUS_REWARD_MO = rawMemory.createMemoryObject("REWARD", ""); //reward for i-1 s,a pair
 		}
 		
-		this.pushInput(STIMULUS_MO);
-		this.pushInput(PREVIOUS_REWARD_MO);
+		this.addInput(STIMULUS_MO);
+		this.addInput(PREVIOUS_REWARD_MO);
 		if(ws!=null)
 		{
 			ws.putMemoryObject(STIMULUS_MO);

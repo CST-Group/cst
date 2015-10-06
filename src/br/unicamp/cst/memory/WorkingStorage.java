@@ -258,9 +258,9 @@ public class WorkingStorage  implements Subject
 			whats_missing.removeAll(lista);
 
 			if(io==0){//update inputs
-				co.pushInputs(whats_missing);
+				co.addInputs(whats_missing);
 			}else if(io==1){//update outputs
-				co.pushOutputs(whats_missing);
+				co.addOutputs(whats_missing);
 			}else{
 				throw new IllegalArgumentException();
 			}
@@ -417,7 +417,7 @@ public class WorkingStorage  implements Subject
 
 		if(io==0){
 			allOfType.removeAll(co.getInputs());
-			co.pushInputs(allOfType); //Adding to codelet
+			co.addInputs(allOfType); //Adding to codelet
 			if(what_ws_sent_to_codelets_inputs.containsKey(co)){
 				HashMap<String, List<MemoryObject>> temp = what_ws_sent_to_codelets_inputs.get(co);
 				if(temp.containsKey(type)){
@@ -439,7 +439,7 @@ public class WorkingStorage  implements Subject
 		}
 		if(io==1){
 			allOfType.removeAll(co.getOutputs());//TODO WEIRD!!  It is removing something that doesn't exist!
-			co.pushOutputs(allOfType); //Adding to codelet
+			co.addOutputs(allOfType); //Adding to codelet
 			if(what_ws_sent_to_codelets_outputs.containsKey(co)){
 				HashMap<String, List<MemoryObject>> temp = what_ws_sent_to_codelets_outputs.get(co);
 				if(temp.containsKey(type)){

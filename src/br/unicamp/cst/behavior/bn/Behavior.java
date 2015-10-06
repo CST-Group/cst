@@ -511,7 +511,7 @@ public abstract class Behavior extends Codelet
 	public void addPreconList(MemoryObject condition)
 	{
 		this.preconList.add(condition);
-		this.pushInput(condition);
+		this.addInput(condition);
 	}
 
 
@@ -531,7 +531,7 @@ public abstract class Behavior extends Codelet
 	public void addSoftPreconList(MemoryObject condition)
 	{
 		this.softPreconList.add(condition);
-		this.pushInput(condition);
+		this.addInput(condition);
 	}
 
 
@@ -551,7 +551,7 @@ public abstract class Behavior extends Codelet
 	public void addAddList(MemoryObject condition)
 	{
 		this.addList.add(condition);
-		this.pushOutput(condition);
+		this.addOutput(condition);
 	}
 
 	/**
@@ -569,7 +569,7 @@ public abstract class Behavior extends Codelet
 	 */
 	public void addDelList(MemoryObject condition)
 	{
-		this.pushOutput(condition);
+		this.addOutput(condition);
 		this.deleteList.add(condition);
 	}
 

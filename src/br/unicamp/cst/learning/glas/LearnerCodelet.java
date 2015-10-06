@@ -80,7 +80,7 @@ public class LearnerCodelet extends Codelet
 
 		if(rawMemory!=null)
 		this.SOLUTION_TREE_MO=rawMemory.createMemoryObject("SOLUTION_TREE", "");
-		this.pushOutput(this.SOLUTION_TREE_MO);
+		this.addOutput(this.SOLUTION_TREE_MO);
 		if(ws!=null)
 			ws.putMemoryObject(this.SOLUTION_TREE_MO);
 

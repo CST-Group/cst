@@ -327,17 +327,26 @@ public abstract class Codelet implements Runnable
 	{
 		this.inputs.add(input);
 	}
-	public synchronized void pushInput(MemoryObject input)//TODO:  how should we deal with an attempt to add an existing MO?
+	/* public synchronized void pushInput(MemoryObject input)//TODO:  how should we deal with an attempt to add an existing MO?
 	{
 		addInput(input);
+	}
+        */
+        /**
+	 * @param adds a list of inputs
+	 */
+	public synchronized void addInputs(List<MemoryObject> inputs)//TODO:  how should we deal with an attempt to add an existing MO?
+	{
+		this.inputs.addAll(inputs);
 	}
 	/**
 	 * @param adds a list of inputs
 	 */
-	public synchronized void pushInputs(List<MemoryObject> inputs)//TODO:  how should we deal with an attempt to add an existing MO?
+	/*public synchronized void pushInputs(List<MemoryObject> inputs)//TODO:  how should we deal with an attempt to add an existing MO?
 	{
-		this.inputs.addAll(inputs);
+		addInputs(inputs);
 	}
+        */
 	/**
 	 * @param adds one output to set
 	 */
@@ -345,10 +354,12 @@ public abstract class Codelet implements Runnable
 	{
 		this.outputs.add(output);
 	}
-	public synchronized void pushOutput(MemoryObject output)
+	/*
+        public synchronized void pushOutput(MemoryObject output)
 	{
 		addOutput(output);
 	}
+        */
 	/**
 	 * Removes a given memory object from output list
 	 * @param output
@@ -372,10 +383,14 @@ public abstract class Codelet implements Runnable
 	{
 		this.inputs.removeAll(inputs);
 	}
-	public synchronized void pushOutputs(List<MemoryObject> outputs)
+        public synchronized void addOutputs(List<MemoryObject> outputs)
 	{
 		this.outputs.addAll(outputs);
 	}
+	/* public synchronized void pushOutputs(List<MemoryObject> outputs)
+	{
+		addOutputs(outputs);
+	} */
 	/**
 	 * @return the outputs
 	 */
@@ -468,10 +483,10 @@ public abstract class Codelet implements Runnable
 		 this.broadcast.add(b);
 	 }
 
-	 public synchronized void pushBroadcast(MemoryObject b)//TODO:  how should we deal with an attempt to add an existing MO?
+	 /* public synchronized void pushBroadcast(MemoryObject b)//TODO:  how should we deal with an attempt to add an existing MO?
 	 {
 		 addBroadcast(b);
-	 }
+	 } */
 	 /**
 	  * 
 	  * @return The name of the thread running this Codelet

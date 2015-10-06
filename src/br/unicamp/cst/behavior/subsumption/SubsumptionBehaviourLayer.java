@@ -59,17 +59,17 @@ public class SubsumptionBehaviourLayer
 	
 	public void attachActionToSensor(SubsumptionAction action, Codelet sensor) 
 	{
-		action.pushInputs(sensor.getOutputs());
+		action.addInputs(sensor.getOutputs());
 	}
 
 	public void attachActionToActuator(SubsumptionAction action, Codelet actuator)
 	{
-		action.pushOutputs(actuator.getInputs());		
+		action.addOutputs(actuator.getInputs());		
 	}
 
 	public void attachTwoActions(SubsumptionAction previousAction,SubsumptionAction nextAction,List<MemoryObject> memoryObjectsLinkingPreviousAndNextAction) 
 	{
-		previousAction.pushOutputs(memoryObjectsLinkingPreviousAndNextAction);
-		nextAction.pushInputs(memoryObjectsLinkingPreviousAndNextAction);	
+		previousAction.addOutputs(memoryObjectsLinkingPreviousAndNextAction);
+		nextAction.addInputs(memoryObjectsLinkingPreviousAndNextAction);	
 	}
 }

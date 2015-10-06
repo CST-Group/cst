@@ -91,10 +91,10 @@ public abstract class Perception extends Codelet
 		
 		
 		for(MemoryObject mo : addDK){
-			this.pushOutput(mo);
+			this.addOutput(mo);
 		}
 		for(MemoryObject mo : addDO){
-			this.pushOutput(mo);
+			this.addOutput(mo);
 		}
 		for(MemoryObject mo : remove){
 			this.removesOutput(mo);
@@ -134,12 +134,12 @@ public abstract class Perception extends Codelet
 //				for(String trueProp:trueStates){
 //					MemoryObject mo = worldState_string_mo.get(trueProp);
 //					if(!outputs.contains(mo)){
-//						this.pushOutput(mo);
+//						this.addOutput(mo);
 //					}
 //				}
 	}
 	
-	public synchronized void pushOutput(MemoryObject output)
+	public synchronized void addOutput(MemoryObject output)
 	{
 		this.getOutputs().add(output);
 		
