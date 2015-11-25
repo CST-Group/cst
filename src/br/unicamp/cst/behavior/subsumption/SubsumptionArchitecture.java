@@ -21,9 +21,9 @@ import br.unicamp.cst.core.entities.Mind;
 
 /**
  * An implementation of a subsumption architecture as defined in [Rodney A. Brooks 1991] "Intelligence without representation".
- * This architecture is aimed at selecting the actions of a primite reactive-only creature, in the reptilian level.
- * A  subsumption architecture is composed of behaviour layers of actions, in the sense that each layer is a group of actions 
- * which define a behaviour.
+ * This architecture is aimed at selecting the actions of a reactive-only creature, in the reptilian level.
+ * A  subsumption architecture is composed of behavior layers of actions, in the sense that each layer is a group of actions 
+ * which define a behavior.
  * 
  * @author andre
  *
