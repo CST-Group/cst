@@ -7,6 +7,7 @@
  * 
  * Contributors:
  *     K. Raizer, A. L. O. Paraense, R. R. Gudwin - initial API and implementation
+ *     E. M. Fróes - documentation
  ******************************************************************************/
 
 package br.unicamp.cst.perception;
@@ -37,7 +38,11 @@ public abstract class Perception extends Codelet
 	private ArrayList<MemoryObject> detected_percepts=new ArrayList<MemoryObject>();//list of all percepts that were detected by the codelet (is reset after uptadeOutputWithPercepts is called)
 	
 	private WorkingStorage localWS;
-	
+        
+        /**
+	 * Default constructor.
+         * @param localWS
+	 */
 	public Perception(WorkingStorage localWS)
 	{
 		this.localWS = localWS;
@@ -139,7 +144,11 @@ public abstract class Perception extends Codelet
 //				}
 	}
 	
-	public synchronized void addOutput(MemoryObject output)
+        /**
+         * This method adds an output memory in the output list.
+         * @param output
+         */
+       	public synchronized void addOutput(MemoryObject output)
 	{
 		this.getOutputs().add(output);
 		
@@ -149,6 +158,10 @@ public abstract class Perception extends Codelet
 		this.synchWithWorkingStorage();
 	}
 
+        /**
+         * This method removes an output memory in the output list.
+         * @param output
+         */
 	public synchronized void removesOutput(MemoryObject output)
 	{	
 		this.getOutputs().remove(output);
@@ -158,16 +171,17 @@ public abstract class Perception extends Codelet
 		
 		this.synchWithWorkingStorage();
 	}
-/**
- * Makes sure what this perception codelet perceives as true, remains in working storage, while what it perceives as being false does not.
- * This method resets the list of detected percepts.
- */
+        
+        /**
+         * Makes sure what this perception codelet perceives as true, remains in working storage, while what it perceives as being false does not.
+         * This method resets the list of detected percepts.
+         */
 	private void synchWithWorkingStorage()
 	{
 		//TODO Remember to acquire lock!
 		ArrayList<MemoryObject> alreadyInWorkingStorage = new ArrayList<MemoryObject>();
 		alreadyInWorkingStorage.addAll(localWS.getAll());
-//		alreadyInWorkingStorage.retainAll(this.getOutputs());
+		//alreadyInWorkingStorage.retainAll(this.getOutputs());
 		
 		ArrayList<MemoryObject> mustAdd = new ArrayList<MemoryObject>();
 		mustAdd.addAll(list_of_true_world_states);

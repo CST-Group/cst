@@ -7,6 +7,7 @@
  * 
  * Contributors:
  *     K. Raizer, A. L. O. Paraense, R. R. Gudwin - initial API and implementation
+ *     E. M. Fróes - documentation
  ******************************************************************************/
 
 package br.unicamp.cst.memory;
@@ -31,6 +32,14 @@ private ArrayList<String> actionList=new ArrayList<String>();
 private boolean performed; //defines if the memory object holding this  information has been used or not
 private String behaviorPropositionString;
 
+
+        /**
+	 * Constructor that initializes all attributes and composes "behaviorPropositionString".
+         * @param name
+         * @param addList
+         * @param delList
+         * @param actionList
+	 */
 	public BehaviorProposition(String name, ArrayList<String> addList, ArrayList<String> delList,ArrayList<String> actionList){
 		this.name=name;
 		this.addList.addAll(addList);
@@ -40,18 +49,36 @@ private String behaviorPropositionString;
 		createBehaviorPropositionString();
 		
 	}
+        
+        /**
+	 * Constructor receive the "behaviorPropositionString" String as parameter and initialize all attributes of class.
+         * @param behaviorPropositionString
+	 */
 	public BehaviorProposition(String behaviorPropositionString){
 		this.behaviorPropositionString=behaviorPropositionString;
 		createBehaviorPropositions();
 		
 	}
 
+        /**
+         * This method return action list.
+	 * @return ArrayList<String>.
+	 */
 	public ArrayList<String> getActionList() {
 		return actionList;
 	}
+        
+        /**
+         * This method set action list.
+	 * @params actionList.
+	 */
 	public void setActionList(ArrayList<String> actionList) {
 		this.actionList = actionList;
 	}
+        
+        /**
+         * This method is responsible for initializing the attributes of the class from "behaviorPropositionString".
+	 */
 	private void createBehaviorPropositions() {
 		String[] tempString;
 		
@@ -98,6 +125,9 @@ private String behaviorPropositionString;
 		
 	}
 
+        /**
+         * This method is responsible for composing the "behaviorPropositionString" from the attributes of class.
+	 */
 	private void createBehaviorPropositionString() {
 		behaviorPropositionString="";
 		behaviorPropositionString=behaviorPropositionString+"<NAME>"+this.getName()+"<NAME>"; //TODO THis is not standard XML
@@ -130,6 +160,7 @@ private String behaviorPropositionString;
 	}
 
 	/**
+         * This method set the behavior proposition string.
 	 * @param behaviorPropositionString the behaviorPropositionString to set
 	 */
 	public synchronized void setBehaviorPropositionString(String behaviorPropositionString) {
@@ -137,60 +168,79 @@ private String behaviorPropositionString;
 		createBehaviorPropositions();//updates the variables based on the new string
 	}
 	
+        /**
+         * This method return the behavior proposition string.
+	 * @return behavior proposition string.
+	 */
 	public synchronized String getBehaviorPropositionString(){
 		return this.behaviorPropositionString;
 	}
 
-
+        /**
+         * This return name.
+	 * @return name.
+	 */
 	public synchronized String getName() {
 		return this.name;
 	}
 
 	/**
-	 * @return performed if the bp was performed or not
+         * Return if the bp was performed or not.
+	 * @return was performed or not
 	 */
 	public boolean isPerformed() {
 		return performed;
 	}
+        
 	/**
-	 * @param used the used to set
+         * This, set performed attribute and composes the behavior proposition string from attributes of class.
+	 * @param performed
 	 */
-	public void setPerformed(boolean performed) {
-//		System.out.println("##### Trying to set performed to "+performed+"  ########");
-//		System.out.println("Before: performed = "+this.performed+"  string: "+this.behaviorPropositionString);
+	public void setPerformed(boolean performed) {   
+                //System.out.println("##### Trying to set performed to "+performed+"  ########");
+		//System.out.println("Before: performed = "+this.performed+"  string: "+this.behaviorPropositionString);
 		
 		this.performed = performed;
 		createBehaviorPropositionString(); //Updates the variables in the string
 
-//		System.out.println("After: performed = "+this.performed+"  string: "+this.behaviorPropositionString);
-//
-//		System.out.println("#######################################");
+		//System.out.println("After: performed = "+this.performed+"  string: "+this.behaviorPropositionString);
+                //System.out.println("#######################################");
 	}
+        
 	/**
-	 * @return the addList
+         * Return the addList.
+	 * @return addList.
 	 */
 	public List<String> getAddList() {
 		return this.addList;
 	}
+        
 	/**
+         * Set the add list.
 	 * @param addList the addList to set
 	 */
 	public void setAddList(ArrayList<String> addList) {
 		this.addList = addList;
 	}
+        
 	/**
+         * Return the delete list.
 	 * @return the delList
 	 */
 	public List<String> getDelList() {
 		return delList;
 	}
+        
 	/**
+         * This, set the delete list.
 	 * @param delList the delList to set
 	 */
 	public void setDelList(ArrayList<String> delList) {
 		this.delList = delList;
 	}
+        
 	/**
+         * Set name of Behavior Proposition.
 	 * @param name the name to set
 	 */
 	public synchronized void setName(String name) {

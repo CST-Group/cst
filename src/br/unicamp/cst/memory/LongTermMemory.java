@@ -7,6 +7,7 @@
  * 
  * Contributors:
  *     K. Raizer, A. L. O. Paraense, R. R. Gudwin - initial API and implementation
+ *     E. M. Fróes - documentation
  ******************************************************************************/
 
 package br.unicamp.cst.memory;
@@ -41,19 +42,25 @@ public class LongTermMemory
 	private RawMemory rawMemory;
 
 	/**
-	 * Default constructor
+	 * Default constructor.
+         * @param rawMemory
 	 */
 	public LongTermMemory(RawMemory rawMemory)
 	{
 
 		this.rawMemory = rawMemory;
-//		learnedPropositions = new ConcurrentHashMap<String,MemoryObject>();
+		//learnedPropositions = new ConcurrentHashMap<String,MemoryObject>();
 		boolean success = (new File("LongTermMemory")).mkdirs();
 
 
 	}
 
-	// Returns the contents of the file in a byte array.
+        /** 
+         * This method receive a object "File" as parameter and return the contents of the file in a byte array.
+         * @param file
+         * @return byte array.
+         * @throws IOException 
+         */
 	public static byte[] getBytesFromFile(File file) throws IOException {
 		InputStream is = new FileInputStream(file);
 
@@ -89,11 +96,9 @@ public class LongTermMemory
 		return bytes;
 	}
 
-	//---------------
-
 	/**
 	 * 
-	 * Avoids cloning
+	 * Avoids cloning.
 	 */
 	public Object clone() throws CloneNotSupportedException{
 		throw new CloneNotSupportedException();
@@ -142,7 +147,8 @@ public class LongTermMemory
 	/**
 	 * Searches in persisted long term memory if this memory object already exists.
 	 * The criteria are its type and info.
-	 * @param mo
+	 * @param type
+         * @param info
 	 * @return the existing memory object, or null if there aren't any.
 	 */
 	private MemoryObject checksIfMemoryExists(String type, Object info) {
@@ -170,17 +176,19 @@ public class LongTermMemory
 		}
 		return ltmMO;
 	}
+        
+        
 	/**
 	 *  Reads a memory object from disk.
 	 * @param file
-	 * @return
+	 * @return memory object.
 	 */
 	private MemoryObject deserializeMO(File file){
 		//DESERIALIZE
 		MemoryObject mo2=null;
 		try {
 			// Deserialize from a file
-//			File file = new File(path+filename+extension);
+			//File file = new File(path+filename+extension);
 			ObjectInputStream in = new ObjectInputStream(new FileInputStream(file));
 			// Deserialize the object
 			mo2 = (MemoryObject) in.readObject();
@@ -210,7 +218,7 @@ public class LongTermMemory
 	 *  If it fails to find it, it then looks for it on disk.
 	 * @param type
 	 * @param info
-	 * @return
+	 * @return memory object.
 	 */
 	public MemoryObject retrieve(String type, String info) {
 		MemoryObject retrievedMO=null;
@@ -232,6 +240,7 @@ public class LongTermMemory
 		}
 		return retrievedMO;
 	}
+        
 	/**
 	 * WARNING: 
 	 * Clears everything from LTM, both from ram and disk.
@@ -240,18 +249,20 @@ public class LongTermMemory
 	public void totalClearLTM() {
 		File f = new File(path); // gets the element at the index of the List 
 		File[] lista = f.listFiles();
-//		System.out.println(lista);
+		//System.out.println(lista);
 		if(lista!=null){
 		 for (File c : f.listFiles()) //Cleans up directory for other tests
 		      c.delete();
 		}
 	}
+        
 	/**
-	 * Prints all active content in ltm
+	 * Prints all active content in ltm.
 	 */
 	public void printLTM(){
 		System.out.println("LTM Active Content: "+ltmMOs);
 	}
+        
 	/** 
 	 * Clears LTM from memory.
 	 */
