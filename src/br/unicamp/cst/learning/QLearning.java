@@ -7,6 +7,7 @@
  * 
  * Contributors:
  *     K. Raizer, A. L. O. Paraense, R. R. Gudwin - initial API and implementation
+ *     E. M. Fróes - documentation
  ******************************************************************************/
 
 package br.unicamp.cst.learning;
@@ -61,14 +62,23 @@ public class QLearning {
 	private double reward=0;
 	private Random r=new Random();
 
-
+        /**
+         * Default Constructor
+         */
 	public QLearning(){
 		statesList=new ArrayList<String>();
 		actionsList=new ArrayList<String>();
 		Q = new HashMap<String, HashMap<String,Double>>(); // Q learning
 	}
-
-
+        
+        
+       
+        /**
+         * This method set Q value with parameters Qval, state and action.
+         * @param Qval
+         * @param state
+         * @param action 
+         */
 	public void setQ(double Qval, String state, String action){
 		HashMap<String,Double> tempS=this.Q.get(state);
 		if(tempS!=null){
@@ -91,13 +101,13 @@ public class QLearning {
 			this.Q.put(state, tempNew);
 		}
 	}
-/**
- * Returns the utility value Q related to the given state/action pair
- * 
- * @param state
- * @param action
- * @return
- */
+        
+        /**
+        * Returns the utility value Q related to the given state/action pair
+        * @param state
+        * @param action
+        * @return
+        */
 	public double getQ(String state,String action){
 		double dQ=0;
 		if(!(Q.get(state)==null || Q.get(state).get(action)==null)){
@@ -132,12 +142,12 @@ public class QLearning {
 		return maxQinSl;
 	}
 
-/**
- * 
- * @param stateIWas state I was previously
- * @param actionIDid action I did while at the previous state
- * @param rewardIGot reward I got after moving from previous state to the present one
- */
+        /**
+        * 
+        * @param stateIWas state I was previously
+        * @param actionIDid action I did while at the previous state
+        * @param rewardIGot reward I got after moving from previous state to the present one
+        */
 	public void update(String stateIWas,String actionIDid, double rewardIGot) {
 		//which is calculated whenever action a is executed in state s leading to state s'
 		this.sl=stateIWas;
@@ -305,11 +315,11 @@ public class QLearning {
 	}
 
 
-/**
- *  Sets the learning rate parameter alpha.
- *  Should be between 0 and 1
- * @param alpha
- */
+        /**
+        *  Sets the learning rate parameter alpha.
+        *  Should be between 0 and 1
+        * @param alpha
+        */
 	public void setAlpha(double alpha) {
 		this.alpha = alpha;
 	}
@@ -317,15 +327,18 @@ public class QLearning {
 	public double getGamma() {
 		return gamma;
 	}
-/**
- * Sets the discount factor.
- * Should be between 0 and 1.
- * @param gamma
- */
+        
+        
+        /**
+        * Sets the discount factor.
+        * Should be between 0 and 1.
+        * @param gamma
+        */
 	public void setGamma(double gamma) {
 		this.gamma = gamma;
 	}
-	/**
+	
+        /**
 	 * Selects the best action for this state with probability "e", 
 	 * and a random one with probability (1-e) 
 	 *  If a given state has no record of one or more actions, it will consider them as valued 0.

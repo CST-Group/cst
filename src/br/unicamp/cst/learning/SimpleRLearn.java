@@ -7,6 +7,7 @@
  * 
  * Contributors:
  *     K. Raizer, A. L. O. Paraense, R. R. Gudwin - initial API and implementation
+ *     E. M. Fróes - documentation
  ******************************************************************************/
 
 package br.unicamp.cst.learning;
@@ -37,25 +38,29 @@ public class SimpleRLearn {
 	int Na=0; //number of actions
 	int Ns=0; //number of states
 	Random rnd = new Random();
-
-	public SimpleRLearn(int Ns,int Na){
+        
+        /**
+         * Default Constructor.
+         * @param Ns
+         * @param Na 
+         */
+      	public SimpleRLearn(int Ns,int Na){
 		this.Na=Na; //number of actions
 		this.Ns=Ns; //number of states
 		this.Q =	new double[Ns][Na]; //All set as zero from the start
 	}
 
-/**
- * Updates Q table of values
- * 
- * @param s current state
- * @param a chosen action
- * @param r reward for performing action a in state s, should be between -1 and 1
- */
+        /**
+         * Updates Q table of values.
+         * @param s current state
+         * @param a chosen action
+         * @param r reward for performing action a in state s, should be between -1 and 1
+        */
 	public void update(int s, int a, double r){
 		if(r<=1 && r>=-1){
 		if(s>=Ns && a>=Na){ //TODO  shouldn't be || ?
 			if(s>=Ns){
-//				System.out.println("State "+s+" doesn't exist.");
+				//System.out.println("State "+s+" doesn't exist.");
 				throw new Error("State "+s+" doesn't exist.");
 			}
 			if(a>=Na){
@@ -94,6 +99,9 @@ public class SimpleRLearn {
 		
 	}
 
+        /**
+         * Add action.
+         */
 	public void addAction(){
 		int newNa = this.Na+1;
 		double[][] new_Q = new double[Ns][newNa];
@@ -107,6 +115,9 @@ public class SimpleRLearn {
 		Q=new_Q;
 	}
 
+        /**
+         * Add state.
+         */
 	public void addState(){
 		int newNs = this.Ns+1;
 		double[][] new_Q = new double[newNs][Na];
@@ -120,6 +131,9 @@ public class SimpleRLearn {
 		Q=new_Q;
 	}
 
+        /**
+         * Print Q value.
+         */
 	public void printQ(){
 		System.out.println("--- Q table ---");
 		for(int st=0;st<Ns;st++){
@@ -166,6 +180,7 @@ public class SimpleRLearn {
 
 
 	/**
+         * Gets Q value.
 	 * @return the q
 	 */
 	public double[][] getQ() {
@@ -174,6 +189,7 @@ public class SimpleRLearn {
 
 
 	/**
+         * Sets Q value.
 	 * @param q the q to set
 	 */
 	public void setQ(double[][] q) {
@@ -182,6 +198,7 @@ public class SimpleRLearn {
 
 
 	/**
+         * Gets NA value.
 	 * @return the na
 	 */
 	public int getNa() {
@@ -190,6 +207,7 @@ public class SimpleRLearn {
 
 
 	/**
+         * Sets NA value.
 	 * @param na the na to set
 	 */
 	public void setNa(int na) {
@@ -198,6 +216,7 @@ public class SimpleRLearn {
 
 
 	/**
+         * Gets NS value.
 	 * @return the ns
 	 */
 	public int getNs() {
@@ -206,12 +225,17 @@ public class SimpleRLearn {
 
 
 	/**
+         * Gets NS value.
 	 * @param ns the ns to set
 	 */
 	public void setNs(int ns) {
 		Ns = ns;
 	}
 
+        /**
+         * Verify if is empty.
+         * @return true or false
+         */
 	public boolean isEmpty(){
 		boolean empty=(this.Na==0 || this.Ns==0);
 		return empty;

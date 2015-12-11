@@ -7,6 +7,7 @@
  * 
  * Contributors:
  *     K. Raizer, A. L. O. Paraense, R. R. Gudwin - initial API and implementation
+ *     E. M. Fróes - documentation
  ******************************************************************************/
 
 package br.unicamp.cst.perception;
@@ -28,7 +29,11 @@ public class PerceptionProxy
    private List<Codelet> listInterpreters;
    
    private CodeRack codeRack;
-     
+   
+   /**
+    * Default Constructor.
+    * @param codeRack
+    */
    public PerceptionProxy(CodeRack codeRack)
    {
 	   this.codeRack = codeRack;
@@ -37,7 +42,7 @@ public class PerceptionProxy
    }
    
    /**
-    * Starts all interpreters in this proxy
+    * Starts all interpreters in this proxy.
     */
    public void start()
    {
@@ -46,8 +51,9 @@ public class PerceptionProxy
          interpreter.start();
       }
    }
+   
    /**
-    * Stops all interpreters in this proxy
+    * Stops all interpreters in this proxy.
     */
    public void stop()
    {
@@ -56,8 +62,9 @@ public class PerceptionProxy
     	  interpreter.stop();
       }
    }
+   
    /**
-    * Add an new interpreter to this proxy
+    * Add an new interpreter to this proxy.
     * @param interpreter to be added to this proxy
     */
    public void add(Codelet interpreter)
@@ -75,6 +82,7 @@ public class PerceptionProxy
 	   if(codeRack!=null)
 		   codeRack.destroyCodelet(co);
    }
+   
    /**
     * Removes the given codelet from this proxy but keepts it in CodeRack.
     * @param co
