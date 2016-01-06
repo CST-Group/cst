@@ -21,11 +21,8 @@ import java.io.Writer;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
-import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Random;
-
-import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -63,7 +60,7 @@ public class QLearning {
 	private Random r=new Random();
 
         /**
-         * Default Constructor
+         * Default Constructor.
          */
 	public QLearning(){
 		statesList=new ArrayList<String>();
@@ -116,6 +113,11 @@ public class QLearning {
 		return  dQ;
 	}
 
+        /**
+        * Returns the maximum Q value for sl. 
+        * @param sl
+        * @return Q Value
+        */
 	public double maxQsl(String sl){
 		double maxQinSl=0;
 		String maxAl="";
@@ -143,7 +145,7 @@ public class QLearning {
 	}
 
         /**
-        * 
+        * This methods is responsible for update the state.
         * @param stateIWas state I was previously
         * @param actionIDid action I did while at the previous state
         * @param rewardIGot reward I got after moving from previous state to the present one
@@ -172,7 +174,9 @@ public class QLearning {
 	}
 
 
-
+        /**
+        * This print Q values.
+        */
 	public void printQ() {
 		System.out.println("------ Printed Q -------");
 		Iterator<Entry<String, HashMap<String, Double>>> itS = this.Q.entrySet().iterator(); 
@@ -193,7 +197,9 @@ public class QLearning {
 		System.out.println("----------------------------");
 	}
 
-
+        /**
+         *  Store Q values to file using JSON structure.
+         */
 	public void storeQ(){
 		String textQ="";
 		//		JSONArray actionValueArray=new JSONArray();
@@ -242,7 +248,9 @@ public class QLearning {
 		//		System.out.println("----------------------------");
 	}
 
-
+        /**
+         *  Recover Q values from file in JSON structure.
+         */
 	public void recoverQ(){
 		//...checks on aFile are elided
 		StringBuilder contents = new StringBuilder();
@@ -306,10 +314,19 @@ public class QLearning {
 		} 
 
 	}
+        
+        /**
+         * Clear Q values.
+         */
 	public void clearQ(){
 		this.Q.clear();
 	}
 
+        
+        /**
+         * Gets alpha value.
+         * @return 
+         */
 	public double getAlpha() {
 		return alpha;
 	}
@@ -323,7 +340,11 @@ public class QLearning {
 	public void setAlpha(double alpha) {
 		this.alpha = alpha;
 	}
-
+            
+        /**
+         * Gets gamma value.
+         * @return 
+         */
 	public double getGamma() {
 		return gamma;
 	}
@@ -344,6 +365,7 @@ public class QLearning {
 	 *  If a given state has no record of one or more actions, it will consider them as valued 0.
 	 * @param state
 	 * @param e
+         * @return selectedAction
 	 */
 	public String getAction(String state){//TODO should improve this. It should consider all non explored actions as being equally 0 for all purposes
 		//		System.out.println("Inside get action");
@@ -395,6 +417,7 @@ public class QLearning {
 
 
 	/**
+         * Gets states list.
 	 * @return the statesList
 	 */
 	public ArrayList<String> getStatesList() {
@@ -403,6 +426,7 @@ public class QLearning {
 
 
 	/**
+         * Sets action list.
 	 * @param statesList the statesList to set
 	 */
 	public void setStatesList(ArrayList<String> statesList) {
@@ -411,6 +435,7 @@ public class QLearning {
 
 
 	/**
+         * Gets the action list.
 	 * @return the actionsList
 	 */
 	public ArrayList<String> getActionsList() {
@@ -419,6 +444,7 @@ public class QLearning {
 
 
 	/**
+         * This sets action list.
 	 * @param actionsList the actionsList to set
 	 */
 	public void setActionsList(ArrayList<String> actionsList) {
@@ -428,7 +454,8 @@ public class QLearning {
 
 
 	/**
-	 * @return the e
+         * Gets E value.
+	 * @return e
 	 */
 	public double getE() {
 		return e;
@@ -445,7 +472,11 @@ public class QLearning {
 		this.e = e;
 	}
 
-
+        /**
+         * Gets all actions from state.
+         * @param state
+         * @return actons
+         */
 	public String getAllActionsFromState(String state){
 		String actions="";
 		if(this.Q.get(state)!=null){
@@ -468,6 +499,12 @@ public class QLearning {
 		return actions;		
 
 	}
+        
+        /**
+         * Select randomically a action.
+         * @param localActionsList
+         * @return actionR 
+         */
 	private String selectRandomAction(ArrayList<String> localActionsList) {
 		String actionR=this.a;
 		double pseudoRandomNumber=r.nextDouble();
@@ -494,12 +531,12 @@ public class QLearning {
 
 	}
 	/**
-	 * maxwellBoltzmann() returns a pseudo-random value from a Maxwell-Boltzmann distribution
+	 * This  method "maxwellBoltzmann()" returns a pseudo-random value from a Maxwell-Boltzmann distribution
 	 * with parameter sigma. Take the sum of the squares of three gaussian random variables 
 	 * with mean 0, and standard deviation sigma, and return the square root.
 	 * double  e = random.nextGaussian();  // Gaussian with mean 0 and stddev = 1
 	 * 
-	 * @return
+	 * @return sum
 	 */
 	public double maxwellBoltzmann(){
 		double sum=0;
@@ -514,6 +551,7 @@ public class QLearning {
 	}
 
 	/**
+         * Gets B value.
 	 * @return the b
 	 */
 	public double getB() {
@@ -522,6 +560,7 @@ public class QLearning {
 
 
 	/**
+         * Sets B value.
 	 * @param b the b to set
 	 */
 	public void setB(double b) {
@@ -530,6 +569,7 @@ public class QLearning {
 
 
 	/**
+         * Gets S value.
 	 * @return the s
 	 */
 	public String getS() {
@@ -538,6 +578,7 @@ public class QLearning {
 
 
 	/**
+         * Sets S value.
 	 * @param s the s to set
 	 */
 	public void setS(String s) {
@@ -546,6 +587,7 @@ public class QLearning {
 
 
 	/**
+         * Gets A value.
 	 * @return the a
 	 */
 	public String getA() {
@@ -554,6 +596,7 @@ public class QLearning {
 
 
 	/**
+         * Sets A value.
 	 * @param a the a to set
 	 */
 	public void setA(String a) {
@@ -562,6 +605,7 @@ public class QLearning {
 
 
 	/**
+         * Gets SL value.
 	 * @return the sl
 	 */
 	public String getSl() {
@@ -570,6 +614,7 @@ public class QLearning {
 
 
 	/**
+         * Sets SL value.
 	 * @param sl the sl to set
 	 */
 	public void setSl(String sl) {
@@ -578,6 +623,7 @@ public class QLearning {
 
 
 	/**
+         * Gets the AL value.
 	 * @return the al
 	 */
 	public String getAl() {
@@ -586,13 +632,18 @@ public class QLearning {
 
 
 	/**
+         * Sets AL value.
 	 * @param al the al to set
 	 */
 	public void setAl(String al) {
 		this.al = al;
 	}
 
-
+        
+        /**
+         * Gets all Q values.
+         * @return 
+         */
 	public HashMap getAllQ() {
 
 		return this.Q;

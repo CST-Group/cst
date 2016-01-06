@@ -7,6 +7,7 @@
  * 
  * Contributors:
  *     K. Raizer, A. L. O. Paraense, R. R. Gudwin - initial API and implementation
+ *     E. M. Fróes - documentation
  ******************************************************************************/
 
 package br.unicamp.cst.learning;
@@ -38,6 +39,11 @@ public class Simple2dRLearn {
 	int Ns=0; //number of states
 	Random rnd = new Random();
 
+        /**
+         * Default Constructor.
+         * @param Ns
+         * @param Na 
+         */
 	public Simple2dRLearn(int Ns,int Na){
 		this.Na=Na; //number of actions
 		this.Ns=Ns; //number of states
@@ -94,7 +100,10 @@ public class Simple2dRLearn {
 
 
 	}
-
+        
+        /**
+         * Add action.
+         */
 	public void addAction(){
 		int newNa = this.Na+1;
 		double[][][] new_Q = new double[Ns][Ns][newNa];
@@ -109,6 +118,9 @@ public class Simple2dRLearn {
 		Q=new_Q;
 	}
 
+        /**
+         * Add state.
+         */
 	public void addState(){
 		int newNs = this.Ns+1;
 		double[][][] new_Q = new double[newNs][newNs][Na];
@@ -124,6 +136,9 @@ public class Simple2dRLearn {
 		Q=new_Q;
 	}
 
+        /**
+         * Print Q values.
+         */
 	public void printQ(){
 		System.out.println("--- Q table ---");
 		for(int ac=0;ac<Na;ac++){
@@ -171,13 +186,13 @@ public class Simple2dRLearn {
 		return best_a;
 	}
 
-/**
- * Returns the best chosen action and its value in Q.
- * NOTE: Remember that best_action should probably be cast to int for use outside this class.
- * @param s1
- * @param s2
- * @return a double array {best_action, best_value} 
- */
+        /**
+         * Returns the best chosen action and its value in Q.
+         * NOTE: Remember that best_action should probably be cast to int for use outside this class.
+         * @param s1
+         * @param s2
+         * @return a double array {best_action, best_value} 
+        */
 	public double[] getBestActionAndValue(int s1, int s2) {
 		double best_a=-1;
 		double best_value=Double.NEGATIVE_INFINITY;
@@ -206,6 +221,7 @@ public class Simple2dRLearn {
 	}
 	
 	/**
+         * Gets Q value.
 	 * @return the q
 	 */
 	public double[][][] getQ() {
@@ -214,6 +230,7 @@ public class Simple2dRLearn {
 
 
 	/**
+         * Sets Q value.
 	 * @param q the q to set
 	 */
 	public void setQ(double[][][] q) {
@@ -225,6 +242,7 @@ public class Simple2dRLearn {
 
 
 	/**
+         * Gets NA value.
 	 * @return the na
 	 */
 	public int getNa() {
@@ -233,6 +251,7 @@ public class Simple2dRLearn {
 
 
 	/**
+         * Sets NA value.
 	 * @param na the na to set
 	 */
 	public void setNa(int na) {
@@ -241,6 +260,7 @@ public class Simple2dRLearn {
 
 
 	/**
+         * Gets NS value.
 	 * @return the ns
 	 */
 	public int getNs() {
@@ -249,12 +269,17 @@ public class Simple2dRLearn {
 
 
 	/**
+         * Sets NS value.
 	 * @param ns the ns to set
 	 */
 	public void setNs(int ns) {
 		Ns = ns;
 	}
 
+        /**
+         * Verify if is empty.
+         * @return true or false
+         */
 	public boolean isEmpty(){
 		boolean empty=(this.Na==0 || this.Ns==0);
 		return empty;
