@@ -51,7 +51,7 @@ public abstract class Goal extends Codelet {
         this.setCurrentGoal(false);
         this.setUrgentIntervention(false);
         this.setbPause(false);
-        this.setbLock(false);
+        this.setbLock(true);
         this.setInterventionThreshold(interventionThreshold);
         this.setBelowInterventionThreshold(interventionThreshold);
         this.setSubsumptionBehaviourLayer(new SubsumptionBehaviourLayer());
@@ -68,7 +68,7 @@ public abstract class Goal extends Codelet {
         this.setCurrentGoal(false);
         this.setUrgentIntervention(false);
         this.setbPause(false);
-        this.setbLock(false);
+        this.setbLock(true);
         this.setInterventionThreshold(interventionThreshold);
         this.setBelowInterventionThreshold(belowInterventionThreshold);
         this.setSubsumptionBehaviourLayer(new SubsumptionBehaviourLayer());
