@@ -90,9 +90,9 @@ public class GoalArchitecture extends Codelet {
 
             mostVotedGoal.startGoalActions();
 
-            while (!mostVotedGoal.isFinishedGoalActions()) {
-                setLastGoal(getCurrentGoal());
-            }
+            while (!mostVotedGoal.isFinishedGoalActions());
+            
+            setLastGoal(getCurrentGoal());
         }
 
     }
@@ -115,9 +115,9 @@ public class GoalArchitecture extends Codelet {
             goals.get(i).setCurrentGoal(false);
 
         }
-
+        
         likelyGoal.setCurrentGoal(true);
-
+ 
         return likelyGoal;
     }
 
