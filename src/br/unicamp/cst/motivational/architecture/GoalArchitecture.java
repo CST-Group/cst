@@ -132,6 +132,7 @@ public class GoalArchitecture extends Codelet {
                     goal.urgentIntervention();
                 }
             });
+            
 
             List<Goal> lstOfIntervationGoals = lstOfGoals.stream().filter(goal -> goal.isUrgentIntervention() == true).collect(Collectors.toList());
 
