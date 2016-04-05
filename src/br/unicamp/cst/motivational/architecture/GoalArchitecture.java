@@ -55,7 +55,6 @@ public class GoalArchitecture extends Codelet {
         this.setDrives(drives);
         this.setGoals(goals);
         this.setShouldMonitoringUrgentGoal(true);
-        this.initMonitoringUrgentGoal();
     }
 
     @Override
@@ -78,6 +77,9 @@ public class GoalArchitecture extends Codelet {
 
         synchronized (this) {
 
+            if(getMonitoringUrgentGoal() == null)
+                initMonitoringUrgentGoal();
+            
             getGoals().stream().forEach(goal -> {
                 synchronized (goal) {
                     goal.processVote();
@@ -93,6 +95,7 @@ public class GoalArchitecture extends Codelet {
             while (!mostVotedGoal.isFinishedGoalActions());
             
             setLastGoal(getCurrentGoal());
+            
         }
 
     }
@@ -127,6 +130,7 @@ public class GoalArchitecture extends Codelet {
 
             Goal urgentGoal = null;
 
+            
             lstOfGoals.forEach(goal -> {
                 synchronized (goal) {
                     goal.urgentIntervention();
@@ -153,7 +157,7 @@ public class GoalArchitecture extends Codelet {
 
     public void initMonitoringUrgentGoal() {
 
-        monitoringUrgentGoal = new Thread() {
+        setMonitoringUrgentGoal(new Thread() {
             @Override
             public void run() {
                 do {
@@ -180,10 +184,10 @@ public class GoalArchitecture extends Codelet {
 
                 } while (isShouldMonitoringUrgentGoal());
             }
+            
+        });
 
-        };
-
-        monitoringUrgentGoal.start();
+        getMonitoringUrgentGoal().start();
     }
 
     public synchronized List<Drive> getDrives() {
@@ -247,5 +251,19 @@ public class GoalArchitecture extends Codelet {
 
     public void setShouldMonitoringUrgentGoal(boolean shouldMonitoringUrgentGoal) {
         this.shouldMonitoringUrgentGoal = shouldMonitoringUrgentGoal;
+    }
+
+    /**
+     * @return the monitoringUrgentGoal
+     */
+    public Thread getMonitoringUrgentGoal() {
+        return monitoringUrgentGoal;
+    }
+
+    /**
+     * @param monitoringUrgentGoal the monitoringUrgentGoal to set
+     */
+    public void setMonitoringUrgentGoal(Thread monitoringUrgentGoal) {
+        this.monitoringUrgentGoal = monitoringUrgentGoal;
     }
 }

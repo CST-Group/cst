@@ -42,7 +42,7 @@ public class CodeRack
 	/**
 	 * @return the allCodelets
 	 */
-	public List<Codelet> getAllCodelets()
+	public synchronized List<Codelet> getAllCodelets()
 	{
 		return allCodelets;
 	}
@@ -138,7 +138,9 @@ public class CodeRack
 	{
 		for(Codelet co: this.getAllCodelets())
 		{
+                    synchronized(co){
 			co.start();
+                    }
 		}
 	}
 	/**
