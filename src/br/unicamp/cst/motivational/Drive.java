@@ -9,14 +9,10 @@
  *     E. M. Fróes, R. R. Gudwin - initial API and implementation
  ******************************************************************************/
 
-package br.unicamp.cst.motivational.drive;
+package br.unicamp.cst.motivational;
 
 import br.unicamp.cst.core.entities.Codelet;
 import br.unicamp.cst.core.exceptions.CodeletActivationBoundsException;
-import br.unicamp.cst.motivational.entity.DriveLevel;
-import br.unicamp.cst.motivational.entity.Priority;
-import br.unicamp.cst.motivational.entity.MotivationalMessages;
-import br.unicamp.cst.motivational.exception.MotivationalException;
 
 import java.util.ArrayList;
 import java.util.List;
