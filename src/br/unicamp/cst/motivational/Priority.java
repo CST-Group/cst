@@ -9,7 +9,7 @@
  *     E. M. Fróes, R. R. Gudwin - initial API and implementation
  ******************************************************************************/
 
-package br.unicamp.cst.motivational.entity;
+package br.unicamp.cst.motivational;
 
 /**
  * Created by Du on 09/03/16.

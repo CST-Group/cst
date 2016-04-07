@@ -9,10 +9,17 @@
  *     E. M. Fróes, R. R. Gudwin - initial API and implementation
  ******************************************************************************/
 
-package br.unicamp.cst.motivational.entity;
+package br.unicamp.cst.motivational;
 
-public enum DriveLevel {
-    LOW_LEVEL,
-    HIGH_LEVEL,
-    SECUNDARY
+/**
+ * Created by Du on 05/03/16.
+ */
+public class MotivationalException extends Exception {
+
+    public MotivationalException(String message){
+        super(message);
+    }
+
 }
+
+

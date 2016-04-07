@@ -5,7 +5,7 @@
  * Public License v3 which accompanies this distribution, and is available at
  * http://www.gnu.org/licenses/lgpl.html
  *
- * Contributors: K. Raizer, A. L. O. Paraense, R. R. Gudwin - initial API and
+ * Contributors: K. Raizer, A. L. O. Paraense, E. M. Fróes, R. R. Gudwin - initial API and
  * implementation
  * ****************************************************************************
  */

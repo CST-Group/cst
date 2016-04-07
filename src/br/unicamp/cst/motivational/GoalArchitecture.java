@@ -9,14 +9,11 @@
  *     E. M. Fróes, R. R. Gudwin - initial API and implementation
  ******************************************************************************/
 
-package br.unicamp.cst.motivational.architecture;
+package br.unicamp.cst.motivational;
 
 import br.unicamp.cst.core.entities.Codelet;
 import br.unicamp.cst.core.exceptions.CodeletActivationBoundsException;
-import br.unicamp.cst.motivational.drive.Drive;
-import br.unicamp.cst.motivational.entity.MotivationalMessages;
-import br.unicamp.cst.motivational.exception.MotivationalException;
-import br.unicamp.cst.motivational.goal.Goal;
+import java.util.Collections;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -52,8 +49,8 @@ public class GoalArchitecture extends Codelet {
     private boolean shouldMonitoringUrgentGoal;
 
     public GoalArchitecture(List<Drive> drives, List<Goal> goals) {
-        this.setDrives(drives);
-        this.setGoals(goals);
+        this.setDrives(Collections.synchronizedList(drives));
+        this.setGoals(Collections.synchronizedList(goals));
         this.setShouldMonitoringUrgentGoal(true);
     }
 
@@ -92,7 +89,9 @@ public class GoalArchitecture extends Codelet {
 
             mostVotedGoal.startGoalActions();
 
-            while (!mostVotedGoal.isFinishedGoalActions());
+            while (!mostVotedGoal.isbLock());
+            
+            mostVotedGoal.stopGoalActions();
             
             setLastGoal(getCurrentGoal());
             
@@ -109,7 +108,7 @@ public class GoalArchitecture extends Codelet {
             if (i == 0) {
                 likelyGoal = goals.get(i);
             } else {
-                if (goals.get(i).getVote() > likelyGoal.getVote()) {
+                if (goals.get(i).getActivation() > likelyGoal.getActivation()) {
                     likelyGoal = goals.get(i);
                 }
 
@@ -127,16 +126,13 @@ public class GoalArchitecture extends Codelet {
     public synchronized Goal findWinnerUrgentGoal(List<Goal> lstOfGoals) {
 
         synchronized (this) {
-
             Goal urgentGoal = null;
 
-            
             lstOfGoals.forEach(goal -> {
                 synchronized (goal) {
                     goal.urgentIntervention();
                 }
             });
-            
 
             List<Goal> lstOfIntervationGoals = lstOfGoals.stream().filter(goal -> goal.isUrgentIntervention() == true).collect(Collectors.toList());
 
@@ -178,7 +174,7 @@ public class GoalArchitecture extends Codelet {
 
                             urgentGoal.stopGoalActions();
 
-                            getCurrentGoal().startGoalActions();
+                            getCurrentGoal().resumeGoalActions();
                         }
                     }
 

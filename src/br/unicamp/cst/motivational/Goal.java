@@ -10,16 +10,13 @@
  ******************************************************************************/
 
 
-package br.unicamp.cst.motivational.goal;
+package br.unicamp.cst.motivational;
 
 import br.unicamp.cst.behavior.subsumption.SubsumptionAction;
 import br.unicamp.cst.behavior.subsumption.SubsumptionBehaviourLayer;
 import br.unicamp.cst.core.entities.Codelet;
 import br.unicamp.cst.core.exceptions.CodeletActivationBoundsException;
-import br.unicamp.cst.motivational.drive.Drive;
-import br.unicamp.cst.motivational.entity.MotivationalMessages;
-import br.unicamp.cst.motivational.entity.Priority;
-import br.unicamp.cst.motivational.exception.MotivationalException;
+import java.util.Collections;
 
 import java.util.List;
 import java.util.logging.Level;
@@ -29,7 +26,6 @@ import java.util.stream.Collectors;
 public abstract class Goal extends Codelet {
 
     private String name;
-    private double vote;
     private double interventionThreshold;
     private double belowInterventionThreshold;
     private int steps;
@@ -44,8 +40,7 @@ public abstract class Goal extends Codelet {
 
     public Goal(String name, List<Drive> drivesVote, int steps, int minSteps, double interventionThreshold) {
         this.setName(name);
-        this.setDrivesVote(drivesVote);
-        this.setVote(0);
+        this.setDrivesVote(Collections.synchronizedList(drivesVote));
         this.setSteps(steps);
         this.setExecutedSteps(0);
         this.setCurrentGoal(false);
@@ -61,8 +56,7 @@ public abstract class Goal extends Codelet {
 
     public Goal(String name, List<Drive> drivesVote, int steps, int minSteps, double interventionThreshold, double belowInterventionThreshold) {
         this.setName(name);
-        this.setDrivesVote(drivesVote);
-        this.setVote(0);
+        this.setDrivesVote(Collections.synchronizedList(drivesVote));
         this.setSteps(steps);
         this.setExecutedSteps(0);
         this.setCurrentGoal(false);
@@ -75,7 +69,7 @@ public abstract class Goal extends Codelet {
         this.setMinSteps(minSteps);
     }
     
-    public abstract void calculateVote(List<Drive> listOfDrivesVote);
+    public abstract double calculateVote(List<Drive> listOfDrivesVote);
 
     public abstract double calculateUrgentVote(List<Drive> listOHighPriorityDrive);
 
@@ -84,10 +78,12 @@ public abstract class Goal extends Codelet {
     
     public synchronized void processVote() {
         synchronized(this){
-            this.setVote(0.0d);
-            this.calculateVote(this.getDrivesVote());
+            
+            double activation = this.calculateVote(this.getDrivesVote());
+            activation = activation == Double.NaN? 0:activation;
+            
             try {
-                this.setActivation(getVote()/10);
+                this.setActivation(activation);
             } catch (CodeletActivationBoundsException ex) {
                 Logger.getLogger(Goal.class.getName()).log(Level.SEVERE, null, ex);
             }
@@ -119,6 +115,13 @@ public abstract class Goal extends Codelet {
         setUrgentIntervention(false);
         setbPause(true);
     }
+    
+    public synchronized void resumeGoalActions(){
+        setbLock(true);
+        setUrgentIntervention(false);
+        setbPause(false);
+    }
+    
 
     public synchronized void urgentIntervention() {
 
@@ -148,7 +151,11 @@ public abstract class Goal extends Codelet {
                 if (urgentVote >= getBelowInterventionThreshold()
                         || getExecutedSteps() <= getMinSteps()) {
                     setUrgentIntervention(true);
-                    setVote(urgentVote);
+                    try {
+                        setActivation(urgentVote);
+                    } catch (CodeletActivationBoundsException ex) {
+                        Logger.getLogger(Goal.class.getName()).log(Level.SEVERE, null, ex);
+                    }
                 } else {
                     setUrgentIntervention(false);
                 }
@@ -199,14 +206,6 @@ public abstract class Goal extends Codelet {
             me.printStackTrace();
         }
 
-    }
-
-    public synchronized double getVote() {
-        return vote;
-    }
-
-    public synchronized void setVote(double vote) {
-        this.vote = vote;
     }
 
     public synchronized int getSteps() {
