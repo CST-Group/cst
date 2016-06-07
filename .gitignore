@@ -2,3 +2,5 @@
 /build/
 /nbproject/private/
 /bin/
+/.project
+/.classpath
