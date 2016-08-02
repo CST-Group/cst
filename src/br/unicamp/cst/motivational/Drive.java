@@ -6,7 +6,7 @@
  * http://www.gnu.org/licenses/lgpl.html
  * 
  * Contributors:
- *     E. M. Fróes, R. R. Gudwin - initial API and implementation
+ *     E. M. Frï¿½es, R. R. Gudwin - initial API and implementation
  ******************************************************************************/
 
 package br.unicamp.cst.motivational;
@@ -23,9 +23,9 @@ public abstract class Drive extends Codelet {
     private DriveLevel level;
     private List<Drive> primaryDrives;
     private String name;
-    private Priority priority;
+    private double priorityValue;
 
-    public Drive(String name, DriveLevel level, Priority priority, double relevance) throws CodeletActivationBoundsException {
+    public Drive(String name, DriveLevel level, double priority, double relevance) throws CodeletActivationBoundsException {
         this.setLevel(level);
         this.setName(name);
         this.setPriority(priority);
@@ -121,17 +121,17 @@ public abstract class Drive extends Codelet {
 
     }
 
-    public synchronized Priority getPriority() {
-        return priority;
+    public synchronized double getPriority() {
+        return priorityValue;
     }
 
-    public synchronized void setPriority(Priority priority) {
+    public synchronized void setPriority(double priority) {
         try {
-            if (priority == null) {
+            if (priority <= 0) {
                 throw new MotivationalException(MotivationalMessages.MSG_VAR_PRIORITY_NULL);
             }
 
-            this.priority = priority;
+            this.priorityValue = priority;
         } catch (MotivationalException me) {
             me.printStackTrace();
         }

@@ -6,7 +6,7 @@
  * http://www.gnu.org/licenses/lgpl.html
  * 
  * Contributors:
- *     E. M. Fróes, R. R. Gudwin - initial API and implementation
+ *     E. M. Frï¿½es, R. R. Gudwin - initial API and implementation
  ******************************************************************************/
 
 
@@ -28,6 +28,7 @@ public abstract class Goal extends Codelet {
     private String name;
     private double interventionThreshold;
     private double belowInterventionThreshold;
+    private double priorityHighLevel;
     private int steps;
     private int minSteps;
     private int executedSteps;
@@ -38,7 +39,7 @@ public abstract class Goal extends Codelet {
     private boolean bPause = false;
     private boolean urgentIntervention = false;
 
-    public Goal(String name, List<Drive> drivesVote, int steps, int minSteps, double interventionThreshold) {
+    public Goal(String name, List<Drive> drivesVote, int steps, int minSteps, double interventionThreshold, double priorityHighLevel) {
         this.setName(name);
         this.setDrivesVote(Collections.synchronizedList(drivesVote));
         this.setSteps(steps);
@@ -51,10 +52,11 @@ public abstract class Goal extends Codelet {
         this.setBelowInterventionThreshold(interventionThreshold);
         this.setSubsumptionBehaviourLayer(new SubsumptionBehaviourLayer());
         this.setMinSteps(minSteps);
+        this.setPriorityHighLevel(priorityHighLevel);
 
     }
 
-    public Goal(String name, List<Drive> drivesVote, int steps, int minSteps, double interventionThreshold, double belowInterventionThreshold) {
+    public Goal(String name, List<Drive> drivesVote, int steps, int minSteps, double interventionThreshold, double belowInterventionThreshold, double priorityHighLevel) {
         this.setName(name);
         this.setDrivesVote(Collections.synchronizedList(drivesVote));
         this.setSteps(steps);
@@ -67,6 +69,7 @@ public abstract class Goal extends Codelet {
         this.setBelowInterventionThreshold(belowInterventionThreshold);
         this.setSubsumptionBehaviourLayer(new SubsumptionBehaviourLayer());
         this.setMinSteps(minSteps);
+        this.setPriorityHighLevel(priorityHighLevel);
     }
     
     public abstract double calculateVote(List<Drive> listOfDrivesVote);
@@ -127,7 +130,7 @@ public abstract class Goal extends Codelet {
 
         synchronized (this) {
             if (getInterventionThreshold() != 0.0d) {
-                List<Drive> listOHighPriorityDrive = getDrivesVote().stream().filter(d -> d.getPriority().equals(Priority.HIGH_PRIORITY)).collect(Collectors.toList());
+                List<Drive> listOHighPriorityDrive = getDrivesVote().stream().filter(d -> d.getPriority() >= getPriorityHighLevel()).collect(Collectors.toList());
 
                 if (calculateUrgentVote(listOHighPriorityDrive) >= getInterventionThreshold()) {
                     setUrgentIntervention(true);
@@ -143,7 +146,7 @@ public abstract class Goal extends Codelet {
     public synchronized void isFinishedUrgentIntervention() {
         synchronized (this) {
             if (getInterventionThreshold() != 0.0d) {
-                List<Drive> listOHighPriorityDrive = getDrivesVote().stream().filter(d -> d.getPriority().equals(Priority.HIGH_PRIORITY)).collect(Collectors.toList());
+                List<Drive> listOHighPriorityDrive = getDrivesVote().stream().filter(d -> d.getPriority() >= getPriorityHighLevel()).collect(Collectors.toList());
 
                 
                 double urgentVote = calculateUrgentVote(listOHighPriorityDrive);
@@ -324,5 +327,13 @@ public abstract class Goal extends Codelet {
 
     public void setbPause(boolean bPause) {
         this.bPause = bPause;
+    }
+
+    public double getPriorityHighLevel() {
+        return priorityHighLevel;
+    }
+
+    public void setPriorityHighLevel(double priorityHighLevel) {
+        this.priorityHighLevel = priorityHighLevel;
     }
 }
