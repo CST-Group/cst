@@ -5,19 +5,19 @@
  * Public License v3 which accompanies this distribution, and is available at
  * http://www.gnu.org/licenses/lgpl.html
  *
- * Contributors: K. Raizer, A. L. O. Paraense, E. M. Fróes, R. R. Gudwin - initial API and
+ * Contributors: K. Raizer, A. L. O. Paraense, E. M. Frï¿½es, R. R. Gudwin - initial API and
  * implementation
  * ****************************************************************************
  */
 package br.unicamp.cst.core.entities;
 
 import br.unicamp.cst.behavior.bn.support.Grafico;
+import org.jfree.data.xy.XYSeries;
+import org.jfree.data.xy.XYSeriesCollection;
+
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
-
-import org.jfree.data.xy.XYSeries;
-import org.jfree.data.xy.XYSeriesCollection;
 
 /**
  * @author klaus

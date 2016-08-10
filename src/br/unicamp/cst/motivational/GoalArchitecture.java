@@ -4,42 +4,48 @@
  * are made available under the terms of the GNU Lesser Public License v3
  * which accompanies this distribution, and is available at
  * http://www.gnu.org/licenses/lgpl.html
- * 
+ * <p>
  * Contributors:
- *     E. M. Fróes, R. R. Gudwin - initial API and implementation
+ * E. M. Frï¿½es, R. R. Gudwin - initial API and implementation
  ******************************************************************************/
 
 package br.unicamp.cst.motivational;
 
 import br.unicamp.cst.core.entities.Codelet;
+import br.unicamp.cst.core.entities.MemoryObject;
 import br.unicamp.cst.core.exceptions.CodeletActivationBoundsException;
-import java.util.Collections;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
-
 
 
 /**
  * The <b><i>GoalArchitecture</i></b> class, together with the <b><i>Goal</i></b> class and the 
  * <b><i>Drive</i></b> class are the most important classes in motivational system in the CST toolkit.  
- * 
+ *
  * The Motivational System was inspired in papers and tutorials published by professor Ron Sun that describe functions and applicabilities of "Motivational Subsystem" 
- * in the Clarion Cognitive Architecture Context, along with Codelets and Subsumption concepts presents in the CST Toolkit.
+ * in the Clarion Cognitive Architecture context, and along with Codelets and Subsumption concepts presents in the CST Toolkit.
  * According to Ron Sun et. al, "drives" and "goals" are implicit and explicit representations which is contained in a cognitive agent to meet your needs and your inner desires. 
  * Thus, the drives are implicit and primary representations to which are essential to define the explicit representations, which in this case are the goals. 
  * Once the goal established, the agent can performing differents kind of behaviors to achieve this goal [1][2].
- * 
+ *
  * [1] - [Ron Sun, 2003] A Tutorial on Clarion 5.0 - http://www.sts.rpi.edu/~rsun/sun.tutorial.pdf
  * [2] - [Ron Sun, 2005] The Motivational and Metacognitive Control in CLARION - http://www.sts.rpi.edu/~rsun/folder-files/sun-wgbook2007.pdf
- * 
- * @see Goal 
+ *
+ * @see Goal
  * @see Drive
- * 
+ *
  * @author eduardofroes
  */
 
 public class GoalArchitecture extends Codelet {
+
+    public final static String DRIVES_MEMORY = "DRIVES_MEMORY";
+    public final static String GOALS_MEMORY = "GOALS_MEMORY";
+
+    private MemoryObject drivesMO;
+    private MemoryObject goalsMO;
 
     private List<Drive> drives;
     private List<Goal> goals;
@@ -48,15 +54,22 @@ public class GoalArchitecture extends Codelet {
     private Thread monitoringUrgentGoal;
     private boolean shouldMonitoringUrgentGoal;
 
-    public GoalArchitecture(List<Drive> drives, List<Goal> goals) {
-        this.setDrives(Collections.synchronizedList(drives));
-        this.setGoals(Collections.synchronizedList(goals));
+    public GoalArchitecture() {
         this.setShouldMonitoringUrgentGoal(true);
     }
 
     @Override
     public void accessMemoryObjects() {
 
+        if (getDrivesMO() == null) {
+            setDrivesMO(this.getInput(DRIVES_MEMORY, 0));
+            this.setDrives(Collections.synchronizedList((List<Drive>) getDrivesMO().getI()));
+        }
+
+        if (getGoalsMO() == null) {
+            setGoalsMO(this.getInput(GOALS_MEMORY, 0));
+            this.setGoals(Collections.synchronizedList((List<Goal>) getGoalsMO().getI()));
+        }
     }
 
     @Override
@@ -74,9 +87,9 @@ public class GoalArchitecture extends Codelet {
 
         synchronized (this) {
 
-            if(getMonitoringUrgentGoal() == null)
+            if (getMonitoringUrgentGoal() == null)
                 initMonitoringUrgentGoal();
-            
+
             getGoals().stream().forEach(goal -> {
                 synchronized (goal) {
                     goal.processVote();
@@ -89,12 +102,12 @@ public class GoalArchitecture extends Codelet {
 
             mostVotedGoal.startGoalActions();
 
-            while (!mostVotedGoal.isbLock());
-            
+            while (!mostVotedGoal.isbLock()) ;
+
             mostVotedGoal.stopGoalActions();
-            
+
             setLastGoal(getCurrentGoal());
-            
+
         }
 
     }
@@ -117,9 +130,9 @@ public class GoalArchitecture extends Codelet {
             goals.get(i).setCurrentGoal(false);
 
         }
-        
+
         likelyGoal.setCurrentGoal(true);
- 
+
         return likelyGoal;
     }
 
@@ -180,7 +193,7 @@ public class GoalArchitecture extends Codelet {
 
                 } while (isShouldMonitoringUrgentGoal());
             }
-            
+
         });
 
         getMonitoringUrgentGoal().start();
@@ -262,4 +275,21 @@ public class GoalArchitecture extends Codelet {
     public void setMonitoringUrgentGoal(Thread monitoringUrgentGoal) {
         this.monitoringUrgentGoal = monitoringUrgentGoal;
     }
+
+    public MemoryObject getDrivesMO() {
+        return drivesMO;
+    }
+
+    public void setDrivesMO(MemoryObject drivesMO) {
+        this.drivesMO = drivesMO;
+    }
+
+    public MemoryObject getGoalsMO() {
+        return goalsMO;
+    }
+
+    public void setGoalsMO(MemoryObject goalsMO) {
+        this.goalsMO = goalsMO;
+    }
+
 }

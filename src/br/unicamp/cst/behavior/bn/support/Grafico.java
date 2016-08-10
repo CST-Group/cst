@@ -10,8 +10,6 @@
  ******************************************************************************/
 package br.unicamp.cst.behavior.bn.support;
 
-import java.awt.Color;
-
 import org.jfree.chart.ChartFactory;
 import org.jfree.chart.ChartFrame;
 import org.jfree.chart.JFreeChart;
@@ -21,11 +19,13 @@ import org.jfree.chart.renderer.xy.XYLineAndShapeRenderer;
 import org.jfree.data.xy.XYSeriesCollection;
 import org.jfree.ui.RectangleInsets;
 
+import java.awt.*;
+
 public class Grafico {
 
 	public Grafico(String frametitle, String charttitle, String xlabel, String ylabel, XYSeriesCollection dataset){
 		JFreeChart chart = ChartFactory.createXYLineChart(charttitle, xlabel, ylabel, dataset, PlotOrientation.VERTICAL, true, true, false);
-		
+
 		XYPlot plot = (XYPlot) chart.getPlot();
 		
 		plot.setBackgroundPaint(Color.lightGray);
@@ -36,7 +36,7 @@ public class Grafico {
 		renderer.setShapesVisible(true);
 		renderer.setShapesFilled(true);
 
-		
+
 		ChartFrame frame= new ChartFrame(frametitle,chart);
 	
 		frame.pack();

@@ -6,7 +6,7 @@
  * http://www.gnu.org/licenses/lgpl.html
  * 
  * Contributors:
- *     E. M. Fróes, R. R. Gudwin - initial API and implementation
+ *     E. M. Frï¿½es, R. R. Gudwin - initial API and implementation
  ******************************************************************************/
 
 package br.unicamp.cst.motivational;
@@ -28,6 +28,7 @@ public class MotivationalMessages {
 
 
     //GOAL ARCHITECTURE MESSAGES.
-    public static final String MSG_VAR_GOAL_ARC_GOALS_NULL = "List of goals is null or empty.";
-    public static final String MSG_VAR_GOAL_ARC_DRIVES_NULL = "List of drives is null or empty.";
+    public static final String MSG_VAR_GOAL_ARC_GOALS_NULL = "List of goals are null or empty.";
+    public static final String MSG_VAR_GOAL_ARC_DRIVES_NULL = "List of drives are null or empty.";
+
 }

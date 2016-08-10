@@ -15,8 +15,8 @@ package br.unicamp.cst.motivational;
 import br.unicamp.cst.behavior.subsumption.SubsumptionAction;
 import br.unicamp.cst.behavior.subsumption.SubsumptionBehaviourLayer;
 import br.unicamp.cst.core.entities.Codelet;
+import br.unicamp.cst.core.entities.MemoryObject;
 import br.unicamp.cst.core.exceptions.CodeletActivationBoundsException;
-import java.util.Collections;
 
 import java.util.List;
 import java.util.logging.Level;
@@ -26,9 +26,11 @@ import java.util.stream.Collectors;
 public abstract class Goal extends Codelet {
 
     private String name;
+    public final static String DRIVES_VOTE_MEMORY = "DRIVES_VOTE_MEMORY";
+
     private double interventionThreshold;
     private double belowInterventionThreshold;
-    private double priorityHighLevel;
+    private double priorityHighLevel = 0d;
     private int steps;
     private int minSteps;
     private int executedSteps;
@@ -38,10 +40,10 @@ public abstract class Goal extends Codelet {
     private boolean bLock = true;
     private boolean bPause = false;
     private boolean urgentIntervention = false;
+    private MemoryObject drivesVoteMO;
 
-    public Goal(String name, List<Drive> drivesVote, int steps, int minSteps, double interventionThreshold, double priorityHighLevel) {
+    public Goal(String name, int steps, int minSteps, double interventionThreshold, double priorityHighLevel) {
         this.setName(name);
-        this.setDrivesVote(Collections.synchronizedList(drivesVote));
         this.setSteps(steps);
         this.setExecutedSteps(0);
         this.setCurrentGoal(false);
@@ -56,9 +58,8 @@ public abstract class Goal extends Codelet {
 
     }
 
-    public Goal(String name, List<Drive> drivesVote, int steps, int minSteps, double interventionThreshold, double belowInterventionThreshold, double priorityHighLevel) {
+    public Goal(String name, int steps, int minSteps, double interventionThreshold, double belowInterventionThreshold, double priorityHighLevel) {
         this.setName(name);
-        this.setDrivesVote(Collections.synchronizedList(drivesVote));
         this.setSteps(steps);
         this.setExecutedSteps(0);
         this.setCurrentGoal(false);
@@ -71,6 +72,15 @@ public abstract class Goal extends Codelet {
         this.setMinSteps(minSteps);
         this.setPriorityHighLevel(priorityHighLevel);
     }
+
+
+    public void accessDriveVoteMemory() {
+        if(getDrivesVoteMO() == null) {
+            setDrivesVoteMO(this.getInput(DRIVES_VOTE_MEMORY, 0));
+            this.setDrivesVote((List<Drive>)getDrivesVoteMO().getI());
+        }
+
+    }
     
     public abstract double calculateVote(List<Drive> listOfDrivesVote);
 
@@ -81,7 +91,9 @@ public abstract class Goal extends Codelet {
     
     public synchronized void processVote() {
         synchronized(this){
-            
+
+            this.accessDriveVoteMemory();
+
             double activation = this.calculateVote(this.getDrivesVote());
             activation = activation == Double.NaN? 0:activation;
             
@@ -129,6 +141,9 @@ public abstract class Goal extends Codelet {
     public synchronized void urgentIntervention() {
 
         synchronized (this) {
+
+            this.accessDriveVoteMemory();
+
             if (getInterventionThreshold() != 0.0d) {
                 List<Drive> listOHighPriorityDrive = getDrivesVote().stream().filter(d -> d.getPriority() >= getPriorityHighLevel()).collect(Collectors.toList());
 
@@ -145,6 +160,7 @@ public abstract class Goal extends Codelet {
 
     public synchronized void isFinishedUrgentIntervention() {
         synchronized (this) {
+
             if (getInterventionThreshold() != 0.0d) {
                 List<Drive> listOHighPriorityDrive = getDrivesVote().stream().filter(d -> d.getPriority() >= getPriorityHighLevel()).collect(Collectors.toList());
 
@@ -335,5 +351,13 @@ public abstract class Goal extends Codelet {
 
     public void setPriorityHighLevel(double priorityHighLevel) {
         this.priorityHighLevel = priorityHighLevel;
+    }
+
+    public MemoryObject getDrivesVoteMO() {
+        return drivesVoteMO;
+    }
+
+    public void setDrivesVoteMO(MemoryObject drivesVoteMO) {
+        this.drivesVoteMO = drivesVoteMO;
     }
 }
