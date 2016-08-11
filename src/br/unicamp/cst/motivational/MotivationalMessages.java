@@ -31,4 +31,8 @@ public class MotivationalMessages {
     public static final String MSG_VAR_GOAL_ARC_GOALS_NULL = "List of goals are null or empty.";
     public static final String MSG_VAR_GOAL_ARC_DRIVES_NULL = "List of drives are null or empty.";
 
+    //TIMED GOAL.
+    public static final String MSG_VAR_EXPIRY_TIME_NULL = "Expiry time is null or zero.";
+    public static final String MSG_VAR_DIFFERENCE_BETWEEN_DATES_ZERO = "Differece between dates is zero or less than zero.";
+
 }

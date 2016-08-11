@@ -35,12 +35,12 @@ public abstract class Goal extends Codelet {
     private int minSteps;
     private int executedSteps;
     private SubsumptionBehaviourLayer subsumptionBehaviourLayer;
-    private List<Drive> drivesVote;
+    protected List<Drive> drivesVote;
     private boolean currentGoal = false;
     private boolean bLock = true;
     private boolean bPause = false;
     private boolean urgentIntervention = false;
-    private MemoryObject drivesVoteMO;
+    protected MemoryObject drivesVoteMO;
 
     public Goal(String name, int steps, int minSteps, double interventionThreshold, double priorityHighLevel) {
         this.setName(name);
