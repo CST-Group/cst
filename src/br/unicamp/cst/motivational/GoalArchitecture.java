@@ -6,7 +6,7 @@
  * http://www.gnu.org/licenses/lgpl.html
  * <p>
  * Contributors:
- * E. M. Fr�es, R. R. Gudwin - initial API and implementation
+ * E. M. Froes, R. R. Gudwin - initial API and implementation
  ******************************************************************************/
 
 package br.unicamp.cst.motivational;

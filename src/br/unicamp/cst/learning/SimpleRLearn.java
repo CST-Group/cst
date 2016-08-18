@@ -7,14 +7,12 @@
  * 
  * Contributors:
  *     K. Raizer, A. L. O. Paraense, R. R. Gudwin - initial API and implementation
- *     E. M. Fróes - documentation
+ *     E. M. Froes - documentation
  ******************************************************************************/
 
 package br.unicamp.cst.learning;
 
 import java.util.Random;
-
-import javax.lang.model.element.NestingKind;
 
 /**
  *  This class is used to perform a simple reinforcement learning.

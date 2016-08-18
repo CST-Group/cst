@@ -1,11 +1,20 @@
+/*******************************************************************************
+ * Copyright (c) 2016  DCA-FEEC-UNICAMP
+ * All rights reserved. This program and the accompanying materials
+ * are made available under the terms of the GNU Lesser Public License v3
+ * which accompanies this distribution, and is available at
+ * http://www.gnu.org/licenses/lgpl.html
+ *
+ * Contributors:
+ *     E. M. Froes, R. R. Gudwin - initial API and implementation
+ ******************************************************************************/
+
 package br.unicamp.cst.motivational;
 
 import java.util.Calendar;
 import java.util.List;
 
-/**
- * Created by Du on 10/08/16.
- */
+
 public abstract class TimedGoal extends Goal {
 
     private Calendar startDate;
@@ -61,9 +70,9 @@ public abstract class TimedGoal extends Goal {
         return calculateUrgentVoteByTime(listOfDrivesVote, this.calculateCompletedTime());
     }
 
-    public abstract double calculateVoteByTime(List<Drive> listOfDriveVote, double rateOfcompletedTime);
+    public abstract double calculateVoteByTime(List<Drive> listOfDriveVote, double timeActivation);
 
-    public abstract double calculateUrgentVoteByTime(List<Drive> listOHighPriorityDrive, double rateOfcompletedTime);
+    public abstract double calculateUrgentVoteByTime(List<Drive> listOHighPriorityDrive, double timeActivation);
 
     @Override
     public synchronized void setDrivesVote(List<Drive> drivesVote) {

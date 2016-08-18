@@ -4,9 +4,9 @@
  * are made available under the terms of the GNU Lesser Public License v3
  * which accompanies this distribution, and is available at
  * http://www.gnu.org/licenses/lgpl.html
- * 
+ * <p>
  * Contributors:
- *     E. M. Fr�es, R. R. Gudwin - initial API and implementation
+ * E. M. Froes, R. R. Gudwin - initial API and implementation
  ******************************************************************************/
 
 package br.unicamp.cst.motivational;

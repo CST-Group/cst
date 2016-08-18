@@ -6,14 +6,11 @@
  * http://www.gnu.org/licenses/lgpl.html
  * 
  * Contributors:
- *     E. M. Fróes, R. R. Gudwin - initial API and implementation
+ *     E. M. Froes, R. R. Gudwin - initial API and implementation
  ******************************************************************************/
 
 package br.unicamp.cst.motivational;
 
-/**
- * Created by Du on 05/03/16.
- */
 public class MotivationalException extends Exception {
 
     public MotivationalException(String message){

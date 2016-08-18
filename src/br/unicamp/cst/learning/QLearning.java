@@ -7,7 +7,7 @@
  * 
  * Contributors:
  *     K. Raizer, A. L. O. Paraense, R. R. Gudwin - initial API and implementation
- *     E. M. Fróes - documentation
+ *     E. M. Froes - documentation
  ******************************************************************************/
 
 package br.unicamp.cst.learning;

@@ -7,17 +7,17 @@
  * 
  * Contributors:
  *     K. Raizer, A. L. O. Paraense, R. R. Gudwin - initial API and implementation
- *     E. M. Fróes - documentation
+ *     E. M. Froes - documentation
  ******************************************************************************/
 
 package br.unicamp.cst.perception;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-
 import br.unicamp.cst.core.entities.Codelet;
 import br.unicamp.cst.core.entities.MemoryObject;
 import br.unicamp.cst.memory.WorkingStorage;
+
+import java.util.ArrayList;
+import java.util.HashMap;
 
 /**
  * This Perception class allows us to create codelets with additional methods.

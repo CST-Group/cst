@@ -7,16 +7,16 @@
  * 
  * Contributors:
  *     K. Raizer, A. L. O. Paraense, R. R. Gudwin - initial API and implementation
- *     E. M. Fróes - documentation
+ *     E. M. Froes - documentation
  ******************************************************************************/
 
 package br.unicamp.cst.perception;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import br.unicamp.cst.core.entities.CodeRack;
 import br.unicamp.cst.core.entities.Codelet;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Perception proxy holds the codelets responsible for interpreting data coming from sensors 
