@@ -19,7 +19,7 @@ import java.util.List;
 
 /**
  * 
- * The Raw Memory contains all memory objects in the system.
+ * The Raw Memory contains all memories in the system.
  * 
  * @author andre.paraense
  * @author klaus.raizer
@@ -28,40 +28,40 @@ import java.util.List;
 public class RawMemory
 {
    /**
-    * List of all memory objects in the system
+    * List of all memories in the system
     */
-   private List<MemoryObject> allMemoryObjects;
+   private List<Memory> allMemories;
    
    /**
     * Default constructor
     */
    public RawMemory()
    {
-      allMemoryObjects =  Collections.synchronizedList(new ArrayList<MemoryObject>());
+      allMemories =  Collections.synchronizedList(new ArrayList<Memory>());
    }
 
    /**
     * @return the allMemoryObjects
     */
-   public synchronized List<MemoryObject> getAllMemoryObjects()
+   public synchronized List<Memory> getAllMemoryObjects()
    {
-	   synchronized(allMemoryObjects)
+	   synchronized(allMemories)
 	   {
-		   return allMemoryObjects; 
+		   return allMemories; 
 	   }   
    }
 /**
- * Returns a list of all memory objects in raw memory of a given type
- * @param type of memory object
- * @return list of MOs of a given type
+ * Returns a list of all memories in raw memory of a given type
+ * @param type of memory
+ * @return list of Ms of a given type
  */
-   public synchronized List<MemoryObject> getAllOfType(String type)
+   public synchronized List<Memory> getAllOfType(String type)
    {
-	   List<MemoryObject> listOfType=new ArrayList<MemoryObject>();
+	   List<Memory> listOfType=new ArrayList<Memory>();
 	   
-	   synchronized(allMemoryObjects)
+	   synchronized(allMemories)
 	   {
-		   for(MemoryObject mo:this.allMemoryObjects)
+		   for(Memory mo:this.allMemories)
 		   {
 			   if(mo.getName().equalsIgnoreCase(type))
 			   {
@@ -76,13 +76,13 @@ public class RawMemory
    
    
    /**
-    * @param allMemoryObjects the allMemoryObjects to set
+    * @param allMemories the allMemoryObjects to set
     */
-   public synchronized void setAllMemoryObjects(List<MemoryObject> allMemoryObjects)
+   public synchronized void setAllMemoryObjects(List<Memory> allMemories)
    {
-	   synchronized(this.allMemoryObjects)
+	   synchronized(this.allMemories)
 	   {
-		   this.allMemoryObjects = allMemoryObjects;
+		   this.allMemories = allMemories;
 	   }     
    }
 
@@ -91,9 +91,9 @@ public class RawMemory
     */
    public synchronized void printContent()
    {
-	   synchronized(allMemoryObjects)
+	   synchronized(allMemories)
 	   {
-		   for(MemoryObject mo : allMemoryObjects)
+		   for(Memory mo : allMemories)
 		      {
 		         System.out.println(mo.toString());
 		      }  
@@ -101,41 +101,18 @@ public class RawMemory
    }
 
    /**
-    * Adds a new MemoryObject to the Raw Memory
+    * Adds a new Memory to the Raw Memory
     * 
-    * @param mo memory object to be added
+    * @param mo memory to be added
     */
-   public synchronized void addMemoryObject(MemoryObject mo)
+   public synchronized void addMemoryObject(Memory mo)
    {
-	   synchronized(allMemoryObjects)
+	   synchronized(allMemories)
 	   {
-		      allMemoryObjects.add(mo);
+		      allMemories.add(mo);
 	   }     
    }
 
-   /**
-    * Creates a new MemoryObject and adds it to the Raw Memory, using provided info and type
-    * 
-    * @param type memory object type
-    * @param info memory object info
-    * @return mo created MemoryObject
-    */
-//   public synchronized MemoryObject createMemoryObject(MemoryObjectType type, String info)
-//   {
-//	   // memory object to be added to rawmemory
-//       MemoryObject mo = new MemoryObject();
-//       Date date = new Date();         
-//       mo.setInfo(info);
-//       mo.setType(type);
-//       mo.setTimestamp(new Timestamp(date.getTime()));
-//       mo.setEvaluation(0.5d);
-//       mo.name = "";
-//
-//       // adding the new object to raw memory
-//       this.addMemoryObject(mo);
-//       return mo;
-//      
-//   }
    /**
     * Creates a new MemoryObject (Java style) and adds it to the Raw Memory, using provided info and type
     * 
@@ -153,7 +130,7 @@ public class RawMemory
        //mo.setInfo("");
        mo.setTimestamp(new Timestamp(date.getTime()));
        mo.setEvaluation(0.5d);
-       mo.name = name;
+       mo.setType(name);
 
        // adding the new object to raw memory
        this.addMemoryObject(mo);
@@ -166,14 +143,14 @@ public class RawMemory
    
    
    /**
-    * Destroys a given memory object from raw memory
+    * Destroys a given memory from raw memory
     * @param mo
     */
-   public synchronized void destroyMemoryObject(MemoryObject mo)
+   public synchronized void destroyMemoryObject(Memory mo)
    {
-	   synchronized(allMemoryObjects)
+	   synchronized(allMemories)
 	   {
-		   allMemoryObjects.remove(mo);
+		   allMemories.remove(mo);
 	   }  
    }
    
@@ -183,9 +160,9 @@ public class RawMemory
     */
    public synchronized int size()
    { 
-	   synchronized(allMemoryObjects)
+	   synchronized(allMemories)
 	   {
-		   return allMemoryObjects.size();
+		   return allMemories.size();
 	   }     
    }
    
@@ -195,13 +172,13 @@ public class RawMemory
     */
    public void shutDown() 
    {
-	   synchronized(allMemoryObjects)
+	   synchronized(allMemories)
 	   {
-		   for(MemoryObject mo: this.getAllMemoryObjects())
+		   for(Memory mo: this.getAllMemoryObjects())
 		   {
 			   mo=null;
 		   }
-		   this.allMemoryObjects.clear();
+		   this.allMemories.clear();
 	   }	
    }  
 }

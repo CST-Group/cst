@@ -11,13 +11,13 @@
 
 package br.unicamp.cst.motivational;
 
-import br.unicamp.cst.core.entities.Codelet;
-import br.unicamp.cst.core.entities.MemoryObject;
-import br.unicamp.cst.core.exceptions.CodeletActivationBoundsException;
-
 import java.util.Collections;
 import java.util.List;
-import java.util.stream.Collectors;
+
+import br.unicamp.cst.core.entities.Codelet;
+import br.unicamp.cst.core.entities.Memory;
+import br.unicamp.cst.core.exceptions.CodeletActivationBoundsException;
+
 
 
 /**
@@ -44,8 +44,8 @@ public class GoalArchitecture extends Codelet {
     public final static String DRIVES_MEMORY = "DRIVES_MEMORY";
     public final static String GOALS_MEMORY = "GOALS_MEMORY";
 
-    private MemoryObject drivesMO;
-    private MemoryObject goalsMO;
+    private Memory drivesMO;
+    private Memory goalsMO;
 
     private List<Drive> drives;
     private List<Goal> goals;
@@ -90,11 +90,11 @@ public class GoalArchitecture extends Codelet {
             if (getMonitoringUrgentGoal() == null)
                 initMonitoringUrgentGoal();
 
-            getGoals().stream().forEach(goal -> {
-                synchronized (goal) {
-                    goal.processVote();
-                }
-            });
+//            getGoals().stream().forEach(goal -> {
+//                synchronized (goal) {
+//                    goal.processVote();
+//                }
+//            });
 
             Goal mostVotedGoal = getMostVotedGoal(this.getGoals());
 
@@ -141,23 +141,23 @@ public class GoalArchitecture extends Codelet {
         synchronized (this) {
             Goal urgentGoal = null;
 
-            lstOfGoals.forEach(goal -> {
-                synchronized (goal) {
-                    goal.urgentIntervention();
-                }
-            });
+//            lstOfGoals.forEach(goal -> {
+//                synchronized (goal) {
+//                    goal.urgentIntervention();
+//                }
+//            });
 
-            List<Goal> lstOfIntervationGoals = lstOfGoals.stream().filter(goal -> goal.isUrgentIntervention() == true).collect(Collectors.toList());
-
-            if (lstOfIntervationGoals.size() > 0) {
-
-                if (lstOfIntervationGoals.size() > 1) {
-                    urgentGoal = getMostVotedGoal(lstOfIntervationGoals);
-
-                } else {
-                    urgentGoal = lstOfIntervationGoals.get(0);
-                }
-            }
+//            List<Goal> lstOfIntervationGoals = lstOfGoals.stream().filter(goal -> goal.isUrgentIntervention() == true).collect(Collectors.toList());
+//
+//            if (lstOfIntervationGoals.size() > 0) {
+//
+//                if (lstOfIntervationGoals.size() > 1) {
+//                    urgentGoal = getMostVotedGoal(lstOfIntervationGoals);
+//
+//                } else {
+//                    urgentGoal = lstOfIntervationGoals.get(0);
+//                }
+//            }
 
             return urgentGoal;
         }
@@ -181,9 +181,9 @@ public class GoalArchitecture extends Codelet {
 
                             urgentGoal.startGoalActions();
 
-                            while (!urgentGoal.isFinishedGoalActions() && urgentGoal.isUrgentIntervention()) {
-                                urgentGoal.isFinishedUrgentIntervention();
-                            }
+//                            while (!urgentGoal.isFinishedGoalActions() && urgentGoal.isUrgentIntervention()) {
+//                                urgentGoal.isFinishedUrgentIntervention();
+//                            }
 
                             urgentGoal.stopGoalActions();
 
@@ -276,19 +276,19 @@ public class GoalArchitecture extends Codelet {
         this.monitoringUrgentGoal = monitoringUrgentGoal;
     }
 
-    public MemoryObject getDrivesMO() {
+    public Memory getDrivesMO() {
         return drivesMO;
     }
 
-    public void setDrivesMO(MemoryObject drivesMO) {
+    public void setDrivesMO(Memory drivesMO) {
         this.drivesMO = drivesMO;
     }
 
-    public MemoryObject getGoalsMO() {
+    public Memory getGoalsMO() {
         return goalsMO;
     }
 
-    public void setGoalsMO(MemoryObject goalsMO) {
+    public void setGoalsMO(Memory goalsMO) {
         this.goalsMO = goalsMO;
     }
 

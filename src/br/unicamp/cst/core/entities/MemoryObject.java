@@ -16,14 +16,13 @@ import java.sql.Timestamp;
 import java.util.Date;
 
 
-/**
- * 
+/** 
  * Unit of data in memory.
  * 
  * @author andre.paraense
  * @author klaus.raizer
  */
-public class MemoryObject implements Serializable
+public class MemoryObject implements Memory,Serializable
 {
    
    private static final long serialVersionUID = 1L;
@@ -31,28 +30,24 @@ public class MemoryObject implements Serializable
    private Long idmemoryobject;
    
    /**
-	 * Information contained in the memory object.
-	 */
-   //private volatile String info;
-   
-   /**
 	 * Date when the data was "created".
 	 */
    private Timestamp timestamp;
-   
-   /**
-	 * Type of the information in the memory object.
-	 */
-   //private MemoryObjectType type;
    
    /**
     * An evaluation of this memory object based on inner references
     */
    private volatile Double evaluation;
    
-   private Object I;
-   //private Class<Object> T;
-   public String name;
+   /**
+	 * Information contained in the memory object.
+	 */
+   private volatile Object I;
+
+   /**
+    * Type of the memory object
+    */
+   private String name;
    
    public MemoryObject()
    {
@@ -81,24 +76,6 @@ public class MemoryObject implements Serializable
     * 
     * @return
     */
-//   public synchronized String getInfo()
-//   {
-//      return this.info;
-//   }
-   
-   /**
-    *  Sets the info in memory object. 
-    * @param info
-    */
-//   public synchronized void setInfo(String info)
-//   {
-//      this.info = info;
-//   } 
-   
-   /**
-    * 
-    * @return
-    */
    public synchronized Object getI()
    {
       return this.I;
@@ -111,35 +88,18 @@ public class MemoryObject implements Serializable
    public synchronized void setI(Object info)
    {
       this.I = info;
+      Date date = new Date(); 
+	  setTimestamp(new Timestamp(date.getTime()));  
    }
    
-//   /**
-//    * 
-//    * @return
-//    */
-//   public synchronized Class<Object> getT()
-//   {
-//      return this.T;
-//   }
-   
-//   /**
-//    *  Sets the type of memory object - Java style. 
-//    * @param nclass
-//    */
-//   public synchronized void setT(Class<Object> nclass)
-//   {
-//      this.T = nclass;
-//   }
-   
    /**
-    *  Updates the info in memory object.  And in the process, updates the time stamp.
+    *  This method is deprecated after v0.1. For the time being, it has been kept only for backward compatibility. Use the {@link #setI(Object info) setI} method instead.
     * @param info
     */
+   @Deprecated
    public synchronized void updateI(Object info)
    {
-	   setI(info);
-	   Date date = new Date(); 
-	   setTimestamp(new Timestamp(date.getTime()));    
+	   setI(info); 
    } 
    
    /**
@@ -195,35 +155,24 @@ public class MemoryObject implements Serializable
       this.evaluation = evaluation;
    }
 
-   /* (non-Javadoc)
-    * @see java.lang.Object#toString()
-    */
    @Override
-   public String toString()
-   {
-      return "MemoryObject [" + (idmemoryobject != null ? "idmemoryobject=" + idmemoryobject + ", " : "") + (timestamp != null ? "timestamp=" + timestamp + ", " : "") + (name != null ? "type=" + name + ", " : "") + (evaluation != null ? "evaluation=" + evaluation : "") + "]";
+   public String toString() {
+	   return "MemoryObject [idmemoryobject=" + idmemoryobject + ", timestamp=" + timestamp + ", evaluation=" + evaluation
+			   + ", I=" + I + ", name=" + name + "]";
    }
 
-   /* (non-Javadoc)
-    * @see java.lang.Object#hashCode()
-    */
    @Override
    public int hashCode() {
 	   final int prime = 31;
 	   int result = 1;
-	   result = prime * result
-	   + ((evaluation == null) ? 0 : evaluation.hashCode());
-	   result = prime * result
-	   + ((idmemoryobject == null) ? 0 : idmemoryobject.hashCode());
-//	   result = prime * result + ((info == null) ? 0 : info.hashCode());
-	   result = prime * result + ((timestamp == null) ? 0 : timestamp.hashCode());
+	   result = prime * result + ((I == null) ? 0 : I.hashCode());
+	   result = prime * result + ((evaluation == null) ? 0 : evaluation.hashCode());
+	   result = prime * result + ((idmemoryobject == null) ? 0 : idmemoryobject.hashCode());
 	   result = prime * result + ((name == null) ? 0 : name.hashCode());
+	   result = prime * result + ((timestamp == null) ? 0 : timestamp.hashCode());
 	   return result;
    }
 
-   /* (non-Javadoc)
-    * @see java.lang.Object#equals(java.lang.Object)
-    */
    @Override
    public boolean equals(Object obj) {
 	   if (this == obj)
@@ -233,6 +182,11 @@ public class MemoryObject implements Serializable
 	   if (getClass() != obj.getClass())
 		   return false;
 	   MemoryObject other = (MemoryObject) obj;
+	   if (I == null) {
+		   if (other.I != null)
+			   return false;
+	   } else if (!I.equals(other.I))
+		   return false;
 	   if (evaluation == null) {
 		   if (other.evaluation != null)
 			   return false;
@@ -243,23 +197,16 @@ public class MemoryObject implements Serializable
 			   return false;
 	   } else if (!idmemoryobject.equals(other.idmemoryobject))
 		   return false;
-//	   if (info == null) {
-//		   if (other.info != null)
-//			   return false;
-//	   } else if (!info.equals(other.info))
-//		   return false;
-	   if (timestamp == null) {
-		   if (other.timestamp != null)
-			   return false;
-	   } else if (!timestamp.equals(other.timestamp))
-		   return false;
 	   if (name == null) {
 		   if (other.name != null)
 			   return false;
 	   } else if (!name.equals(other.name))
 		   return false;
+	   if (timestamp == null) {
+		   if (other.timestamp != null)
+			   return false;
+	   } else if (!timestamp.equals(other.timestamp))
+		   return false;
 	   return true;
    }
-
-
 }

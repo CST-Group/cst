@@ -12,7 +12,7 @@
 package br.unicamp.cst.io;
 
 import br.unicamp.cst.core.entities.Codelet;
-import br.unicamp.cst.core.entities.MemoryObject;
+import br.unicamp.cst.core.entities.Memory;
 import br.unicamp.cst.memory.WorkingStorage;
 /**
  *  The Sensor class is a Codelet which writes to working storage every memory object written to its output list.
@@ -30,14 +30,14 @@ public abstract class Sensor extends Codelet
 	}
 	
 	@Override
-	public synchronized void addOutput(MemoryObject mo)
+	public synchronized void addOutput(Memory mo)
 	{
 		this.getOutputs().add(mo);
 		if(ws!=null)
 			ws.putMemoryObject(mo);
 	}
 	@Override
-	public synchronized void removesOutput(MemoryObject mo)
+	public synchronized void removesOutput(Memory mo)
 	{
 		this.getOutputs().remove(mo);
 		if(ws!=null)

@@ -12,12 +12,12 @@
 
 package br.unicamp.cst.perception;
 
-import br.unicamp.cst.core.entities.Codelet;
-import br.unicamp.cst.core.entities.MemoryObject;
-import br.unicamp.cst.memory.WorkingStorage;
-
 import java.util.ArrayList;
 import java.util.HashMap;
+
+import br.unicamp.cst.core.entities.Codelet;
+import br.unicamp.cst.core.entities.Memory;
+import br.unicamp.cst.memory.WorkingStorage;
 
 /**
  * This Perception class allows us to create codelets with additional methods.
@@ -30,12 +30,12 @@ import java.util.HashMap;
  */
 public abstract class Perception extends Codelet
 {
-	private HashMap<MemoryObject, Boolean> world_state_log = new HashMap<MemoryObject, Boolean>();
-	private ArrayList<MemoryObject> list_of_true_world_states=new ArrayList<MemoryObject>();
-	private ArrayList<MemoryObject> list_of_false_world_states=new ArrayList<MemoryObject>();
+	private HashMap<Memory, Boolean> world_state_log = new HashMap<Memory, Boolean>();
+	private ArrayList<Memory> list_of_true_world_states=new ArrayList<Memory>();
+	private ArrayList<Memory> list_of_false_world_states=new ArrayList<Memory>();
 	
-	private ArrayList<MemoryObject> known_percepts=new ArrayList<MemoryObject>();//list of all known percepts (only grows with time)
-	private ArrayList<MemoryObject> detected_percepts=new ArrayList<MemoryObject>();//list of all percepts that were detected by the codelet (is reset after uptadeOutputWithPercepts is called)
+	private ArrayList<Memory> known_percepts=new ArrayList<Memory>();//list of all known percepts (only grows with time)
+	private ArrayList<Memory> detected_percepts=new ArrayList<Memory>();//list of all percepts that were detected by the codelet (is reset after uptadeOutputWithPercepts is called)
 	
 	private WorkingStorage localWS;
         
@@ -52,7 +52,7 @@ public abstract class Perception extends Codelet
 	 * Important: Remember to call uptadeOutputWithPercepts() in order to keep pushed percepts into this codelet's output list.
 	 * @param pe
 	 */
-	public synchronized void pushDetectedPercept(MemoryObject pe)
+	public synchronized void pushDetectedPercept(Memory pe)
 	{
 		if(!this.detected_percepts.contains(pe)){
 			this.detected_percepts.add(pe);
@@ -69,13 +69,13 @@ public abstract class Perception extends Codelet
 	 */
 	public synchronized void uptadeOutputWithPercepts(){
 
-		ArrayList<MemoryObject> D = new ArrayList<MemoryObject>();
-		ArrayList<MemoryObject> K = new ArrayList<MemoryObject>();
-		ArrayList<MemoryObject> O = new ArrayList<MemoryObject>();
+		ArrayList<Memory> D = new ArrayList<Memory>();
+		ArrayList<Memory> K = new ArrayList<Memory>();
+		ArrayList<Memory> O = new ArrayList<Memory>();
 		
-		ArrayList<MemoryObject> addDK = new ArrayList<MemoryObject>();
-		ArrayList<MemoryObject> addDO = new ArrayList<MemoryObject>();
-		ArrayList<MemoryObject> remove = new ArrayList<MemoryObject>();
+		ArrayList<Memory> addDK = new ArrayList<Memory>();
+		ArrayList<Memory> addDO = new ArrayList<Memory>();
+		ArrayList<Memory> remove = new ArrayList<Memory>();
 		
 		D.addAll(this.detected_percepts);
 		K.addAll(this.known_percepts);
@@ -95,13 +95,13 @@ public abstract class Perception extends Codelet
 		remove.removeAll(D);
 		
 		
-		for(MemoryObject mo : addDK){
+		for(Memory mo : addDK){
 			this.addOutput(mo);
 		}
-		for(MemoryObject mo : addDO){
+		for(Memory mo : addDO){
 			this.addOutput(mo);
 		}
-		for(MemoryObject mo : remove){
+		for(Memory mo : remove){
 			this.removesOutput(mo);
 		}
 
@@ -111,25 +111,25 @@ public abstract class Perception extends Codelet
 		
 //		
 //		
-//				ArrayList<MemoryObject> outputs = new ArrayList<MemoryObject>();
+//				ArrayList<Memory> outputs = new ArrayList<Memory>();
 //				outputs.addAll(this.getOutputs());
 //				
-//				ArrayList<MemoryObject> detected=new ArrayList<MemoryObject>();
+//				ArrayList<Memory> detected=new ArrayList<Memory>();
 //				detected.addAll(this.detected_percepts);
 //				detected.removeAll(outputs);
 //
 //				//Removing false propositions
-//				for(MemoryObject mo:outputs){
+//				for(Memory mo:outputs){
 //					if(!detected_percepts.contains(mo.getInfo())){
 //						this.removesOutput(mo);
 //					}
 //				}
 //
 //
-//				outputs = new ArrayList<MemoryObject>();
+//				outputs = new ArrayList<Memory>();
 //				outputs.addAll(this.getOutputs());
 //
-//				ArrayList<MemoryObject> undetected=new ArrayList<MemoryObject>();
+//				ArrayList<Memory> undetected=new ArrayList<Memory>();
 //				undetected.addAll(this.known_percepts);
 //				undetected.removeAll(outputs);
 //				
@@ -137,7 +137,7 @@ public abstract class Perception extends Codelet
 //				
 //				//Adding true propositions
 //				for(String trueProp:trueStates){
-//					MemoryObject mo = worldState_string_mo.get(trueProp);
+//					Memory mo = worldState_string_mo.get(trueProp);
 //					if(!outputs.contains(mo)){
 //						this.addOutput(mo);
 //					}
@@ -148,7 +148,7 @@ public abstract class Perception extends Codelet
          * This method adds an output memory in the output list.
          * @param output
          */
-       	public synchronized void addOutput(MemoryObject output)
+       	public synchronized void addOutput(Memory output)
 	{
 		this.getOutputs().add(output);
 		
@@ -162,7 +162,7 @@ public abstract class Perception extends Codelet
          * This method removes an output memory in the output list.
          * @param output
          */
-	public synchronized void removesOutput(MemoryObject output)
+	public synchronized void removesOutput(Memory output)
 	{	
 		this.getOutputs().remove(output);
 		
@@ -179,21 +179,21 @@ public abstract class Perception extends Codelet
 	private void synchWithWorkingStorage()
 	{
 		//TODO Remember to acquire lock!
-		ArrayList<MemoryObject> alreadyInWorkingStorage = new ArrayList<MemoryObject>();
+		ArrayList<Memory> alreadyInWorkingStorage = new ArrayList<Memory>();
 		alreadyInWorkingStorage.addAll(localWS.getAll());
 		//alreadyInWorkingStorage.retainAll(this.getOutputs());
 		
-		ArrayList<MemoryObject> mustAdd = new ArrayList<MemoryObject>();
+		ArrayList<Memory> mustAdd = new ArrayList<Memory>();
 		mustAdd.addAll(list_of_true_world_states);
 		mustAdd.removeAll(alreadyInWorkingStorage);
 
-		ArrayList<MemoryObject> mustRemove = new ArrayList<MemoryObject>();
+		ArrayList<Memory> mustRemove = new ArrayList<Memory>();
 		mustRemove.addAll(list_of_false_world_states);
 		
-		for(MemoryObject mo : mustRemove){
+		for(Memory mo : mustRemove){
 			localWS.removeFromWorkingStorageWithoutDelete(mo);
 		}
-		for(MemoryObject mo:mustAdd){
+		for(Memory mo:mustAdd){
 			localWS.putMemoryObject(mo);
 		}
 	}

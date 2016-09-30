@@ -86,13 +86,13 @@ public class CodeRack
 	 * Creates a codelet and adds it to this coderack
 	 * 
 	 * @param activation codelet's activation
-	 * @param broadcast list of memory objects which were broadcast lately (teated as input memory objects)
-	 * @param inputs list of input memory objects
-	 * @param outputs list o output memory objects
+	 * @param broadcast list of memory objects which were broadcast lately (treated as input memories)
+	 * @param inputs list of input memories
+	 * @param outputs list o output memories
 	 * @param co codelet to be created
 	 * @return the codelet created
 	 */
-	public Codelet createCodelet(double activation, List<MemoryObject> broadcast, List<MemoryObject> inputs, List<MemoryObject> outputs, Codelet co)
+	public Codelet createCodelet(double activation, List<Memory> broadcast, List<Memory> inputs, List<Memory> outputs, Codelet co)
 	{
 		try 
 		{

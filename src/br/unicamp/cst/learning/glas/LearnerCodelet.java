@@ -22,7 +22,7 @@ import br.unicamp.cst.behavior.glas.GlasSequence;
 import br.unicamp.cst.behavior.glas.GlasSequenceElements;
 import br.unicamp.cst.behavior.glas.Individual;
 import br.unicamp.cst.core.entities.Codelet;
-import br.unicamp.cst.core.entities.MemoryObject;
+import br.unicamp.cst.core.entities.Memory;
 import br.unicamp.cst.core.entities.RawMemory;
 import br.unicamp.cst.core.exceptions.CodeletActivationBoundsException;
 import br.unicamp.cst.memory.WorkingStorage;
@@ -39,8 +39,8 @@ public class LearnerCodelet extends Codelet
 	boolean first_run=true;
 	double goal_fitness=Double.POSITIVE_INFINITY;
 
-	private MemoryObject EVENTS_SEQUENCE_MO;
-	private MemoryObject SOLUTION_TREE_MO;  //Holds a phenotype of the best solution until now
+	private Memory EVENTS_SEQUENCE_MO;
+	private Memory SOLUTION_TREE_MO;  //Holds a phenotype of the best solution until now
 	private boolean plot_solution=false;
 
 	//GlasPlot ploter =null;
@@ -99,7 +99,7 @@ public class LearnerCodelet extends Codelet
 			initial_solution_tree_json.put(initial_solution_tree_int[i]);
 		}
 
-		this.SOLUTION_TREE_MO.updateI(initial_solution_tree_json.toString());
+		this.SOLUTION_TREE_MO.setI(initial_solution_tree_json.toString());
 
 
 		//		[0,1,1,2,3,4,5,0,1,2,3,4,5,6,0,1,1,1,1,2,2]
@@ -271,7 +271,7 @@ public class LearnerCodelet extends Codelet
 												
 						
 						
-						SOLUTION_TREE_MO.updateI(best_solution_tree.toString()); 
+						SOLUTION_TREE_MO.setI(best_solution_tree.toString()); 
 //						SOLUTION_TREE_MO.setEvaluation(best_found_fit);
 						SOLUTION_TREE_MO.setEvaluation(normalized_fitness);						
 						first_run=false;

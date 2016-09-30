@@ -16,7 +16,7 @@ import java.util.List;
 
 import br.unicamp.cst.core.entities.CodeRack;
 import br.unicamp.cst.core.entities.Codelet;
-import br.unicamp.cst.core.entities.MemoryObject;
+import br.unicamp.cst.core.entities.Memory;
 import br.unicamp.cst.core.exceptions.CodeletActivationBoundsException;
 
 
@@ -111,28 +111,28 @@ public class SpotlightBroadcastController extends Codelet
 				
 				if(consciousCodelet!=null)
 				{											
-					List<MemoryObject> memoryObjectsToBeBroadcasted  = consciousCodelet.getOutputs();
-					if(memoryObjectsToBeBroadcasted!=null)
+					List<Memory> memoriesToBeBroadcasted  = consciousCodelet.getOutputs();
+					if(memoriesToBeBroadcasted!=null)
 					{
 						for (Codelet codelet: allCodeletsList)
 						{ 
 							if(!codelet.getName().equalsIgnoreCase(consciousCodelet.getName()))
-								codelet.setBroadcast(memoryObjectsToBeBroadcasted);
+								codelet.setBroadcast(memoriesToBeBroadcasted);
 							else
-								codelet.setBroadcast(new ArrayList<MemoryObject>());
+								codelet.setBroadcast(new ArrayList<Memory>());
 						}
 					}else
 					{
 						for (Codelet codelet: allCodeletsList)
 						{ 					
-							codelet.setBroadcast(new ArrayList<MemoryObject>());
+							codelet.setBroadcast(new ArrayList<Memory>());
 						}
 					}
 				}else
 				{
 					for (Codelet codelet: allCodeletsList)
 					{ 					
-						codelet.setBroadcast(new ArrayList<MemoryObject>());
+						codelet.setBroadcast(new ArrayList<Memory>());
 					}						
 				}
 			}

@@ -21,7 +21,7 @@ import java.util.Map;
 
 import javax.swing.JFrame;
 
-import br.unicamp.cst.core.entities.MemoryObject;
+import br.unicamp.cst.core.entities.Memory;
 import edu.uci.ics.jung.algorithms.layout.KKLayout;
 import edu.uci.ics.jung.algorithms.layout.Layout;
 import edu.uci.ics.jung.graph.Graph;
@@ -53,7 +53,7 @@ public class BNplot {
 		for(Behavior be:behaviorList)
 		{
 
-			HashMap<Behavior,ArrayList<MemoryObject>> succPred=new HashMap<Behavior, ArrayList<MemoryObject>>();
+			HashMap<Behavior,ArrayList<Memory>> succPred=new HashMap<Behavior, ArrayList<Memory>>();
 			succPred.putAll(be.getSuccessors());
 			String sourceBeName=be.getName();
 			Iterator it = succPred.entrySet().iterator();
@@ -67,7 +67,7 @@ public class BNplot {
 			}
 
 
-			HashMap<Behavior,ArrayList<MemoryObject>> conflict=new HashMap<Behavior, ArrayList<MemoryObject>>();
+			HashMap<Behavior,ArrayList<Memory>> conflict=new HashMap<Behavior, ArrayList<Memory>>();
 			conflict.putAll(be.getConflicters());
 
 			it = conflict.entrySet().iterator();

@@ -12,16 +12,15 @@
 
 package br.unicamp.cst.motivational;
 
-import br.unicamp.cst.behavior.subsumption.SubsumptionAction;
-import br.unicamp.cst.behavior.subsumption.SubsumptionBehaviourLayer;
-import br.unicamp.cst.core.entities.Codelet;
-import br.unicamp.cst.core.entities.MemoryObject;
-import br.unicamp.cst.core.exceptions.CodeletActivationBoundsException;
-
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import java.util.stream.Collectors;
+
+import br.unicamp.cst.behavior.subsumption.SubsumptionAction;
+import br.unicamp.cst.behavior.subsumption.SubsumptionBehaviourLayer;
+import br.unicamp.cst.core.entities.Codelet;
+import br.unicamp.cst.core.entities.Memory;
+import br.unicamp.cst.core.exceptions.CodeletActivationBoundsException;
 
 public abstract class Goal extends Codelet {
 
@@ -40,7 +39,7 @@ public abstract class Goal extends Codelet {
     private boolean bLock = true;
     private boolean bPause = false;
     private boolean urgentIntervention = false;
-    protected MemoryObject drivesVoteMO;
+    protected Memory drivesVoteMO;
 
     public Goal(String name, int steps, int minSteps, double interventionThreshold, double priorityHighLevel) {
         this.setName(name);
@@ -138,51 +137,51 @@ public abstract class Goal extends Codelet {
     }
     
 
-    public synchronized void urgentIntervention() {
+//    public synchronized void urgentIntervention() {
+//
+//        synchronized (this) {
+//
+//            this.accessDriveVoteMemory();
+//
+//            if (getInterventionThreshold() != 0.0d) {
+//                List<Drive> listOHighPriorityDrive = getDrivesVote().stream().filter(d -> d.getPriority() >= getPriorityHighLevel()).collect(Collectors.toList());
+//
+//                if (calculateUrgentVote(listOHighPriorityDrive) >= getInterventionThreshold()) {
+//                    setUrgentIntervention(true);
+//                } else {
+//                    setUrgentIntervention(false);
+//                }
+//            } else {
+//                setUrgentIntervention(false);
+//            }
+//        }
+//    }
 
-        synchronized (this) {
-
-            this.accessDriveVoteMemory();
-
-            if (getInterventionThreshold() != 0.0d) {
-                List<Drive> listOHighPriorityDrive = getDrivesVote().stream().filter(d -> d.getPriority() >= getPriorityHighLevel()).collect(Collectors.toList());
-
-                if (calculateUrgentVote(listOHighPriorityDrive) >= getInterventionThreshold()) {
-                    setUrgentIntervention(true);
-                } else {
-                    setUrgentIntervention(false);
-                }
-            } else {
-                setUrgentIntervention(false);
-            }
-        }
-    }
-
-    public synchronized void isFinishedUrgentIntervention() {
-        synchronized (this) {
-
-            if (getInterventionThreshold() != 0.0d) {
-                List<Drive> listOHighPriorityDrive = getDrivesVote().stream().filter(d -> d.getPriority() >= getPriorityHighLevel()).collect(Collectors.toList());
-
-                
-                double urgentVote = calculateUrgentVote(listOHighPriorityDrive);
-                
-                if (urgentVote >= getBelowInterventionThreshold()
-                        || getExecutedSteps() <= getMinSteps()) {
-                    setUrgentIntervention(true);
-                    try {
-                        setActivation(urgentVote);
-                    } catch (CodeletActivationBoundsException ex) {
-                        Logger.getLogger(Goal.class.getName()).log(Level.SEVERE, null, ex);
-                    }
-                } else {
-                    setUrgentIntervention(false);
-                }
-            } else {
-                setUrgentIntervention(false);
-            }
-        }
-    }
+//    public synchronized void isFinishedUrgentIntervention() {
+//        synchronized (this) {
+//
+//            if (getInterventionThreshold() != 0.0d) {
+//                List<Drive> listOHighPriorityDrive = getDrivesVote().stream().filter(d -> d.getPriority() >= getPriorityHighLevel()).collect(Collectors.toList());
+//
+//                
+//                double urgentVote = calculateUrgentVote(listOHighPriorityDrive);
+//                
+//                if (urgentVote >= getBelowInterventionThreshold()
+//                        || getExecutedSteps() <= getMinSteps()) {
+//                    setUrgentIntervention(true);
+//                    try {
+//                        setActivation(urgentVote);
+//                    } catch (CodeletActivationBoundsException ex) {
+//                        Logger.getLogger(Goal.class.getName()).log(Level.SEVERE, null, ex);
+//                    }
+//                } else {
+//                    setUrgentIntervention(false);
+//                }
+//            } else {
+//                setUrgentIntervention(false);
+//            }
+//        }
+//    }
 
     @Override
     public synchronized void calculateActivation() {
@@ -353,11 +352,11 @@ public abstract class Goal extends Codelet {
         this.priorityHighLevel = priorityHighLevel;
     }
 
-    public MemoryObject getDrivesVoteMO() {
+    public Memory getDrivesVoteMO() {
         return drivesVoteMO;
     }
 
-    public void setDrivesVoteMO(MemoryObject drivesVoteMO) {
+    public void setDrivesVoteMO(Memory drivesVoteMO) {
         this.drivesVoteMO = drivesVoteMO;
     }
 }

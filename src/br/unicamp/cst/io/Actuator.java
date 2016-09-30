@@ -12,7 +12,7 @@
 package br.unicamp.cst.io;
 
 import br.unicamp.cst.core.entities.Codelet;
-import br.unicamp.cst.core.entities.MemoryObject;
+import br.unicamp.cst.core.entities.Memory;
 import br.unicamp.cst.memory.WorkingStorage;
 
 /**
@@ -32,14 +32,14 @@ public abstract class Actuator extends Codelet
 	}
 	
 	@Override
-	public void addInput(MemoryObject mo)
+	public void addInput(Memory mo)
 	{
 		this.getInputs().add(mo);
 		if(ws!=null)
 			ws.putMemoryObject(mo);
 	}
 	@Override
-	public void removesInput(MemoryObject mo)
+	public void removesInput(Memory mo)
 	{
 		this.getInputs().remove(mo);
 		if(ws!=null)

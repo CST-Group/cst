@@ -18,7 +18,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import br.unicamp.cst.core.entities.Codelet;
-import br.unicamp.cst.core.entities.MemoryObject;
+import br.unicamp.cst.core.entities.Memory;
 import br.unicamp.cst.core.entities.RawMemory;
 import br.unicamp.cst.memory.WorkingStorage;
 
@@ -30,22 +30,22 @@ import br.unicamp.cst.memory.WorkingStorage;
 public class SequenceBuilderCodelet extends Codelet
 {
 	private  boolean enabled = true;
-	private MemoryObject STIMULUS_MO;
-	private MemoryObject ACTION_MO;
-	private MemoryObject PREVIOUS_REWARD_MO; //Reward for i=1 a,s pair
+	private Memory STIMULUS_MO;
+	private Memory ACTION_MO;
+	private Memory PREVIOUS_REWARD_MO; //Reward for i=1 a,s pair
 	private boolean first_run=true;
 	private Timestamp previous_stimulus_time_stamp;
 	private JSONArray sequence = new JSONArray();
-	private MemoryObject EVENTS_SEQUENCE_MO;
+	private Memory EVENTS_SEQUENCE_MO;
 	private int sensed_stimulus;
 	private int expected_action;
 	private double reward_received;
 	private boolean printEvents=false;
-	private MemoryObject NEW_EVENT_DETECTED_MO;
+	private Memory NEW_EVENT_DETECTED_MO;
 
-	private MemoryObject NEW_STIM_MO;
-	private MemoryObject NEW_ACTION_MO;
-	private MemoryObject NEW_REWARD_MO;
+	private Memory NEW_STIM_MO;
+	private Memory NEW_ACTION_MO;
+	private Memory NEW_REWARD_MO;
 	
 	private RawMemory rawMemory;
 
@@ -180,13 +180,13 @@ public class SequenceBuilderCodelet extends Codelet
 					e.printStackTrace();
 				}
 
-				EVENTS_SEQUENCE_MO.updateI(sequence.toString());
+				EVENTS_SEQUENCE_MO.setI(sequence.toString());
 
 				//----------
 
-				NEW_STIM_MO.updateI(String.valueOf(false));
-				NEW_ACTION_MO.updateI(String.valueOf(false));
-				NEW_REWARD_MO.updateI(String.valueOf(false));
+				NEW_STIM_MO.setI(String.valueOf(false));
+				NEW_ACTION_MO.setI(String.valueOf(false));
+				NEW_REWARD_MO.setI(String.valueOf(false));
 
 			}//if enable
 		}// proc()
@@ -243,14 +243,14 @@ public class SequenceBuilderCodelet extends Codelet
 	/**
 	 * @return the EVENTS_SEQUENCE_MO
 	 */
-	public MemoryObject getEVENTS_SEQUENCE_MO() {
+	public Memory getEVENTS_SEQUENCE_MO() {
 		return EVENTS_SEQUENCE_MO;
 	}
 
 	/**
 	 * @param eVENTS_SEQUENCE_MO the eVENTS_SEQUENCE_MO to set
 	 */
-	public void setEVENTS_SEQUENCE_MO(MemoryObject eVENTS_SEQUENCE_MO) {
+	public void setEVENTS_SEQUENCE_MO(Memory eVENTS_SEQUENCE_MO) {
 		EVENTS_SEQUENCE_MO = eVENTS_SEQUENCE_MO;
 	}
 

@@ -39,7 +39,7 @@ import br.unicamp.cst.core.exceptions.CodeletThresholdBoundsException;
  * new MemoryObjects. Codelets also have an Activation level, which can be used in some
  * situations. 
  * 
- * @see MemoryObject 
+ * @see Memory
  * @see Mind
  * 
  * @author andre.paraense
@@ -58,17 +58,17 @@ public abstract class Codelet implements Runnable
 	 */
 	private double threshold=0.0d;
 	/**
-	 * Input memory objects, the ones that are read.
+	 * Input memories, the ones that are read.
 	 */
-	private List<MemoryObject> inputs=new ArrayList<MemoryObject>();
+	private List<Memory> inputs=new ArrayList<Memory>();
 	/**
-	 * Output memory objetcs, the ones that are written.
+	 * Output memories, the ones that are written.
 	 */
-	private List<MemoryObject> outputs=new ArrayList<MemoryObject>();
+	private List<Memory> outputs=new ArrayList<Memory>();
 	/**
-	 * Input memory objects, the ones that were broadcasted.
+	 * Input memories, the ones that were broadcasted.
 	 */
-	private List<MemoryObject> broadcast=new ArrayList<MemoryObject>();
+	private List<Memory> broadcast=new ArrayList<Memory>();
 	
 	/** defines if proc() should be automatically called in a loop */
 	private boolean loop=true; //
@@ -291,110 +291,75 @@ public abstract class Codelet implements Runnable
 	/**
 	 * @return the inputs
 	 */
-	public synchronized List<MemoryObject> getInputs()
+	public synchronized List<Memory> getInputs()
 	{
 		return inputs;
 	}
 
 	/**
-	 * @return a string list with input info
-	 */
-
-//	public synchronized ArrayList<String> getInputsInfo()
-//	{
-//		ArrayList<String> inputsInfo=new ArrayList<String>();   
-//		
-//		if(inputs!=null)
-//			for(MemoryObject input:inputs)
-//			{
-//				inputsInfo.add(input.getInfo());
-//			}
-//
-//		return inputsInfo;
-//	}
-
-	/**
 	 * @param inputs the inputs to set
 	 */
-	public synchronized void setInputs(List<MemoryObject> inputs)
+	public synchronized void setInputs(List<Memory> inputs)
 	{
 		this.inputs = inputs;
 	}
 	/**
 	 * @param adds one input to set
 	 */
-	public synchronized void addInput(MemoryObject input)//TODO:  how should we deal with an attempt to add an existing MO?
+	public synchronized void addInput(Memory input)
 	{
 		this.inputs.add(input);
 	}
-	/* public synchronized void pushInput(MemoryObject input)//TODO:  how should we deal with an attempt to add an existing MO?
-	{
-		addInput(input);
-	}
-        */
+
         /**
 	 * @param adds a list of inputs
 	 */
-	public synchronized void addInputs(List<MemoryObject> inputs)//TODO:  how should we deal with an attempt to add an existing MO?
+	public synchronized void addInputs(List<Memory> inputs)
 	{
 		this.inputs.addAll(inputs);
 	}
-	/**
-	 * @param adds a list of inputs
-	 */
-	/*public synchronized void pushInputs(List<MemoryObject> inputs)//TODO:  how should we deal with an attempt to add an existing MO?
-	{
-		addInputs(inputs);
-	}
-        */
+
 	/**
 	 * @param adds one output to set
 	 */
-	public synchronized void addOutput(MemoryObject output)
+	public synchronized void addOutput(Memory output)
 	{
 		this.outputs.add(output);
 	}
-	/*
-        public synchronized void pushOutput(MemoryObject output)
-	{
-		addOutput(output);
-	}
-        */
+
 	/**
-	 * Removes a given memory object from output list
+	 * Removes a given memory from output list
 	 * @param output
 	 */
-	public synchronized void removesOutput(MemoryObject output){
+	public synchronized void removesOutput(Memory output){
 		this.outputs.remove(output);
 	}
 	/**
-	 * Removes a given memory object from input list
+	 * Removes a given memory from input list
 	 * @param output
 	 */
-	public synchronized void removesInput(MemoryObject input){
+	public synchronized void removesInput(Memory input){
 		this.inputs.remove(input);
 	}
 
-	public synchronized void removeFromOutput(List<MemoryObject> outputs)
+	public synchronized void removeFromOutput(List<Memory> outputs)
 	{
 		this.outputs.removeAll(outputs);
 	}
-	public synchronized void removeFromInput(List<MemoryObject> inputs)
+	
+	public synchronized void removeFromInput(List<Memory> inputs)
 	{
 		this.inputs.removeAll(inputs);
 	}
-        public synchronized void addOutputs(List<MemoryObject> outputs)
+        public synchronized void addOutputs(List<Memory> outputs)
 	{
 		this.outputs.addAll(outputs);
 	}
-	/* public synchronized void pushOutputs(List<MemoryObject> outputs)
-	{
-		addOutputs(outputs);
-	} */
+
 	/**
 	 * @return the outputs
 	 */
-	public synchronized List<MemoryObject> getOutputs()
+	public synchronized List<Memory> getOutputs()
 	{
 		return outputs;
 	}
@@ -403,12 +368,12 @@ public abstract class Codelet implements Runnable
 	 * @param type
 	 * @return list of all memory objects in output of a given type
 	 */
-	private synchronized ArrayList<MemoryObject> getOutputsOfType(String type) 
+	private synchronized ArrayList<Memory> getOutputsOfType(String type) 
 	{
-		ArrayList<MemoryObject> outputsOfType = new ArrayList<MemoryObject>();
+		ArrayList<Memory> outputsOfType = new ArrayList<Memory>();
 		
 		if(outputs!=null&&outputs.size()>0)
-			for(MemoryObject mo:this.outputs)
+			for(Memory mo:this.outputs)
 			{
 				if(mo.getName()!=null && mo.getName().equalsIgnoreCase(type))
 				{
@@ -422,12 +387,12 @@ public abstract class Codelet implements Runnable
 	 * @param type
 	 * @return list of memory objects in input of a given type
 	 */
-	public synchronized ArrayList<MemoryObject> getInputsOfType(String type) 
+	public synchronized ArrayList<Memory> getInputsOfType(String type) 
 	{
-		ArrayList<MemoryObject> inputsOfType = new ArrayList<MemoryObject>();
+		ArrayList<Memory> inputsOfType = new ArrayList<Memory>();
 		
 		if(inputs!=null&&inputs.size()>0)
-			for(MemoryObject mo:this.inputs)
+			for(Memory mo:this.inputs)
 			{
 				if(mo.getName()!=null && mo.getName().equalsIgnoreCase(type))
 				{
@@ -442,7 +407,7 @@ public abstract class Codelet implements Runnable
 	/**
 	 * @param outputs the outputs to set
 	 */
-	public synchronized void setOutputs(List<MemoryObject> outputs)
+	public synchronized void setOutputs(List<Memory> outputs)
 	{
 		this.outputs = outputs;
 	}
@@ -450,7 +415,7 @@ public abstract class Codelet implements Runnable
 	/**
 	 * @return the broadcast
 	 */
-	public synchronized List<MemoryObject> getBroadcast()
+	public synchronized List<Memory> getBroadcast()
 	{
 		return broadcast;
 	}
@@ -459,17 +424,17 @@ public abstract class Codelet implements Runnable
 	/**
 	 * @param broadcast the broadcast to set
 	 */
-	public synchronized void setBroadcast(List<MemoryObject> broadcast)
+	public synchronized void setBroadcast(List<Memory> broadcast)
 	{
 		this.broadcast = broadcast;
 	}
 
-	public synchronized MemoryObject getBroadcast(String name) 
+	public synchronized Memory getBroadcast(String name) 
 	{
 		if(broadcast!=null&&broadcast.size()>0)
-			for (MemoryObject mo : broadcast) 
+			for (Memory mo : broadcast) 
 			{
-				if (mo.name!=null && mo.name.equalsIgnoreCase(name)) 
+				if (mo.getName()!=null && mo.getName().equalsIgnoreCase(name)) 
 					return mo;
 			}
 		return null;
@@ -478,15 +443,11 @@ public abstract class Codelet implements Runnable
 	/**
 	 * @param b one input to set
 	 */
-	 public synchronized void addBroadcast(MemoryObject b)//TODO:  how should we deal with an attempt to add an existing MO?
+	 public synchronized void addBroadcast(Memory b)
 	 {
 		 this.broadcast.add(b);
 	 }
 
-	 /* public synchronized void pushBroadcast(MemoryObject b)//TODO:  how should we deal with an attempt to add an existing MO?
-	 {
-		 addBroadcast(b);
-	 } */
 	 /**
 	  * 
 	  * @return The name of the thread running this Codelet
@@ -506,20 +467,20 @@ public abstract class Codelet implements Runnable
 	 }
 
 	 /**
-	  * This method returns an input memory object from its input list.
-	  * If it couldn't find the given MO, it sets this codelet as not able to perform proc(), and keeps trying to find it.
+	  * This method returns an input memory from its input list.
+	  * If it couldn't find the given M, it sets this codelet as not able to perform proc(), and keeps trying to find it.
 	  * 
-	  * @param type type of memory object it needs
-	  * @param index position of memory object in the sublist
-	  * @return memory object of type at position 
+	  * @param type type of memory it needs
+	  * @param index position of memory in the sublist
+	  * @return memory of type at position 
 	  */
-	 public synchronized MemoryObject getInput(String type, int index)
+	 public synchronized Memory getInput(String type, int index)
 	 {
-		 MemoryObject inputMO = null;
-		 ArrayList<MemoryObject> listMO=new ArrayList<MemoryObject>();
+		 Memory inputMO = null;
+		 ArrayList<Memory> listMO=new ArrayList<Memory>();
 
 		 if(inputs!=null&&inputs.size()>0)
-			 for(MemoryObject mo:inputs)
+			 for(Memory mo:inputs)
 			 {
 				 if(mo.getName()!=null && mo.getName().equalsIgnoreCase(type))
 				 {
@@ -538,12 +499,12 @@ public abstract class Codelet implements Runnable
 		 return inputMO;
 	 }
 
-	 public synchronized MemoryObject getInput(String name) 
+	 public synchronized Memory getInput(String name) 
 	 {
 		 if(inputs!=null&&inputs.size()>0)
-			 for (MemoryObject mo : inputs) 
+			 for (Memory mo : inputs) 
 			 {
-				 if (mo.name!=null && mo.name.equalsIgnoreCase(name)) 
+				 if (mo.getName()!=null && mo.getName().equalsIgnoreCase(name)) 
 					 return mo;
 			 }
 		 
@@ -551,20 +512,20 @@ public abstract class Codelet implements Runnable
 	 }
 
 	 /**
-	  * This method returns an output memory object from its output list.
-	  * If it couldn't find the given MO, it sets this codelet as not able to perform proc(), and keeps trying to find it.
+	  * This method returns an output memory from its output list.
+	  * If it couldn't find the given M, it sets this codelet as not able to perform proc(), and keeps trying to find it.
 	  * 
-	  * @param type type of memory object it needs
-	  * @param position position of memory object in the sublist
-	  * @return memory object of type at position 
+	  * @param type type of memory it needs
+	  * @param position position of memory in the sublist
+	  * @return memory of type at position 
 	  */
-	 public synchronized MemoryObject getOutput(String type, int index)
+	 public synchronized Memory getOutput(String type, int index)
 	 {
-		 MemoryObject outputMO = null;
-		 ArrayList<MemoryObject> listMO=new ArrayList<MemoryObject>();
+		 Memory outputMO = null;
+		 ArrayList<Memory> listMO=new ArrayList<Memory>();
 
 		 if(outputs!=null&&outputs.size()>0)
-			 for(MemoryObject mo:outputs)
+			 for(Memory mo:outputs)
 			 {
 				 if(mo!=null && type!=null && mo.getName()!=null && mo.getName().equalsIgnoreCase(type))
 				 {
@@ -585,12 +546,12 @@ public abstract class Codelet implements Runnable
 		 return outputMO;
 	 }
 
-	 public synchronized MemoryObject getOutput(String name) 
+	 public synchronized Memory getOutput(String name) 
 	 {
 		 if(outputs!=null&&outputs.size()>0)
-			 for (MemoryObject mo : outputs) 
+			 for (Memory mo : outputs) 
 			 {
-				 if (mo.name!=null && mo.name.equalsIgnoreCase(name)) 
+				 if (mo.getName()!=null && mo.getName().equalsIgnoreCase(name)) 
 					 return mo;
 			 }
 		 
@@ -603,15 +564,15 @@ public abstract class Codelet implements Runnable
 	  * @param index
 	  * @return
 	  */
-	 public synchronized MemoryObject getBroadcast(String type, int index)
+	 public synchronized Memory getBroadcast(String type, int index)
 	 {
-		 MemoryObject broadcastMO = null;
+		 Memory broadcastMO = null;
 		 
-		 ArrayList<MemoryObject> listMO=new ArrayList<MemoryObject>();
+		 ArrayList<Memory> listMO=new ArrayList<Memory>();
 
 		 if(broadcast!=null&&broadcast.size()>0)
 		 {
-			 for(MemoryObject mo:broadcast)
+			 for(Memory mo:broadcast)
 			 {
 				 if(mo.getName()!=null && mo.getName().equalsIgnoreCase(type))
 				 {

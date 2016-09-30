@@ -44,23 +44,7 @@ public class Mind
 		return rawMemory;
 	}
 
-	/**
-	 * Creates a new MemoryObject and adds it to the Raw Memory, using provided info and type
-	 * 
-	 * @param type memory object type
-	 * @param info memory object info
-	 * @return mo created MemoryObject
-	 */
-//	public synchronized MemoryObject createMemoryObject(MemoryObjectType type, String info)
-//	{
-//		MemoryObject mo = null;
-//
-//		if(rawMemory!=null)
-//			mo = rawMemory.createMemoryObject(type, info);
-//
-//		return mo;
-//
-//	}
+
 	/**
 	 * Creates a new MemoryObject (Java style) and adds it to the Raw Memory, using provided info and type
 	 * 

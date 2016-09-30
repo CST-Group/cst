@@ -19,7 +19,7 @@ import org.json.JSONArray;
 import org.json.JSONException;
 
 import br.unicamp.cst.core.entities.Codelet;
-import br.unicamp.cst.core.entities.MemoryObject;
+import br.unicamp.cst.core.entities.Memory;
 import br.unicamp.cst.core.entities.RawMemory;
 import br.unicamp.cst.memory.WorkingStorage;
 
@@ -31,18 +31,18 @@ import br.unicamp.cst.memory.WorkingStorage;
  */
 public class ActionSelectionCodelet extends Codelet{
 
-	MemoryObject SOLUTION_TREE_MO;	//input (should be found in working storage)
-	MemoryObject ACTION_MO; //output
-	MemoryObject STIMULUS_MO; //input
+	Memory SOLUTION_TREE_MO;	//input (should be found in working storage)
+	Memory ACTION_MO; //output
+	Memory STIMULUS_MO; //input
 	int[] empty_solution_tree={0, 1, 0, 1, 0, 1};
 	private GlasActionSelection sm;
 	private Timestamp last_stimulus_time_stamp;
 	private boolean first_run=true;
 	private JSONArray current_solution_tree_jsonarray=new JSONArray();
-	private MemoryObject NEW_STIM_MO;
-	//	private MemoryObject NEW_EVENT_DETECTED_MO;
-	private MemoryObject NEW_ACTION_MO;
-	private MemoryObject NEW_REWARD_MO;
+	private Memory NEW_STIM_MO;
+	//	private Memory NEW_EVENT_DETECTED_MO;
+	private Memory NEW_ACTION_MO;
+	private Memory NEW_REWARD_MO;
 	private boolean enabled=true;
 	private double exp_factor=0; //Exploratory factor
 	private double solution_tree_fitness = Double.NEGATIVE_INFINITY;
@@ -86,7 +86,7 @@ public class ActionSelectionCodelet extends Codelet{
 	public void accessMemoryObjects() 
 	{		
 		SOLUTION_TREE_MO=this.getInput("SOLUTION_TREE", 0);
-		ArrayList<MemoryObject> teste = ws!=null ? ws.getAllOfType("SOLUTION_TREE") : null;
+		ArrayList<Memory> teste = ws!=null ? ws.getAllOfType("SOLUTION_TREE") : null;
 		STIMULUS_MO=this.getInput("STIMULUS", 0);
 		//		System.out.println("(STIMULUS_MO.getInfo() (antes): "+STIMULUS_MO.getInfo());
 		//		ACTION_MO=this.getOutput(MemoryObjectTypesGlas.ACTION, 0);
@@ -162,14 +162,14 @@ public class ActionSelectionCodelet extends Codelet{
 				}
 
 
-				ACTION_MO.updateI(Integer.toString(selected_action[0])); //TODO is [0] correct?
+				ACTION_MO.setI(Integer.toString(selected_action[0])); //TODO is [0] correct?
 				//			System.out.println("ACTION_MO.updateInfo("+selected_action[0]+")");
 
 				new_action=true;
 				//			System.out.println("new_action=true;");
 			}
 
-			NEW_ACTION_MO.updateI(String.valueOf(new_action));
+			NEW_ACTION_MO.setI(String.valueOf(new_action));
 
 		}//end if(enabled)
 	}// end proc()

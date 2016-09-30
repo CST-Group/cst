@@ -20,7 +20,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import br.unicamp.cst.core.entities.Codelet;
-import br.unicamp.cst.core.entities.MemoryObject;
+import br.unicamp.cst.core.entities.Memory;
 import br.unicamp.cst.core.exceptions.CodeletActivationBoundsException;
 import br.unicamp.cst.memory.WorkingStorage;
 
@@ -42,26 +42,26 @@ public abstract class Behavior extends Codelet
 	protected ArrayList<String> actionList = new ArrayList<String>();// Actions that are to be performed by actuators and which constitute this behavior
 	protected JSONArray jsonActionList = new JSONArray();
 
-	protected ArrayList<MemoryObject> preconList = new ArrayList<MemoryObject>(); // ci list of preconditions that must be fulfilled before the competence module can become active
-	protected ArrayList<MemoryObject> addList = new ArrayList<MemoryObject>(); // ai expected effects of this action in terms of an add list
-	protected ArrayList<MemoryObject> deleteList = new ArrayList<MemoryObject>(); // di expected effects of this action in terms of a delete list
+	protected ArrayList<Memory> preconList = new ArrayList<Memory>(); // ci list of preconditions that must be fulfilled before the competence module can become active
+	protected ArrayList<Memory> addList = new ArrayList<Memory>(); // ai expected effects of this action in terms of an add list
+	protected ArrayList<Memory> deleteList = new ArrayList<Memory>(); // di expected effects of this action in terms of a delete list
 	//TODO I'm modifying MAES original model to encompass a "soft" precondition list. Is is "soft" in the sense that it is not a must have.
 	// a soft precondition affects activation spread in the same way a traditional precondition does, but its absense does not prevent the behavior to be executed.	
-	protected ArrayList<MemoryObject> softPreconList = new ArrayList<MemoryObject>(); // ci list of preconditions that are desirable to be fulfilled before the competence module can become active
+	protected ArrayList<Memory> softPreconList = new ArrayList<Memory>(); // ci list of preconditions that are desirable to be fulfilled before the competence module can become active
 
 	// Alpha level of activation is the codelet's own A (activation level) [Hypothesis to be investigated]
 	protected ArrayList<Behavior> allBehaviors = new ArrayList<Behavior>();//Pointers to all behaviors in the network. Basal ganglia should support this hypothesis. 
 	protected ArrayList<Behavior> coalition = new ArrayList<Behavior>(); //A subset of all behaviors, given by consciousness.
 
-	protected Hashtable<Behavior, ArrayList<MemoryObject>> predecessors = new Hashtable<Behavior, ArrayList<MemoryObject>>();
-	protected Hashtable<Behavior, ArrayList<MemoryObject>> successors = new Hashtable<Behavior, ArrayList<MemoryObject>>();
-	protected Hashtable<Behavior, ArrayList<MemoryObject>> conflicters = new Hashtable<Behavior, ArrayList<MemoryObject>>();
+	protected Hashtable<Behavior, ArrayList<Memory>> predecessors = new Hashtable<Behavior, ArrayList<Memory>>();
+	protected Hashtable<Behavior, ArrayList<Memory>> successors = new Hashtable<Behavior, ArrayList<Memory>>();
+	protected Hashtable<Behavior, ArrayList<Memory>> conflicters = new Hashtable<Behavior, ArrayList<Memory>>();
 
-	private ArrayList<MemoryObject> permanentGoals = new ArrayList<MemoryObject>();
-	private ArrayList<MemoryObject> onceOnlyGoals = new ArrayList<MemoryObject>();
-	private ArrayList<MemoryObject> protectedGoals = new ArrayList<MemoryObject>();
-	private ArrayList<MemoryObject> goals = new ArrayList<MemoryObject>();
-	private ArrayList<MemoryObject> worldState = new ArrayList<MemoryObject>();
+	private ArrayList<Memory> permanentGoals = new ArrayList<Memory>();
+	private ArrayList<Memory> onceOnlyGoals = new ArrayList<Memory>();
+	private ArrayList<Memory> protectedGoals = new ArrayList<Memory>();
+	private ArrayList<Memory> goals = new ArrayList<Memory>();
+	private ArrayList<Memory> worldState = new ArrayList<Memory>();
 	private ArrayList<Object> listOfWorldBeliefStates=new ArrayList<Object>();
 	private ArrayList<Object> listOfPreviousWorldBeliefStates=new ArrayList<Object>();
 
@@ -168,7 +168,7 @@ public abstract class Behavior extends Codelet
 	{
 		worldState.clear();
 		String moType;
-		for (MemoryObject mo : getInputs())
+		for (Memory mo : getInputs())
 		{
 			if(mo!=null){
 				moType = mo.getName();
@@ -205,7 +205,7 @@ public abstract class Behavior extends Codelet
 //		}
 		
 
-		ArrayList<MemoryObject> intersection = new ArrayList<MemoryObject>();
+		ArrayList<Memory> intersection = new ArrayList<Memory>();
 		for (Behavior competence : coalition)
 		{
 //			if(competence.getName().contains("ROOM13")){
@@ -274,9 +274,9 @@ public abstract class Behavior extends Codelet
 		protectedGoals.clear();
 		String moType;
 
-		ArrayList<MemoryObject> my_inputs=new ArrayList<MemoryObject>();
+		ArrayList<Memory> my_inputs=new ArrayList<Memory>();
 		my_inputs.addAll(getInputs());
-		for (MemoryObject mo : my_inputs)
+		for (Memory mo : my_inputs)
 		{
 			if(mo!=null){
 				moType = mo.getName();
@@ -318,7 +318,7 @@ public abstract class Behavior extends Codelet
 	 */
 	private boolean resourceConflict() {//TODO must develop this idea further
 		boolean resourceConflict=false;
-		ArrayList<MemoryObject> allOfType=new ArrayList<MemoryObject>();
+		ArrayList<Memory> allOfType=new ArrayList<Memory>();
 
 		if(ws!=null)
 			allOfType.addAll(ws.getAllOfType("BEHAVIOR_PROPOSITION"));
@@ -328,7 +328,7 @@ public abstract class Behavior extends Codelet
 
 		if(allOfType!=null){
 
-			for(MemoryObject bp:allOfType){
+			for(Memory bp:allOfType){
 				try {
 					JSONObject jsonBp=new JSONObject(bp.getI());
 					//System.out.println("=======> bp.getInfo(): "+bp.getInfo());
@@ -365,15 +365,15 @@ public abstract class Behavior extends Codelet
 	private boolean checkIfExecutable()
 	{
 		listOfWorldBeliefStates = new ArrayList<Object>();
-		for(MemoryObject mo:this.getInputsOfType("WORLD_STATE")){
+		for(Memory mo:this.getInputsOfType("WORLD_STATE")){
 			listOfWorldBeliefStates.add(mo.getI());
 			//				System.out.println("###########adding world state");
 		}
-		ArrayList<MemoryObject> tempPreconList=new ArrayList<MemoryObject>();
+		ArrayList<Memory> tempPreconList=new ArrayList<Memory>();
 		//Comparison between two MOs is performed between their infos
 		tempPreconList.addAll(preconList);
 
-		for(MemoryObject precon:preconList){ 
+		for(Memory precon:preconList){ 
 
 			for(Object ws:listOfWorldBeliefStates){
 				if(precon.getI().equals(ws)){
@@ -508,7 +508,7 @@ public abstract class Behavior extends Codelet
 	 * @param adds
 	 *           condition to listOfPreconditions
 	 */
-	public void addPreconList(MemoryObject condition)
+	public void addPreconList(Memory condition)
 	{
 		this.preconList.add(condition);
 		this.addInput(condition);
@@ -518,7 +518,7 @@ public abstract class Behavior extends Codelet
 	/**
 	 * @return deletes condition from listOfPreconditions
 	 */
-	public boolean delPreconList(MemoryObject condition)
+	public boolean delPreconList(Memory condition)
 	{
 		this.removesInput(condition);
 		return preconList.remove(condition);
@@ -528,7 +528,7 @@ public abstract class Behavior extends Codelet
 	 * @param adds
 	 *           condition to listOfPreconditions
 	 */
-	public void addSoftPreconList(MemoryObject condition)
+	public void addSoftPreconList(Memory condition)
 	{
 		this.softPreconList.add(condition);
 		this.addInput(condition);
@@ -538,7 +538,7 @@ public abstract class Behavior extends Codelet
 	/**
 	 * @return deletes condition from listOfPreconditions
 	 */
-	public boolean delSoftPreconList(MemoryObject condition)
+	public boolean delSoftPreconList(Memory condition)
 	{
 		this.removesInput(condition);
 		return softPreconList.remove(condition);
@@ -548,7 +548,7 @@ public abstract class Behavior extends Codelet
 	 * @param adds
 	 *           condition to addList
 	 */
-	public void addAddList(MemoryObject condition)
+	public void addAddList(Memory condition)
 	{
 		this.addList.add(condition);
 		this.addOutput(condition);
@@ -557,7 +557,7 @@ public abstract class Behavior extends Codelet
 	/**
 	 * @return deletes condition from addList
 	 */
-	public boolean delAddList(MemoryObject condition)
+	public boolean delAddList(Memory condition)
 	{	
 		this.removesOutput(condition);
 		return addList.remove(condition);
@@ -567,7 +567,7 @@ public abstract class Behavior extends Codelet
 	 * @param adds
 	 *           condition to deleteList
 	 */
-	public void addDelList(MemoryObject condition)
+	public void addDelList(Memory condition)
 	{
 		this.addOutput(condition);
 		this.deleteList.add(condition);
@@ -576,7 +576,7 @@ public abstract class Behavior extends Codelet
 	/**
 	 * @return deletes condition from deleteList
 	 */
-	public boolean delDelList(MemoryObject condition)
+	public boolean delDelList(Memory condition)
 	{	this.removesOutput(condition);
 	return deleteList.remove(condition);
 	}
@@ -603,7 +603,7 @@ public abstract class Behavior extends Codelet
 	 * 
 	 * @return list of preconditions
 	 */
-	public ArrayList<MemoryObject> getListOfPreconditions()
+	public ArrayList<Memory> getListOfPreconditions()
 	{
 		return preconList;
 	}
@@ -613,7 +613,7 @@ public abstract class Behavior extends Codelet
 	 * @param listOfPreconditions
 	 *           List of MemoryObjects with preconditions
 	 */
-	public void setListOfPreconditions(ArrayList<MemoryObject> listOfPreconditions)
+	public void setListOfPreconditions(ArrayList<Memory> listOfPreconditions)
 	{
 		this.preconList = listOfPreconditions;
 	}
@@ -622,7 +622,7 @@ public abstract class Behavior extends Codelet
 	 * 
 	 * @return add list
 	 */
-	public ArrayList<MemoryObject> getAddList()
+	public ArrayList<Memory> getAddList()
 	{
 		return addList;
 	}
@@ -632,7 +632,7 @@ public abstract class Behavior extends Codelet
 	 * @param addList
 	 *           sets the add list
 	 */
-	public void setAddList(ArrayList<MemoryObject> addList)
+	public void setAddList(ArrayList<Memory> addList)
 	{
 		this.addList = addList;
 	}
@@ -641,7 +641,7 @@ public abstract class Behavior extends Codelet
 	 * 
 	 * @return the delete list
 	 */
-	public ArrayList<MemoryObject> getDeleteList()
+	public ArrayList<Memory> getDeleteList()
 	{
 		return deleteList;
 	}
@@ -651,7 +651,7 @@ public abstract class Behavior extends Codelet
 	 * @param deleteList
 	 *           sets the delete list
 	 */
-	public void setDeleteList(ArrayList<MemoryObject> deleteList)
+	public void setDeleteList(ArrayList<Memory> deleteList)
 	{
 		this.deleteList = deleteList;
 	}
@@ -733,7 +733,7 @@ public abstract class Behavior extends Codelet
 	/**
 	 * @return the successors
 	 */
-	public Hashtable<Behavior, ArrayList<MemoryObject>> getSuccessors()
+	public Hashtable<Behavior, ArrayList<Memory>> getSuccessors()
 	{
 		return successors;
 	}
@@ -742,7 +742,7 @@ public abstract class Behavior extends Codelet
 	 * @param successors
 	 *           the successors to set
 	 */
-	public void setSuccessors(Hashtable<Behavior, ArrayList<MemoryObject>> successors)
+	public void setSuccessors(Hashtable<Behavior, ArrayList<Memory>> successors)
 	{
 		this.successors = successors;
 	}
@@ -750,7 +750,7 @@ public abstract class Behavior extends Codelet
 	/**
 	 * @return the predecessors
 	 */
-	public Hashtable<Behavior, ArrayList<MemoryObject>> getPredecessors()
+	public Hashtable<Behavior, ArrayList<Memory>> getPredecessors()
 	{
 		return predecessors;
 	}
@@ -759,7 +759,7 @@ public abstract class Behavior extends Codelet
 	 * @param predecessors
 	 *           the predecessors to set
 	 */
-	public void setPredecessors(Hashtable<Behavior, ArrayList<MemoryObject>> predecessors)
+	public void setPredecessors(Hashtable<Behavior, ArrayList<Memory>> predecessors)
 	{
 		this.predecessors = predecessors;
 	}
@@ -767,7 +767,7 @@ public abstract class Behavior extends Codelet
 	/**
 	 * @return the conflicters
 	 */
-	public Hashtable<Behavior, ArrayList<MemoryObject>> getConflicters()
+	public Hashtable<Behavior, ArrayList<Memory>> getConflicters()
 	{
 		return conflicters;
 	}
@@ -776,7 +776,7 @@ public abstract class Behavior extends Codelet
 	 * @param conflicters
 	 *           the conflicters to set
 	 */
-	public void setConflicters(Hashtable<Behavior, ArrayList<MemoryObject>> conflicters)
+	public void setConflicters(Hashtable<Behavior, ArrayList<Memory>> conflicters)
 	{
 		this.conflicters = conflicters;
 	}
@@ -807,7 +807,7 @@ public abstract class Behavior extends Codelet
 	{ 		
 		double activation = 0;
 		ArrayList<Behavior> tempCodelets = new ArrayList<Behavior>();
-		ArrayList<MemoryObject> THIS_softPrecon_and_ClassicPrecon=new ArrayList<MemoryObject>();
+		ArrayList<Memory> THIS_softPrecon_and_ClassicPrecon=new ArrayList<Memory>();
 		THIS_softPrecon_and_ClassicPrecon.addAll(this.getListOfPreconditions());
 		THIS_softPrecon_and_ClassicPrecon.addAll(this.getSoftPreconList());
 
@@ -815,9 +815,9 @@ public abstract class Behavior extends Codelet
 
 		if (!tempCodelets.isEmpty())
 		{
-			ArrayList<MemoryObject> intersection = getIntersectionSet(this.getWorldState(), THIS_softPrecon_and_ClassicPrecon);
+			ArrayList<Memory> intersection = getIntersectionSet(this.getWorldState(), THIS_softPrecon_and_ClassicPrecon);
 			
-			for (MemoryObject j : intersection)
+			for (Memory j : intersection)
 			{
 				double sharpM = 0;
 				for (Behavior module : tempCodelets)
@@ -826,7 +826,7 @@ public abstract class Behavior extends Codelet
 					{
 						try
 						{
-							ArrayList<MemoryObject> MODULE_softPrecon_and_ClassicPrecon=new ArrayList<MemoryObject>();
+							ArrayList<Memory> MODULE_softPrecon_and_ClassicPrecon=new ArrayList<Memory>();
 							MODULE_softPrecon_and_ClassicPrecon.addAll(module.getListOfPreconditions());
 							MODULE_softPrecon_and_ClassicPrecon.addAll(module.getSoftPreconList());
 							
@@ -885,8 +885,8 @@ public abstract class Behavior extends Codelet
 		tempCodelets.addAll(this.getAllBehaviors());
 		if (!tempCodelets.isEmpty())
 		{
-			ArrayList<MemoryObject> intersection = getIntersectionSet(this.getGoals(), this.getAddList());
-			for (MemoryObject j : intersection)
+			ArrayList<Memory> intersection = getIntersectionSet(this.getGoals(), this.getAddList());
+			for (Memory j : intersection)
 			{
 				double sharpA = 0;
 				for (Behavior module : tempCodelets)
@@ -938,8 +938,8 @@ public abstract class Behavior extends Codelet
 		// synchronized(this.coalition){
 		if (!this.getCoalition().isEmpty())
 		{
-			ArrayList<MemoryObject> intersection = getIntersectionSet(this.getProtectedGoals(), this.getDeleteList());
-			for (MemoryObject j : intersection)
+			ArrayList<Memory> intersection = getIntersectionSet(this.getProtectedGoals(), this.getDeleteList());
+			for (Memory j : intersection)
 			{
 				double sharpU = 0;
 				for (Behavior module : this.getCoalition())
@@ -1008,14 +1008,14 @@ public abstract class Behavior extends Codelet
 						if (!module.isExecutable())
 						{// A competence module x that is not executable spreads activation backward.
 
-							ArrayList<MemoryObject> intersection = new ArrayList<MemoryObject>();
-							ArrayList<MemoryObject> preconPlusSoftPrecon=new ArrayList<MemoryObject>();
+							ArrayList<Memory> intersection = new ArrayList<Memory>();
+							ArrayList<Memory> preconPlusSoftPrecon=new ArrayList<Memory>();
 
 							preconPlusSoftPrecon.addAll(module.getListOfPreconditions());
 
 							intersection.addAll(getIntersectionSet(preconPlusSoftPrecon, this.getAddList()));
 							intersection.removeAll(worldState);
-							for (MemoryObject item : intersection)
+							for (Memory item : intersection)
 							{
 								amount = amount + ((1.0 / this.competencesWithPropInAdd(item)) * (1.0 / (double) this.getAddList().size()));
 							}
@@ -1064,9 +1064,9 @@ public abstract class Behavior extends Codelet
 						double amount = 0;
 						if (module.isExecutable())
 						{// An executable competence module x spreads activation forward.
-							ArrayList<MemoryObject> intersection = new ArrayList<MemoryObject>();
+							ArrayList<Memory> intersection = new ArrayList<Memory>();
 
-							ArrayList<MemoryObject> preconPlusSoftPrecon=new ArrayList<MemoryObject>();
+							ArrayList<Memory> preconPlusSoftPrecon=new ArrayList<Memory>();
 
 							preconPlusSoftPrecon.addAll(this.getListOfPreconditions());
 							preconPlusSoftPrecon.addAll(this.getSoftPreconList());
@@ -1074,7 +1074,7 @@ public abstract class Behavior extends Codelet
 
 							intersection.addAll(getIntersectionSet(module.getDeleteList(), preconPlusSoftPrecon));
 							intersection.removeAll(worldState);
-							for (MemoryObject item : intersection)
+							for (Memory item : intersection)
 							{
 								amount = amount + ((1.0 / this.competencesWithPropInPrecon(item)) * (1.0 / (double) preconPlusSoftPrecon.size()));
 							}
@@ -1122,9 +1122,9 @@ public abstract class Behavior extends Codelet
 					{
 						// ---------------------------------
 						double amount = 0;
-						ArrayList<MemoryObject> intersection = new ArrayList<MemoryObject>();
+						ArrayList<Memory> intersection = new ArrayList<Memory>();
 
-						ArrayList<MemoryObject> preconPlusSoftPrecon=new ArrayList<MemoryObject>();						
+						ArrayList<Memory> preconPlusSoftPrecon=new ArrayList<Memory>();						
 						preconPlusSoftPrecon.addAll(this.getListOfPreconditions());
 						preconPlusSoftPrecon.addAll(this.getSoftPreconList());
 
@@ -1133,13 +1133,13 @@ public abstract class Behavior extends Codelet
 
 						if (!((module.getActivation() < this.getActivation()) && (!intersection.isEmpty())))
 						{ // this is the else case due to !
-							preconPlusSoftPrecon=new ArrayList<MemoryObject>();						
+							preconPlusSoftPrecon=new ArrayList<Memory>();						
 							preconPlusSoftPrecon.addAll(module.getListOfPreconditions());
 							preconPlusSoftPrecon.addAll(module.getSoftPreconList());
 
 							intersection = getIntersectionSet(this.getDeleteList(), preconPlusSoftPrecon);
 							intersection = getIntersectionSet(intersection, worldState);
-							for (MemoryObject item : intersection)
+							for (Memory item : intersection)
 							{
 								amount = amount + ((1.0 / this.competencesWithPropInDel(item)) * (1.0 / (double) this.getDeleteList().size()));
 							}
@@ -1147,7 +1147,7 @@ public abstract class Behavior extends Codelet
 							// (self.conf_energy / self.goal_energy) *
 							// amount)
 							amount = module.getActivation() * (globalVariables.getDelta() / globalVariables.getGamma()) * amount;
-							ArrayList<MemoryObject> modulos = this.getConflicters().get(module);
+							ArrayList<Memory> modulos = this.getConflicters().get(module);
 							double numberOfConflicters = 0;
 							if (modulos != null)
 							{
@@ -1204,10 +1204,10 @@ public abstract class Behavior extends Codelet
 	 * @throws Exception 
 	 */
 
-	public ArrayList<MemoryObject> getIntersectionSet(ArrayList<MemoryObject> A, ArrayList<MemoryObject> B)
+	public ArrayList<Memory> getIntersectionSet(ArrayList<Memory> A, ArrayList<Memory> B)
 	{//TODO Should this comparison be performed as pattern matching?
-		ArrayList<MemoryObject> currentList = new ArrayList<MemoryObject>();
-		ArrayList<MemoryObject> intersection = new ArrayList<MemoryObject>();
+		ArrayList<Memory> currentList = new ArrayList<Memory>();
+		ArrayList<Memory> intersection = new ArrayList<Memory>();
 
 
 		if((A.isEmpty()||B.isEmpty())||(A==null||B==null)){
@@ -1231,7 +1231,7 @@ public abstract class Behavior extends Codelet
 
 		for (int i = intersection.size() - 1; i > -1; --i)
 		{
-			MemoryObject mo = intersection.get(i);
+			Memory mo = intersection.get(i);
 
 			if (!removeByInfo(currentList,mo.getI()))
 				removeByInfo(intersection,mo.getI());
@@ -1239,10 +1239,10 @@ public abstract class Behavior extends Codelet
 		return intersection;
 	}
 
-	public boolean removeByInfo(ArrayList<MemoryObject> moList, Object target){
+	public boolean removeByInfo(ArrayList<Memory> moList, Object target){
 		boolean removed=false;
-		MemoryObject mustRemove=null;
-		for(MemoryObject mo:moList){
+		Memory mustRemove=null;
+		for(Memory mo:moList){
 			if(mo.getI().equals(target)){
 				mustRemove=mo;
 				break;
@@ -1261,7 +1261,7 @@ public abstract class Behavior extends Codelet
 	/**
 	 * @return the worldState
 	 */
-	public ArrayList<MemoryObject> getWorldState()
+	public ArrayList<Memory> getWorldState()
 	{
 		return worldState;
 	}
@@ -1270,7 +1270,7 @@ public abstract class Behavior extends Codelet
 	 * @param worldState
 	 *           the worldState to set
 	 */
-	public void setWorldState(ArrayList<MemoryObject> worldState)
+	public void setWorldState(ArrayList<Memory> worldState)
 	{
 		this.worldState = worldState;
 	}
@@ -1278,7 +1278,7 @@ public abstract class Behavior extends Codelet
 	/**
 	 * @return the protectedGoals
 	 */
-	public ArrayList<MemoryObject> getProtectedGoals()
+	public ArrayList<Memory> getProtectedGoals()
 	{
 		return protectedGoals;
 	}
@@ -1287,7 +1287,7 @@ public abstract class Behavior extends Codelet
 	 * @param protectedGoals
 	 *           the protectedGoals to set
 	 */
-	public void setProtectedGoals(ArrayList<MemoryObject> protectedGoals)
+	public void setProtectedGoals(ArrayList<Memory> protectedGoals)
 	{
 		this.protectedGoals = protectedGoals;
 	}
@@ -1295,7 +1295,7 @@ public abstract class Behavior extends Codelet
 	/**
 	 * @return the permanentGoals
 	 */
-	public ArrayList<MemoryObject> getPermanentGoals()
+	public ArrayList<Memory> getPermanentGoals()
 	{
 		return permanentGoals;
 	}
@@ -1304,7 +1304,7 @@ public abstract class Behavior extends Codelet
 	 * @param permanentGoals
 	 *           the permanentGoals to set
 	 */
-	public void setPermanentGoals(ArrayList<MemoryObject> permanentGoals)
+	public void setPermanentGoals(ArrayList<Memory> permanentGoals)
 	{
 		this.permanentGoals = permanentGoals;
 	}
@@ -1312,7 +1312,7 @@ public abstract class Behavior extends Codelet
 	/**
 	 * @return the onceOnlyGoals
 	 */
-	public ArrayList<MemoryObject> getOnceOnlyGoals()
+	public ArrayList<Memory> getOnceOnlyGoals()
 	{
 		return onceOnlyGoals;
 	}
@@ -1321,7 +1321,7 @@ public abstract class Behavior extends Codelet
 	 * @param onceOnlyGoals
 	 *           the onceOnlyGoals to set
 	 */
-	public void setOnceOnlyGoals(ArrayList<MemoryObject> onceOnlyGoals)
+	public void setOnceOnlyGoals(ArrayList<Memory> onceOnlyGoals)
 	{
 		this.onceOnlyGoals = onceOnlyGoals;
 	}
@@ -1329,7 +1329,7 @@ public abstract class Behavior extends Codelet
 	/**
 	 * @return the goals
 	 */
-	public ArrayList<MemoryObject> getGoals()
+	public ArrayList<Memory> getGoals()
 	{
 		return goals;
 	}
@@ -1338,7 +1338,7 @@ public abstract class Behavior extends Codelet
 	 * @param goals
 	 *           the goals to set
 	 */
-	public void setGoals(ArrayList<MemoryObject> goals)
+	public void setGoals(ArrayList<Memory> goals)
 	{
 		this.goals = goals;
 	}
@@ -1426,7 +1426,7 @@ public abstract class Behavior extends Codelet
 	/**
 	 * Returns the number of competences in coalition with the given proposition in their precondition lists
 	 */
-	private double competencesWithPropInPrecon(MemoryObject proposition)
+	private double competencesWithPropInPrecon(Memory proposition)
 	{
 		double compWithProp = 0;
 		for (Behavior comp : this.getCoalition())
@@ -1453,7 +1453,7 @@ public abstract class Behavior extends Codelet
 	/**
 	 * Returns the list of competences from coalition with the given proposition in their add lists
 	 */
-	private double competencesWithPropInAdd(MemoryObject proposition)
+	private double competencesWithPropInAdd(Memory proposition)
 	{
 		double compWithProp = 0;
 		for (Behavior comp : this.getCoalition())
@@ -1480,7 +1480,7 @@ public abstract class Behavior extends Codelet
 	/**
 	 * Returns the list of competences from coalition with the given proposition in its del lists
 	 */
-	private double competencesWithPropInDel(MemoryObject proposition)
+	private double competencesWithPropInDel(Memory proposition)
 	{
 		double compWithProp = 0;
 		for (Behavior comp : this.getCoalition())
@@ -1552,13 +1552,13 @@ public abstract class Behavior extends Codelet
 	/**
 	 * @return the softPreconList
 	 */
-	public ArrayList<MemoryObject> getSoftPreconList() {
+	public ArrayList<Memory> getSoftPreconList() {
 		return softPreconList;
 	}
 	/**
 	 * @param softPreconList the softPreconList to set
 	 */
-	public void setSoftPreconList(ArrayList<MemoryObject> softPreconList) {
+	public void setSoftPreconList(ArrayList<Memory> softPreconList) {
 		this.softPreconList = softPreconList;
 	}
 }
