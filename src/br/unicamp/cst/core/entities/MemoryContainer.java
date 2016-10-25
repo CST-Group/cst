@@ -19,6 +19,22 @@ public class MemoryContainer implements Memory {
 
 	}
 
+	public MemoryContainer(String type, int numberOfMemoryObjectsInTheContainer) {
+		
+		memories = new ArrayList<>();
+		
+		for(int i = 0; i < numberOfMemoryObjectsInTheContainer; i++){
+			
+			MemoryObject mo = new MemoryObject(); 
+			mo.setI("-1");
+			mo.setEvaluation(0.0d);
+			mo.setType(type);
+
+			memories.add(mo);
+			
+		}
+	}
+
 	/** 
 	 * @return the info of the memory which has the greatest evaluation
 	 */
@@ -33,7 +49,7 @@ public class MemoryContainer implements Memory {
 
 			double memoryEval = memory.getEvaluation();
 
-			if( memoryEval > maxEval){
+			if( memoryEval >= maxEval){
 
 				maxEval = memoryEval;
 				I = memory.getI();
@@ -82,6 +98,32 @@ public class MemoryContainer implements Memory {
 
 
 	}
+	
+	/**
+	 * 
+	 * @param info the information to be set in the 
+	 * @param index
+	 * @param evaluation
+	 */
+	public synchronized void setI(Object info, Double evaluation, int index){
+
+		if(memories != null && memories.size() > index){
+
+			Memory memory = memories.get(index);
+
+			if(memory != null){
+
+				if(memory instanceof MemoryObject){
+					memory.setI(info);
+					memory.setEvaluation(evaluation);
+				} else if(memory instanceof MemoryContainer){
+					((MemoryContainer) memory).setI(info, evaluation, index);
+				}					
+			}
+		}
+
+
+	}
 
 	/**
 	 * @return the greatest evaluation of the memories in the memory list
@@ -95,7 +137,7 @@ public class MemoryContainer implements Memory {
 
 			double memoryEval = memory.getEvaluation();
 
-			if( memoryEval > maxEvaluation)
+			if( memoryEval >= maxEvaluation)
 				maxEvaluation = memoryEval;
 
 		}
@@ -117,7 +159,7 @@ public class MemoryContainer implements Memory {
 
 			double memoryEval = memory.getEvaluation();
 
-			if( memoryEval > maxEval){
+			if( memoryEval >= maxEval){
 
 				maxEval = memoryEval;
 				name = memory.getName();

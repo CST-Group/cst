@@ -129,7 +129,7 @@ public class RawMemory
        //mo.setT(type);
        //mo.setInfo("");
        mo.setTimestamp(new Timestamp(date.getTime()));
-       mo.setEvaluation(0.5d);
+       mo.setEvaluation(0.0d);
        mo.setType(name);
 
        // adding the new object to raw memory
