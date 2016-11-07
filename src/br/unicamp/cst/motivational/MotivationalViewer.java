@@ -23,13 +23,13 @@ import java.awt.*;
 import java.util.ArrayList;
 import java.util.List;
 
-public class MotivationalMonitor implements Runnable  {
+public class MotivationalViewer implements Runnable  {
     private List<Codelet> listOfMotivationalEntities = new ArrayList<Codelet>();
     private long refreshPeriod;
     private String title;
     private String entity;
 
-    public MotivationalMonitor(List<Codelet> listOfMotivationalEntities, long refreshPeriod, String title, String entity) {
+    public MotivationalViewer(List<Codelet> listOfMotivationalEntities, long refreshPeriod, String title, String entity) {
         this.setListOfMotivationalEntities(listOfMotivationalEntities);
         this.setRefreshPeriod(refreshPeriod);
         this.setTitle(title);

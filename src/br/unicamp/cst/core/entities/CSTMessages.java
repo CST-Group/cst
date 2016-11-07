@@ -9,16 +9,18 @@
  *     E. M. Froes, R. R. Gudwin - initial API and implementation
  ******************************************************************************/
 
-package br.unicamp.cst.motivational;
+package br.unicamp.cst.core.entities;
 
-public class MotivationalMessages {
+public class CSTMessages {
 
     //DRIVE MESSAGES.
-    public static final String MSG_VAR_LEVEL_NULL = "Drive level is null.";
     public static final String MSG_VAR_NAME_NULL = "Drive name is null.";
     public static final String MSG_VAR_RELEVANCE = "Drive relevance must be less equal than 1 and greater equal than 0.";
     public static final String MSG_VAR_PRIORITY_NULL = "Drive priority is null.";
-
+    public static final String MSG_VAR_URGENT_ACTIVATION_RANGE = "Drive urgent activation must be less equal than 1 and greater equal than 0.";
+    public static final String MSG_VAR_URGENT_ACTIVATION_THRESHOLD_RANGE = "Drive urgent activation threshold must be less equal than 1 and greater equal than 0.";
+    public static final String MSG_VAR_LOWER_URGENT_ACTIVATION_THRESHOLD_RANGE = "Drive lower urgent activation threshold must be less equal than 1 and greater equal than 0.";
+    public static final String MSG_VAR_HIGH_PRIORITY = "Drive high priority must be less equal than 1 and greater equal than 0.";
 
     //GOAL MESSAGES.
     public static final String MSG_VAR_GOAL_NAME_NULL = "EmotionalCodelet name is null";

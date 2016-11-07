@@ -12,6 +12,11 @@
 
 package br.unicamp.cst.motivational;
 
+import br.unicamp.cst.core.entities.Codelet;
+import br.unicamp.cst.core.entities.MemoryObject;
+import br.unicamp.cst.core.entities.CSTMessages;
+import br.unicamp.cst.core.exceptions.CodeletActivationBoundsException;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -19,125 +24,85 @@ import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import br.unicamp.cst.core.entities.Codelet;
-import br.unicamp.cst.core.entities.MemoryObject;
-import br.unicamp.cst.core.exceptions.CodeletActivationBoundsException;
-
 public abstract class EmotionalCodelet extends Codelet {
 
-    public final static String DRIVES_VOTE_MEMORY = "DRIVES_VOTE_MEMORY";
-    public final static String OUTPUT_GOAL_MEMORY = "OUTPUT_GOAL_MEMORY";
+    public final static String INPUT_DRIVES_MEMORY = "INPUT_DRIVES_MEMORY";
+    public final static String OUTPUT_DRIVE_MEMORY = "OUTPUT_DRIVE_MEMORY";
+    public final static String MOOD_MEMORY = "MOOD_MEMORY";
 
     private String name;
-    private double urgentActivationThreshold;
-    private double lowerUrgentThreshold;
-    private double priorityHighLevel = 0d;
-    private double urgentActivation = 0d;
+    private Mood mood;
+    private Drive emotion;
 
-    private Map<MemoryObject, Double> drivesVote;
-    private MemoryObject drivesVoteMO;
+    private Map<Drive, Double> inputDrives;
+    private MemoryObject inputDrivesMO;
     private MemoryObject outputGoalMO;
+    private MemoryObject moodMO;
 
-    public EmotionalCodelet(String name, double urgentInterventionThreshold, double priorityHighLevel) {
+    public EmotionalCodelet(String name) throws CodeletActivationBoundsException {
         this.setName(name);
-        this.setUrgentActivationThreshold(urgentInterventionThreshold);
-        this.setLowerUrgentThreshold(urgentInterventionThreshold);
-        this.setPriorityHighLevel(priorityHighLevel);
-
-    }
-
-    public EmotionalCodelet(String name, double urgentInterventionThreshold, double belowInterventionThreshold, double priorityHighLevel) {
-        this.setName(name);
-        this.setUrgentActivationThreshold(urgentInterventionThreshold);
-        this.setLowerUrgentThreshold(belowInterventionThreshold);
-        this.setPriorityHighLevel(priorityHighLevel);
+        this.setActivation(0.0d);
+        setEmotion(new Drive(name));
     }
 
     @Override
     public void accessMemoryObjects(){
 
-        if(getDrivesVoteMO() == null) {
-            setDrivesVoteMO((MemoryObject) this.getInput(DRIVES_VOTE_MEMORY, 0));
-            this.setDrivesVote((HashMap<MemoryObject, Double>)getDrivesVoteMO().getI());
+        if(getInputDrivesMO() == null) {
+            setInputDrivesMO((MemoryObject) this.getInput(INPUT_DRIVES_MEMORY, 0));
+            this.setInputDrives((HashMap<Drive, Double>) getInputDrivesMO().getI());
+        }
+
+        if(getMoodMO() == null){
+            setInputDrivesMO((MemoryObject) this.getInput(MOOD_MEMORY, 0));
+            this.setMood((Mood) getInputDrivesMO().getI());
         }
 
         if(getOutputGoalMO() == null){
-            setOutputGoalMO((MemoryObject) this.getInput(OUTPUT_GOAL_MEMORY, 0));
+            setOutputGoalMO((MemoryObject) this.getOutput(OUTPUT_DRIVE_MEMORY, 0));
         }
 
     }
 
-    public abstract double calculateActivation(List<MemoryObject> listOfDrivesVote);
+    public abstract double calculateMoodDistortion(List<Drive> listOfDrives, Mood mood);
 
-    public abstract double calculateUrgentActivation(List<MemoryObject> listOfHighPriorityDrive);
+    public abstract Drive generateEmotion(List<Drive> listOfDrives, Drive emotion);
 
     @Override
     public synchronized void calculateActivation() {
 
         synchronized(this){
 
-            double urgent = this.calculateUrgentActivation(getHighPriorityDrives());
-            double activation = this.calculateActivation(getDrivesWithRelevance());
+            List<Drive> listOfDrives = new ArrayList<Drive>();
 
-            activation = activation == Double.NaN? 0:activation;
-            urgent = urgent == Double.NaN? 0:urgent;
+            for (Map.Entry<Drive, Double> drive : getInputDrives().entrySet()) {
+                listOfDrives.add(drive.getKey());
+            }
+
+            double activation = this.calculateMoodDistortion(listOfDrives, getMood());
 
             try {
                 this.setActivation(activation);
-                this.setUrgentActivation(urgent);
+                getEmotion().setActivation(activation);
             } catch (CodeletActivationBoundsException ex) {
                 Logger.getLogger(EmotionalCodelet.class.getName()).log(Level.SEVERE, null, ex);
             }
-        }
-
-    }
-
-    private List<MemoryObject> getDrivesWithRelevance(){
-
-        List<MemoryObject> drives = new ArrayList<>();
-
-        for (Map.Entry<MemoryObject, Double> drive : getDrivesVote().entrySet()) {
-
-            Map<String, Object> driveParameters = (Map<String, Object>) drive.getKey().getI();
-
-            drive.getKey().setEvaluation(drive.getKey().getEvaluation() * (Double)driveParameters.get("relevance"));
-            drives.add(drive.getKey());
 
         }
 
-        return drives;
-    }
-
-    private List<MemoryObject> getHighPriorityDrives(){
-
-        List<MemoryObject> drives = new ArrayList<>();
-
-        for (Map.Entry<MemoryObject, Double> drive : getDrivesVote().entrySet()) {
-
-            Map<String, Object> driveParameters = (Map<String, Object>) drive.getKey().getI();
-
-            if((Double)driveParameters.get("priorityValue") >= getPriorityHighLevel())
-            {
-                drive.getKey().setEvaluation(drive.getKey().getEvaluation() * (Double)driveParameters.get("relevance"));
-                drives.add(drive.getKey());
-            }
-        }
-
-        return drives;
     }
 
     @Override
     public void proc() {
 
-        Map<String, Object> goal = new HashMap<>();
+        List<Drive> listOfDrives = new ArrayList<Drive>();
 
-        goal.put("name", getName());
-        goal.put("activation", getActivation());
-        goal.put("urgentActivation", getUrgentActivation());
-        goal.put("urgentActivationThreshold", getUrgentActivationThreshold());
-        goal.put("lowerUrgentThreshold", getLowerUrgentThreshold());
+        for (Map.Entry<Drive, Double> drive : getInputDrives().entrySet()) {
+            listOfDrives.add(drive.getKey());
+        }
 
-        getOutputGoalMO().setI(goal);
+        Drive emotion = generateEmotion(listOfDrives, getEmotion());
+        getOutputGoalMO().setI(emotion);
         getOutputGoalMO().setEvaluation(getActivation());
 
     }
@@ -150,90 +115,50 @@ public abstract class EmotionalCodelet extends Codelet {
 
         try {
             if (name.equals("")) {
-                throw new MotivationalException(MotivationalMessages.MSG_VAR_GOAL_NAME_NULL);
+                throw new Exception(CSTMessages.MSG_VAR_GOAL_NAME_NULL);
             }
 
             this.name = name;
 
-        } catch (MotivationalException me) {
+        } catch (Exception me) {
             me.printStackTrace();
         }
 
     }
 
-    private synchronized Map<MemoryObject, Double> getDrivesVote() {
-        return drivesVote;
+    private synchronized Map<Drive, Double> getInputDrives() {
+        return inputDrives;
     }
 
-    private synchronized void setDrivesVote(Map<MemoryObject, Double> drivesVote) {
+    private synchronized void setInputDrives(Map<Drive, Double> inputDrives) {
 
         try {
-            if (drivesVote == null) {
-                throw new MotivationalException(MotivationalMessages.MSG_VAR_GOAL_DRIVE_VOTES);
-            } else if (drivesVote.size() == 0) {
-                throw new MotivationalException(MotivationalMessages.MSG_VAR_GOAL_DRIVE_VOTES);
+            if (inputDrives == null) {
+                throw new Exception(CSTMessages.MSG_VAR_GOAL_DRIVE_VOTES);
+            } else if (inputDrives.size() == 0) {
+                throw new Exception(CSTMessages.MSG_VAR_GOAL_DRIVE_VOTES);
             }
 
-            for (Map.Entry<MemoryObject, Double> drive: drivesVote.entrySet()) {
+            for (Map.Entry<Drive, Double> drive: inputDrives.entrySet()) {
                 if(drive.getValue() > 1 || drive.getValue() < 0){
-                    throw new MotivationalException("Drive:"+drive.getKey().getName() +" "+ MotivationalMessages.MSG_VAR_RELEVANCE);
+                    throw new Exception("Drive:"+drive.getKey().getName() +" "+ CSTMessages.MSG_VAR_RELEVANCE);
                 }
             }
 
-            this.drivesVote = drivesVote;
-        } catch (MotivationalException me) {
+            this.inputDrives = inputDrives;
+
+        } catch (Exception me) {
             me.printStackTrace();
         }
 
     }
 
-    public double getUrgentActivationThreshold() {
-        return urgentActivationThreshold;
+    public MemoryObject getInputDrivesMO() {
+        return inputDrivesMO;
     }
 
-    private void setUrgentActivationThreshold(double urgentActivationThreshold) {
-
-        try {
-            if (urgentActivationThreshold < 0 && urgentActivationThreshold > 1) {
-                throw new MotivationalException(MotivationalMessages.MSG_VAR_GOAL_INTERVENTION_THRESHOLD);
-            } else {
-                this.urgentActivationThreshold = urgentActivationThreshold;
-            }
-        } catch (MotivationalException me) {
-            me.printStackTrace();
-        }
-    }
-
-    public double getLowerUrgentThreshold() {
-        return lowerUrgentThreshold;
-    }
-
-    public void setLowerUrgentThreshold(double lowerUrgentThreshold) {
-        this.lowerUrgentThreshold = lowerUrgentThreshold;
-    }
-
-    public double getPriorityHighLevel() {
-        return priorityHighLevel;
-    }
-
-    public void setPriorityHighLevel(double priorityHighLevel) {
-        this.priorityHighLevel = priorityHighLevel;
-    }
-
-    public MemoryObject getDrivesVoteMO() {
-        return drivesVoteMO;
-    }
-
-    public void setDrivesVoteMO(MemoryObject drivesVoteMO) {
-        this.drivesVoteMO = drivesVoteMO;
-    }
-
-    public double getUrgentActivation() {
-        return urgentActivation;
-    }
-
-    public void setUrgentActivation(double urgentActivation) {
-        this.urgentActivation = urgentActivation;
+    public void setInputDrivesMO(MemoryObject inputDrivesMO) {
+        this.inputDrivesMO = inputDrivesMO;
     }
 
     public MemoryObject getOutputGoalMO() {
@@ -242,5 +167,29 @@ public abstract class EmotionalCodelet extends Codelet {
 
     public void setOutputGoalMO(MemoryObject outputGoalMO) {
         this.outputGoalMO = outputGoalMO;
+    }
+
+    public MemoryObject getMoodMO() {
+        return moodMO;
+    }
+
+    public void setMoodMO(MemoryObject moodMO) {
+        this.moodMO = moodMO;
+    }
+
+    public Mood getMood() {
+        return mood;
+    }
+
+    public void setMood(Mood mood) {
+        this.mood = mood;
+    }
+
+    public Drive getEmotion() {
+        return emotion;
+    }
+
+    public void setEmotion(Drive emotion) {
+        this.emotion = emotion;
     }
 }
