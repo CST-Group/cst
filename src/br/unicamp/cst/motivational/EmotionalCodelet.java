@@ -13,7 +13,7 @@
 package br.unicamp.cst.motivational;
 
 import br.unicamp.cst.core.entities.Codelet;
-import br.unicamp.cst.core.entities.MemoryObject;
+import br.unicamp.cst.core.entities.Memory;
 import br.unicamp.cst.core.entities.CSTMessages;
 import br.unicamp.cst.core.exceptions.CodeletActivationBoundsException;
 
@@ -27,46 +27,52 @@ import java.util.logging.Logger;
 public abstract class EmotionalCodelet extends Codelet {
 
     public final static String INPUT_DRIVES_MEMORY = "INPUT_DRIVES_MEMORY";
-    public final static String OUTPUT_DRIVE_MEMORY = "OUTPUT_DRIVE_MEMORY";
+    public final static String INPUT_AFFECTED_DRIVE_MEMORY = "INPUT_AFFECTED_DRIVE_MEMORY";
+    public final static String OUTPUT_AFFECTED_DRIVE_MEMORY = "OUTPUT_AFFECTED_DRIVE_MEMORY";
     public final static String MOOD_MEMORY = "MOOD_MEMORY";
 
     private String name;
     private Mood mood;
-    private Drive emotion;
+    private Drive affectedDrive;
 
     private Map<Drive, Double> inputDrives;
-    private MemoryObject inputDrivesMO;
-    private MemoryObject outputGoalMO;
-    private MemoryObject moodMO;
+    private Memory inputDrivesMO;
+    private Memory inputAffectedDriveMO;
+    private Memory outputAffectedDriveMO;
+    private Memory moodMO;
 
     public EmotionalCodelet(String name) throws CodeletActivationBoundsException {
         this.setName(name);
         this.setActivation(0.0d);
-        setEmotion(new Drive(name));
+        setAffectedDrive(new Drive(name));
     }
 
     @Override
     public void accessMemoryObjects(){
 
         if(getInputDrivesMO() == null) {
-            setInputDrivesMO((MemoryObject) this.getInput(INPUT_DRIVES_MEMORY, 0));
+            setInputDrivesMO(this.getInput(INPUT_DRIVES_MEMORY, 0));
             this.setInputDrives((HashMap<Drive, Double>) getInputDrivesMO().getI());
         }
 
+        if(getInputAffectedDriveMO() == null){
+            setInputAffectedDriveMO(getInput(INPUT_AFFECTED_DRIVE_MEMORY, 0));
+        }
+
+
         if(getMoodMO() == null){
-            setInputDrivesMO((MemoryObject) this.getInput(MOOD_MEMORY, 0));
+            setInputDrivesMO(this.getInput(MOOD_MEMORY, 0));
             this.setMood((Mood) getInputDrivesMO().getI());
         }
 
-        if(getOutputGoalMO() == null){
-            setOutputGoalMO((MemoryObject) this.getOutput(OUTPUT_DRIVE_MEMORY, 0));
+        if(getOutputAffectedDriveMO() == null){
+            setOutputAffectedDriveMO(this.getOutput(OUTPUT_AFFECTED_DRIVE_MEMORY, 0));
         }
 
     }
 
-    public abstract double calculateMoodDistortion(List<Drive> listOfDrives, Mood mood);
+    public abstract double calculateMoodFilter(List<Drive> listOfDrives, Mood mood, Drive affectedDrive);
 
-    public abstract Drive generateEmotion(List<Drive> listOfDrives, Drive emotion);
 
     @Override
     public synchronized void calculateActivation() {
@@ -79,11 +85,11 @@ public abstract class EmotionalCodelet extends Codelet {
                 listOfDrives.add(drive.getKey());
             }
 
-            double activation = this.calculateMoodDistortion(listOfDrives, getMood());
+            double activation = this.calculateMoodFilter(listOfDrives, getMood(), getAffectedDrive());
 
             try {
                 this.setActivation(activation);
-                getEmotion().setActivation(activation);
+                getAffectedDrive().setActivation(activation);
             } catch (CodeletActivationBoundsException ex) {
                 Logger.getLogger(EmotionalCodelet.class.getName()).log(Level.SEVERE, null, ex);
             }
@@ -95,15 +101,11 @@ public abstract class EmotionalCodelet extends Codelet {
     @Override
     public void proc() {
 
-        List<Drive> listOfDrives = new ArrayList<Drive>();
+        Drive emotion = getAffectedDrive();
+        emotion.setFilter(getActivation());
 
-        for (Map.Entry<Drive, Double> drive : getInputDrives().entrySet()) {
-            listOfDrives.add(drive.getKey());
-        }
-
-        Drive emotion = generateEmotion(listOfDrives, getEmotion());
-        getOutputGoalMO().setI(emotion);
-        getOutputGoalMO().setEvaluation(getActivation());
+        getOutputAffectedDriveMO().setI(emotion);
+        getOutputAffectedDriveMO().setEvaluation(getActivation());
 
     }
 
@@ -115,7 +117,7 @@ public abstract class EmotionalCodelet extends Codelet {
 
         try {
             if (name.equals("")) {
-                throw new Exception(CSTMessages.MSG_VAR_GOAL_NAME_NULL);
+                throw new Exception(CSTMessages.MSG_VAR_EMOTIONAL_NAME_NULL);
             }
 
             this.name = name;
@@ -134,9 +136,9 @@ public abstract class EmotionalCodelet extends Codelet {
 
         try {
             if (inputDrives == null) {
-                throw new Exception(CSTMessages.MSG_VAR_GOAL_DRIVE_VOTES);
+                throw new Exception(CSTMessages.MSG_VAR_EMOTIONAL_DRIVE_VOTES);
             } else if (inputDrives.size() == 0) {
-                throw new Exception(CSTMessages.MSG_VAR_GOAL_DRIVE_VOTES);
+                throw new Exception(CSTMessages.MSG_VAR_EMOTIONAL_DRIVE_VOTES);
             }
 
             for (Map.Entry<Drive, Double> drive: inputDrives.entrySet()) {
@@ -153,27 +155,27 @@ public abstract class EmotionalCodelet extends Codelet {
 
     }
 
-    public MemoryObject getInputDrivesMO() {
+    public Memory getInputDrivesMO() {
         return inputDrivesMO;
     }
 
-    public void setInputDrivesMO(MemoryObject inputDrivesMO) {
+    public void setInputDrivesMO(Memory inputDrivesMO) {
         this.inputDrivesMO = inputDrivesMO;
     }
 
-    public MemoryObject getOutputGoalMO() {
-        return outputGoalMO;
+    public Memory getOutputAffectedDriveMO() {
+        return outputAffectedDriveMO;
     }
 
-    public void setOutputGoalMO(MemoryObject outputGoalMO) {
-        this.outputGoalMO = outputGoalMO;
+    public void setOutputAffectedDriveMO(Memory outputAffectedDriveMO) {
+        this.outputAffectedDriveMO = outputAffectedDriveMO;
     }
 
-    public MemoryObject getMoodMO() {
+    public Memory getMoodMO() {
         return moodMO;
     }
 
-    public void setMoodMO(MemoryObject moodMO) {
+    public void setMoodMO(Memory moodMO) {
         this.moodMO = moodMO;
     }
 
@@ -185,11 +187,19 @@ public abstract class EmotionalCodelet extends Codelet {
         this.mood = mood;
     }
 
-    public Drive getEmotion() {
-        return emotion;
+    public Drive getAffectedDrive() {
+        return affectedDrive;
     }
 
-    public void setEmotion(Drive emotion) {
-        this.emotion = emotion;
+    public void setAffectedDrive(Drive affectedDrive) {
+        this.affectedDrive = affectedDrive;
+    }
+
+    public Memory getInputAffectedDriveMO() {
+        return inputAffectedDriveMO;
+    }
+
+    public void setInputAffectedDriveMO(Memory inputAffectedDriveMO) {
+        this.inputAffectedDriveMO = inputAffectedDriveMO;
     }
 }

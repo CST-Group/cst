@@ -420,7 +420,7 @@ public abstract class Behavior extends Codelet
 
 			if (!this.isActive())
 			{
-				//						activation = activation + this.getActivation(); //TODO Without normalization
+				//						activation = activation + this.getValue(); //TODO Without normalization
 				activation=activation*(1-this.getActivation())/maxA+this.getActivation(); //With Normalization
 			}
 

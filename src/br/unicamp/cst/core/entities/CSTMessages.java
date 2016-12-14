@@ -23,9 +23,9 @@ public class CSTMessages {
     public static final String MSG_VAR_HIGH_PRIORITY = "Drive high priority must be less equal than 1 and greater equal than 0.";
 
     //GOAL MESSAGES.
-    public static final String MSG_VAR_GOAL_NAME_NULL = "EmotionalCodelet name is null";
-    public static final String MSG_VAR_GOAL_DRIVE_VOTES = "EmotionalCodelet drive votes is null or empty.";
-    public static final String MSG_VAR_GOAL_INTERVENTION_THRESHOLD = "Intervention threshold must be less equal than 1 and greater equal than 0.";
+    public static final String MSG_VAR_EMOTIONAL_NAME_NULL = "EmotionalCodelet name is null";
+    public static final String MSG_VAR_EMOTIONAL_DRIVE_VOTES = "EmotionalCodelet drive votes is null or empty.";
+    public static final String MSG_VAR_EMOTIONAL_INTERVENTION_THRESHOLD = "Intervention threshold must be less equal than 1 and greater equal than 0.";
 
 
 }

@@ -74,7 +74,7 @@ public class BehaviorsWTA extends Codelet
 						try
 						{
 //							//Using the loop to also perform activation decay
-//							competence.setActivation(competence.getActivation()*globalVariables.getPi());
+//							competence.setValue(competence.getValue()*globalVariables.getPi());
 							
 							if(competence.isActive()){
 								there_is_already_one_active=true;
@@ -128,7 +128,7 @@ public class BehaviorsWTA extends Codelet
 
 				//ACTIVATES EXECUTABLE CODELET WITH HIGHEST ACTIVATION LEVEL
 
-				//				System.out.println("I believe this guy should become active (A="+chosen_codelet.getActivation()+"): "+chosen_codelet.getName());
+				//				System.out.println("I believe this guy should become active (A="+chosen_codelet.getValue()+"): "+chosen_codelet.getName());
 				if(chosenBehavior!=null){//otherwise, it means it could not find a suitable behavior for activation
 					if (impendingAccess(chosenBehavior)){
 						try
@@ -222,8 +222,8 @@ public class BehaviorsWTA extends Codelet
 //				
 //				
 //				//Core functionality
-//				if(competence.isExecutable()&&competence.getActivation()>=globalVariables.getThetaTemp()){
-//					codeletsActivation.put(competence, competence.getActivation());
+//				if(competence.isExecutable()&&competence.getValue()>=globalVariables.getThetaTemp()){
+//					codeletsActivation.put(competence, competence.getValue());
 //
 //					tempListOfExecutableCodelets.add(competence.getName());//Assumes each behavior has a particular name
 //				}
@@ -240,7 +240,7 @@ public class BehaviorsWTA extends Codelet
 ////							}//else, remain active, (but keep its activation level down?)
 ////							else{
 ////								if(setToZeroWhenActivated){
-////									this.setActivation(0);//TODO is this in accordance with [Maes 1989] ?
+////									this.setValue(0);//TODO is this in accordance with [Maes 1989] ?
 ////								}
 ////							}
 ////						}
@@ -296,11 +296,11 @@ public class BehaviorsWTA extends Codelet
 //		
 //		//ACTIVATES EXECUTABLE CODELET WITH HIGHEST ACTIVATION LEVEL
 //		if(chosen_codelet!=null){
-//			//				System.out.println("I believe this guy should become active (A="+chosen_codelet.getActivation()+"): "+chosen_codelet.getName());
+//			//				System.out.println("I believe this guy should become active (A="+chosen_codelet.getValue()+"): "+chosen_codelet.getName());
 //			if (impendingAccess(chosen_codelet)){
 //				try
 //				{
-//					double previousActivation = chosen_codelet.getActivation();
+//					double previousActivation = chosen_codelet.getValue();
 //					double previousThetaTemp = globalVariables.getThetaTemp();
 //					boolean wasExecutable = chosen_codelet.isExecutable();
 //					boolean wasActive = chosen_codelet.isActive();
@@ -308,9 +308,9 @@ public class BehaviorsWTA extends Codelet
 //					
 //					
 //					chosen_codelet.setActive(true);
-//					chosen_codelet.setActivation(0);// [Maes 1989]
+//					chosen_codelet.setValue(0);// [Maes 1989]
 //					
-//					double nextActivation = chosen_codelet.getActivation();
+//					double nextActivation = chosen_codelet.getValue();
 //					boolean isActive = chosen_codelet.isActive();
 //					System.out.println("");
 //
@@ -358,11 +358,11 @@ public class BehaviorsWTA extends Codelet
 ////			try
 ////			{
 ////				double decay=0.01;
-////				double act=competence.getActivation();
+////				double act=competence.getValue();
 ////				
 ////				if(act>decay){
 ////					act=act-decay;
-////					competence.setActivation(act);
+////					competence.setValue(act);
 ////				}
 ////			} finally
 ////			{

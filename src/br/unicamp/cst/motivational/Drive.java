@@ -6,6 +6,7 @@ package br.unicamp.cst.motivational;
 public class Drive {
 
     private String name;
+    private double filter;
     private double activation;
     private double priority;
     private double level;
@@ -25,6 +26,7 @@ public class Drive {
         setUrgentActivation(urgentActivation);
         setUrgentActivationThreshold(urgentActivationThreshold);
         setLowerUrgentThreshold(lowerUrgentThreshold);
+        setFilter(1);
     }
 
     public synchronized String getName() {
@@ -81,5 +83,13 @@ public class Drive {
 
     public synchronized void setLowerUrgentThreshold(double lowerUrgentThreshold) {
         this.lowerUrgentThreshold = lowerUrgentThreshold;
+    }
+
+    public double getFilter() {
+        return filter;
+    }
+
+    public void setFilter(double filter) {
+        this.filter = filter;
     }
 }
