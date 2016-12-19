@@ -71,7 +71,7 @@ public abstract class EmotionalCodelet extends Codelet {
 
     }
 
-    public abstract double calculateMoodFilter(List<Drive> listOfDrives, Mood mood, Drive affectedDrive);
+    public abstract double calculateMoodFilter(List<Drive> listOfDrives, Mood mood);
 
 
     @Override
@@ -85,7 +85,7 @@ public abstract class EmotionalCodelet extends Codelet {
                 listOfDrives.add(drive.getKey());
             }
 
-            double activation = this.calculateMoodFilter(listOfDrives, getMood(), getAffectedDrive());
+            double activation = this.calculateMoodFilter(listOfDrives, getMood());
 
             try {
                 this.setActivation(activation);
@@ -102,7 +102,6 @@ public abstract class EmotionalCodelet extends Codelet {
     public void proc() {
 
         Drive emotion = getAffectedDrive();
-        emotion.setFilter(getActivation());
 
         getOutputAffectedDriveMO().setI(emotion);
         getOutputAffectedDriveMO().setEvaluation(getActivation());

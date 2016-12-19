@@ -40,7 +40,8 @@ public abstract class MotivationalCodelet extends Codelet {
     private Memory sensorsMO;
     private Memory outputDriveMO;
 
-    public MotivationalCodelet(String name, double level, double priority, double highPriorityThreshold, double urgentActivationThreshold, double lowerUrgentActivationThreshold) throws CodeletActivationBoundsException {
+    public MotivationalCodelet(String name, double level, double priority, double highPriorityThreshold, double urgentActivationThreshold, double lowerUrgentActivationThreshold)
+            throws CodeletActivationBoundsException {
         setLevel(level);
         setName(name);
         setPriority(priority);
