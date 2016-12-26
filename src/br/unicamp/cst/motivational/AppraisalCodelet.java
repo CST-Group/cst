@@ -1,14 +1,6 @@
-/*******************************************************************************
- * Copyright (c) 2016  DCA-FEEC-UNICAMP
- * All rights reserved. This program and the accompanying materials
- * are made available under the terms of the GNU Lesser Public License v3
- * which accompanies this distribution, and is available at
- * http://www.gnu.org/licenses/lgpl.html
+/**
  *
- * Contributors:
- *     E. M. Froes, R. R. Gudwin - initial API and implementation
- ******************************************************************************/
-
+ */
 package br.unicamp.cst.motivational;
 
 import br.unicamp.cst.core.entities.Codelet;
@@ -25,28 +17,32 @@ public abstract class AppraisalCodelet extends Codelet {
     public final static String INPUT_PREDICTED_SITUATION_MEMORY = "INPUT_PREDICTED_SITUATION_MEMORY";
     public final static String OUTPUT_APPRAISAL_MEMORY = "OUTPUT_APPRAISAL_MEMORY";
 
+    private String name;
+    private Configuration currentConfiguration;
+    private Configuration predictedSituation;
+
     private Memory currentConfigurationMO;
     private Memory predictedSituationMO;
     private Memory appraisalMO;
 
-    private Configuration currentConfiguration;
-    private Configuration predictedSituation;
-    private Appraisal appraisal;
+    public AppraisalCodelet(String name) {
+        setName(name);
+    }
 
     @Override
     public void accessMemoryObjects() {
-        if(getCurrentConfigurationMO() != null){
+        if (getCurrentConfigurationMO() != null) {
             setCurrentConfigurationMO(getInput(INPUT_CURRENT_CONFIGURATION_MEMORY, 0));
             setCurrentConfiguration((Configuration) getCurrentConfigurationMO().getI());
 
         }
 
-        if(getPredictedSituationMO() != null){
+        if (getPredictedSituationMO() != null) {
             setPredictedSituationMO(getInput(INPUT_PREDICTED_SITUATION_MEMORY, 0));
             setPredictedSituation((Configuration) getPredictedSituationMO().getI());
         }
 
-        if(getAppraisalMO() != null){
+        if (getAppraisalMO() != null) {
             setAppraisalMO(getOutput(OUTPUT_APPRAISAL_MEMORY, 0));
         }
     }
@@ -62,13 +58,39 @@ public abstract class AppraisalCodelet extends Codelet {
 
     @Override
     public void proc() {
-        setAppraisal(genarateAppraisal(getCurrentConfiguration(), getPredictedSituation()));
-        getAppraisalMO().setI(getAppraisal());
+        Appraisal appraisal = genarateAppraisal(getCurrentConfiguration(), getPredictedSituation());
+        appraisal.setName(getName());
+        getAppraisalMO().setI(appraisal);
     }
 
 
     public abstract Appraisal genarateAppraisal(Configuration currentConfiguration, Configuration predictedSituation);
 
+    @Override
+    public String getName() {
+        return name;
+    }
+
+    @Override
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public Configuration getCurrentConfiguration() {
+        return currentConfiguration;
+    }
+
+    public void setCurrentConfiguration(Configuration currentConfiguration) {
+        this.currentConfiguration = currentConfiguration;
+    }
+
+    public Configuration getPredictedSituation() {
+        return predictedSituation;
+    }
+
+    public void setPredictedSituation(Configuration predictedSituation) {
+        this.predictedSituation = predictedSituation;
+    }
 
     public Memory getCurrentConfigurationMO() {
         return currentConfigurationMO;
@@ -94,27 +116,5 @@ public abstract class AppraisalCodelet extends Codelet {
         this.appraisalMO = appraisalMO;
     }
 
-    public Configuration getCurrentConfiguration() {
-        return currentConfiguration;
-    }
-
-    public void setCurrentConfiguration(Configuration currentConfiguration) {
-        this.currentConfiguration = currentConfiguration;
-    }
-
-    public Configuration getPredictedSituation() {
-        return predictedSituation;
-    }
-
-    public void setPredictedSituation(Configuration predictedSituation) {
-        this.predictedSituation = predictedSituation;
-    }
-
-    public Appraisal getAppraisal() {
-        return appraisal;
-    }
-
-    public void setAppraisal(Appraisal appraisal) {
-        this.appraisal = appraisal;
-    }
 }
+

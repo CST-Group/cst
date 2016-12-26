@@ -28,8 +28,9 @@ public abstract class EmotionalCodelet extends Codelet {
 
     public final static String INPUT_DRIVES_MEMORY = "INPUT_DRIVES_MEMORY";
     public final static String INPUT_AFFECTED_DRIVE_MEMORY = "INPUT_AFFECTED_DRIVE_MEMORY";
+    public final static String INPUT_MOOD_MEMORY = "INPUT_MOOD_MEMORY";
     public final static String OUTPUT_AFFECTED_DRIVE_MEMORY = "OUTPUT_AFFECTED_DRIVE_MEMORY";
-    public final static String MOOD_MEMORY = "MOOD_MEMORY";
+
 
     private String name;
     private Mood mood;
@@ -39,7 +40,7 @@ public abstract class EmotionalCodelet extends Codelet {
     private Memory inputDrivesMO;
     private Memory inputAffectedDriveMO;
     private Memory outputAffectedDriveMO;
-    private Memory moodMO;
+    private Memory inputMoodMO;
 
     public EmotionalCodelet(String name) throws CodeletActivationBoundsException {
         this.setName(name);
@@ -60,8 +61,8 @@ public abstract class EmotionalCodelet extends Codelet {
         }
 
 
-        if(getMoodMO() == null){
-            setInputDrivesMO(this.getInput(MOOD_MEMORY, 0));
+        if(getInputMoodMO() == null){
+            setInputMoodMO(this.getInput(INPUT_MOOD_MEMORY, 0));
             this.setMood((Mood) getInputDrivesMO().getI());
         }
 
@@ -71,7 +72,7 @@ public abstract class EmotionalCodelet extends Codelet {
 
     }
 
-    public abstract double calculateMoodFilter(List<Drive> listOfDrives, Mood mood);
+    public abstract double calculateMoodFilterDistortion(List<Drive> listOfDrives, Mood mood);
 
 
     @Override
@@ -85,7 +86,7 @@ public abstract class EmotionalCodelet extends Codelet {
                 listOfDrives.add(drive.getKey());
             }
 
-            double activation = this.calculateMoodFilter(listOfDrives, getMood());
+            double activation = this.calculateMoodFilterDistortion(listOfDrives, getMood());
 
             try {
                 this.setActivation(activation);
@@ -170,12 +171,12 @@ public abstract class EmotionalCodelet extends Codelet {
         this.outputAffectedDriveMO = outputAffectedDriveMO;
     }
 
-    public Memory getMoodMO() {
-        return moodMO;
+    public Memory getInputMoodMO() {
+        return inputMoodMO;
     }
 
-    public void setMoodMO(Memory moodMO) {
-        this.moodMO = moodMO;
+    public void setInputMoodMO(Memory inputMoodMO) {
+        this.inputMoodMO = inputMoodMO;
     }
 
     public Mood getMood() {

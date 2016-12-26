@@ -16,24 +16,30 @@ import br.unicamp.cst.core.entities.Memory;
 import br.unicamp.cst.core.exceptions.CodeletActivationBoundsException;
 import br.unicamp.cst.memory.EpisodicMemory;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public abstract class MoodCodelet extends Codelet {
 
-    public static String INPUT_DRIVES_MEMORY = "INPUT_DRIVES_MEMORY";
-    public static String INPUT_APPRAISAL_MEMORY = "INPUT_APPRAISAL_MEMORY";
-    public static String INPUT_EPISODIC_RECALL_MEMORY = "INPUT_EPISODIC_RECALL_MEMORY";
-    public static String OUTPUT_MOOD_MEMORY = "OUTPUT_MOOD_MEMORY";
+    public static final String INPUT_DRIVES_MEMORY = "INPUT_DRIVES_MEMORY";
+    public static final String INPUT_APPRAISAL_MEMORY = "INPUT_APPRAISAL_MEMORY";
+    public static final String INPUT_EPISODIC_RECALL_MEMORY = "INPUT_EPISODIC_RECALL_MEMORY";
+    public static final String OUTPUT_MOOD_MEMORY = "OUTPUT_MOOD_MEMORY";
 
-
+    private String name;
     private List<Drive> listOfDrives;
     private Appraisal appraisal;
-    private EpisodicMemory episodicMemory;
+    private EpisodicMemory episodicRecallMemory;
 
     private Memory inputDrivesMemoryMO;
     private Memory appraisalMO;
     private Memory episodicRecallMO;
     private Memory outputMoodMO;
+
+    public MoodCodelet(String name){
+        this.setName(name);
+        this.setListOfDrives(new ArrayList<Drive>());
+    }
 
     @Override
     public void accessMemoryObjects() {
@@ -51,7 +57,7 @@ public abstract class MoodCodelet extends Codelet {
 
         if(getEpisodicRecallMO() != null){
             setEpisodicRecallMO(getInput(INPUT_EPISODIC_RECALL_MEMORY, 0));
-            setEpisodicMemory((EpisodicMemory) getEpisodicRecallMO().getI());
+            setEpisodicRecallMemory((EpisodicMemory) getEpisodicRecallMO().getI());
         }
 
         if(getOutputMoodMO() != null){
@@ -73,8 +79,43 @@ public abstract class MoodCodelet extends Codelet {
 
     @Override
     public void proc() {
-        Mood mood = moodGenerate(getListOfDrives(), getAppraisal(), getEpisodicMemory());
+        Mood mood = moodGenerate(getListOfDrives(), getAppraisal(), getEpisodicRecallMemory());
+        mood.setName(getName());
         getOutputMoodMO().setI(mood);
+    }
+
+    @Override
+    public String getName() {
+        return name;
+    }
+
+    @Override
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public List<Drive> getListOfDrives() {
+        return listOfDrives;
+    }
+
+    public void setListOfDrives(List<Drive> listOfDrives) {
+        this.listOfDrives = listOfDrives;
+    }
+
+    public Appraisal getAppraisal() {
+        return appraisal;
+    }
+
+    public void setAppraisal(Appraisal appraisal) {
+        this.appraisal = appraisal;
+    }
+
+    public EpisodicMemory getEpisodicRecallMemory() {
+        return episodicRecallMemory;
+    }
+
+    public void setEpisodicRecallMemory(EpisodicMemory episodicRecallMemory) {
+        this.episodicRecallMemory = episodicRecallMemory;
     }
 
     public Memory getInputDrivesMemoryMO() {
@@ -109,27 +150,9 @@ public abstract class MoodCodelet extends Codelet {
         this.outputMoodMO = outputMoodMO;
     }
 
-    public List<Drive> getListOfDrives() {
-        return listOfDrives;
-    }
 
-    public void setListOfDrives(List<Drive> listOfDrives) {
-        this.listOfDrives = listOfDrives;
-    }
 
-    public Appraisal getAppraisal() {
-        return appraisal;
-    }
 
-    public void setAppraisal(Appraisal appraisal) {
-        this.appraisal = appraisal;
-    }
 
-    public EpisodicMemory getEpisodicMemory() {
-        return episodicMemory;
-    }
 
-    public void setEpisodicMemory(EpisodicMemory episodicMemory) {
-        this.episodicMemory = episodicMemory;
-    }
 }

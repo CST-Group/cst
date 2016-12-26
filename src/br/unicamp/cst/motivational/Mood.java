@@ -17,6 +17,11 @@ public class Mood {
     private String name;
     private double value;
 
+    public Mood(String name, double value){
+        setName(name);
+        setValue(value);
+    }
+
     public String getName() {
         return name;
     }

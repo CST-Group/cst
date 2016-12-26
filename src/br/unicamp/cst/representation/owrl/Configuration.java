@@ -19,17 +19,11 @@ public class Configuration {
      
      
      public Configuration (List<WorldObject> objs){
-         
          objects = objs;
-     
-     
      }
 
     public List<WorldObject> getObjects() {
         return objects;
     }
-     
-     
-     
     
 }

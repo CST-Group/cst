@@ -22,25 +22,27 @@ import java.util.*;
 public abstract class MotivationalCodelet extends Codelet {
 
     public static final String INPUT_DRIVES_MEMORY = "INPUT_DRIVES_MEMORY";
-    public static final String SENSORS_MEMORY = "SENSORS_MEMORY";
+    public static final String INPUT_SENSORS_MEMORY = "INPUT_SENSORS_MEMORY";
     public static final String OUTPUT_DRIVE_MEMORY = "OUTPUT_DRIVES_MEMORY";
 
-    private Map<Drive, Double> inputDrives;
-    private List<Memory> sensors;
     private String name;
     private double priority;
     private double urgentActivation;
     private double urgentActivationThreshold;
     private double lowerUrgentActivationThreshold;
     private double level;
-    private double highPriorityThreshold;
+
+    private Map<Drive, Double> inputDrives;
+    private List<Memory> sensors;
+
+    private double priorityThreshold;
     private Drive outputDrive;
 
     private Memory inputDrivesMO;
     private Memory sensorsMO;
     private Memory outputDriveMO;
 
-    public MotivationalCodelet(String name, double level, double priority, double highPriorityThreshold, double urgentActivationThreshold, double lowerUrgentActivationThreshold)
+    public MotivationalCodelet(String name, double level, double priority, double priorityThreshold, double urgentActivationThreshold, double lowerUrgentActivationThreshold)
             throws CodeletActivationBoundsException {
         setLevel(level);
         setName(name);
@@ -50,7 +52,7 @@ public abstract class MotivationalCodelet extends Codelet {
         setUrgentActivationThreshold(urgentActivationThreshold);
         setLowerUrgentActivationThreshold(lowerUrgentActivationThreshold);
         setInputDrives(new HashMap<Drive, Double>());
-        setHighPriorityThreshold(highPriorityThreshold);
+        setPriorityThreshold(priorityThreshold);
         setOutputDrive(new Drive(getName(),
                                 getActivation(),
                                 getPriority(),
@@ -70,7 +72,7 @@ public abstract class MotivationalCodelet extends Codelet {
         }
 
         if (getSensorsMO() == null) {
-            setSensorsMO((MemoryObject) this.getInput(SENSORS_MEMORY, 0));
+            setSensorsMO((MemoryObject) this.getInput(INPUT_SENSORS_MEMORY, 0));
             this.setSensors(Collections.synchronizedList((List<Memory>) getSensorsMO().getI()));
         }
 
@@ -121,7 +123,7 @@ public abstract class MotivationalCodelet extends Codelet {
 
                             driveClone.setActivation(driveClone.getActivation() * drive.getValue() * driveClone.getFilter());
 
-                            if (driveClone.getPriority() >= getHighPriorityThreshold())
+                            if (driveClone.getPriority() >= getPriorityThreshold())
                                 listOfHighPriorityDrives.add(drive.getKey());
 
                             listOfDrives.add(driveClone);
@@ -305,21 +307,21 @@ public abstract class MotivationalCodelet extends Codelet {
         }
     }
 
-    public double getHighPriorityThreshold() {
-        return highPriorityThreshold;
+    public double getPriorityThreshold() {
+        return priorityThreshold;
     }
 
-    public void setHighPriorityThreshold(double highPriorityThreshold) {
+    public void setPriorityThreshold(double priorityThreshold) {
 
 
         try {
-            if(highPriorityThreshold < 0 || highPriorityThreshold > 1)
+            if(priorityThreshold < 0 || priorityThreshold > 1)
             {
                 throw new Exception(CSTMessages.MSG_VAR_HIGH_PRIORITY);
             }
             else
             {
-                this.highPriorityThreshold = highPriorityThreshold;
+                this.priorityThreshold = priorityThreshold;
             }
         }catch (Exception ex){
             ex.printStackTrace();
