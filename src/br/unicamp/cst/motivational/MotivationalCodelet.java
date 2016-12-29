@@ -39,7 +39,7 @@ public abstract class MotivationalCodelet extends Codelet {
     private Drive outputDrive;
 
     private Memory inputDrivesMO;
-    private Memory sensorsMO;
+    private Memory inputSensorsMO;
     private Memory outputDriveMO;
 
     public MotivationalCodelet(String name, double level, double priority, double priorityThreshold, double urgentActivationThreshold, double lowerUrgentActivationThreshold)
@@ -71,9 +71,9 @@ public abstract class MotivationalCodelet extends Codelet {
             this.setInputDrives((Map<Drive, Double>) getInputDrivesMO().getI());
         }
 
-        if (getSensorsMO() == null) {
-            setSensorsMO((MemoryObject) this.getInput(INPUT_SENSORS_MEMORY, 0));
-            this.setSensors(Collections.synchronizedList((List<Memory>) getSensorsMO().getI()));
+        if (getInputSensorsMO() == null) {
+            setInputSensorsMO((MemoryObject) this.getInput(INPUT_SENSORS_MEMORY, 0));
+            this.setSensors(Collections.synchronizedList((List<Memory>) getInputSensorsMO().getI()));
         }
 
         if (getOutputDriveMO() == null) {
@@ -205,12 +205,12 @@ public abstract class MotivationalCodelet extends Codelet {
         this.inputDrivesMO = inputDrivesMO;
     }
 
-    public Memory getSensorsMO() {
-        return sensorsMO;
+    public Memory getInputSensorsMO() {
+        return inputSensorsMO;
     }
 
-    public void setSensorsMO(MemoryObject sensorsMO) {
-        this.sensorsMO = sensorsMO;
+    public void setInputSensorsMO(MemoryObject inputSensorsMO) {
+        this.inputSensorsMO = inputSensorsMO;
     }
 
     public Memory getOutputDriveMO() {
