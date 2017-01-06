@@ -23,6 +23,7 @@ import org.jsoar.kernel.memory.Wmes;
 import org.jsoar.kernel.symbols.DoubleSymbol;
 import org.jsoar.kernel.symbols.Identifier;
 import org.jsoar.kernel.symbols.StringSymbol;
+import org.jsoar.kernel.symbols.Symbol;
 import org.jsoar.kernel.symbols.SymbolFactory;
 import org.jsoar.runtime.ThreadedAgent;
 import org.jsoar.util.commands.SoarCommands;
@@ -42,6 +43,7 @@ public class SOARPlugin {
     String agentName;
     File productionPath;
     
+    public String InputLinkAsString="";
     public String OutputLinkAsString="";
     public String JSONOutputLinkAsString="";
     
@@ -96,6 +98,7 @@ public class SOARPlugin {
     }
     
     public void runSOAR() {
+        InputLinkAsString = getWMEStringInput();
         try
         {
             if (agent != null)
@@ -107,6 +110,7 @@ public class SOARPlugin {
         {
             logger.severe("Error while running SOAR step"+e);
         }
+        OutputLinkAsString = getWMEStringOutput();
     }
     
     private String GetParameterValue(String par) {
@@ -119,21 +123,21 @@ public class SOARPlugin {
         return(parvalue);
     }
     
-    public void printInputWMEs(){
-        Iterator<Wme> It = agent.getInputOutput().getInputLink().getWmes();
-        while(It.hasNext()){
-            Wme next = It.next();
-            System.out.println(next.getAttribute().toString());
-            System.out.println(next.getValue().toString());
-            
-            Iterator<Wme> children = next.getChildren();
-            while(children.hasNext()){
-                Wme child = children.next();
-                System.out.println(child.getAttribute().toString());
-                System.out.println(child.getValue().toString());
-            }
-        }
-    }
+//    public void printInputWMEs(){
+//        Iterator<Wme> It = agent.getInputOutput().getInputLink().getWmes();
+//        while(It.hasNext()){
+//            Wme next = It.next();
+//            System.out.println(next.getAttribute().toString());
+//            System.out.println(next.getValue().toString());
+//            
+//            Iterator<Wme> children = next.getChildren();
+//            while(children.hasNext()){
+//                Wme child = children.next();
+//                System.out.println(child.getAttribute().toString());
+//                System.out.println(child.getValue().toString());
+//            }
+//        }
+//    }
     
     public void printWMEs(List<Wme> Commands){
         for (Wme wme: Commands) {
@@ -172,7 +176,8 @@ public class SOARPlugin {
             if (agent != null)
             {
                 List<Wme> Commands = getOutputLink_WME();
-                OutputLinkAsString = getWMEsAsString(Commands);
+                //OutputLinkAsString = getWMEsAsString(Commands);
+                OutputLinkAsString = getWMEStringOutput();
                 //System.out.println("Selected Commands: "+Commands.size());
                 //printWMEs(Commands);
                 for(Wme command : Commands){
@@ -568,6 +573,82 @@ public class SOARPlugin {
 
       return prettyJson;
   }
+    
+    public void printWME(Identifier id) {
+        printWME(id,0);
+        
+    }
+    
+    public void printWME(Identifier id, int level) {
+        Iterator<Wme> It = id.getWmes();
+        while (It.hasNext()) {
+            Wme wme = It.next();
+            Identifier idd = wme.getIdentifier();
+            Symbol a = wme.getAttribute();
+            Symbol v = wme.getValue();
+            Identifier testv = v.asIdentifier();
+            for (int i=0;i<level;i++) System.out.print("   ");
+            if (testv != null) {
+                System.out.print("("+idd.toString()+","+a.toString()+","+v.toString()+")\n");
+                printWME(testv,level+1);
+            }
+            else System.out.print("("+idd.toString()+","+a.toString()+","+v.toString()+")\n");
+        }
+    }
+    
+    public void printInputWMEs(){
+        Identifier il = agent.getInputOutput().getInputLink();
+        System.out.println("Input --->");
+        printWME(il);
+    }
+    
+    public void printOutputWMEs(){
+        Identifier ol = agent.getInputOutput().getOutputLink();
+        System.out.println("Output --->");
+        printWME(ol);
+    }
+    
+    public String getWMEString(Identifier id) {
+        return(getWMEString(id,0));
+    }
+    
+    public String getWMEString(Identifier id, int level) {
+        String out = "";
+        Iterator<Wme> It = id.getWmes();
+        while (It.hasNext()) {
+            Wme wme = It.next();
+            Identifier idd = wme.getIdentifier();
+            Symbol a = wme.getAttribute();
+            Symbol v = wme.getValue();
+            Identifier testv = v.asIdentifier();
+            for (int i=0;i<level;i++) out += "   ";
+            if (testv != null) {
+                out += String.format("(%s,%s,%s)\n",idd.toString(),a.toString(),v.toString());
+                out += getWMEString(testv,level+1);
+            }
+            else out += String.format("(%s,%s,%s)\n",idd.toString(),a.toString(),v.toString());
+        }
+        return(out);
+    }
+    
+    public String getWMEStringInput(){
+        String out = "";
+        Identifier il = agent.getInputOutput().getInputLink();
+        out += "Input --->\n";
+        out += getWMEString(il);
+        return(out);
+    }
+    
+    public String getWMEStringOutput(){
+        String out = "";
+        Identifier ol = agent.getInputOutput().getOutputLink();
+        out += "Output --->\n";
+        out += getWMEString(ol);
+        return(out);
+    }
+    
+    
+    
 }
     /**
      * Doc doc doc 
