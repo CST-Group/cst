@@ -1,8 +1,14 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
+/*******************************************************************************
+ * Copyright (c) 2012  DCA-FEEC-UNICAMP
+ * All rights reserved. This program and the accompanying materials
+ * are made available under the terms of the GNU Lesser Public License v3
+ * which accompanies this distribution, and is available at
+ * http://www.gnu.org/licenses/lgpl.html
+ * 
+ * Contributors:
+ *     S. M. de Paula and R. R. Gudwin 
+ ******************************************************************************/
+
 package br.unicamp.cst.representation.owrl;
 
 import java.util.ArrayList;
@@ -18,7 +24,15 @@ public class WorldObject implements Cloneable {
     private List<WorldObject> parts;//1-n;
     private String name;
     private int ID;
+    static int ncode = 0;
 
+    public WorldObject(String name) {
+        setName(name);
+        setID(ncode++);
+        properties = new ArrayList<Property>();
+        parts = new ArrayList<WorldObject>();
+    }
+    
     public WorldObject(String name, List<Property> props, int id) {
 
         setID(id);
@@ -44,6 +58,10 @@ public class WorldObject implements Cloneable {
     public void setParts(List<WorldObject> parts) {
         this.parts = parts;
     }
+    
+    public void addPart(WorldObject part) {
+        parts.add(part);
+    }
 
     public String getName() {
         return name;
@@ -67,6 +85,10 @@ public class WorldObject implements Cloneable {
 
     public void setProperties(List<Property> props) {
         this.properties = props;
+    }
+    
+    public void addProperty(Property prop) {
+        properties.add(prop);
     }
 
     @Override

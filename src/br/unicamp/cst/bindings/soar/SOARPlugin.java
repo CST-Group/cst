@@ -5,6 +5,9 @@
  */
 package br.unicamp.cst.bindings.soar;
 
+import br.unicamp.cst.representation.owrl.Property;
+import br.unicamp.cst.representation.owrl.QualityDimension;
+import br.unicamp.cst.representation.owrl.WorldObject;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonElement;
@@ -167,7 +170,6 @@ public class SOARPlugin {
         List<Wme> olwme = Wmes.matcher(agent).filter(agent.getInputOutput().getOutputLink());
         return(olwme);
     }
-    
     
     public JsonObject getOutputLink() {
        JsonObject json = new JsonObject();
@@ -647,7 +649,71 @@ public class SOARPlugin {
         return(out);
     }
     
+    public WorldObject getWorldObject(Identifier id, String name) {
+        WorldObject newwo = new WorldObject(name);
+        Iterator<Wme> It = id.getWmes();
+        while (It.hasNext()) {
+            Wme wme = It.next();
+            Identifier idd = wme.getIdentifier();
+            Symbol a = wme.getAttribute();
+            Symbol v = wme.getValue();
+            Identifier testv = v.asIdentifier();
+            if (testv != null) { // The value is an identifier
+                WorldObject child = getWorldObject(testv,a.toString());
+                newwo.addPart(child);
+            }
+            else { // The value is a property
+                QualityDimension qd;
+                Object value;
+                if (v.asDouble() != null) value = v.asDouble().getValue();
+                else if(v.asInteger() != null) value = v.asInteger().getValue();
+                else value = v.toString();
+                qd = new QualityDimension(a.toString(),value);
+                Property pp = new Property(a.toString(),qd);
+                //pp.setQualityDimension("VALUE", v.toString());
+                newwo.addProperty(pp);
+            }
+        }
+        return(newwo);
+    }
+
+    public WorldObject getOutputLinkOWRL() {
+        Identifier ol = agent.getInputOutput().getOutputLink();
+        return(getWorldObject(ol,"OutputLink"));
+    }
+
+    public void setInputLink(WorldObject ilwo) {
+        Identifier il = agent.getInputOutput().getInputLink();
+        setInputLink(ilwo,il);
+    }
     
+    public void setInputLink(WorldObject il, Identifier id){
+        List<WorldObject> parts = il.getParts();
+        List<Property> properties = il.getProperties();
+        for (WorldObject w : parts) {
+            Identifier id2 = CreateIdWME(id,w.getName());
+            setInputLink(w,id2);
+            
+        }
+        for (Property p : properties) {
+            Identifier id3 = CreateIdWME(id,p.getName());
+            for (QualityDimension qd : p.getQualityDimensions()) {
+                  if(qd.isNumber()){
+                    Double value = (Double) qd.getValue();
+                    CreateFloatWME(id3, qd.getName(), (double)value);
+                  }
+                  else if(qd.isString()){
+                    String value = (String) qd.getValue();
+                    CreateStringWME(id3, qd.getName(), (String)value);
+                  }
+                  else if(qd.isBoolean()){
+                    Boolean value = (Boolean) qd.getValue();
+                    CreateStringWME(id3, qd.getName(), value.toString());
+                  } 
+               }
+        }
+        
+    }
     
 }
     /**

@@ -1,54 +1,50 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
+/*******************************************************************************
+ * Copyright (c) 2012  DCA-FEEC-UNICAMP
+ * All rights reserved. This program and the accompanying materials
+ * are made available under the terms of the GNU Lesser Public License v3
+ * which accompanies this distribution, and is available at
+ * http://www.gnu.org/licenses/lgpl.html
+ * 
+ * Contributors to this module:
+ *     S. M. de Paula and R. R. Gudwin 
+ ******************************************************************************/
+
 package br.unicamp.cst.representation.owrl;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
-import java.util.Set;
 
 /**
  *
  * @author suelenmapa
  */
-public class Property {
+public final class Property {
 
-    private Map<String, Object> qualityDimensions;//1-n
+    private List<QualityDimension> qualityDimensions;//1-n
 
     private String Name;
 
     public Property(String name) {
         setName(name);
-        qualityDimensions = new HashMap<String, Object>();
+        qualityDimensions = new ArrayList<>();
+    }
+    
+    public Property(String name, QualityDimension qd) {
+        this(name);
+        setQualityDimension(qd);
     }
 
-    public Property(String name, Map<String, Object> ob) {
+    public Property(String name, List<QualityDimension> qd) {
         setName(name);
-        qualityDimensions = ob;
+        qualityDimensions = qd;
     }
 
-    public Map<String, Object> getProperty() {
+    public List<QualityDimension> getQualityDimensions() {
         return qualityDimensions;
     }
 
-    public List<Object> getValuesOfDimensionsTogether() {
-
-        List<Object> o = new ArrayList<>();
-
-        Set<String> dimensionName = qualityDimensions.keySet();
-        for (String key : dimensionName) {
-            o.add(qualityDimensions.get(key));
-        }
-
-        return o;
-    }
-
-    public void setQualityDimension(String name, Object object) {
-        getProperty().put(name, object);
+    public void setQualityDimension(QualityDimension qd) {
+        qualityDimensions.add(qd);
     }
 
     public String getName() {
@@ -59,9 +55,13 @@ public class Property {
         this.Name = Name;
     }
 
+    @Override
     public Property clone() {
-        HashMap<String, Object> newQualityDimensions = (HashMap<String, Object>) ((HashMap<String, Object>) qualityDimensions).clone();
-        return new Property(getName(), newQualityDimensions);
+        List<QualityDimension> newQualityDimension = new ArrayList<>();
+        for (QualityDimension qd : qualityDimensions) {
+            newQualityDimension.add(qd.clone());
+        }
+        return new Property(getName(), newQualityDimension);
     }
 
 }

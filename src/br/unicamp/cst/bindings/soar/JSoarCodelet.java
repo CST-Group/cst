@@ -5,8 +5,10 @@
  */
 package br.unicamp.cst.bindings.soar;
 
-import br.unicamp.cst.bindings.soar.SOARPlugin;
 import br.unicamp.cst.core.entities.Codelet;
+import br.unicamp.cst.representation.owrl.Property;
+import br.unicamp.cst.representation.owrl.QualityDimension;
+import br.unicamp.cst.representation.owrl.WorldObject;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import java.io.File;
@@ -44,6 +46,46 @@ public abstract class JSoarCodelet extends Codelet {
     
     
     public ArrayList<Object> getCommands(String package_with_beans_classes){
+        ArrayList<Object> commandList = new ArrayList<Object>();
+        WorldObject ol = jsoar.getOutputLinkOWRL();
+        
+        for (WorldObject command : ol.getParts()) {
+            
+            String commandType = command.getName();
+            Object commandObject = null;
+            Class type = null;
+            try {
+               type = Class.forName(package_with_beans_classes+"."+commandType);
+               commandObject = type.newInstance();
+               type.cast(commandObject);
+            } catch(Exception e) {e.printStackTrace();}
+            for (Property p : command.getProperties()) {
+                try {
+                   for(Field field : type.getFields()){
+                    if(p.getName().equals(field.getName())){
+                        QualityDimension value = p.getQualityDimensions().get(0);
+                        if(value.isDouble()){
+                            float fvalue = ((Double) value.getValue()).floatValue();
+                            field.set(commandObject, fvalue );
+                        } else if(value.isLong()){
+                            float fvalue = ((Long) value.getValue()).floatValue();
+                            field.set(commandObject, fvalue );
+                        }
+                        else{
+                            field.set(commandObject, value.getValue());
+                        }
+                    }
+                   }
+                } catch(Exception e) {e.printStackTrace();}
+                
+            }
+            //System.out.println(commandObject.getClass().getName()+" -> "+commandObject);
+            commandList.add(commandObject);
+        }
+        return commandList;
+    }
+    
+    public ArrayList<Object> getCommands2(String package_with_beans_classes){
         ArrayList<Object> commandList = new ArrayList<Object>();
         JsonObject templist = jsoar.getOutputLink();
         Set<Map.Entry<String,JsonElement>> set = templist.entrySet();

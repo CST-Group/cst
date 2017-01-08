@@ -1,8 +1,14 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
+/*******************************************************************************
+ * Copyright (c) 2012  DCA-FEEC-UNICAMP
+ * All rights reserved. This program and the accompanying materials
+ * are made available under the terms of the GNU Lesser Public License v3
+ * which accompanies this distribution, and is available at
+ * http://www.gnu.org/licenses/lgpl.html
+ * 
+ * Contributors to this module:
+ *     S. M. de Paula and R. R. Gudwin 
+ ******************************************************************************/
+
 package br.unicamp.cst.representation.owrl;
 
 import java.util.Enumeration;
@@ -108,7 +114,6 @@ public class ViewTree extends javax.swing.JFrame {
 
                 if (cn_final.getName().compareTo(cn_initial.getName()) == 0) {
                     compareNodes((DefaultMutableTreeNode) rootFinal.getChildAt(i), (DefaultMutableTreeNode) rootInitial.getChildAt(c));
-
                     found = true;
                     break;
                 }
@@ -148,8 +153,7 @@ public class ViewTree extends javax.swing.JFrame {
     private JTree addNodeJTree(Configuration conf, JScrollPane where, DefaultMutableTreeNode node, JTree tree) {
 
         List<WorldObject> listWO = conf.getObjects();
-        
-        
+
         for (WorldObject wo : listWO) {
 
             DefaultMutableTreeNode objectNode = new DefaultMutableTreeNode(new TreeElement(wo.getName() + "_" + wo.getID(), TreeElement.NODE_NORMAL, wo, TreeElement.ICON_OBJECT));
@@ -162,16 +166,20 @@ public class ViewTree extends javax.swing.JFrame {
                 DefaultMutableTreeNode propertyNode = new DefaultMutableTreeNode(new TreeElement(p.getName(), TreeElement.NODE_NORMAL, p, TreeElement.ICON_PROPERTY));
                 objectNode.add(propertyNode);
 
-                Map<String, Object> map = ((Property) p).getProperty();
-                Set<String> qualityDimName = map.keySet();
-                for (String chave : qualityDimName) {
+//                Map<String, Object> map = ((Property) p).getQualityDimensions();
+                int size = ((Property) p).getQualityDimensions().size();
+                //Set<String> qualityDimName = map.keySet();
+                for (int s = 0; s < size; s++) {
+
+                    String chave = ((Property) p).getQualityDimensions().get(s).getName();
+                    String value = (((Property) p).getQualityDimensions().get(s).getValue()).toString();
+
                     DefaultMutableTreeNode qualityDimensionNode = new DefaultMutableTreeNode(new TreeElement(chave, TreeElement.NODE_NORMAL, chave, TreeElement.ICON_QUALITYDIM));
                     propertyNode.add(qualityDimensionNode);
 
-                    if (chave != null) {
-                        DefaultMutableTreeNode valueQualityDimensionNode = new DefaultMutableTreeNode(new TreeElement(map.get(chave).toString(), TreeElement.NODE_NORMAL, map.get(chave).toString(), TreeElement.ICON_VALUE));
-                        qualityDimensionNode.add(valueQualityDimensionNode);
-                    }
+                    DefaultMutableTreeNode valueQualityDimensionNode = new DefaultMutableTreeNode(new TreeElement(value, TreeElement.NODE_NORMAL, value, TreeElement.ICON_VALUE));
+                    qualityDimensionNode.add(valueQualityDimensionNode);
+
                 }
 
             }
