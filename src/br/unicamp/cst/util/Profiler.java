@@ -31,4 +31,8 @@ public class Profiler {
         System.out.println("Time elapsed: "+(after-before)+" ms");
     }
     
+    public void printDifference(String pre) {
+        System.out.println(pre+" Time elapsed: "+(after-before)+" ms");
+    }
+    
 }

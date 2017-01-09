@@ -1,8 +1,14 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
+/*******************************************************************************
+ * Copyright (c) 2012  DCA-FEEC-UNICAMP
+ * All rights reserved. This program and the accompanying materials
+ * are made available under the terms of the GNU Lesser Public License v3
+ * which accompanies this distribution, and is available at
+ * http://www.gnu.org/licenses/lgpl.html
+ * 
+ * Contributors to this module:
+ *     W. Gibaut, R. R. Gudwin 
+ ******************************************************************************/
+
 package br.unicamp.cst.bindings.soar;
 
 import br.unicamp.cst.core.entities.Codelet;
@@ -45,7 +51,7 @@ public abstract class JSoarCodelet extends Codelet {
     }
     
     
-    public ArrayList<Object> getCommands(String package_with_beans_classes){
+    public ArrayList<Object> getCommandsOWRL(String package_with_beans_classes){
         ArrayList<Object> commandList = new ArrayList<Object>();
         WorldObject ol = jsoar.getOutputLinkOWRL();
         
@@ -66,10 +72,10 @@ public abstract class JSoarCodelet extends Codelet {
                         QualityDimension value = p.getQualityDimensions().get(0);
                         if(value.isDouble()){
                             float fvalue = ((Double) value.getValue()).floatValue();
-                            field.set(commandObject, fvalue );
+                            field.set(commandObject, fvalue);
                         } else if(value.isLong()){
                             float fvalue = ((Long) value.getValue()).floatValue();
-                            field.set(commandObject, fvalue );
+                            field.set(commandObject, fvalue);
                         }
                         else{
                             field.set(commandObject, value.getValue());
@@ -79,15 +85,14 @@ public abstract class JSoarCodelet extends Codelet {
                 } catch(Exception e) {e.printStackTrace();}
                 
             }
-            //System.out.println(commandObject.getClass().getName()+" -> "+commandObject);
             commandList.add(commandObject);
         }
         return commandList;
     }
     
-    public ArrayList<Object> getCommands2(String package_with_beans_classes){
+    public ArrayList<Object> getCommandsJSON(String package_with_beans_classes){
         ArrayList<Object> commandList = new ArrayList<Object>();
-        JsonObject templist = jsoar.getOutputLink();
+        JsonObject templist = jsoar.getOutputLinkJSON();
         Set<Map.Entry<String,JsonElement>> set = templist.entrySet();
         Iterator <Entry<String,JsonElement>> it = set.iterator();
         while(it.hasNext()){
@@ -119,18 +124,6 @@ public abstract class JSoarCodelet extends Codelet {
         }
         return commandList;
     }
-    
-    /*
-     public ArrayList<SoarCommand> getCommands(List<String> commandsList){
-        ArrayList<SoarCommand> commandList = jsoar.getReceivedCommands(commandsList);    
-        return commandList;
-    }*/
-    
-    
-    public abstract void processCommands();
-    
-    
-   
     
     public JsonObject createJson(String pathToLeaf, Object value){
         JsonObject json = new JsonObject();
