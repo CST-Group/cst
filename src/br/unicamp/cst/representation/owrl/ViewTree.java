@@ -384,10 +384,8 @@ public class ViewTree extends javax.swing.JFrame {
         }
     }//GEN-LAST:event_jButton1ActionPerformed
 
-    public static ImageIcon
-            createImageIcon(String path) {
-        java.net.URL imgURL = ViewTree.class
-                .getResource(path);
+    public static ImageIcon createImageIcon(String path) {
+        java.net.URL imgURL = ViewTree.class.getResource(path);
         if (imgURL != null) {
             return new ImageIcon(imgURL);
         } else {

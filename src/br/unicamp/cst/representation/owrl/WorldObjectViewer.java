@@ -24,25 +24,14 @@ public class WorldObjectViewer extends javax.swing.JFrame {
     
     private JTree jtree;
     WorldObject wog;
-    //private JTree configurationTreeFinal;
-    //private DefaultMutableTreeNode parentNodeInitial;
-    //private DefaultMutableTreeNode parentNodeFinal;
 
     /**
      * Creates new form WorldObjectViewer
      */
     public WorldObjectViewer(String windowName) {
         initComponents();
-        //jsp.setViewportView(null);
-        //parentNodeInitial = addRootNode("WorldObject Hierarchy");
-        //jtree = new JTree(parentNodeInitial);
-        //jsp.setViewportView(jtree);
-        //repaint();
-        //jtree = addNodeJTree(wo);
         TreeModel tm = createTreeModel(new WorldObject("Empty"));
-        //tree = new JTree(objectNode);
         jtree = new JTree(tm);
-        //where.setViewportView(tree);
         expandAllNodes(jtree);
         jsp.setViewportView(jtree);
         jtree.setCellRenderer(new RendererJTree());
@@ -163,19 +152,13 @@ public class WorldObjectViewer extends javax.swing.JFrame {
         return(tm);
     }
     
-    private JTree addNodeJTree(WorldObject wo) {
-        JTree tree;
-        //DefaultMutableTreeNode objectNode = addObject(wo);
-        //node.add(objectNode);
-        TreeModel tm = createTreeModel(wo);
-        //tree = new JTree(objectNode);
-        tree = new JTree(tm);
-        //where.setViewportView(tree);
-        expandAllNodes(tree);
-        //repaint();
-        
-        return tree;
-    }
+//    private JTree addNodeJTree(WorldObject wo) {
+//        JTree tree;
+//        TreeModel tm = createTreeModel(wo);
+//        tree = new JTree(tm);
+//        expandAllNodes(tree);
+//        return tree;
+//    }
     
     private void expandAllNodes(JTree tree) {
          expandAllNodes(tree, 0, tree.getRowCount());
