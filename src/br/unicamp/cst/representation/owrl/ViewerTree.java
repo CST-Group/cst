@@ -25,7 +25,7 @@ import javax.swing.tree.TreeNode;
  *
  * @author suelenmapa
  */
-public class ViewTree extends javax.swing.JFrame {
+public class ViewerTree extends javax.swing.JFrame {
 
     private JTree configurationTreeInitial;
     private JTree configurationTreeFinal;
@@ -34,7 +34,7 @@ public class ViewTree extends javax.swing.JFrame {
 
     private Map<String, Configuration> listConfs;
 
-    public ViewTree(Map<String, Configuration> lc) {
+    public ViewerTree(Map<String, Configuration> lc) {
 
         initComponents();
         this.listConfs = lc;
@@ -150,39 +150,14 @@ public class ViewTree extends javax.swing.JFrame {
 
     }
 
-    private JTree addNodeJTree(Configuration conf, JScrollPane where, DefaultMutableTreeNode node, JTree tree) {
+   private JTree addNodeJTree(Configuration conf, JScrollPane where, DefaultMutableTreeNode node, JTree tree) {
 
         List<WorldObject> listWO = conf.getObjects();
 
         for (WorldObject wo : listWO) {
 
-            DefaultMutableTreeNode objectNode = new DefaultMutableTreeNode(new TreeElement(wo.getName() + "_" + wo.getID(), TreeElement.NODE_NORMAL, wo, TreeElement.ICON_OBJECT));
+            DefaultMutableTreeNode objectNode = addObject(wo);
             node.add(objectNode);
-
-            List<Property> props = wo.getProperties();
-
-            for (Property p : props) {
-
-                DefaultMutableTreeNode propertyNode = new DefaultMutableTreeNode(new TreeElement(p.getName(), TreeElement.NODE_NORMAL, p, TreeElement.ICON_PROPERTY));
-                objectNode.add(propertyNode);
-
-//                Map<String, Object> map = ((Property) p).getQualityDimensions();
-                int size = ((Property) p).getQualityDimensions().size();
-                //Set<String> qualityDimName = map.keySet();
-                for (int s = 0; s < size; s++) {
-
-                    String chave = ((Property) p).getQualityDimensions().get(s).getName();
-                    String value = (((Property) p).getQualityDimensions().get(s).getValue()).toString();
-
-                    DefaultMutableTreeNode qualityDimensionNode = new DefaultMutableTreeNode(new TreeElement(chave, TreeElement.NODE_NORMAL, chave, TreeElement.ICON_QUALITYDIM));
-                    propertyNode.add(qualityDimensionNode);
-
-                    DefaultMutableTreeNode valueQualityDimensionNode = new DefaultMutableTreeNode(new TreeElement(value, TreeElement.NODE_NORMAL, value, TreeElement.ICON_VALUE));
-                    qualityDimensionNode.add(valueQualityDimensionNode);
-
-                }
-
-            }
 
             tree = new JTree(node);
 
@@ -190,9 +165,42 @@ public class ViewTree extends javax.swing.JFrame {
             repaint();
 
         }
-
+       
+              
         return tree;
 
+    }
+    
+    private DefaultMutableTreeNode addObject(WorldObject wo) {
+        DefaultMutableTreeNode objectNode = new DefaultMutableTreeNode(new TreeElement(wo.getName() + " [" + wo.getID() + "]", TreeElement.NODE_NORMAL, wo, TreeElement.ICON_OBJECT));
+        List<WorldObject> parts = wo.getParts();
+        for (WorldObject oo : parts) {
+            DefaultMutableTreeNode part = addObject(oo);
+            objectNode.add(part);
+        }
+
+        List<Property> props = wo.getProperties();
+        for (Property p : props) {
+            DefaultMutableTreeNode propertyNode = addProperty(p);
+            objectNode.add(propertyNode);
+        }
+
+        return (objectNode);
+    }
+    
+     private DefaultMutableTreeNode addProperty(Property p) {
+        DefaultMutableTreeNode propertyNode = new DefaultMutableTreeNode(new TreeElement(p.getName(), TreeElement.NODE_NORMAL, p, TreeElement.ICON_PROPERTY));
+        int size = ((Property) p).getQualityDimensions().size();
+        for (int s = 0; s < size; s++) {
+            String chave = ((Property) p).getQualityDimensions().get(s).getName();
+            String value = (((Property) p).getQualityDimensions().get(s).getValue()).toString();
+            DefaultMutableTreeNode qualityDimensionNode = new DefaultMutableTreeNode(new TreeElement(chave, TreeElement.NODE_NORMAL, chave, TreeElement.ICON_QUALITYDIM));
+            propertyNode.add(qualityDimensionNode);
+            DefaultMutableTreeNode valueQualityDimensionNode = new DefaultMutableTreeNode(new TreeElement(value, TreeElement.NODE_NORMAL, value, TreeElement.ICON_VALUE));
+            qualityDimensionNode.add(valueQualityDimensionNode);
+
+        }
+        return(propertyNode);
     }
 
     /**
@@ -385,7 +393,7 @@ public class ViewTree extends javax.swing.JFrame {
     }//GEN-LAST:event_jButton1ActionPerformed
 
     public static ImageIcon createImageIcon(String path) {
-        java.net.URL imgURL = ViewTree.class.getResource(path);
+        java.net.URL imgURL = ViewerTree.class.getResource(path);
         if (imgURL != null) {
             return new ImageIcon(imgURL);
         } else {

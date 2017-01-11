@@ -38,7 +38,7 @@ public class WorldObject implements Cloneable {
         setID(id);
         setName(name);
         setProperties(props);
-        setParts(null);
+        parts = new ArrayList<WorldObject>();
 
     }
 
@@ -97,6 +97,6 @@ public class WorldObject implements Cloneable {
         for (Property p : getProperties()) {
             newProperties.add(p.clone());
         }
-        return new WorldObject(getName(), newProperties, getID());
+        return new  WorldObject(getName(), getID(), getParts(),newProperties);
     }
 }
