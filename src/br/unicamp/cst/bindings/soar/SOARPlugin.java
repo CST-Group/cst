@@ -572,15 +572,22 @@ public class SOARPlugin {
     }
 
     public boolean containsWme(final List<Wme> list, final String name){
-    return list.stream().filter(o -> o.getAttribute().equals(agent.getSymbols().createString(name))).findFirst().isPresent();
-}
+        boolean found = false;
+        for(int i=0; i<list.size(); i++){
+           if(list.get(i).equals(agent.getSymbols().createString(name))){
+                found = true;
+                break;
+           }
+        }
+        return found;
+    }
     
     
     public String toPrettyFormat(JsonObject json) {
       Gson gson = new GsonBuilder().setPrettyPrinting().create();
       String prettyJson = gson.toJson(json);
       return prettyJson;
-  }
+    }
     
     /* -----------------------------------------------------------------------
     Beginning of WME Print Support methods

@@ -11,6 +11,8 @@
 
 package br.unicamp.cst.representation.owrl;
 
+import br.unicamp.cst.motivational.Appraisal;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -22,7 +24,7 @@ public class Configuration {
     
      private List<WorldObject> objects = new ArrayList<>();//1-n.
      //String name;
-     
+     private Appraisal appraisal;
      
      public Configuration (List<WorldObject> objs){
          
@@ -34,8 +36,13 @@ public class Configuration {
     public List<WorldObject> getObjects() {
         return objects;
     }
-     
-     
-     
-    
+
+
+    public Appraisal getAppraisal() {
+        return appraisal;
+    }
+
+    public void setAppraisal(Appraisal appraisal) {
+        this.appraisal = appraisal;
+    }
 }
