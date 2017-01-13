@@ -205,6 +205,10 @@ public abstract class JSoarCodelet extends Codelet {
         //jsoar.printWMEs();
     }
     
+    public void setInputLink(WorldObject wo){
+        jsoar.setInputLink(wo);
+    }
+    
     public void removeWme(String pathToNode){
         jsoar.removeBranchFromWme(pathToNode);
     }
