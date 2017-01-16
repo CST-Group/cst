@@ -194,10 +194,10 @@ public class ViewerTree extends javax.swing.JFrame {
         for (int s = 0; s < size; s++) {
             String chave = ((Property) p).getQualityDimensions().get(s).getName();
             String value = (((Property) p).getQualityDimensions().get(s).getValue()).toString();
-            DefaultMutableTreeNode qualityDimensionNode = new DefaultMutableTreeNode(new TreeElement(chave, TreeElement.NODE_NORMAL, chave, TreeElement.ICON_QUALITYDIM));
+            DefaultMutableTreeNode qualityDimensionNode = new DefaultMutableTreeNode(new TreeElement(chave+" : "+value, TreeElement.NODE_NORMAL, chave+" : "+value, TreeElement.ICON_QUALITYDIM));
             propertyNode.add(qualityDimensionNode);
-            DefaultMutableTreeNode valueQualityDimensionNode = new DefaultMutableTreeNode(new TreeElement(value, TreeElement.NODE_NORMAL, value, TreeElement.ICON_VALUE));
-            qualityDimensionNode.add(valueQualityDimensionNode);
+            //DefaultMutableTreeNode valueQualityDimensionNode = new DefaultMutableTreeNode(new TreeElement(value, TreeElement.NODE_NORMAL, value, TreeElement.ICON_VALUE));
+            //qualityDimensionNode.add(valueQualityDimensionNode);
 
         }
         return(propertyNode);

@@ -92,18 +92,21 @@ public class WorldObjectViewer extends javax.swing.JFrame {
             java.util.logging.Logger.getLogger(WorldObjectViewer.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         }
         //</editor-fold>
-        WorldObject wo = new WorldObject("Teste");
-        WorldObject so1 = new WorldObject("Sub-objeto1");
-        so1.addProperty(new Property("Property2",new QualityDimension("Quality Dimension2","Value2")));
-        wo.addPart(so1);
-        WorldObject so2 = new WorldObject("Sub-objeto2");
-        so2.addProperty(new Property("Property3",new QualityDimension("Quality Dimension3","Value3")));
-        wo.addPart(so2);
-        wo.addProperty(new Property("Property",new QualityDimension("Quality Dimension","Value")));   
+        WorldObject robot = new WorldObject("Robot");
+        WorldObject sensor = new WorldObject("Sensor");
+        Property position = new Property("Position");
+        position.setQualityDimension(new QualityDimension("x",0.5));
+        position.setQualityDimension(new QualityDimension("y",0.6));
+        sensor.addProperty(position);
+        robot.addPart(sensor);
+        WorldObject actuator = new WorldObject("Actuator");
+        actuator.addProperty(new Property("velocity",new QualityDimension("intensity",-0.12)));
+        robot.addPart(actuator);
+        robot.addProperty(new Property("Model",new QualityDimension("Serial#","1234XDr56")));   
         WorldObjectViewer ov = new WorldObjectViewer("Teste");
         ov.setVisible(true);
         System.out.println("Teste:");
-        ov.updateTree(wo);
+        ov.updateTree(robot);
     }
   
     public void setWO(WorldObject newwog) {
@@ -137,10 +140,10 @@ public class WorldObjectViewer extends javax.swing.JFrame {
         for (int s = 0; s < size; s++) {
             String chave = ((Property) p).getQualityDimensions().get(s).getName();
             String value = (((Property) p).getQualityDimensions().get(s).getValue()).toString();
-            DefaultMutableTreeNode qualityDimensionNode = new DefaultMutableTreeNode(new TreeElement(chave, TreeElement.NODE_NORMAL, chave, TreeElement.ICON_QUALITYDIM));
+            DefaultMutableTreeNode qualityDimensionNode = new DefaultMutableTreeNode(new TreeElement(chave+" : "+value, TreeElement.NODE_NORMAL, chave+" : "+value, TreeElement.ICON_QUALITYDIM));
             propertyNode.add(qualityDimensionNode);
-            DefaultMutableTreeNode valueQualityDimensionNode = new DefaultMutableTreeNode(new TreeElement(value, TreeElement.NODE_NORMAL, value, TreeElement.ICON_VALUE));
-            qualityDimensionNode.add(valueQualityDimensionNode);
+            //DefaultMutableTreeNode valueQualityDimensionNode = new DefaultMutableTreeNode(new TreeElement(value, TreeElement.NODE_NORMAL, value, TreeElement.ICON_VALUE));
+            //qualityDimensionNode.add(valueQualityDimensionNode);
 
         }
         return(propertyNode);
