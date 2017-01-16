@@ -75,12 +75,15 @@ public class ViewerTree extends javax.swing.JFrame {
             while (c_node_1.hasMoreElements()) {
                 DefaultMutableTreeNode n_node_1 = c_node_1.nextElement();
                 DefaultMutableTreeNode n_node_2 = c_node_2.nextElement();
-                returnValue = returnValue || compareNodes(n_node_1, n_node_2);
+                //returnValue = returnValue || compareNodes(n_node_1, n_node_2);
+                returnValue = compareNodes(n_node_1, n_node_2);
+
+                if (returnValue) {
+                    ((TreeElement) node_1.getUserObject()).setColor(TreeElement.NODE_CHANGE);
+                    ((TreeElement) node_2.getUserObject()).setColor(TreeElement.NODE_CHANGE);
+                }
             }
-            if (returnValue) {
-                ((TreeElement) node_1.getUserObject()).setColor(TreeElement.NODE_CHANGE);
-                ((TreeElement) node_2.getUserObject()).setColor(TreeElement.NODE_CHANGE);
-            }
+            
         }
         return returnValue;
     }
