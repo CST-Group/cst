@@ -12,6 +12,11 @@ import java.util.ArrayList;
 public class MemoryContainer implements Memory {
 
 	private volatile ArrayList<Memory> memories;
+	
+	/**
+	 * Type of the memory container
+	 */
+	private String name;
 
 	public MemoryContainer(){
 
@@ -19,20 +24,11 @@ public class MemoryContainer implements Memory {
 
 	}
 
-	public MemoryContainer(String type, int numberOfMemoryObjectsInTheContainer) {
+	public MemoryContainer(String type) {
 		
 		memories = new ArrayList<>();
 		
-		for(int i = 0; i < numberOfMemoryObjectsInTheContainer; i++){
-			
-			MemoryObject mo = new MemoryObject(); 
-			mo.setI("-1");
-			mo.setEvaluation(0.0d);
-			mo.setType(type);
-
-			memories.add(mo);
-			
-		}
+		this.name = type;
 	}
 
 	/** 
@@ -151,22 +147,6 @@ public class MemoryContainer implements Memory {
 	@Override
 	public synchronized String getName() {
 
-		String name = null;
-
-		double maxEval = 0.0d;
-
-		for(Memory memory : memories){
-
-			double memoryEval = memory.getEvaluation();
-
-			if( memoryEval >= maxEval){
-
-				maxEval = memoryEval;
-				name = memory.getName();
-			}
-
-		}
-
 		return name;
 	}
 
@@ -196,50 +176,48 @@ public class MemoryContainer implements Memory {
 	}
 
 	/**
-	 * TODO - This main is only for fast testing purposes. Should be deleted later.
 	 * 
-	 * @param args
+	 * @param phase
+	 * @param activation
+	 * @param type
 	 */
-//	public static void main(String[] args) {
-//
-//		MemoryContainer memoryContainer = new MemoryContainer();
-//
-//		MemoryObject memory1 = new MemoryObject();
-//		memory1.setI("MemoryObject 1");
-//		memory1.setEvaluation(0.5D);
-//		memory1.setType("String");
-//
-//		memoryContainer.add(memory1);
-//
-//		MemoryContainer memory2 = new MemoryContainer();
-//
-//		MemoryObject memoryI1 = new MemoryObject();
-//		memoryI1.setI("MemoryObject Inside 1");
-//		memoryI1.setEvaluation(0.6D);
-//		memoryI1.setType("String");
-//
-//		memory2.add(memoryI1);
-//
-//		MemoryObject memoryI2 = new MemoryObject();
-//		memoryI2.setI("MemoryObject Inside 2");
-//		memoryI2.setEvaluation(0.5D);
-//		memoryI2.setType("String");
-//
-//		memory2.add(memoryI2);
-//
-//		memoryContainer.add(memory2);
-//
-//		MemoryObject memory3 = new MemoryObject();
-//		memory3.setI("MemoryObject 2");
-//		memory3.setEvaluation(0.4D);
-//		memory3.setType("String");
-//
-//		memoryContainer.add(memory3);
-//
-//		System.out.println(memoryContainer.getI());
-//		System.out.println(memoryContainer.getName());
-//		System.out.println(memoryContainer.getEvaluation());
-//
-//	}
+	public void setI(String info, double evaluation, String type) {
 
+		if(memories != null){
+			
+			boolean set = false;
+
+			for(Memory memory : memories){
+
+				if(memory != null && memory instanceof MemoryObject){
+
+					MemoryObject memoryObject = (MemoryObject) memory;
+
+					if(memoryObject.getName().equalsIgnoreCase(type)){
+
+						memory.setI(info);
+						memory.setEvaluation(evaluation);
+						
+						set = true;
+						break;
+
+					} 					
+				}
+
+			}
+			
+			if(!set){
+				
+				MemoryObject mo = new MemoryObject(); 
+				mo.setI(info);
+				mo.setEvaluation(evaluation);
+				mo.setType(type);
+
+				memories.add(mo);
+				
+			}
+		}	
+	}
+	
+	
 }
