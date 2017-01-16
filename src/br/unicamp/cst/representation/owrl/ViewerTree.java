@@ -59,6 +59,7 @@ public class ViewerTree extends javax.swing.JFrame {
     private boolean compareNodes(DefaultMutableTreeNode node_1, DefaultMutableTreeNode node_2) {
         boolean returnValue = false;
         //System.out.println("Comparando " + ((TreeElement) node_1.getUserObject()).getName() + " e " + ((TreeElement) node_2.getUserObject()).getName());
+        //System.out.println("Comparando " + ((TreeElement) node_1.getUserObject()).getName() + " e " + ((TreeElement) node_2.getUserObject()).getName());
         if (node_1.isLeaf() && node_2.isLeaf()) {
             TreeElement v_node_1 = (TreeElement) node_1.getUserObject();
             TreeElement v_node_2 = (TreeElement) node_2.getUserObject();
@@ -83,7 +84,7 @@ public class ViewerTree extends javax.swing.JFrame {
                     ((TreeElement) node_2.getUserObject()).setColor(TreeElement.NODE_CHANGE);
                 }
             }
-            
+
         }
         return returnValue;
     }
