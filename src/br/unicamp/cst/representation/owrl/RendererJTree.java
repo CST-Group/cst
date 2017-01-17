@@ -45,6 +45,36 @@ public class RendererJTree extends DefaultTreeCellRenderer {
             case TreeElement.ICON_VALUE:
                 img = new ImageIcon(this.getClass().getResource("/br/unicamp/cst/images/value.png"));
                 break;
+            case TreeElement.ICON_MIND:
+                img = new ImageIcon(this.getClass().getResource("/br/unicamp/cst/images/mind.png"));
+                break;
+            case TreeElement.ICON_CODELET:
+                img = new ImageIcon(this.getClass().getResource("/br/unicamp/cst/images/codelet.png"));
+                break;
+            case TreeElement.ICON_CODELETS:
+                img = new ImageIcon(this.getClass().getResource("/br/unicamp/cst/images/codelets.png"));
+                break;
+            case TreeElement.ICON_MEMORY:
+                img = new ImageIcon(this.getClass().getResource("/br/unicamp/cst/images/memory.png"));
+                break;
+            case TreeElement.ICON_MEMORIES:
+                img = new ImageIcon(this.getClass().getResource("/br/unicamp/cst/images/memories.png"));
+                break;
+            case TreeElement.ICON_CONTAINER:
+                img = new ImageIcon(this.getClass().getResource("/br/unicamp/cst/images/container.png"));
+                break;
+            case TreeElement.ICON_MO:
+                img = new ImageIcon(this.getClass().getResource("/br/unicamp/cst/images/mo.png"));
+                break;
+            case TreeElement.ICON_INPUT:
+                img = new ImageIcon(this.getClass().getResource("/br/unicamp/cst/images/input.png"));
+                break;
+            case TreeElement.ICON_OUTPUT:
+                img = new ImageIcon(this.getClass().getResource("/br/unicamp/cst/images/output.png"));
+                break;
+            case TreeElement.ICON_BROADCAST:    
+                img = new ImageIcon(this.getClass().getResource("/br/unicamp/cst/images/broadcast.png"));
+                break;
             // TODO: Criar um icone de erro
         }
         setOpenIcon(img);

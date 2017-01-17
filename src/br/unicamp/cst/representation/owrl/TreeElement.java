@@ -32,6 +32,16 @@ public class TreeElement {
     public static final int ICON_PROPERTY = 3;
     public static final int ICON_QUALITYDIM = 4;
     public static final int ICON_VALUE = 5;
+    public static final int ICON_MIND = 6;
+    public static final int ICON_CODELET = 7;
+    public static final int ICON_CODELETS = 8;
+    public static final int ICON_MEMORY = 9;
+    public static final int ICON_MEMORIES = 10;
+    public static final int ICON_CONTAINER = 11;
+    public static final int ICON_MO = 12;
+    public static final int ICON_INPUT = 13;
+    public static final int ICON_OUTPUT = 14;
+    public static final int ICON_BROADCAST = 15;
 
     public TreeElement(String name, int node_type, Object element, int typeIcon) {
         setName(name);

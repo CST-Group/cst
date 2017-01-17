@@ -219,5 +219,8 @@ public class MemoryContainer implements Memory {
 		}	
 	}
 	
+        public ArrayList<Memory> getAllMemories() {
+            return memories;
+        }
 	
 }
