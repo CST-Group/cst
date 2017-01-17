@@ -43,6 +43,17 @@ public class Mind
 	{
 		return rawMemory;
 	}
+	
+	public synchronized MemoryContainer createMemoryContainer(String name){
+		
+		MemoryContainer mc = null;
+		
+		if(rawMemory!=null)
+			mc = rawMemory.createMemoryContainer(name);
+		
+		return mc;
+		
+	}
 
 
 	/**

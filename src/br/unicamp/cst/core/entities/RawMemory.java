@@ -105,12 +105,33 @@ public class RawMemory
     * 
     * @param mo memory to be added
     */
+   @Deprecated
    public synchronized void addMemoryObject(Memory mo)
    {
 	   synchronized(allMemories)
 	   {
 		      allMemories.add(mo);
 	   }     
+   }
+   
+   public synchronized void addMemory(Memory mo)
+   {
+	   synchronized(allMemories)
+	   {
+		      allMemories.add(mo);
+	   }     
+   }
+   
+   
+   public synchronized MemoryContainer createMemoryContainer(String name){
+	   
+	   
+	   MemoryContainer mc = new MemoryContainer(name);
+	   
+	   this.addMemory(mc);
+	   
+	   return mc;
+	   
    }
 
    /**
@@ -133,7 +154,7 @@ public class RawMemory
        mo.setType(name);
 
        // adding the new object to raw memory
-       this.addMemoryObject(mo);
+       this.addMemory(mo);
        return mo;
    }
    
