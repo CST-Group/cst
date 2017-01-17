@@ -42,7 +42,7 @@ public class MindViewer extends javax.swing.JFrame {
         jsp.setViewportView(jtree);
         jtree.setCellRenderer(new RendererJTree());
         setTitle(windowName);
-        StartTimer();
+        //StartTimer();
     }
 
     /**
@@ -55,22 +55,45 @@ public class MindViewer extends javax.swing.JFrame {
     private void initComponents() {
 
         jsp = new javax.swing.JScrollPane();
+        jToolBar1 = new javax.swing.JToolBar();
+        bRefresh = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
+
+        jToolBar1.setRollover(true);
+
+        bRefresh.setText("Refresh");
+        bRefresh.setFocusable(false);
+        bRefresh.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
+        bRefresh.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
+        bRefresh.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                bRefreshActionPerformed(evt);
+            }
+        });
+        jToolBar1.add(bRefresh);
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(jsp, javax.swing.GroupLayout.DEFAULT_SIZE, 400, Short.MAX_VALUE)
+            .addComponent(jToolBar1, javax.swing.GroupLayout.DEFAULT_SIZE, 400, Short.MAX_VALUE)
+            .addComponent(jsp)
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(jsp, javax.swing.GroupLayout.DEFAULT_SIZE, 413, Short.MAX_VALUE)
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+                .addComponent(jToolBar1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(jsp, javax.swing.GroupLayout.DEFAULT_SIZE, 394, Short.MAX_VALUE))
         );
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
+
+    private void bRefreshActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_bRefreshActionPerformed
+        if (wog != null) updateTree(wog);
+    }//GEN-LAST:event_bRefreshActionPerformed
 
     /**
      * @param args the command line arguments
@@ -106,6 +129,7 @@ public class MindViewer extends javax.swing.JFrame {
         MemoryObject m5 = m.createMemoryObject("M5",0.12);
         MemoryContainer m6 = m.createMemoryContainer("C1");
         MemoryContainer m7 = m.createMemoryContainer("C2");
+        m7.setI(0.55,0.23);
         m6.setI(0.33,0.22);
         m6.setI(0.12,0.13);
         m6.setI(m7);
@@ -249,6 +273,7 @@ public class MindViewer extends javax.swing.JFrame {
     }
     
     public void updateTree(Mind m) {
+       wog = m; 
        TreeModel tm = createTreeModel(m);
        jtree.setModel(tm);
        expandAllNodes(jtree);
@@ -262,6 +287,8 @@ public class MindViewer extends javax.swing.JFrame {
     
     public void tick() {
         if (wog != null) updateTree(wog);
+        else System.out.println("Mind é null");
+        System.out.println("update");
     }
 
     class WOVTimerTask extends TimerTask {
@@ -281,6 +308,8 @@ public class MindViewer extends javax.swing.JFrame {
     }
     }
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JButton bRefresh;
+    private javax.swing.JToolBar jToolBar1;
     private javax.swing.JScrollPane jsp;
     // End of variables declaration//GEN-END:variables
 }

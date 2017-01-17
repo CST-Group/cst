@@ -51,7 +51,7 @@ public class MemoryObject implements Memory,Serializable
    
    public MemoryObject()
    {
-      
+      evaluation = 0.0d;
    }
    
    /**
