@@ -18,8 +18,9 @@ public interface Memory {
 	/**
 	 * 
 	 * @param info the updated info to set in memory
+	 * @return index of the memory inside the container or -1 if not a container
 	 */
-	void setI(Object info);
+	int setI(Object info);
 	
 	
 	/**

@@ -85,11 +85,13 @@ public class MemoryObject implements Memory,Serializable
     *  Sets the info in memory object - Java Style. 
     * @param info
     */
-   public synchronized void setI(Object info)
+   public synchronized int setI(Object info)
    {
       this.I = info;
       Date date = new Date(); 
 	  setTimestamp(new Timestamp(date.getTime()));  
+	  
+	  return -1;
    }
    
    /**

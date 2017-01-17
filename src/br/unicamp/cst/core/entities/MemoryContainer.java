@@ -12,7 +12,7 @@ import java.util.ArrayList;
 public class MemoryContainer implements Memory {
 
 	private volatile ArrayList<Memory> memories;
-	
+
 	/**
 	 * Type of the memory container
 	 */
@@ -25,9 +25,9 @@ public class MemoryContainer implements Memory {
 	}
 
 	public MemoryContainer(String type) {
-		
+
 		memories = new ArrayList<>();
-		
+
 		this.name = type;
 	}
 
@@ -60,18 +60,21 @@ public class MemoryContainer implements Memory {
 	 * MemoryContainer inserts the info as a new MemoryObject in its Memory list
 	 */
 	@Override
-	public synchronized void setI(Object info) {
-                 setI(info,0.0);
+	public synchronized int setI(Object info) {
+		return setI(info,-1.0d);
 	}
-        
-        public synchronized void setI(Object info, Double evaluation) {
+	
+	public synchronized int setI(Object info, Double evaluation) {
 
 		MemoryObject mo = new MemoryObject(); 
 		mo.setI(info);
-		mo.setEvaluation(evaluation);
+		if(evaluation!=-1.0)
+			mo.setEvaluation(evaluation);
 		mo.setType("");
 
 		memories.add(mo);
+		
+		return memories.indexOf(mo);
 
 	}
 
@@ -98,7 +101,7 @@ public class MemoryContainer implements Memory {
 
 
 	}
-	
+
 	/**
 	 * 
 	 * @param info the information to be set in the 
@@ -155,7 +158,7 @@ public class MemoryContainer implements Memory {
 	}
 
 	@Override
-	public void setEvaluation(Double eval) {
+	public synchronized void setEvaluation(Double eval) {
 
 		MemoryObject mo = new MemoryObject(); 		
 		mo.setEvaluation(eval);
@@ -169,13 +172,19 @@ public class MemoryContainer implements Memory {
 	 * 
 	 * @param memory the memory to be added in this container
 	 */
-	public void add(Memory memory) {
+	public synchronized int add(Memory memory) {
 
+		int index = -1;
+		
 		if(memory != null){
 
 			memories.add(memory);
+			
+			index = memories.indexOf(memory);
 
 		} 
+		
+		return index;
 
 	}
 
@@ -184,14 +193,19 @@ public class MemoryContainer implements Memory {
 	 * @param info
 	 * @param evaluation
 	 * @param type
+	 * @return
 	 */
-	public void setI(String info, double evaluation, String type) {
+	public synchronized int setI(String info, double evaluation, String type) {
+		
+		int index = -1;
 
 		if(memories != null){
-			
+
 			boolean set = false;
 
-			for(Memory memory : memories){
+			for(int i = 0; i < memories.size(); i++){
+				
+				Memory memory = memories.get(i);
 
 				if(memory != null && memory instanceof MemoryObject){
 
@@ -201,7 +215,7 @@ public class MemoryContainer implements Memory {
 
 						memory.setI(info);
 						memory.setEvaluation(evaluation);
-						
+						index = i;
 						set = true;
 						break;
 
@@ -209,9 +223,9 @@ public class MemoryContainer implements Memory {
 				}
 
 			}
-			
+
 			if(!set){
-				
+
 				MemoryObject mo = new MemoryObject(); 
 				mo.setI(info);
 				mo.setEvaluation(evaluation);
@@ -219,12 +233,16 @@ public class MemoryContainer implements Memory {
 
 				memories.add(mo);
 				
+				index = memories.indexOf(mo);
+
 			}
-		}	
+		}
+		
+		return index;
 	}
-	
-        public ArrayList<Memory> getAllMemories() {
-            return memories;
-        }
-	
+
+	public synchronized ArrayList<Memory> getAllMemories() {
+		return memories;
+	}
+
 }
