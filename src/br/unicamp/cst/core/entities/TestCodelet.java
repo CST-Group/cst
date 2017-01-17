@@ -10,6 +10,11 @@ package br.unicamp.cst.core.entities;
  * @author gudwin
  */
 public class TestCodelet extends Codelet {
+    
+    public TestCodelet(String nome) {
+        setName(nome);
+    }
+    
         public void accessMemoryObjects() {
             
         }

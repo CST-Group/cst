@@ -105,17 +105,18 @@ public class MindViewer extends javax.swing.JFrame {
         MemoryObject m4 = m.createMemoryObject("Memory 4","S4");
         MemoryObject m5 = m.createMemoryObject("Memory 5","S5");
         MemoryContainer m6 = new MemoryContainer("Container");
-        Codelet c = new TestCodelet();
+        m6.setI("S6");
+        Codelet c = new TestCodelet("Codelet 1");
         c.addInput(m1);
         c.addInput(m2);
         c.addOutput(m3);
         c.addOutput(m4);
         c.addBroadcast(m5);
         m.insertCodelet(c);
-        Codelet c2 = new TestCodelet();
+        Codelet c2 = new TestCodelet("Codelet 2");
         c2.addInput(m4);
         c2.addInput(m5);
-        c2.addOutput(m1);
+        c2.addOutput(m6);
         c2.addOutput(m3);
         c2.addBroadcast(m5);
         m.insertCodelet(c2);
@@ -162,19 +163,43 @@ public class MindViewer extends javax.swing.JFrame {
         List<Memory> broadcasts = p.getBroadcast();
         DefaultMutableTreeNode inputs_t = addItem("Inputs",TreeElement.ICON_INPUT);
         for (Memory i : inputs) {
-            DefaultMutableTreeNode memoryNode = addItem(i.getName(),TreeElement.ICON_MEMORY);
+            int icon=TreeElement.ICON_MEMORY;
+            if (i.getClass().getCanonicalName().equals("br.unicamp.cst.core.entities.MemoryObject"))
+                icon = TreeElement.ICON_MO;
+            else if (i.getClass().getCanonicalName().equals("br.unicamp.cst.core.entities.MemoryContainer"))
+                icon = TreeElement.ICON_CONTAINER;
+            String value = "";
+            Object oval = i.getI();
+            if (oval != null) value += oval.toString();
+            DefaultMutableTreeNode memoryNode = addItem(i.getName()+" : "+value,icon);
             inputs_t.add(memoryNode);
         }
         codeletNode.add(inputs_t);
         DefaultMutableTreeNode outputs_t = addItem("Ouputs",TreeElement.ICON_OUTPUT);
         for (Memory o : outputs) {
-            DefaultMutableTreeNode memoryNode = addItem(o.getName(),TreeElement.ICON_MEMORY);
+            int icon=TreeElement.ICON_MEMORY;
+            if (o.getClass().getCanonicalName().equals("br.unicamp.cst.core.entities.MemoryObject"))
+                icon = TreeElement.ICON_MO;
+            else if (o.getClass().getCanonicalName().equals("br.unicamp.cst.core.entities.MemoryContainer"))
+                icon = TreeElement.ICON_CONTAINER;
+            String value = "";
+            Object oval = o.getI();
+            if (oval != null) value += oval.toString();
+            DefaultMutableTreeNode memoryNode = addItem(o.getName()+" : "+value,icon);
             outputs_t.add(memoryNode);
         }
         codeletNode.add(outputs_t);
         DefaultMutableTreeNode broadcasts_t = addItem("Broadcasts",TreeElement.ICON_BROADCAST);
         for (Memory b : broadcasts) {
-            DefaultMutableTreeNode memoryNode = addItem(b.getName(),TreeElement.ICON_MEMORY);
+            int icon=TreeElement.ICON_MEMORY;
+            if (b.getClass().getCanonicalName().equals("br.unicamp.cst.core.entities.MemoryObject"))
+                icon = TreeElement.ICON_MO;
+            else if (b.getClass().getCanonicalName().equals("br.unicamp.cst.core.entities.MemoryContainer"))
+                icon = TreeElement.ICON_CONTAINER;
+            String value = "";
+            Object oval = b.getI();
+            if (oval != null) value += oval.toString();
+            DefaultMutableTreeNode memoryNode = addItem(b.getName()+" : "+value,icon);
             broadcasts_t.add(memoryNode);
         }
         codeletNode.add(broadcasts_t);
