@@ -61,10 +61,14 @@ public class MemoryContainer implements Memory {
 	 */
 	@Override
 	public synchronized void setI(Object info) {
+                 setI(info,0.0);
+	}
+        
+        public synchronized void setI(Object info, Double evaluation) {
 
 		MemoryObject mo = new MemoryObject(); 
 		mo.setI(info);
-		mo.setEvaluation(0.0d);
+		mo.setEvaluation(evaluation);
 		mo.setType("");
 
 		memories.add(mo);
@@ -177,8 +181,8 @@ public class MemoryContainer implements Memory {
 
 	/**
 	 * 
-	 * @param phase
-	 * @param activation
+	 * @param info
+	 * @param evaluation
 	 * @param type
 	 */
 	public void setI(String info, double evaluation, String type) {

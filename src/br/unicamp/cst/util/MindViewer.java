@@ -99,13 +99,16 @@ public class MindViewer extends javax.swing.JFrame {
         }
         //</editor-fold>
         Mind m = new Mind();
-        MemoryObject m1 = m.createMemoryObject("Memory 1","S1");
-        MemoryObject m2 = m.createMemoryObject("Memory 2","S2");
-        MemoryObject m3 = m.createMemoryObject("Memory 3","S3");
-        MemoryObject m4 = m.createMemoryObject("Memory 4","S4");
-        MemoryObject m5 = m.createMemoryObject("Memory 5","S5");
-        MemoryContainer m6 = new MemoryContainer("Container");
-        m6.setI("S6");
+        MemoryObject m1 = m.createMemoryObject("M1",0.12);
+        MemoryObject m2 = m.createMemoryObject("M2",0.32);
+        MemoryObject m3 = m.createMemoryObject("M3",0.44);
+        MemoryObject m4 = m.createMemoryObject("M4",0.52);
+        MemoryObject m5 = m.createMemoryObject("M5",0.12);
+        MemoryContainer m6 = m.createMemoryContainer("C1");
+        MemoryContainer m7 = m.createMemoryContainer("C2");
+        m6.setI(0.33,0.22);
+        m6.setI(0.12,0.13);
+        m6.setI(m7);
         Codelet c = new TestCodelet("Codelet 1");
         c.addInput(m1);
         c.addInput(m2);
@@ -156,53 +159,32 @@ public class MindViewer extends javax.swing.JFrame {
         return(mindNode);    
     }
     
+    private DefaultMutableTreeNode addIO(Memory m, int icon) {
+            String value = m.getName()+" : ";
+            Object mval = m.getI();
+            if (mval != null) value += mval.toString();
+            else value += null;
+            DefaultMutableTreeNode memoryNode = addItem(value,icon);
+            return(memoryNode);
+    }
+    
     private DefaultMutableTreeNode addCodelet(Codelet p) {
         DefaultMutableTreeNode codeletNode = addItem(p.getName(), TreeElement.ICON_CODELET);
         List<Memory> inputs = p.getInputs();
         List<Memory> outputs = p.getOutputs();
         List<Memory> broadcasts = p.getBroadcast();
-        DefaultMutableTreeNode inputs_t = addItem("Inputs",TreeElement.ICON_INPUT);
         for (Memory i : inputs) {
-            int icon=TreeElement.ICON_MEMORY;
-            if (i.getClass().getCanonicalName().equals("br.unicamp.cst.core.entities.MemoryObject"))
-                icon = TreeElement.ICON_MO;
-            else if (i.getClass().getCanonicalName().equals("br.unicamp.cst.core.entities.MemoryContainer"))
-                icon = TreeElement.ICON_CONTAINER;
-            String value = "";
-            Object oval = i.getI();
-            if (oval != null) value += oval.toString();
-            DefaultMutableTreeNode memoryNode = addItem(i.getName()+" : "+value,icon);
-            inputs_t.add(memoryNode);
+            DefaultMutableTreeNode memoryNode = addIO(i,TreeElement.ICON_INPUT);
+            codeletNode.add(memoryNode);
         }
-        codeletNode.add(inputs_t);
-        DefaultMutableTreeNode outputs_t = addItem("Ouputs",TreeElement.ICON_OUTPUT);
         for (Memory o : outputs) {
-            int icon=TreeElement.ICON_MEMORY;
-            if (o.getClass().getCanonicalName().equals("br.unicamp.cst.core.entities.MemoryObject"))
-                icon = TreeElement.ICON_MO;
-            else if (o.getClass().getCanonicalName().equals("br.unicamp.cst.core.entities.MemoryContainer"))
-                icon = TreeElement.ICON_CONTAINER;
-            String value = "";
-            Object oval = o.getI();
-            if (oval != null) value += oval.toString();
-            DefaultMutableTreeNode memoryNode = addItem(o.getName()+" : "+value,icon);
-            outputs_t.add(memoryNode);
+            DefaultMutableTreeNode memoryNode = addIO(o,TreeElement.ICON_OUTPUT);
+            codeletNode.add(memoryNode);
         }
-        codeletNode.add(outputs_t);
-        DefaultMutableTreeNode broadcasts_t = addItem("Broadcasts",TreeElement.ICON_BROADCAST);
         for (Memory b : broadcasts) {
-            int icon=TreeElement.ICON_MEMORY;
-            if (b.getClass().getCanonicalName().equals("br.unicamp.cst.core.entities.MemoryObject"))
-                icon = TreeElement.ICON_MO;
-            else if (b.getClass().getCanonicalName().equals("br.unicamp.cst.core.entities.MemoryContainer"))
-                icon = TreeElement.ICON_CONTAINER;
-            String value = "";
-            Object oval = b.getI();
-            if (oval != null) value += oval.toString();
-            DefaultMutableTreeNode memoryNode = addItem(b.getName()+" : "+value,icon);
-            broadcasts_t.add(memoryNode);
+            DefaultMutableTreeNode memoryNode = addIO(b,TreeElement.ICON_BROADCAST);
+            codeletNode.add(memoryNode);
         }
-        codeletNode.add(broadcasts_t);
         return(codeletNode);
     }
     
@@ -213,13 +195,23 @@ public class MindViewer extends javax.swing.JFrame {
     }
     
     
+    
     private DefaultMutableTreeNode addMemory(Memory p) {
-        DefaultMutableTreeNode memoryNode = addItem(p.getName(),TreeElement.ICON_MEMORIES);
         String name = p.getName();
+        DefaultMutableTreeNode memoryNode = addItem(name,TreeElement.ICON_MEMORIES);
         if (p.getClass().getCanonicalName().equals("br.unicamp.cst.core.entities.MemoryObject")) {
-            memoryNode = addItem(name,TreeElement.ICON_MO);
+            String value = "";
+            Object pval = p.getI();
+            if (pval != null) value += pval.toString();
+            else value += "null";
+            memoryNode = addItem(name+" : "+value,TreeElement.ICON_MO);
         }
         else if (p.getClass().getCanonicalName().equals("br.unicamp.cst.core.entities.MemoryContainer")) {
+            String value = "";
+            Object pval = p.getI();
+            if (pval != null) value += pval.toString();
+            else value += "null";
+            memoryNode = addItem(name+" : "+value,TreeElement.ICON_CONTAINER);
             MemoryContainer mc = (MemoryContainer)p;
             for (Memory mo : mc.getAllMemories()) {
                 DefaultMutableTreeNode newmemo = addMemory(mo);
@@ -265,7 +257,7 @@ public class MindViewer extends javax.swing.JFrame {
      public void StartTimer() {
         Timer t = new Timer();
         WOVTimerTask tt = new WOVTimerTask(this);
-        t.scheduleAtFixedRate(tt,0,10000);
+        t.scheduleAtFixedRate(tt,0,3000);
     }
     
     public void tick() {
