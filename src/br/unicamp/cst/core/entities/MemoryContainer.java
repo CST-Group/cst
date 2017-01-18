@@ -55,6 +55,17 @@ public class MemoryContainer implements Memory {
 
 		return I;
 	}
+        
+        public synchronized Object getI(int index) {
+
+		if (index >= 0 && index < memories.size()) {
+                    return(memories.get(index).getI());
+                }
+                else {
+                    System.out.println("Index for the "+getName()+".getI(index) method greater than the number of MemoryObjects within the MemoryContainer");
+                    return(null);
+                }
+	}
 
 	/** 
 	 * MemoryContainer inserts the info as a new MemoryObject in its Memory list
