@@ -31,7 +31,7 @@ public final class Property {
     
     public Property(String name, QualityDimension qd) {
         this(name);
-        setQualityDimension(qd);
+        addQualityDimension(qd);
     }
 
     public Property(String name, List<QualityDimension> qd) {
@@ -39,11 +39,15 @@ public final class Property {
         qualityDimensions = qd;
     }
 
+    Property() {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
     public List<QualityDimension> getQualityDimensions() {
         return qualityDimensions;
     }
 
-    public void setQualityDimension(QualityDimension qd) {
+    public void addQualityDimension(QualityDimension qd) {
         qualityDimensions.add(qd);
     }
 

@@ -1,14 +1,13 @@
-/*******************************************************************************
+/** *****************************************************************************
  * Copyright (c) 2012  DCA-FEEC-UNICAMP
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the GNU Lesser Public License v3
  * which accompanies this distribution, and is available at
  * http://www.gnu.org/licenses/lgpl.html
- * 
+ *
  * Contributors:
- *     S. M. de Paula and R. R. Gudwin 
- ******************************************************************************/
-
+ *     S. M. de Paula and R. R. Gudwin
+ ***************************************************************************** */
 package br.unicamp.cst.representation.owrl;
 
 import java.util.ArrayList;
@@ -32,9 +31,15 @@ public class WorldObject implements Cloneable {
         properties = new ArrayList<Property>();
         parts = new ArrayList<WorldObject>();
     }
-    
-    public WorldObject(String name, List<Property> props, int id) {
 
+    public WorldObject(String name, int id) {
+        setName(name);
+        setID(id);
+        properties = new ArrayList<Property>();
+        parts = new ArrayList<WorldObject>();
+    }
+
+    public WorldObject(String name, int id, List<Property> props) {
         setID(id);
         setName(name);
         setProperties(props);
@@ -42,13 +47,22 @@ public class WorldObject implements Cloneable {
 
     }
 
-    public WorldObject(String name, int id, List<WorldObject> parts, List<Property> props) {
-
+    public WorldObject(String name, int id, List<Property> props, List<WorldObject> parts) {
         setID(id);
         setName(name);
         setParts(parts);
         setProperties(props);
 
+    }
+
+    public void modify(WorldObject modifications) {
+        for (Property prop_change : modifications.getProperties()) {
+            for (Property prop_base : getProperties()) {
+                if (prop_base.getName().compareTo(prop_change.getName()) == 0) {
+                    // prop_base.setQualityDimension(prop_change.getQualityDimensions());
+                }
+            }
+        }
     }
 
     public List<WorldObject> getParts() {
@@ -58,7 +72,7 @@ public class WorldObject implements Cloneable {
     public void setParts(List<WorldObject> parts) {
         this.parts = parts;
     }
-    
+
     public void addPart(WorldObject part) {
         parts.add(part);
     }
@@ -86,7 +100,7 @@ public class WorldObject implements Cloneable {
     public void setProperties(List<Property> props) {
         this.properties = props;
     }
-    
+
     public void addProperty(Property prop) {
         properties.add(prop);
     }
@@ -97,6 +111,10 @@ public class WorldObject implements Cloneable {
         for (Property p : getProperties()) {
             newProperties.add(p.clone());
         }
-        return new  WorldObject(getName(), getID(), getParts(),newProperties);
+        List<WorldObject> newParts = new ArrayList<>();
+        for (WorldObject wo : getParts()) {
+            newParts.add(wo.clone());
+        }
+        return new WorldObject(getName(), getID(), newProperties, newParts);
     }
 }

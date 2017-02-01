@@ -95,8 +95,8 @@ public class WorldObjectViewer extends javax.swing.JFrame {
         WorldObject robot = new WorldObject("Robot");
         WorldObject sensor = new WorldObject("Sensor");
         Property position = new Property("Position");
-        position.setQualityDimension(new QualityDimension("x",0.5));
-        position.setQualityDimension(new QualityDimension("y",0.6));
+        position.addQualityDimension(new QualityDimension("x",0.5));
+        position.addQualityDimension(new QualityDimension("y",0.6));
         sensor.addProperty(position);
         robot.addPart(sensor);
         WorldObject actuator = new WorldObject("Actuator");

@@ -25,7 +25,7 @@ import javax.swing.tree.TreeNode;
  *
  * @author suelenmapa
  */
-public class ViewerTree extends javax.swing.JFrame {
+public class TreeViewer extends javax.swing.JFrame {
 
     private JTree configurationTreeInitial;
     private JTree configurationTreeFinal;
@@ -34,7 +34,7 @@ public class ViewerTree extends javax.swing.JFrame {
 
     private Map<String, Configuration> listConfs;
 
-    public ViewerTree(Map<String, Configuration> lc) {
+    public TreeViewer(Map<String, Configuration> lc) {
 
         initComponents();
         this.listConfs = lc;
@@ -58,7 +58,6 @@ public class ViewerTree extends javax.swing.JFrame {
 
     private boolean compareNodes(DefaultMutableTreeNode node_1, DefaultMutableTreeNode node_2) {
         boolean returnValue = false;
-        //System.out.println("Comparando " + ((TreeElement) node_1.getUserObject()).getName() + " e " + ((TreeElement) node_2.getUserObject()).getName());
         //System.out.println("Comparando " + ((TreeElement) node_1.getUserObject()).getName() + " e " + ((TreeElement) node_2.getUserObject()).getName());
         if (node_1.isLeaf() && node_2.isLeaf()) {
             TreeElement v_node_1 = (TreeElement) node_1.getUserObject();
@@ -154,7 +153,7 @@ public class ViewerTree extends javax.swing.JFrame {
 
     }
 
-   private JTree addNodeJTree(Configuration conf, JScrollPane where, DefaultMutableTreeNode node, JTree tree) {
+    private JTree addNodeJTree(Configuration conf, JScrollPane where, DefaultMutableTreeNode node, JTree tree) {
 
         List<WorldObject> listWO = conf.getObjects();
 
@@ -169,12 +168,11 @@ public class ViewerTree extends javax.swing.JFrame {
             repaint();
 
         }
-       
-              
+
         return tree;
 
     }
-    
+
     private DefaultMutableTreeNode addObject(WorldObject wo) {
         DefaultMutableTreeNode objectNode = new DefaultMutableTreeNode(new TreeElement(wo.getName() + " [" + wo.getID() + "]", TreeElement.NODE_NORMAL, wo, TreeElement.ICON_OBJECT));
         List<WorldObject> parts = wo.getParts();
@@ -397,7 +395,7 @@ public class ViewerTree extends javax.swing.JFrame {
     }//GEN-LAST:event_jButton1ActionPerformed
 
     public static ImageIcon createImageIcon(String path) {
-        java.net.URL imgURL = ViewerTree.class.getResource(path);
+        java.net.URL imgURL = TreeViewer.class.getResource(path);
         if (imgURL != null) {
             return new ImageIcon(imgURL);
         } else {
