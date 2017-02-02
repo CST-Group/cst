@@ -30,8 +30,9 @@ The main contributors of this project are:
 * [André Luís Ogando Paraense](https://github.com/andre-paraense-mobwise)
 * [Suelen Mapa de Paula](https://github.com/suelenmapa)
 * Vera Aparecida de Figueiredo
-* Elisa Calhau de Castro
+* [Elisa Calhau de Castro](https://github.com/ecalhau)
 * [Eduardo Fróes](https://github.com/eduardofroes)
+* [Wandemberg Santana Pharaoh Gibaut](https://github.com/wandergibaut)
 
 License
 --------
