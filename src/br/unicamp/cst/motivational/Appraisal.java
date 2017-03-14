@@ -11,11 +11,6 @@
 
 package br.unicamp.cst.motivational;
 
-import br.unicamp.cst.representation.owrl.Configuration;
-
-/**
- * Created by du on 14/12/16.
- */
 public class Appraisal {
 
     private String name;
@@ -24,17 +19,11 @@ public class Appraisal {
 
     private String currentState;
 
-    private Configuration currentConfiguration;
 
-    private Configuration predictedSituation;
-
-
-    public Appraisal(String name, String currentState, double evaluation, Configuration currentConfiguration, Configuration predictedSituation){
+    public Appraisal(String name, String currentState, double evaluation){
         setName(name);
         setEvaluation(evaluation);
         setCurrentState(currentState);
-        setCurrentConfiguration(currentConfiguration);
-        setPredictedSituation(predictedSituation);
     }
 
     public String getName() {
@@ -61,19 +50,4 @@ public class Appraisal {
         this.currentState = currentState;
     }
 
-    public Configuration getCurrentConfiguration() {
-        return currentConfiguration;
-    }
-
-    public void setCurrentConfiguration(Configuration currentConfiguration) {
-        this.currentConfiguration = currentConfiguration;
-    }
-
-    public Configuration getPredictedSituation() {
-        return predictedSituation;
-    }
-
-    public void setPredictedSituation(Configuration predictedSituation) {
-        this.predictedSituation = predictedSituation;
-    }
 }

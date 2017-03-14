@@ -72,7 +72,7 @@ public abstract class EmotionalCodelet extends Codelet {
 
     }
 
-    public abstract double calculateMoodFilterDistortion(List<Drive> listOfDrives, Mood mood);
+    public abstract double calculateEmotionalDistortion(List<Drive> listOfDrives, Mood mood);
 
 
     @Override
@@ -86,7 +86,7 @@ public abstract class EmotionalCodelet extends Codelet {
                 listOfDrives.add(drive.getKey());
             }
 
-            double activation = this.calculateMoodFilterDistortion(listOfDrives, getMood());
+            double activation = this.calculateEmotionalDistortion(listOfDrives, getMood());
 
             try {
                 this.setActivation(activation);

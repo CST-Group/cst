@@ -5,27 +5,23 @@ import br.unicamp.cst.core.entities.Memory;
 import br.unicamp.cst.core.exceptions.CodeletActivationBoundsException;
 import br.unicamp.cst.representation.owrl.Configuration;
 
-/**
- * Created by du on 19/12/16.
- */
 public abstract class GoalCodelet extends Codelet {
 
-
-    private static final String INPUT_CURRENT_PERCEPTION_MEMORY = "INPUT_CURRENT_PERCEPTION_MEMORY";
+    private static final String INPUT_HYPOTHETICAL_SITUATIONS_MEMORY = "INPUT_HYPOTHETICAL_SITUATIONS_MEMORY";
     private static final String OUTPUT_GOAL_MEMORY = "OUTPUT_GOAL_MEMORY";
 
-    private Memory currentPerceptionMO;
+    private Memory inputHypotheticalSituationsMO;
     private Memory goalMO;
 
-    private Configuration currentPerception;
+    private Configuration hypotheticalSituation;
     private Goal goal;
 
     @Override
     public void accessMemoryObjects() {
-        if(getCurrentPerceptionMO() == null)
+        if(getInputHypotheticalSituationsMO() == null)
         {
-            setCurrentPerceptionMO(this.getInput(INPUT_CURRENT_PERCEPTION_MEMORY, 0));
-            setCurrentPerception((Configuration) getCurrentPerceptionMO().getI());
+            setInputHypotheticalSituationsMO(this.getInput(INPUT_HYPOTHETICAL_SITUATIONS_MEMORY, 0));
+            setHypotheticalSituation((Configuration) getInputHypotheticalSituationsMO().getI());
         }
 
         if(getGoalMO() == null){
@@ -44,19 +40,19 @@ public abstract class GoalCodelet extends Codelet {
 
     @Override
     public void proc() {
-        setGoal(goalGenarate(getCurrentPerception()));
+        setGoal(goalGeneration(getHypotheticalSituation()));
         getGoalMO().setI(getGoal());
     }
 
 
-    public abstract Goal goalGenarate(Configuration currentPerception);
+    public abstract Goal goalGeneration(Configuration currentPerception);
 
-    public Memory getCurrentPerceptionMO() {
-        return currentPerceptionMO;
+    public Memory getInputHypotheticalSituationsMO() {
+        return inputHypotheticalSituationsMO;
     }
 
-    public void setCurrentPerceptionMO(Memory currentPerceptionMO) {
-        this.currentPerceptionMO = currentPerceptionMO;
+    public void setInputHypotheticalSituationsMO(Memory inputHypotheticalSituationsMO) {
+        this.inputHypotheticalSituationsMO = inputHypotheticalSituationsMO;
     }
 
     public Memory getGoalMO() {
@@ -67,12 +63,12 @@ public abstract class GoalCodelet extends Codelet {
         this.goalMO = goalMO;
     }
 
-    public Configuration getCurrentPerception() {
-        return currentPerception;
+    public Configuration getHypotheticalSituation() {
+        return hypotheticalSituation;
     }
 
-    public void setCurrentPerception(Configuration currentPerception) {
-        this.currentPerception = currentPerception;
+    public void setHypotheticalSituation(Configuration hypotheticalSituation) {
+        this.hypotheticalSituation = hypotheticalSituation;
     }
 
     public Goal getGoal() {

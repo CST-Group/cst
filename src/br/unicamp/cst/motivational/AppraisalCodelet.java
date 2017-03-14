@@ -8,21 +8,17 @@ import br.unicamp.cst.core.entities.Memory;
 import br.unicamp.cst.core.exceptions.CodeletActivationBoundsException;
 import br.unicamp.cst.representation.owrl.Configuration;
 
-/**
- * Created by du on 14/12/16.
- */
+import java.util.List;
+
 public abstract class AppraisalCodelet extends Codelet {
 
-    public final static String INPUT_CURRENT_CONFIGURATION_MEMORY = "INPUT_CURRENT_CONFIGURATION_MEMORY";
-    public final static String INPUT_PREDICTED_SITUATION_MEMORY = "INPUT_PREDICTED_SITUATION_MEMORY";
     public final static String OUTPUT_APPRAISAL_MEMORY = "OUTPUT_APPRAISAL_MEMORY";
+    public final static String INPUT_CONFIGURATIONS_MEMORY = "INPUT_CONFIGURATIONS_MEMORY";
 
     private String name;
-    private Configuration currentConfiguration;
-    private Configuration predictedSituation;
-
-    private Memory currentConfigurationMO;
-    private Memory predictedSituationMO;
+    private List<Configuration> inputConfigurations;
+    private Appraisal appraisal;
+    private Memory inputConfigurationsMO;
     private Memory appraisalMO;
 
     public AppraisalCodelet(String name) {
@@ -31,15 +27,9 @@ public abstract class AppraisalCodelet extends Codelet {
 
     @Override
     public void accessMemoryObjects() {
-        if (getCurrentConfigurationMO() != null) {
-            setCurrentConfigurationMO(getInput(INPUT_CURRENT_CONFIGURATION_MEMORY, 0));
-            setCurrentConfiguration((Configuration) getCurrentConfigurationMO().getI());
-
-        }
-
-        if (getPredictedSituationMO() != null) {
-            setPredictedSituationMO(getInput(INPUT_PREDICTED_SITUATION_MEMORY, 0));
-            setPredictedSituation((Configuration) getPredictedSituationMO().getI());
+        if (getInputConfigurationsMO() != null) {
+            setInputConfigurationsMO(getInput(INPUT_CONFIGURATIONS_MEMORY, 0));
+            setInputConfigurations((List<Configuration>) getInputConfigurationsMO().getI());
         }
 
         if (getAppraisalMO() != null) {
@@ -58,13 +48,13 @@ public abstract class AppraisalCodelet extends Codelet {
 
     @Override
     public void proc() {
-        Appraisal appraisal = genarateAppraisal(getCurrentConfiguration(), getPredictedSituation());
-        appraisal.setName(getName());
-        getAppraisalMO().setI(appraisal);
+        setAppraisal(appraisalGeneration(getInputConfigurations()));
+        getAppraisal().setName(getName());
+        getAppraisalMO().setI(getAppraisal());
     }
 
 
-    public abstract Appraisal genarateAppraisal(Configuration currentConfiguration, Configuration predictedSituation);
+    public abstract Appraisal appraisalGeneration(List<Configuration> inputConfigurations);
 
     @Override
     public String getName() {
@@ -76,37 +66,6 @@ public abstract class AppraisalCodelet extends Codelet {
         this.name = name;
     }
 
-    public Configuration getCurrentConfiguration() {
-        return currentConfiguration;
-    }
-
-    public void setCurrentConfiguration(Configuration currentConfiguration) {
-        this.currentConfiguration = currentConfiguration;
-    }
-
-    public Configuration getPredictedSituation() {
-        return predictedSituation;
-    }
-
-    public void setPredictedSituation(Configuration predictedSituation) {
-        this.predictedSituation = predictedSituation;
-    }
-
-    public Memory getCurrentConfigurationMO() {
-        return currentConfigurationMO;
-    }
-
-    public void setCurrentConfigurationMO(Memory currentConfigurationMO) {
-        this.currentConfigurationMO = currentConfigurationMO;
-    }
-
-    public Memory getPredictedSituationMO() {
-        return predictedSituationMO;
-    }
-
-    public void setPredictedSituationMO(Memory predictedSituationMO) {
-        this.predictedSituationMO = predictedSituationMO;
-    }
 
     public Memory getAppraisalMO() {
         return appraisalMO;
@@ -116,5 +75,28 @@ public abstract class AppraisalCodelet extends Codelet {
         this.appraisalMO = appraisalMO;
     }
 
+    public List<Configuration> getInputConfigurations() {
+        return inputConfigurations;
+    }
+
+    public void setInputConfigurations(List<Configuration> inputConfigurations) {
+        this.inputConfigurations = inputConfigurations;
+    }
+
+    public Appraisal getAppraisal() {
+        return appraisal;
+    }
+
+    public void setAppraisal(Appraisal appraisal) {
+        this.appraisal = appraisal;
+    }
+
+    public Memory getInputConfigurationsMO() {
+        return inputConfigurationsMO;
+    }
+
+    public void setInputConfigurationsMO(Memory inputConfigurationsMO) {
+        this.inputConfigurationsMO = inputConfigurationsMO;
+    }
 }
 

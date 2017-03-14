@@ -14,27 +14,31 @@ package br.unicamp.cst.motivational;
 public class Drive {
 
     private String name;
-    private double filter;
     private double activation;
     private double priority;
     private double level;
-    private double urgentActivation;
-    private double urgentActivationThreshold;
-    private double lowerUrgentThreshold;
+    private double urgencyThreshold;
+    private double emotionalDistortion = 0;
 
     public Drive(String name){
         setName(name);
     }
 
-    public Drive(String name, double activation, double priority, double level, double urgentActivation, double urgentActivationThreshold, double lowerUrgentThreshold){
+    public Drive(String name, double activation, double priority, double level, double urgentThreshold){
         setName(name);
         setActivation(activation);
         setPriority(priority);
         setLevel(level);
-        setUrgentActivation(urgentActivation);
-        setUrgentActivationThreshold(urgentActivationThreshold);
-        setLowerUrgentThreshold(lowerUrgentThreshold);
-        setFilter(1);
+        setUrgencyThreshold(urgentThreshold);
+    }
+
+    public Drive(String name, double activation, double priority, double level, double urgentThreshold, double emotionalDistortion){
+        setName(name);
+        setActivation(activation);
+        setPriority(priority);
+        setLevel(level);
+        setUrgencyThreshold(urgentThreshold);
+        setEmotionalDistortion(emotionalDistortion);
     }
 
     public synchronized String getName() {
@@ -69,35 +73,19 @@ public class Drive {
         this.level = level;
     }
 
-    public synchronized double getUrgentActivation() {
-        return urgentActivation;
+    public double getUrgencyThreshold() {
+        return urgencyThreshold;
     }
 
-    public synchronized void setUrgentActivation(double urgentActivation) {
-        this.urgentActivation = urgentActivation;
+    public void setUrgencyThreshold(double urgencyThreshold) {
+        this.urgencyThreshold = urgencyThreshold;
     }
 
-    public synchronized double getUrgentActivationThreshold() {
-        return urgentActivationThreshold;
+    public double getEmotionalDistortion() {
+        return emotionalDistortion;
     }
 
-    public synchronized void setUrgentActivationThreshold(double urgentActivationThreshold) {
-        this.urgentActivationThreshold = urgentActivationThreshold;
-    }
-
-    public synchronized double getLowerUrgentThreshold() {
-        return lowerUrgentThreshold;
-    }
-
-    public synchronized void setLowerUrgentThreshold(double lowerUrgentThreshold) {
-        this.lowerUrgentThreshold = lowerUrgentThreshold;
-    }
-
-    public double getFilter() {
-        return filter;
-    }
-
-    public void setFilter(double filter) {
-        this.filter = filter;
+    public void setEmotionalDistortion(double emotionalDistortion) {
+        this.emotionalDistortion = emotionalDistortion;
     }
 }
