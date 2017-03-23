@@ -88,4 +88,14 @@ public class Drive {
     public void setEmotionalDistortion(double emotionalDistortion) {
         this.emotionalDistortion = emotionalDistortion;
     }
+
+    @Override
+    public String toString(){
+        return "Name:"+name
+                + " Activation:" + activation
+                + " Priority:" + priority
+                + " Level:" + level
+                + " Urgency Threshold:" + urgencyThreshold
+                + " Emotional Distortion:" + emotionalDistortion;
+    }
 }

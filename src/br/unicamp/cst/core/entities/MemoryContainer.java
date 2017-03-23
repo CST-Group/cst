@@ -3,6 +3,7 @@
  */
 package br.unicamp.cst.core.entities;
 
+import java.sql.Timestamp;
 import java.util.ArrayList;
 
 /**
@@ -10,6 +11,8 @@ import java.util.ArrayList;
  *
  */
 public class MemoryContainer implements Memory {
+
+	private Timestamp timestamp;
 
 	private volatile ArrayList<Memory> memories;
 
@@ -29,6 +32,20 @@ public class MemoryContainer implements Memory {
 		memories = new ArrayList<>();
 
 		this.name = type;
+	}
+
+	public synchronized void setTimestamp(Timestamp timestamp){
+		this.timestamp = timestamp;
+	}
+
+	public synchronized Timestamp getTimestamp()
+	{
+		return this.timestamp;
+	}
+
+	public synchronized void setType(String name)
+	{
+		this.name = name;
 	}
 
 	/** 
