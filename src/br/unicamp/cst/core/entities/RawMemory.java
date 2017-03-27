@@ -11,10 +11,8 @@
 
 package br.unicamp.cst.core.entities;
 
-import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Date;
 import java.util.List;
 
 /**
@@ -144,12 +142,11 @@ public class RawMemory
    public synchronized MemoryObject createMemoryObject(String name, Object info)
    {
 	   // memory object to be added to rawmemory
-       MemoryObject mo = new MemoryObject();
-       Date date = new Date();         
+       MemoryObject mo = new MemoryObject();              
        mo.setI(info);
        //mo.setT(type);
        //mo.setInfo("");
-       mo.setTimestamp(new Timestamp(date.getTime()));
+       mo.setTimestamp(System.currentTimeMillis());
        mo.setEvaluation(0.0d);
        mo.setType(name);
 
@@ -195,10 +192,6 @@ public class RawMemory
    {
 	   synchronized(allMemories)
 	   {
-		   for(Memory mo: this.getAllMemoryObjects())
-		   {
-			   mo=null;
-		   }
 		   this.allMemories.clear();
 	   }	
    }  

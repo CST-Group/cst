@@ -12,8 +12,6 @@
 package br.unicamp.cst.core.entities;
 
 import java.io.Serializable;
-import java.sql.Timestamp;
-import java.util.Date;
 
 
 /** 
@@ -30,9 +28,9 @@ public class MemoryObject implements Memory,Serializable
    private Long idmemoryobject;
    
    /**
-	 * Date when the data was "created".
+	 * Date when the data was "created" in milliseconds 
 	 */
-   private Timestamp timestamp;
+   private Long timestamp;
    
    /**
     * An evaluation of this memory object based on inner references
@@ -87,9 +85,8 @@ public class MemoryObject implements Memory,Serializable
     */
    public synchronized int setI(Object info)
    {
-      this.I = info;
-      Date date = new Date(); 
-	  setTimestamp(new Timestamp(date.getTime()));  
+      this.I = info;      
+	  setTimestamp(System.currentTimeMillis());  
 	  
 	  return -1;
    }
@@ -108,7 +105,7 @@ public class MemoryObject implements Memory,Serializable
     * 
     * @return
     */
-   public synchronized Timestamp getTimestamp()
+   public synchronized Long getTimestamp()
    {
       return this.timestamp;
    }
@@ -117,7 +114,7 @@ public class MemoryObject implements Memory,Serializable
     * 
     * @param timestamp
     */
-   public synchronized void setTimestamp(Timestamp timestamp)
+   public synchronized void setTimestamp(Long timestamp)
    {
       this.timestamp = timestamp;
    }
