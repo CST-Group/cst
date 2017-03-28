@@ -11,7 +11,11 @@
 
 package br.unicamp.cst.motivational;
 
-public class Drive {
+import java.io.Serializable;
+
+public class Drive implements Serializable {
+
+    private static final long serialVersionUID = 1L;
 
     private String name;
     private double activation;
@@ -73,29 +77,26 @@ public class Drive {
         this.level = level;
     }
 
-    public double getUrgencyThreshold() {
+    public synchronized double getUrgencyThreshold() {
         return urgencyThreshold;
     }
 
-    public void setUrgencyThreshold(double urgencyThreshold) {
+    public synchronized void setUrgencyThreshold(double urgencyThreshold) {
         this.urgencyThreshold = urgencyThreshold;
     }
 
-    public double getEmotionalDistortion() {
+    public synchronized double getEmotionalDistortion() {
         return emotionalDistortion;
     }
 
-    public void setEmotionalDistortion(double emotionalDistortion) {
+    public synchronized void setEmotionalDistortion(double emotionalDistortion) {
         this.emotionalDistortion = emotionalDistortion;
     }
 
     @Override
     public String toString(){
-        return "Name:"+name
-                + " Activation:" + activation
-                + " Priority:" + priority
-                + " Level:" + level
-                + " Urgency Threshold:" + urgencyThreshold
-                + " Emotional Distortion:" + emotionalDistortion;
+
+        return"Drive [name="+getName()+", activation="+getActivation()+", priority="+getPriority()+", level="+getLevel()
+                +", urgency threshold="+getUrgencyThreshold()+", emotional distortion="+getEmotionalDistortion()+"]";
     }
 }

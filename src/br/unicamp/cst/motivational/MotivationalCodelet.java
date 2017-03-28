@@ -49,41 +49,41 @@ public abstract class MotivationalCodelet extends Codelet {
         setDrivesRelevance(new HashMap<Memory, Double>());
 
         setOutputDrive(new Drive(getName(),
-                                0,
-                                getPriority(),
-                                getLevel(),
-                                getUrgencyThreshold(),
-                                0));
+                0,
+                getPriority(),
+                getLevel(),
+                getUrgencyThreshold(),
+                0));
 
     }
 
     @Override
     public void accessMemoryObjects() {
 
-        if (getLevel() != 0) {
-            setInputDrivesMO((MemoryObject) this.getInput(INPUT_DRIVES_MEMORY, 0));
+        if (getInputDrivesMO() == null) {
+            setInputDrivesMO(this.getInput(INPUT_DRIVES_MEMORY, 0));
             this.setDrivesRelevance((Map<Memory, Double>) getInputDrivesMO().getI());
         }
 
         if (getInputSensorsMO() == null) {
-            setInputSensorsMO((MemoryObject) this.getInput(INPUT_SENSORS_MEMORY, 0));
+            setInputSensorsMO(this.getInput(INPUT_SENSORS_MEMORY, 0));
             this.setSensoryVariables(Collections.synchronizedList((List<Memory>) getInputSensorsMO().getI()));
         }
 
         if (getOutputDriveMO() == null) {
-            setOutputDriveMO((MemoryObject) this.getOutput(OUTPUT_DRIVE_MEMORY, 0));
+            setOutputDriveMO(this.getOutput(OUTPUT_DRIVE_MEMORY, 0));
         }
 
     }
 
 
     @Override
-    public void proc() {
-
-        getOutputDrive().setActivation(verifingUrgencyThreshold(getOutputDrive()));
-
-        getOutputDriveMO().setI(getOutputDrive());
-        getOutputDriveMO().setEvaluation(getActivation());
+    public synchronized void proc() {
+        synchronized (getOutputDriveMO()) {
+            getOutputDrive().setActivation(getActivation());
+            getOutputDriveMO().setEvaluation(getActivation());
+            getOutputDriveMO().setI(getOutputDrive());
+        }
     }
 
 
@@ -91,13 +91,12 @@ public abstract class MotivationalCodelet extends Codelet {
         getDrivesRelevance().put(drive, relevance);
     }
 
-    public void removeDrive(Memory drive){
+    public void removeDrive(Memory drive) {
         getDrivesRelevance().remove(drive);
     }
 
     @Override
     public synchronized void calculateActivation() {
-
         synchronized (this) {
             try {
                 if (getDrivesRelevance() != null) {
@@ -116,13 +115,13 @@ public abstract class MotivationalCodelet extends Codelet {
                             listOfDrives.add(driveClone);
                         }
 
-                        this.setActivation(calculateSecundaryDriveActivation(getSensoryVariables(), listOfDrives));
+                        this.setActivation(verifingUrgencyThreshold(calculateSecundaryDriveActivation(getSensoryVariables(), listOfDrives), getOutputDrive()));
 
                     } else {
-                        this.setActivation(calculateSimpleActivation(getSensoryVariables()));
+                        this.setActivation(verifingUrgencyThreshold(calculateSimpleActivation(getSensoryVariables()), getOutputDrive()));
                     }
                 } else {
-                    this.setActivation(calculateSimpleActivation(getSensoryVariables()));
+                    this.setActivation(verifingUrgencyThreshold(calculateSimpleActivation(getSensoryVariables()), getOutputDrive()));
                 }
 
             } catch (CodeletActivationBoundsException e) {
@@ -131,15 +130,14 @@ public abstract class MotivationalCodelet extends Codelet {
         }
     }
 
-    private double verifingUrgencyThreshold(Drive drive){
+    private synchronized double verifingUrgencyThreshold(double driveActivation, Drive drive) {
 
         double evaluation = 0;
 
-        if(getActivation() > getUrgencyThreshold()){
+        if (driveActivation > getUrgencyThreshold()) {
             evaluation = 0.5 + drive.getPriority();
-        }
-        else{
-            evaluation = (getActivation() + drive.getEmotionalDistortion())/2;
+        } else {
+            evaluation = (driveActivation + drive.getEmotionalDistortion()) / 2;
         }
 
         return evaluation;
@@ -197,7 +195,7 @@ public abstract class MotivationalCodelet extends Codelet {
         return inputDrivesMO;
     }
 
-    public void setInputDrivesMO(MemoryObject inputDrivesMO) {
+    public void setInputDrivesMO(Memory inputDrivesMO) {
         this.inputDrivesMO = inputDrivesMO;
     }
 
@@ -205,7 +203,7 @@ public abstract class MotivationalCodelet extends Codelet {
         return inputSensorsMO;
     }
 
-    public void setInputSensorsMO(MemoryObject inputSensorsMO) {
+    public void setInputSensorsMO(Memory inputSensorsMO) {
         this.inputSensorsMO = inputSensorsMO;
     }
 
@@ -213,7 +211,7 @@ public abstract class MotivationalCodelet extends Codelet {
         return outputDriveMO;
     }
 
-    public void setOutputDriveMO(MemoryObject outputDriveMO) {
+    public void setOutputDriveMO(Memory outputDriveMO) {
         this.outputDriveMO = outputDriveMO;
     }
 
@@ -227,15 +225,12 @@ public abstract class MotivationalCodelet extends Codelet {
 
     public void setLevel(double level) {
         try {
-            if(level < 0 || level > 1)
-            {
+            if (level < 0 || level > 1) {
                 throw new Exception(CSTMessages.MSG_VAR_URGENT_ACTIVATION_THRESHOLD_RANGE);
-            }
-            else
-            {
+            } else {
                 this.level = level;
             }
-        }catch (Exception ex){
+        } catch (Exception ex) {
             ex.printStackTrace();
         }
     }
