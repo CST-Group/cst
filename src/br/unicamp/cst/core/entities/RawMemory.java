@@ -144,8 +144,6 @@ public class RawMemory
 	   // memory object to be added to rawmemory
        MemoryObject mo = new MemoryObject();              
        mo.setI(info);
-       //mo.setT(type);
-       //mo.setInfo("");
        mo.setTimestamp(System.currentTimeMillis());
        mo.setEvaluation(0.0d);
        mo.setType(name);
