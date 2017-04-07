@@ -17,9 +17,9 @@ package br.unicamp.cst.core.entities;
  */
 public class Mind 
 {
-	private CodeRack codeRack;
+	protected CodeRack codeRack;
 
-	private RawMemory rawMemory;
+	protected RawMemory rawMemory;
 
 	public Mind()
 	{

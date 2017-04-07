@@ -50,28 +50,28 @@ public abstract class Codelet implements Runnable
 	/**
 	 * Activation level of the Codelet. Ranges from 0.0 to 1.0d.
 	 */
-	private double activation=0.0d;
+	protected double activation=0.0d;
 
 	/**
 	 * Threshold of the codelet, which is used to decide if it runs or not. If activation is equal or
 	 * greater than activation, codelet runs proc().Ranges from 0.0 to 1.0d.
 	 */
-	private double threshold=0.0d;
+	protected double threshold=0.0d;
 	/**
 	 * Input memories, the ones that are read.
 	 */
-	private List<Memory> inputs=new ArrayList<Memory>();
+	protected List<Memory> inputs=new ArrayList<Memory>();
 	/**
 	 * Output memories, the ones that are written.
 	 */
-	private List<Memory> outputs=new ArrayList<Memory>();
+	protected List<Memory> outputs=new ArrayList<Memory>();
 	/**
 	 * Input memories, the ones that were broadcasted.
 	 */
-	private List<Memory> broadcast=new ArrayList<Memory>();
+	protected List<Memory> broadcast=new ArrayList<Memory>();
 	
 	/** defines if proc() should be automatically called in a loop */
-	private boolean loop=true; //
+	protected boolean loop=true; //
 	
 	/** If the proc() method is set to be called automatically in a loop, this
          * variable stores the time step for such a loop. A timeStep of value 0 means
@@ -86,7 +86,7 @@ public abstract class Codelet implements Runnable
 	private int enable_count=0;
 	
 	/** Gives this codelet a name, mainly for debugging purposes */
-	private String name=Thread.currentThread().getName();
+	protected String name=Thread.currentThread().getName();
 	
 	/** This variable is a safe lock for multithread access */
 	public Lock lock= new ReentrantLock();

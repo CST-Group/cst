@@ -256,6 +256,59 @@ public class MemoryContainer implements Memory {
 		
 		return index;
 	}
+	
+	/**
+	 * 
+	 * @param info
+	 * @param evaluation
+	 * @param type
+	 * @return
+	 */
+	public synchronized int setI(Object info, double evaluation, String type) {
+		
+		int index = -1;
+
+		if(memories != null){
+
+			boolean set = false;
+
+			for(int i = 0; i < memories.size(); i++){
+				
+				Memory memory = memories.get(i);
+
+				if(memory != null && memory instanceof MemoryObject){
+
+					MemoryObject memoryObject = (MemoryObject) memory;
+
+					if(memoryObject.getName().equalsIgnoreCase(type)){
+
+						memory.setI(info);
+						memory.setEvaluation(evaluation);
+						index = i;
+						set = true;
+						break;
+
+					} 					
+				}
+
+			}
+
+			if(!set){
+
+				MemoryObject mo = new MemoryObject(); 
+				mo.setI(info);
+				mo.setEvaluation(evaluation);
+				mo.setType(type);
+
+				memories.add(mo);
+				
+				index = memories.indexOf(mo);
+
+			}
+		}
+		
+		return index;
+	}
 
 	public synchronized ArrayList<Memory> getAllMemories() {
 		return memories;
