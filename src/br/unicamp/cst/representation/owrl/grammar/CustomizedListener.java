@@ -12,7 +12,7 @@ package br.unicamp.cst.representation.owrl.grammar;
 
 import br.unicamp.cst.representation.owrl.Property;
 import br.unicamp.cst.representation.owrl.QualityDimension;
-import br.unicamp.cst.representation.owrl.WorldObject;
+import br.unicamp.cst.representation.owrl.AbstractObject;
 import br.unicamp.cst.util.Pair;
 import java.util.ArrayList;
 import java.util.List;
@@ -23,7 +23,7 @@ import java.util.List;
  */
 public class CustomizedListener extends OwrlBaseListener {
 
-    private List<Pair<String, List<WorldObject>>> memory = new ArrayList<Pair<String, List<WorldObject>>>();
+    private List<Pair<String, List<AbstractObject>>> memory = new ArrayList<Pair<String, List<AbstractObject>>>();
 
     private int contKey = 0;
 
@@ -32,7 +32,7 @@ public class CustomizedListener extends OwrlBaseListener {
 
         String command = ctx.command().getText();
 
-        List<WorldObject> listWO = new ArrayList<>();
+        List<AbstractObject> listWO = new ArrayList<>();
 
         for (int i = 0; i < ctx.expr().size(); i++) {
 
@@ -44,29 +44,29 @@ public class CustomizedListener extends OwrlBaseListener {
 
     }
 
-    public WorldObject readElementsFromExpr(OwrlParser.ExprContext ctx) {
+    public AbstractObject readElementsFromExpr(OwrlParser.ExprContext ctx) {
 
         String name = ctx.name().object().ID().getText();
         int id = Integer.parseInt(ctx.name().cod().INT_VALUE().getText());
-        WorldObject wo;
+        AbstractObject wo;
 
         if (!ctx.atrib().isEmpty()) {
 
-            wo = new WorldObject(name, id, readProperty(ctx.atrib(0).property()), readPart(ctx.atrib(0).part()));
+            wo = new AbstractObject(name, id, readProperty(ctx.atrib(0).property()), readPart(ctx.atrib(0).part()));
 
         } else {
 
-            wo = new WorldObject(name, id);
+            wo = new AbstractObject(name, id);
         }
 
         return wo;
 
     }
 
-    public List<WorldObject> readPart(List<OwrlParser.PartContext> ctxPart) {
+    public List<AbstractObject> readPart(List<OwrlParser.PartContext> ctxPart) {
 
-        List<WorldObject> parts = new ArrayList<WorldObject>();
-        WorldObject onePart;
+        List<AbstractObject> parts = new ArrayList<AbstractObject>();
+        AbstractObject onePart;
 
         if (ctxPart != null) {
             for (int i = 0; i < ctxPart.size(); i++) {
@@ -74,9 +74,9 @@ public class CustomizedListener extends OwrlBaseListener {
                 String namePart = ctxPart.get(i).name().object().ID().getText();
                 int id = Integer.parseInt(ctxPart.get(i).name().cod().INT_VALUE().getText());
                 List<Property> listPropertiesPart = readProperty(ctxPart.get(i).property());
-                List<WorldObject> subparts = readPart(ctxPart.get(i).part());
+                List<AbstractObject> subparts = readPart(ctxPart.get(i).part());
 
-                onePart = new WorldObject(namePart, id, listPropertiesPart, subparts);
+                onePart = new AbstractObject(namePart, id, listPropertiesPart, subparts);
                 parts.add(onePart);
 
             }
@@ -121,7 +121,7 @@ public class CustomizedListener extends OwrlBaseListener {
 
     }
 
-    public List<Pair<String, List<WorldObject>>> getMemory() {
+    public List<Pair<String, List<AbstractObject>>> getMemory() {
         return memory;
     }
 

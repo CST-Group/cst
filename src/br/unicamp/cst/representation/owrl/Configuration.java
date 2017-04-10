@@ -20,16 +20,16 @@ import java.util.List;
  */
 public class Configuration {
 
-    private List<WorldObject> objects;
+    private List<AbstractObject> objects;
     //String name;
     private Appraisal appraisal;
 
-    public Configuration(List<WorldObject> objs, Appraisal appraisal) {
+    public Configuration(List<AbstractObject> objs, Appraisal appraisal) {
         objects = objs;
         this.appraisal = appraisal;
     }
 
-    public Configuration(List<WorldObject> objs) {
+    public Configuration(List<AbstractObject> objs) {
         objects = objs;
     }
 
@@ -37,11 +37,11 @@ public class Configuration {
         objects = new ArrayList<>();
     }
 
-    public List<WorldObject> getObjects() {
+    public List<AbstractObject> getObjects() {
         return objects;
     }
 
-    public void addObject(WorldObject obj) {
+    public void addObject(AbstractObject obj) {
         objects.add(obj);
     }
 
@@ -55,7 +55,7 @@ public class Configuration {
         return false;
     }
 
-    public boolean changeObject(int id, WorldObject modifications) {
+    public boolean changeObject(int id, AbstractObject modifications) {
         for (int i = 0; i < objects.size(); ++i) {
             if (objects.get(i).getID() == id) {
                 objects.get(i).modify(modifications);
@@ -75,8 +75,8 @@ public class Configuration {
 
     // TODO: Implement clone() inside Appraisal and call it here
     public Configuration clone() {
-        List<WorldObject> newObjects = new ArrayList<WorldObject>();
-        for (WorldObject object : objects) {
+        List<AbstractObject> newObjects = new ArrayList<AbstractObject>();
+        for (AbstractObject object : objects) {
             newObjects.add(object.clone());
         }
         return new Configuration(newObjects);

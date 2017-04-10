@@ -20,17 +20,17 @@ import javax.swing.tree.TreeModel;
  *
  * @author gudwin
  */
-public class WorldObjectViewer extends javax.swing.JFrame {
+public class ObjectViewer extends javax.swing.JFrame {
     
     private JTree jtree;
-    WorldObject wog;
+    AbstractObject wog;
 
     /**
      * Creates new form WorldObjectViewer
      */
-    public WorldObjectViewer(String windowName) {
+    public ObjectViewer(String windowName) {
         initComponents();
-        TreeModel tm = createTreeModel(new WorldObject("Empty"));
+        TreeModel tm = createTreeModel(new AbstractObject("Empty"));
         jtree = new JTree(tm);
         expandAllNodes(jtree);
         jsp.setViewportView(jtree);
@@ -83,33 +83,33 @@ public class WorldObjectViewer extends javax.swing.JFrame {
                 }
             }
         } catch (ClassNotFoundException ex) {
-            java.util.logging.Logger.getLogger(WorldObjectViewer.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            java.util.logging.Logger.getLogger(ObjectViewer.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         } catch (InstantiationException ex) {
-            java.util.logging.Logger.getLogger(WorldObjectViewer.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            java.util.logging.Logger.getLogger(ObjectViewer.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         } catch (IllegalAccessException ex) {
-            java.util.logging.Logger.getLogger(WorldObjectViewer.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            java.util.logging.Logger.getLogger(ObjectViewer.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         } catch (javax.swing.UnsupportedLookAndFeelException ex) {
-            java.util.logging.Logger.getLogger(WorldObjectViewer.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            java.util.logging.Logger.getLogger(ObjectViewer.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         }
         //</editor-fold>
-        WorldObject robot = new WorldObject("Robot");
-        WorldObject sensor = new WorldObject("Sensor");
+        AbstractObject robot = new AbstractObject("Robot");
+        AbstractObject sensor = new AbstractObject("Sensor");
         Property position = new Property("Position");
         position.addQualityDimension(new QualityDimension("x",0.5));
         position.addQualityDimension(new QualityDimension("y",0.6));
         sensor.addProperty(position);
-        robot.addPart(sensor);
-        WorldObject actuator = new WorldObject("Actuator");
+        robot.addCompositePart(sensor);
+        AbstractObject actuator = new AbstractObject("Actuator");
         actuator.addProperty(new Property("velocity",new QualityDimension("intensity",-0.12)));
-        robot.addPart(actuator);
+        robot.addCompositePart(actuator);
         robot.addProperty(new Property("Model",new QualityDimension("Serial#","1234XDr56")));   
-        WorldObjectViewer ov = new WorldObjectViewer("Teste");
+        ObjectViewer ov = new ObjectViewer("Teste");
         ov.setVisible(true);
         System.out.println("Teste:");
         ov.updateTree(robot);
     }
   
-    public void setWO(WorldObject newwog) {
+    public void setWO(AbstractObject newwog) {
         wog = newwog;
     }
     
@@ -118,10 +118,10 @@ public class WorldObjectViewer extends javax.swing.JFrame {
         return(root);
     }
     
-    private DefaultMutableTreeNode addObject(WorldObject wo) {
+    private DefaultMutableTreeNode addObject(AbstractObject wo) {
         DefaultMutableTreeNode objectNode = new DefaultMutableTreeNode(new TreeElement(wo.getName() + " [" + wo.getID()+"]", TreeElement.NODE_NORMAL, wo, TreeElement.ICON_OBJECT));
-        List<WorldObject> parts = wo.getParts();
-        for (WorldObject oo : parts) {
+        List<AbstractObject> parts = wo.getCompositeParts();
+        for (AbstractObject oo : parts) {
             DefaultMutableTreeNode part = addObject(oo);
             objectNode.add(part);
         }
@@ -142,26 +142,19 @@ public class WorldObjectViewer extends javax.swing.JFrame {
             String value = (((Property) p).getQualityDimensions().get(s).getValue()).toString();
             DefaultMutableTreeNode qualityDimensionNode = new DefaultMutableTreeNode(new TreeElement(chave+" : "+value, TreeElement.NODE_NORMAL, chave+" : "+value, TreeElement.ICON_QUALITYDIM));
             propertyNode.add(qualityDimensionNode);
-            //DefaultMutableTreeNode valueQualityDimensionNode = new DefaultMutableTreeNode(new TreeElement(value, TreeElement.NODE_NORMAL, value, TreeElement.ICON_VALUE));
-            //qualityDimensionNode.add(valueQualityDimensionNode);
+            
 
         }
         return(propertyNode);
     }
     
-    public TreeModel createTreeModel(WorldObject wo) {
+    public TreeModel createTreeModel(AbstractObject wo) {
         DefaultMutableTreeNode o = addObject(wo);
         TreeModel tm = new DefaultTreeModel(o);
         return(tm);
     }
     
-//    private JTree addNodeJTree(WorldObject wo) {
-//        JTree tree;
-//        TreeModel tm = createTreeModel(wo);
-//        tree = new JTree(tm);
-//        expandAllNodes(tree);
-//        return tree;
-//    }
+
     
     private void expandAllNodes(JTree tree) {
          expandAllNodes(tree, 0, tree.getRowCount());
@@ -176,7 +169,7 @@ public class WorldObjectViewer extends javax.swing.JFrame {
        }
     }
     
-    public void updateTree(WorldObject wo) {
+    public void updateTree(AbstractObject wo) {
        TreeModel tm = createTreeModel(wo);
        jtree.setModel(tm);
        expandAllNodes(jtree);
@@ -193,10 +186,10 @@ public class WorldObjectViewer extends javax.swing.JFrame {
     }
 
     class WOVTimerTask extends TimerTask {
-    WorldObjectViewer wov;
+    ObjectViewer wov;
     boolean enabled = true;
     
-    public WOVTimerTask(WorldObjectViewer wovi) {
+    public WOVTimerTask(ObjectViewer wovi) {
         wov = wovi;
     }
     
@@ -207,7 +200,7 @@ public class WorldObjectViewer extends javax.swing.JFrame {
     public void setEnabled(boolean value) {
         enabled = value;
     }
-}
+    }
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JScrollPane jsp;
     // End of variables declaration//GEN-END:variables

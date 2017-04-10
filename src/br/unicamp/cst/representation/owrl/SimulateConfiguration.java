@@ -201,7 +201,7 @@ public class SimulateConfiguration extends javax.swing.JFrame {
 
         }
 
-        List<Pair<String, List<WorldObject>>> memory = listener.getMemory();
+        List<Pair<String, List<AbstractObject>>> memory = listener.getMemory();
 
         if (!configurations.applyCommands(memory)) {
             jTextAreaComand.setText(jTextAreaComand.getText().concat("\nErro: Falha ao aplicar instruções. Verifique seu comando.\n"));

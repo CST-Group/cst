@@ -130,12 +130,12 @@ public class TreeViewer extends javax.swing.JFrame {
         for (int c = 0; c < rootInitial.getChildCount(); c++) {
 
             TreeElement cn_initial = (TreeElement) ((DefaultMutableTreeNode) rootInitial.getChildAt(c)).getUserObject();
-            WorldObject wo_initial = (WorldObject) cn_initial.getElement();
+            AbstractObject wo_initial = (AbstractObject) cn_initial.getElement();
 
             boolean found = false;
             for (int i = 0; i < rootFinal.getChildCount(); i++) {
                 TreeElement cn_final = (TreeElement) ((DefaultMutableTreeNode) rootFinal.getChildAt(i)).getUserObject();
-                WorldObject wo_final = (WorldObject) cn_final.getElement();
+                AbstractObject wo_final = (AbstractObject) cn_final.getElement();
 
                 if (wo_initial.getID() == wo_final.getID()) {
                     found = true;
@@ -155,9 +155,9 @@ public class TreeViewer extends javax.swing.JFrame {
 
     private JTree addNodeJTree(Configuration conf, JScrollPane where, DefaultMutableTreeNode node, JTree tree) {
 
-        List<WorldObject> listWO = conf.getObjects();
+        List<AbstractObject> listWO = conf.getObjects();
 
-        for (WorldObject wo : listWO) {
+        for (AbstractObject wo : listWO) {
 
             DefaultMutableTreeNode objectNode = addObject(wo);
             node.add(objectNode);
@@ -173,10 +173,10 @@ public class TreeViewer extends javax.swing.JFrame {
 
     }
 
-    private DefaultMutableTreeNode addObject(WorldObject wo) {
+    private DefaultMutableTreeNode addObject(AbstractObject wo) {
         DefaultMutableTreeNode objectNode = new DefaultMutableTreeNode(new TreeElement(wo.getName() + " [" + wo.getID() + "]", TreeElement.NODE_NORMAL, wo, TreeElement.ICON_OBJECT));
-        List<WorldObject> parts = wo.getParts();
-        for (WorldObject oo : parts) {
+        List<AbstractObject> parts = wo.getCompositeParts();
+        for (AbstractObject oo : parts) {
             DefaultMutableTreeNode part = addObject(oo);
             objectNode.add(part);
         }

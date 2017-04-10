@@ -20,14 +20,14 @@ import java.util.List;
 public class Category {
 
     private String name;
-    private List<WorldObject> listOfWorldObjects;
+    private List<AbstractObject> listOfWorldObjects;
 
     public Category(String name){
         this.setName(name);
-        this.setListOfWorldObjects(new ArrayList<WorldObject>());
+        this.setListOfWorldObjects(new ArrayList<AbstractObject>());
     }
 
-    public Category(String name, List<WorldObject> listOfWorldObjects){
+    public Category(String name, List<AbstractObject> listOfWorldObjects){
         this.setName(name);
         this.setListOfWorldObjects(listOfWorldObjects);
     }
@@ -40,11 +40,11 @@ public class Category {
         this.name = name;
     }
 
-    public List<WorldObject> getListOfWorldObjects() {
+    public List<AbstractObject> getListOfWorldObjects() {
         return listOfWorldObjects;
     }
 
-    public void setListOfWorldObjects(List<WorldObject> listOfWorldObjects) {
+    public void setListOfWorldObjects(List<AbstractObject> listOfWorldObjects) {
         this.listOfWorldObjects = listOfWorldObjects;
     }
 }

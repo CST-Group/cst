@@ -28,17 +28,17 @@ public class ConfigurationManager {
         listConfs = new ArrayList<Pair<String, Configuration>>();
     }
 
-    private void create(WorldObject obj) {
+    private void create(AbstractObject obj) {
         listConfs.get(currentConfiguration).second.addObject(obj);
     }
 
-    private boolean destroy(WorldObject obj, List<WorldObject> list) {
-        for (WorldObject obj_search : list) {
+    private boolean destroy(AbstractObject obj, List<AbstractObject> list) {
+        for (AbstractObject obj_search : list) {
             if (obj_search.getID() == obj.getID()) {
                 list.remove(obj_search);
                 return true;
             } else {
-                if (destroy(obj, obj_search.getParts())) {
+                if (destroy(obj, obj_search.getCompositeParts())) {
                     return true;
                 }
             }
@@ -46,17 +46,17 @@ public class ConfigurationManager {
         return false;
     }
 
-    public boolean applyCommands(List<Pair<String, List<WorldObject>>> commands) {
+    public boolean applyCommands(List<Pair<String, List<AbstractObject>>> commands) {
         newConfiguration(String.format("%04d", listConfs.size() + 1));
-        for (Pair<String, List<WorldObject>> entry : commands) {
+        for (Pair<String, List<AbstractObject>> entry : commands) {
             switch (entry.first) {
                 case "create":
-                    for (WorldObject obj : entry.second) {
+                    for (AbstractObject obj : entry.second) {
                         create(obj);
                     }
                     break;
                 case "destroy":
-                    for (WorldObject obj : entry.second) {
+                    for (AbstractObject obj : entry.second) {
                         if (!(destroy(obj, listConfs.get(currentConfiguration).second.getObjects()))) {
                             String message = "Unknown object: " + obj.getID();
                             JOptionPane.showMessageDialog(null, message);
@@ -65,7 +65,7 @@ public class ConfigurationManager {
                     }
                     break;
                 case "modify":
-                    for (WorldObject obj : entry.second) {
+                    for (AbstractObject obj : entry.second) {
                         if (!destroy(obj, listConfs.get(currentConfiguration).second.getObjects())) {
                             String message = "Unknown object: " + obj.getID();
                             JOptionPane.showMessageDialog(null, message);
@@ -79,7 +79,7 @@ public class ConfigurationManager {
                     System.out.println("Unknown command: " + entry.first);
                     return false;
             }
-            for (WorldObject wo : entry.second) {
+            for (AbstractObject wo : entry.second) {
                 System.out.println(wo.getID() + ", " + wo.getName());
             }
         }

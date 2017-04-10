@@ -14,7 +14,7 @@ package br.unicamp.cst.bindings.soar;
 import br.unicamp.cst.core.entities.Codelet;
 import br.unicamp.cst.representation.owrl.Property;
 import br.unicamp.cst.representation.owrl.QualityDimension;
-import br.unicamp.cst.representation.owrl.WorldObject;
+import br.unicamp.cst.representation.owrl.AbstractObject;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import java.io.File;
@@ -53,9 +53,9 @@ public abstract class JSoarCodelet extends Codelet {
     
     public ArrayList<Object> getCommandsOWRL(String package_with_beans_classes){
         ArrayList<Object> commandList = new ArrayList<Object>();
-        WorldObject ol = jsoar.getOutputLinkOWRL();
+        AbstractObject ol = jsoar.getOutputLinkOWRL();
         
-        for (WorldObject command : ol.getParts()) {
+        for (AbstractObject command : ol.getCompositeParts()) {
             
             String commandType = command.getName();
             Object commandObject = null;
@@ -205,7 +205,7 @@ public abstract class JSoarCodelet extends Codelet {
         //jsoar.printWMEs();
     }
     
-    public void setInputLink(WorldObject wo){
+    public void setInputLink(AbstractObject wo){
         jsoar.setInputLink(wo);
     }
     

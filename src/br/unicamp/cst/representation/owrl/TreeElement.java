@@ -22,6 +22,8 @@ public class TreeElement {
     private Color color;
     private Object element;
     private int icon_type;
+    private int id_node = 0;
+    
     public static final int NODE_NORMAL = 1;
     public static final int NODE_CHANGE = 2;
     public static final int NODE_EXCLUSION = 3;
@@ -43,13 +45,31 @@ public class TreeElement {
     public static final int ICON_OUTPUT = 14;
     public static final int ICON_BROADCAST = 15;
 
+   
     public TreeElement(String name, int node_type, Object element, int typeIcon) {
-        setName(name);
+    
         setColor(node_type);
         setIcon(typeIcon);
+        setId_node(0);
+        setName(name+" [ "+getId_node()+" ]");
+        
         this.element = element;
         this.icon_type = typeIcon;
     }
+    
+     public TreeElement(String name, int node_type, Object element, int typeIcon, int id) {
+    
+        setColor(node_type);
+        setIcon(typeIcon);
+        setId_node(id);
+        setName(name+" [ "+getId_node()+" ]");
+        
+        this.element = element;
+        this.icon_type = typeIcon;
+    }
+    
+    
+    
 
     public String getName() {
         return name;
@@ -92,4 +112,14 @@ public class TreeElement {
     public Object getElement() {
         return element;
     }
+
+    public int getId_node() {
+        return id_node;
+    }
+
+    public void setId_node(int id_node) {
+        this.id_node = id_node;
+    }
+    
+    
 }

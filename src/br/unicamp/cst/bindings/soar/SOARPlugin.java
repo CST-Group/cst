@@ -13,7 +13,7 @@ package br.unicamp.cst.bindings.soar;
 
 import br.unicamp.cst.representation.owrl.Property;
 import br.unicamp.cst.representation.owrl.QualityDimension;
-import br.unicamp.cst.representation.owrl.WorldObject;
+import br.unicamp.cst.representation.owrl.AbstractObject;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonElement;
@@ -674,8 +674,8 @@ public class SOARPlugin {
     Beginning of WorldObject Support methods
     -------------------------------------------------------------------------*/
     
-    public WorldObject getWorldObject(Identifier id, String name) {
-        WorldObject newwo = new WorldObject(name);
+    public AbstractObject getWorldObject(Identifier id, String name) {
+        AbstractObject newwo = new AbstractObject(name);
         Iterator<Wme> It = id.getWmes();
         while (It.hasNext()) {
             Wme wme = It.next();
@@ -684,8 +684,8 @@ public class SOARPlugin {
             Symbol v = wme.getValue();
             Identifier testv = v.asIdentifier();
             if (testv != null) { // The value is an identifier
-                WorldObject child = getWorldObject(testv,a.toString());
-                newwo.addPart(child);
+                AbstractObject child = getWorldObject(testv,a.toString());
+                newwo.addCompositePart(child);
             }
             else { // The value is a property
                 QualityDimension qd;
@@ -702,20 +702,20 @@ public class SOARPlugin {
         return(newwo);
     }
 
-    public WorldObject getOutputLinkOWRL() {
+    public AbstractObject getOutputLinkOWRL() {
         Identifier ol = agent.getInputOutput().getOutputLink();
         return(getWorldObject(ol,"OutputLink"));
     }
 
-    public void setInputLink(WorldObject ilwo) {
+    public void setInputLink(AbstractObject ilwo) {
         Identifier il = agent.getInputOutput().getInputLink();
         setInputLink(ilwo,il);
     }
     
-    public void setInputLink(WorldObject il, Identifier id){
-        List<WorldObject> parts = il.getParts();
+    public void setInputLink(AbstractObject il, Identifier id){
+        List<AbstractObject> parts = il.getCompositeParts();
         List<Property> properties = il.getProperties();
-        for (WorldObject w : parts) {
+        for (AbstractObject w : parts) {
             Identifier id2 = CreateIdWME(id,w.getName());
             setInputLink(w,id2);
             
@@ -876,9 +876,9 @@ public class SOARPlugin {
     
     public ArrayList<Object> getCommandsOWRL(String package_with_beans_classes){
         ArrayList<Object> commandList = new ArrayList<Object>();
-        WorldObject ol = getOutputLinkOWRL();
+        AbstractObject ol = getOutputLinkOWRL();
         
-        for (WorldObject command : ol.getParts()) {
+        for (AbstractObject command : ol.getCompositeParts()) {
             
             String commandType = command.getName();
             Object commandObject = null;
