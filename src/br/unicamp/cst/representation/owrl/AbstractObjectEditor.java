@@ -59,7 +59,21 @@ public class AbstractObjectEditor extends javax.swing.JFrame {
                         };
                         jm1.addActionListener(al);
                         JMenuItem jm2 = new JMenuItem("Add new aggregate object");
+                        ActionListener al2 = new ActionListener() {
+                           public void actionPerformed(ActionEvent e) {
+                               addAggregateObject(ao);
+                               updateTree(root);
+                           }    
+                        };
+                        jm2.addActionListener(al2);
                         JMenuItem jm3 = new JMenuItem("Add new Property");
+                        ActionListener al3 = new ActionListener() {
+                           public void actionPerformed(ActionEvent e) {
+                               addProperty(ao);
+                               updateTree(root);
+                           }    
+                        };
+                        jm3.addActionListener(al3);
                         popup.add(jm1);
                         popup.add(jm2);
                         popup.add(jm3);
