@@ -53,7 +53,7 @@ public class AbstractObjectEditor extends javax.swing.JFrame {
                         JMenuItem jm1 = new JMenuItem("Add new composite object");
                         ActionListener al = new ActionListener() {
                            public void actionPerformed(ActionEvent e) {
-                               addCompositeObject(ao);
+                               createCompositeObject(ao);
                                updateTree(root);
                            }    
                         };
@@ -61,7 +61,7 @@ public class AbstractObjectEditor extends javax.swing.JFrame {
                         JMenuItem jm2 = new JMenuItem("Add new aggregate object");
                         ActionListener al2 = new ActionListener() {
                            public void actionPerformed(ActionEvent e) {
-                               addAggregateObject(ao);
+                               createAggregateObject(ao);
                                updateTree(root);
                            }    
                         };
@@ -69,7 +69,7 @@ public class AbstractObjectEditor extends javax.swing.JFrame {
                         JMenuItem jm3 = new JMenuItem("Add new Property");
                         ActionListener al3 = new ActionListener() {
                            public void actionPerformed(ActionEvent e) {
-                               addProperty(ao);
+                               createProperty(ao);
                                updateTree(root);
                            }    
                         };
@@ -82,7 +82,15 @@ public class AbstractObjectEditor extends javax.swing.JFrame {
                     else if (classname.equals("br.unicamp.cst.representation.owrl.Property")) {
                         Property p = (Property) te.getElement();
                         JPopupMenu popup = new JPopupMenu();
-                        popup.add(new JMenuItem("Add new QualityDimension"));
+                        JMenuItem jm1 = new JMenuItem("Add new QualityDimension");
+                        ActionListener al = new ActionListener() {
+                           public void actionPerformed(ActionEvent e) {
+                               createQualityDimension(p);
+                               updateTree(root);
+                           }    
+                        };
+                        jm1.addActionListener(al);
+                        popup.add(jm1);
                         popup.show(jtree, e.getX(), e.getY());
                     }
                     else if (classname.equals("br.unicamp.cst.representation.owrl.QualityDimension")) {
@@ -99,23 +107,23 @@ public class AbstractObjectEditor extends javax.swing.JFrame {
         jtree.addMouseListener(ml);
     }
     
-    private void addCompositeObject(AbstractObject a) {
+    private void createCompositeObject(AbstractObject a) {
         AbstractObject newao = new AbstractObject("teste");
         a.addCompositePart(newao);
         
     }
     
-    private void addAggregateObject(AbstractObject a) {
+    private void createAggregateObject(AbstractObject a) {
         AbstractObject newao = new AbstractObject("teste");
         a.addAggregatePart(newao);        
     }
     
-    private void addProperty(AbstractObject a) {
+    private void createProperty(AbstractObject a) {
         Property newp = new Property("property");
         a.addProperty(newp);
     }
     
-    private void addQualityDimension(Property p) {
+    private void createQualityDimension(Property p) {
         QualityDimension newqd = new QualityDimension("quality dimension");
         p.addQualityDimension(newqd);
     }

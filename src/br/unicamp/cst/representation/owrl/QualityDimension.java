@@ -27,7 +27,7 @@ public class QualityDimension {
 
     public QualityDimension(String name) {
         this.name = name;
-        this.value = null;
+        this.value = "";
     }
 
     public String getName() {
