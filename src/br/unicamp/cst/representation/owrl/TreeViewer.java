@@ -186,7 +186,7 @@ public class TreeViewer extends javax.swing.JFrame {
         }
         
         List<AbstractObject> aggregates = wo.getAggregatePart();
-        for (AbstractObject oo : parts) {
+        for (AbstractObject oo : aggregates) {
             DefaultMutableTreeNode part = addObject(oo,false);
             objectNode.add(part);
         }
