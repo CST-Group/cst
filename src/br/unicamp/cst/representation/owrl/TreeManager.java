@@ -161,7 +161,7 @@ public class TreeManager {
             
             AbstractObject element=(AbstractObject)newNode;
             treeOganization++;
-            parentNode = new DefaultMutableTreeNode(new TreeElement(element.getName(), TreeElement.NODE_NORMAL, null, TreeElement.ICON_OBJECT, treeOganization));
+            parentNode = new DefaultMutableTreeNode(new TreeElement(element.getName(), TreeElement.NODE_NORMAL, null, TreeElement.ICON_COMPOSITE, treeOganization));
 
             tree = new JTree(parentNode);
 
@@ -222,7 +222,7 @@ public class TreeManager {
      private static DefaultMutableTreeNode InstantiateJustObject(AbstractObject wo) {
          
          treeOganization++;
-         DefaultMutableTreeNode objectNode = new DefaultMutableTreeNode(new TreeElement(wo.getName(), TreeElement.NODE_NORMAL, wo, TreeElement.ICON_OBJECT, treeOganization));
+         DefaultMutableTreeNode objectNode = new DefaultMutableTreeNode(new TreeElement(wo.getName(), TreeElement.NODE_NORMAL, wo, TreeElement.ICON_COMPOSITE, treeOganization));
      
           return (objectNode);
      }
@@ -249,7 +249,7 @@ public class TreeManager {
     
     //Add a complete object: object, property and qualityDimensions
     private static DefaultMutableTreeNode addObject(AbstractObject wo) {
-        DefaultMutableTreeNode objectNode = new DefaultMutableTreeNode(new TreeElement(wo.getName() + " [" + wo.getID() + "]", TreeElement.NODE_NORMAL, wo, TreeElement.ICON_OBJECT));
+        DefaultMutableTreeNode objectNode = new DefaultMutableTreeNode(new TreeElement(wo.getName() + " [" + wo.getID() + "]", TreeElement.NODE_NORMAL, wo, TreeElement.ICON_COMPOSITE));
         List<AbstractObject> parts = wo.getCompositeParts();
         for (AbstractObject oo : parts) {
             DefaultMutableTreeNode part = addObject(oo);

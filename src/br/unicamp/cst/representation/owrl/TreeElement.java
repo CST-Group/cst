@@ -30,31 +30,25 @@ public class TreeElement {
     public static final int NODE_CREATION = 4;
 
     public static final int ICON_CONFIGURATION = 1;
-    public static final int ICON_OBJECT = 2;
-    public static final int ICON_PROPERTY = 3;
-    public static final int ICON_QUALITYDIM = 4;
-    public static final int ICON_VALUE = 5;
-    public static final int ICON_MIND = 6;
-    public static final int ICON_CODELET = 7;
-    public static final int ICON_CODELETS = 8;
-    public static final int ICON_MEMORY = 9;
-    public static final int ICON_MEMORIES = 10;
-    public static final int ICON_CONTAINER = 11;
-    public static final int ICON_MO = 12;
-    public static final int ICON_INPUT = 13;
-    public static final int ICON_OUTPUT = 14;
-    public static final int ICON_BROADCAST = 15;
+    public static final int ICON_COMPOSITE = 2;
+    public static final int ICON_AGGREGATE = 3;
+    public static final int ICON_PROPERTY = 4;
+    public static final int ICON_QUALITYDIM = 5;
+    public static final int ICON_VALUE = 6;
+    public static final int ICON_MIND = 7;
+    public static final int ICON_CODELET = 8;
+    public static final int ICON_CODELETS = 9;
+    public static final int ICON_MEMORY = 10;
+    public static final int ICON_MEMORIES = 11;
+    public static final int ICON_CONTAINER = 12;
+    public static final int ICON_MO = 13;
+    public static final int ICON_INPUT = 14;
+    public static final int ICON_OUTPUT = 15;
+    public static final int ICON_BROADCAST = 16;
 
    
     public TreeElement(String name, int node_type, Object element, int typeIcon) {
-    
-        setColor(node_type);
-        setIcon(typeIcon);
-        setId_node(0);
-        setName(name+" [ "+getId_node()+" ]");
-        
-        this.element = element;
-        this.icon_type = typeIcon;
+        this(name,node_type,element,typeIcon,0);
     }
     
      public TreeElement(String name, int node_type, Object element, int typeIcon, int id) {
@@ -62,7 +56,7 @@ public class TreeElement {
         setColor(node_type);
         setIcon(typeIcon);
         setId_node(id);
-        setName(name+" [ "+getId_node()+" ]");
+        setName(name+" ["+getId_node()+"]");
         
         this.element = element;
         this.icon_type = typeIcon;

@@ -43,49 +43,81 @@ public class AbstractObjectEditor extends javax.swing.JFrame {
                int selRow = jtree.getRowForLocation(e.getX(), e.getY());
                TreePath selPath = jtree.getPathForLocation(e.getX(), e.getY());
                if(selRow != -1) {
-                  if(e.getClickCount() == 1) {
+                  if(e.getClickCount() == 1 && e.getButton() == 3) {
                     DefaultMutableTreeNode tn = (DefaultMutableTreeNode)selPath.getLastPathComponent();
                     TreeElement te = (TreeElement)tn.getUserObject();
                     String classname = te.getElement().getClass().getCanonicalName();
                     if (classname.equals("br.unicamp.cst.representation.owrl.AbstractObject")) {
                         AbstractObject ao = (AbstractObject) te.getElement();
                         JPopupMenu popup = new JPopupMenu();
-                        JMenuItem jm1 = new JMenuItem("Add new composite object");
+                        JMenuItem jm1 = new JMenuItem("Edit AbstractObject");
                         ActionListener al = new ActionListener() {
+                           public void actionPerformed(ActionEvent e) {
+                               editAbstractObject(ao);
+                               updateTree(root);
+                           }    
+                        };
+                        jm1.addActionListener(al);
+                        JMenuItem jm2 = new JMenuItem("Add new composite object");
+                        ActionListener al2 = new ActionListener() {
                            public void actionPerformed(ActionEvent e) {
                                createCompositeObject(ao);
                                updateTree(root);
                            }    
                         };
-                        jm1.addActionListener(al);
-                        JMenuItem jm2 = new JMenuItem("Add new aggregate object");
-                        ActionListener al2 = new ActionListener() {
+                        jm2.addActionListener(al2);
+                        JMenuItem jm3 = new JMenuItem("Add new aggregate object");
+                        ActionListener al3 = new ActionListener() {
                            public void actionPerformed(ActionEvent e) {
                                createAggregateObject(ao);
                                updateTree(root);
                            }    
                         };
-                        jm2.addActionListener(al2);
-                        JMenuItem jm3 = new JMenuItem("Add new Property");
-                        ActionListener al3 = new ActionListener() {
+                        jm3.addActionListener(al3);
+                        JMenuItem jm4 = new JMenuItem("Add new Property");
+                        ActionListener al4 = new ActionListener() {
                            public void actionPerformed(ActionEvent e) {
                                createProperty(ao);
                                updateTree(root);
                            }    
                         };
-                        jm3.addActionListener(al3);
+                        jm4.addActionListener(al4);
                         popup.add(jm1);
                         popup.add(jm2);
                         popup.add(jm3);
+                        popup.add(jm4);
                         popup.show(jtree, e.getX(), e.getY());
                     }
                     else if (classname.equals("br.unicamp.cst.representation.owrl.Property")) {
                         Property p = (Property) te.getElement();
                         JPopupMenu popup = new JPopupMenu();
-                        JMenuItem jm1 = new JMenuItem("Add new QualityDimension");
+                        JMenuItem jm1 = new JMenuItem("Edit Property");
                         ActionListener al = new ActionListener() {
                            public void actionPerformed(ActionEvent e) {
+                               editProperty(p);
+                               updateTree(root);
+                           }    
+                        };
+                        jm1.addActionListener(al);
+                        JMenuItem jm2 = new JMenuItem("Add new QualityDimension");
+                        ActionListener al2 = new ActionListener() {
+                           public void actionPerformed(ActionEvent e) {
                                createQualityDimension(p);
+                               updateTree(root);
+                           }    
+                        };
+                        jm2.addActionListener(al2);
+                        popup.add(jm1);
+                        popup.add(jm2);
+                        popup.show(jtree, e.getX(), e.getY());
+                    }
+                    else if (classname.equals("br.unicamp.cst.representation.owrl.QualityDimension")) {
+                        QualityDimension qd = (QualityDimension) te.getElement();
+                        JPopupMenu popup = new JPopupMenu();
+                        JMenuItem jm1 = new JMenuItem("Edit QualityDimension");
+                        ActionListener al = new ActionListener() {
+                           public void actionPerformed(ActionEvent e) {
+                               editQualityDimension(qd);
                                updateTree(root);
                            }    
                         };
@@ -93,39 +125,46 @@ public class AbstractObjectEditor extends javax.swing.JFrame {
                         popup.add(jm1);
                         popup.show(jtree, e.getX(), e.getY());
                     }
-                    else if (classname.equals("br.unicamp.cst.representation.owrl.QualityDimension")) {
-                        
-                    }
-                    System.out.println(classname+" "+selRow+" "+((TreeElement)tn.getUserObject()).getElement());
-                     //mySingleClick(selRow, selPath);
                }
-               else if(e.getClickCount() == 2) {
-                    System.out.println(selRow + " "+ selPath);
-               }
+//               else if(e.getClickCount() == 2) {
+//                    System.out.println(selRow + " "+ selPath);
+//               }
             }
            }};
         jtree.addMouseListener(ml);
     }
     
     private void createCompositeObject(AbstractObject a) {
-        AbstractObject newao = new AbstractObject("teste");
+        AbstractObject newao = DialogFactory.getAbstractObject();
         a.addCompositePart(newao);
         
     }
     
     private void createAggregateObject(AbstractObject a) {
-        AbstractObject newao = new AbstractObject("teste");
+        AbstractObject newao = DialogFactory.getAbstractObject();
         a.addAggregatePart(newao);        
     }
     
     private void createProperty(AbstractObject a) {
-        Property newp = new Property("property");
+        Property newp = DialogFactory.getProperty();
         a.addProperty(newp);
     }
     
     private void createQualityDimension(Property p) {
-        QualityDimension newqd = new QualityDimension("quality dimension");
+        QualityDimension newqd = DialogFactory.getQualityDimension();
         p.addQualityDimension(newqd);
+    }
+    
+    private void editAbstractObject(AbstractObject ao) {
+        DialogFactory.editAbstractObject(ao);
+    }
+    
+    private void editProperty(Property p) {
+        DialogFactory.editProperty(p);
+    }
+    
+    private void editQualityDimension(QualityDimension qd) {
+        DialogFactory.editQualityDimension(qd);
     }
     
     /**
@@ -224,11 +263,18 @@ public class AbstractObjectEditor extends javax.swing.JFrame {
         return(root);
     }
     
-    private DefaultMutableTreeNode addObject(AbstractObject wo) {
-        DefaultMutableTreeNode objectNode = new DefaultMutableTreeNode(new TreeElement(wo.getName() + " [" + wo.getID()+"]", TreeElement.NODE_NORMAL, wo, TreeElement.ICON_OBJECT));
+    private DefaultMutableTreeNode addObject(AbstractObject wo, boolean composite) {
+        DefaultMutableTreeNode objectNode;
+        if (composite) objectNode = new DefaultMutableTreeNode(new TreeElement(wo.getName() + " [" + wo.getID()+"]", TreeElement.NODE_NORMAL, wo, TreeElement.ICON_COMPOSITE));
+        else objectNode = new DefaultMutableTreeNode(new TreeElement(wo.getName() + " [" + wo.getID()+"]", TreeElement.NODE_NORMAL, wo, TreeElement.ICON_AGGREGATE));
         List<AbstractObject> parts = wo.getCompositeParts();
         for (AbstractObject oo : parts) {
-            DefaultMutableTreeNode part = addObject(oo);
+            DefaultMutableTreeNode part = addObject(oo,true);
+            objectNode.add(part);
+        }
+        List<AbstractObject> aggregates = wo.getAggregatePart();
+        for (AbstractObject oo : aggregates) {
+            DefaultMutableTreeNode part = addObject(oo,false);
             objectNode.add(part);
         }
         List<Property> props = wo.getProperties();
@@ -256,7 +302,7 @@ public class AbstractObjectEditor extends javax.swing.JFrame {
     }
     
     public TreeModel createTreeModel(AbstractObject wo) {
-        DefaultMutableTreeNode o = addObject(wo);
+        DefaultMutableTreeNode o = addObject(wo,true);
         TreeModel tm = new DefaultTreeModel(o);
         return(tm);
     }

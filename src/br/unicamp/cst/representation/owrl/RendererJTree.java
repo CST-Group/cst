@@ -33,9 +33,12 @@ public class RendererJTree extends DefaultTreeCellRenderer {
 //
         TreeElement node = (TreeElement) dmtn.getUserObject();
         switch (node.getIcon()) {
-            case TreeElement.ICON_OBJECT:
+            case TreeElement.ICON_COMPOSITE:
                 img = new ImageIcon(this.getClass().getResource("/br/unicamp/cst/images/object.png"));
                 break;
+            case TreeElement.ICON_AGGREGATE:
+                img = new ImageIcon(this.getClass().getResource("/br/unicamp/cst/images/object2.gif"));
+                break;    
             case TreeElement.ICON_PROPERTY:
                 img = new ImageIcon(this.getClass().getResource("/br/unicamp/cst/images/property.png"));
                 break;

@@ -118,11 +118,18 @@ public class ObjectViewer extends javax.swing.JFrame {
         return(root);
     }
     
-    private DefaultMutableTreeNode addObject(AbstractObject wo) {
-        DefaultMutableTreeNode objectNode = new DefaultMutableTreeNode(new TreeElement(wo.getName() + " [" + wo.getID()+"]", TreeElement.NODE_NORMAL, wo, TreeElement.ICON_OBJECT));
+    private DefaultMutableTreeNode addObject(AbstractObject wo, boolean composite) {
+        DefaultMutableTreeNode objectNode;
+        if (composite) objectNode = new DefaultMutableTreeNode(new TreeElement(wo.getName() + " [" + wo.getID()+"]", TreeElement.NODE_NORMAL, wo, TreeElement.ICON_COMPOSITE));
+        else objectNode = new DefaultMutableTreeNode(new TreeElement(wo.getName() + " [" + wo.getID()+"]", TreeElement.NODE_NORMAL, wo, TreeElement.ICON_AGGREGATE));
         List<AbstractObject> parts = wo.getCompositeParts();
         for (AbstractObject oo : parts) {
-            DefaultMutableTreeNode part = addObject(oo);
+            DefaultMutableTreeNode part = addObject(oo,true);
+            objectNode.add(part);
+        }
+        List<AbstractObject> aggregates = wo.getAggregatePart();
+        for (AbstractObject oo : aggregates) {
+            DefaultMutableTreeNode part = addObject(oo,false);
             objectNode.add(part);
         }
         List<Property> props = wo.getProperties();
@@ -138,9 +145,10 @@ public class ObjectViewer extends javax.swing.JFrame {
         DefaultMutableTreeNode propertyNode = new DefaultMutableTreeNode(new TreeElement(p.getName(), TreeElement.NODE_NORMAL, p, TreeElement.ICON_PROPERTY));
         int size = ((Property) p).getQualityDimensions().size();
         for (int s = 0; s < size; s++) {
-            String chave = ((Property) p).getQualityDimensions().get(s).getName();
-            String value = (((Property) p).getQualityDimensions().get(s).getValue()).toString();
-            DefaultMutableTreeNode qualityDimensionNode = new DefaultMutableTreeNode(new TreeElement(chave+" : "+value, TreeElement.NODE_NORMAL, chave+" : "+value, TreeElement.ICON_QUALITYDIM));
+            QualityDimension qd = ((Property) p).getQualityDimensions().get(s);
+            String chave = qd.getName();
+            String value = qd.getValue().toString();
+            DefaultMutableTreeNode qualityDimensionNode = new DefaultMutableTreeNode(new TreeElement(chave+" : "+value, TreeElement.NODE_NORMAL, qd, TreeElement.ICON_QUALITYDIM));
             propertyNode.add(qualityDimensionNode);
             
 
@@ -149,7 +157,7 @@ public class ObjectViewer extends javax.swing.JFrame {
     }
     
     public TreeModel createTreeModel(AbstractObject wo) {
-        DefaultMutableTreeNode o = addObject(wo);
+        DefaultMutableTreeNode o = addObject(wo,true);
         TreeModel tm = new DefaultTreeModel(o);
         return(tm);
     }
