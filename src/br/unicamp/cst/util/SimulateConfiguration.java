@@ -8,8 +8,9 @@
  * Contributors to this module:
  *     S. M. de Paula and R. R. Gudwin
  ***************************************************************************** */
-package br.unicamp.cst.representation.owrl;
+package br.unicamp.cst.util;
 
+import br.unicamp.cst.representation.owrl.AbstractObject;
 import br.unicamp.cst.representation.owrl.grammar.CustomizedListener;
 import br.unicamp.cst.representation.owrl.grammar.OwrlLexer;
 import br.unicamp.cst.representation.owrl.grammar.OwrlParser;
@@ -32,7 +33,7 @@ public class SimulateConfiguration extends javax.swing.JFrame {
     private JTree configurationTreeB;
     private DefaultMutableTreeNode parentNodeA;
     private DefaultMutableTreeNode parentNodeB;
-    private ConfigurationManager configurations = new ConfigurationManager();
+    private AbstractObject configurations = new AbstractObject("");
 
     /**
      * Creates new form SimulationConfiguration
@@ -43,21 +44,21 @@ public class SimulateConfiguration extends javax.swing.JFrame {
     }
 
     private void buildTree() {
-        if (configurations.size() > 0) {
+        if (configurations.getAggregatePart().size() > 0) {
             parentNodeB = new DefaultMutableTreeNode(new TreeElement("CONFIGURATION", TreeElement.NODE_NORMAL, null, TreeElement.ICON_CONFIGURATION));
             configurationTreeB = new JTree(parentNodeB);
             jSPConfigB.setViewportView(configurationTreeB);
-            if (configurations.size() > 1) {
+            if (configurations.getAggregatePart().size() > 1) {
                 parentNodeA = new DefaultMutableTreeNode(new TreeElement("CONFIGURATION", TreeElement.NODE_NORMAL, null, TreeElement.ICON_CONFIGURATION));
                 configurationTreeA = new JTree(parentNodeA);
                 jSPConfigA.setViewportView(configurationTreeA);
             }
             repaint();
 
-            configurationTreeB = TreeManager.addNodeJTree(configurations.getConfiguration(configurations.size() - 1), jSPConfigB, parentNodeB, configurationTreeB);
+            configurationTreeB = TreeManager.addNodeJTree(configurations, jSPConfigB, parentNodeB, configurationTreeB);
             configurationTreeB.setCellRenderer(new RendererJTree());
-            if (configurations.size() > 1) {
-                configurationTreeA = TreeManager.addNodeJTree(configurations.getConfiguration(configurations.size() - 2), jSPConfigA, parentNodeA, configurationTreeA);
+            if (configurations.getAggregatePart().size() > 1) {
+                configurationTreeA = TreeManager.addNodeJTree(configurations, jSPConfigA, parentNodeA, configurationTreeA);
                 configurationTreeA.setCellRenderer(new RendererJTree());
 
                 TreeManager.compareTrees(configurationTreeA, configurationTreeB, jSPConfigB);
@@ -202,10 +203,10 @@ public class SimulateConfiguration extends javax.swing.JFrame {
         }
 
         List<Pair<String, List<AbstractObject>>> memory = listener.getMemory();
-
-        if (!configurations.applyCommands(memory)) {
-            jTextAreaComand.setText(jTextAreaComand.getText().concat("\nErro: Falha ao aplicar instruções. Verifique seu comando.\n"));
-        }
+//
+//        if (!configurations.applyCommands(memory)) {
+//            jTextAreaComand.setText(jTextAreaComand.getText().concat("\nErro: Falha ao aplicar instruções. Verifique seu comando.\n"));
+//        }
         buildTree();
     }//GEN-LAST:event_jButtonApplyActionPerformed
 

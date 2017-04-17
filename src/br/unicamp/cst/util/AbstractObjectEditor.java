@@ -3,8 +3,11 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package br.unicamp.cst.representation.owrl;
+package br.unicamp.cst.util;
 
+import br.unicamp.cst.representation.owrl.AbstractObject;
+import br.unicamp.cst.representation.owrl.Property;
+import br.unicamp.cst.representation.owrl.QualityDimension;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
@@ -307,9 +310,10 @@ public class AbstractObjectEditor extends javax.swing.JFrame {
         AbstractObject actuator = new AbstractObject("Actuator");
         actuator.addProperty(new Property("velocity",new QualityDimension("intensity",-0.12)));
         robot.addCompositePart(actuator);
+        robot.addAggregatePart(actuator);
         robot.addProperty(new Property("Model",new QualityDimension("Serial#","1234XDr56")));   
-        //AbstractObjectEditor ov = new AbstractObjectEditor(robot);
-        AbstractObjectEditor ov = new AbstractObjectEditor(null);
+        AbstractObjectEditor ov = new AbstractObjectEditor(robot);
+        //AbstractObjectEditor ov = new AbstractObjectEditor(null);
         ov.setVisible(true);
     }
     

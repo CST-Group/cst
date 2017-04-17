@@ -9,8 +9,11 @@
  *     S. M. de Paula and R. R. Gudwin
  ***************************************************************************** */
 
-package br.unicamp.cst.representation.owrl;
+package br.unicamp.cst.util;
 
+import br.unicamp.cst.representation.owrl.AbstractObject;
+import br.unicamp.cst.representation.owrl.Property;
+import br.unicamp.cst.representation.owrl.QualityDimension;
 import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.List;
@@ -133,9 +136,9 @@ public class TreeManager {
     }
 
     
-    public static JTree addNodeJTree(Configuration conf, JScrollPane where, DefaultMutableTreeNode node, JTree tree) {
+    public static JTree addNodeJTree(AbstractObject listObjects, JScrollPane where, DefaultMutableTreeNode node, JTree tree) {
 
-        List<AbstractObject> listWO = conf.getObjects();
+        List<AbstractObject> listWO = listObjects.getAggregatePart();
 
         for (AbstractObject wo : listWO) {
 

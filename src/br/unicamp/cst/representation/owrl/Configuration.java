@@ -74,11 +74,11 @@ public class Configuration {
     }
 
     // TODO: Implement clone() inside Appraisal and call it here
-    public Configuration clone() {
-        List<AbstractObject> newObjects = new ArrayList<AbstractObject>();
-        for (AbstractObject object : objects) {
-            newObjects.add(object.clone());
-        }
-        return new Configuration(newObjects);
-    }
+//    public Configuration clone() {
+//        List<AbstractObject> newObjects = new ArrayList<AbstractObject>();
+//        for (AbstractObject object : objects) {
+//            newObjects.add(object.clone());
+//        }
+//        return new Configuration(newObjects);
+//    }
 }

@@ -3,10 +3,13 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package br.unicamp.cst.representation.owrl;
+package br.unicamp.cst.util;
 
 import br.unicamp.cst.core.entities.Codelet;
 import br.unicamp.cst.core.entities.MemoryObject;
+import br.unicamp.cst.representation.owrl.AbstractObject;
+import br.unicamp.cst.representation.owrl.Property;
+import br.unicamp.cst.representation.owrl.QualityDimension;
 import java.util.List;
 import java.util.Timer;
 import java.util.TimerTask;

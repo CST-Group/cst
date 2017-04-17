@@ -9,7 +9,7 @@
  *     S. M. de Paula and R. R. Gudwin 
  ******************************************************************************/
 
-package br.unicamp.cst.representation.owrl;
+package br.unicamp.cst.util;
 
 import java.awt.Color;
 

@@ -6,8 +6,8 @@
 package br.unicamp.cst.motivational;
 
 import br.unicamp.cst.core.entities.*;
-import br.unicamp.cst.representation.owrl.RendererJTree;
-import br.unicamp.cst.representation.owrl.TreeElement;
+import br.unicamp.cst.util.RendererJTree;
+import br.unicamp.cst.util.TreeElement;
 import org.jfree.chart.ChartFactory;
 import org.jfree.chart.ChartPanel;
 import org.jfree.chart.JFreeChart;

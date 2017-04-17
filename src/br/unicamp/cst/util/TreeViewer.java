@@ -9,8 +9,10 @@
  *     S. M. de Paula and R. R. Gudwin 
  ******************************************************************************/
 
-package br.unicamp.cst.representation.owrl;
+package br.unicamp.cst.util;
 
+import br.unicamp.cst.representation.owrl.AbstractObject;
+import br.unicamp.cst.representation.owrl.Property;
 import java.util.Enumeration;
 import java.util.List;
 import java.util.Map;
@@ -32,9 +34,9 @@ public class TreeViewer extends javax.swing.JFrame {
     private DefaultMutableTreeNode parentNodeInitial;
     private DefaultMutableTreeNode parentNodeFinal;
 
-    private Map<String, Configuration> listConfs;
+    private Map<String, AbstractObject> listConfs;
 
-    public TreeViewer(Map<String, Configuration> lc) {
+    public TreeViewer(Map<String, AbstractObject> lc) {
 
         initComponents();
         this.listConfs = lc;
@@ -153,9 +155,9 @@ public class TreeViewer extends javax.swing.JFrame {
 
     }
 
-    private JTree addNodeJTree(Configuration conf, JScrollPane where, DefaultMutableTreeNode node, JTree tree) {
+    private JTree addNodeJTree(AbstractObject listObjects, JScrollPane where, DefaultMutableTreeNode node, JTree tree) {
 
-        List<AbstractObject> listWO = conf.getObjects();
+        List<AbstractObject> listWO = listObjects.getAggregatePart(); 
 
         for (AbstractObject wo : listWO) {
 
