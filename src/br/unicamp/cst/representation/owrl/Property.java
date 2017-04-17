@@ -67,5 +67,14 @@ public final class Property {
         }
         return new Property(getName(), newQualityDimension);
     }
+    
+    public void deleteChild(Object child) {
+        String childclass = child.getClass().getCanonicalName();
+        //System.out.println("Childclass: "+childclass);
+        if (childclass.equals("br.unicamp.cst.representation.owrl.QualityDimension")) {
+            boolean qdres = qualityDimensions.remove(child);
+            //System.out.println("qdres: "+qdres);
+        }
+    }
 
 }

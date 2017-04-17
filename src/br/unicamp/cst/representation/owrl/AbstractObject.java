@@ -155,4 +155,18 @@ public class AbstractObject implements Cloneable {
         }
         return new AbstractObject(getName(), getID(), newProperties, newParts);
     }
+    
+    public void deleteChild(Object child) {
+        String childclass = child.getClass().getCanonicalName();
+        //System.out.println("Childclass: "+childclass);
+        if (childclass.equals("br.unicamp.cst.representation.owrl.AbstractObject")) {
+            boolean cres = compositeList.remove(child);
+            boolean ares = aggregateList.remove(child);
+            //System.out.println("cres: "+cres+" ares: "+ares);
+        }
+        else if (childclass.equals("br.unicamp.cst.representation.owrl.Property")) {
+            properties.remove(child);
+        }
+        
+    }
 }

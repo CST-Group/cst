@@ -23,6 +23,7 @@ public class TreeElement {
     private Object element;
     private int icon_type;
     private int id_node = 0;
+    private static int ncode=0;
     
     public static final int NODE_NORMAL = 1;
     public static final int NODE_CHANGE = 2;
@@ -48,7 +49,12 @@ public class TreeElement {
 
    
     public TreeElement(String name, int node_type, Object element, int typeIcon) {
-        this(name,node_type,element,typeIcon,0);
+        //this(name,node_type,element,typeIcon,0);
+        this(name,node_type,element,typeIcon,ncode++);
+    }
+    
+    public static void reset() {
+        ncode = 0;
     }
     
      public TreeElement(String name, int node_type, Object element, int typeIcon, int id) {
@@ -56,6 +62,7 @@ public class TreeElement {
         setColor(node_type);
         setIcon(typeIcon);
         setId_node(id);
+        //setName(name+"_"+getId_node());
         setName(name+" ["+getId_node()+"]");
         
         this.element = element;
