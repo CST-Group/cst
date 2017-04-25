@@ -2,22 +2,22 @@
 
 <Form version="1.3" maxVersion="1.9" type="org.netbeans.modules.form.forminfo.JDialogFormInfo">
   <Properties>
-    <Property name="defaultCloseOperation" type="int" value="2"/>
+    <Property id="defaultCloseOperation" type="int" value="2"/>
   </Properties>
   <SyntheticProperties>
-    <SyntheticProperty name="formSizePolicy" type="int" value="1"/>
-    <SyntheticProperty name="generateCenter" type="boolean" value="false"/>
+    <SyntheticProperty id="formSizePolicy" type="int" value="1"/>
+    <SyntheticProperty id="generateCenter" type="boolean" value="false"/>
   </SyntheticProperties>
   <AuxValues>
-    <AuxValue name="FormSettings_autoResourcing" type="java.lang.Integer" value="0"/>
-    <AuxValue name="FormSettings_autoSetComponentName" type="java.lang.Boolean" value="false"/>
-    <AuxValue name="FormSettings_generateFQN" type="java.lang.Boolean" value="true"/>
-    <AuxValue name="FormSettings_generateMnemonicsCode" type="java.lang.Boolean" value="false"/>
-    <AuxValue name="FormSettings_i18nAutoMode" type="java.lang.Boolean" value="false"/>
-    <AuxValue name="FormSettings_layoutCodeTarget" type="java.lang.Integer" value="1"/>
-    <AuxValue name="FormSettings_listenerGenerationStyle" type="java.lang.Integer" value="0"/>
-    <AuxValue name="FormSettings_variablesLocal" type="java.lang.Boolean" value="false"/>
-    <AuxValue name="FormSettings_variablesModifier" type="java.lang.Integer" value="2"/>
+    <AuxValue id="FormSettings_autoResourcing" type="java.lang.Integer" value="0"/>
+    <AuxValue id="FormSettings_autoSetComponentName" type="java.lang.Boolean" value="false"/>
+    <AuxValue id="FormSettings_generateFQN" type="java.lang.Boolean" value="true"/>
+    <AuxValue id="FormSettings_generateMnemonicsCode" type="java.lang.Boolean" value="false"/>
+    <AuxValue id="FormSettings_i18nAutoMode" type="java.lang.Boolean" value="false"/>
+    <AuxValue id="FormSettings_layoutCodeTarget" type="java.lang.Integer" value="1"/>
+    <AuxValue id="FormSettings_listenerGenerationStyle" type="java.lang.Integer" value="0"/>
+    <AuxValue id="FormSettings_variablesLocal" type="java.lang.Boolean" value="false"/>
+    <AuxValue id="FormSettings_variablesModifier" type="java.lang.Integer" value="2"/>
   </AuxValues>
 
   <Layout>
@@ -68,37 +68,37 @@
     </DimensionLayout>
   </Layout>
   <SubComponents>
-    <Component class="javax.swing.JLabel" name="jLabel2">
+    <Component class="javax.swing.JLabel" id="jLabel2">
       <Properties>
-        <Property name="text" type="java.lang.String" value="Name:"/>
+        <Property id="text" type="java.lang.String" value="Name:"/>
       </Properties>
     </Component>
-    <Component class="javax.swing.JTextField" name="jName">
+    <Component class="javax.swing.JTextField" id="jName">
       <Events>
         <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="jNameActionPerformed"/>
       </Events>
     </Component>
-    <Component class="javax.swing.JButton" name="jOK">
+    <Component class="javax.swing.JButton" id="jOK">
       <Properties>
-        <Property name="text" type="java.lang.String" value="OK"/>
+        <Property id="text" type="java.lang.String" value="OK"/>
       </Properties>
       <Events>
         <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="jOKActionPerformed"/>
       </Events>
     </Component>
-    <Component class="javax.swing.JLabel" name="jLabel3">
+    <Component class="javax.swing.JLabel" id="jLabel3">
       <Properties>
-        <Property name="text" type="java.lang.String" value="Value"/>
+        <Property id="text" type="java.lang.String" value="Value"/>
       </Properties>
     </Component>
-    <Component class="javax.swing.JTextField" name="jValue">
+    <Component class="javax.swing.JTextField" id="jValue">
       <Events>
         <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="jValueActionPerformed"/>
       </Events>
     </Component>
-    <Component class="javax.swing.JButton" name="jCancel">
+    <Component class="javax.swing.JButton" id="jCancel">
       <Properties>
-        <Property name="text" type="java.lang.String" value="Cancel"/>
+        <Property id="text" type="java.lang.String" value="Cancel"/>
       </Properties>
       <Events>
         <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="jCancelActionPerformed"/>

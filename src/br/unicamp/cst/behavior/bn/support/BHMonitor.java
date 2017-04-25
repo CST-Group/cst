@@ -103,7 +103,7 @@ public class BHMonitor extends Codelet
 
 			for(Behavior module:tempBehaviors){
 				synchronized(module){
-					//System.out.println(module.getName()+": "+module.getValue());
+					//System.out.println(module.getId()+": "+module.getValue());
 					double instant=Calendar.getInstance().getTimeInMillis()-initialTime;
 
 					

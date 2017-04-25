@@ -2,22 +2,22 @@
 
 <Form version="1.3" maxVersion="1.9" type="org.netbeans.modules.form.forminfo.JFrameFormInfo">
   <Properties>
-    <Property name="defaultCloseOperation" type="int" value="3"/>
+    <Property id="defaultCloseOperation" type="int" value="3"/>
   </Properties>
   <SyntheticProperties>
-    <SyntheticProperty name="formSizePolicy" type="int" value="1"/>
-    <SyntheticProperty name="generateCenter" type="boolean" value="false"/>
+    <SyntheticProperty id="formSizePolicy" type="int" value="1"/>
+    <SyntheticProperty id="generateCenter" type="boolean" value="false"/>
   </SyntheticProperties>
   <AuxValues>
-    <AuxValue name="FormSettings_autoResourcing" type="java.lang.Integer" value="0"/>
-    <AuxValue name="FormSettings_autoSetComponentName" type="java.lang.Boolean" value="false"/>
-    <AuxValue name="FormSettings_generateFQN" type="java.lang.Boolean" value="true"/>
-    <AuxValue name="FormSettings_generateMnemonicsCode" type="java.lang.Boolean" value="false"/>
-    <AuxValue name="FormSettings_i18nAutoMode" type="java.lang.Boolean" value="false"/>
-    <AuxValue name="FormSettings_layoutCodeTarget" type="java.lang.Integer" value="1"/>
-    <AuxValue name="FormSettings_listenerGenerationStyle" type="java.lang.Integer" value="0"/>
-    <AuxValue name="FormSettings_variablesLocal" type="java.lang.Boolean" value="false"/>
-    <AuxValue name="FormSettings_variablesModifier" type="java.lang.Integer" value="2"/>
+    <AuxValue id="FormSettings_autoResourcing" type="java.lang.Integer" value="0"/>
+    <AuxValue id="FormSettings_autoSetComponentName" type="java.lang.Boolean" value="false"/>
+    <AuxValue id="FormSettings_generateFQN" type="java.lang.Boolean" value="true"/>
+    <AuxValue id="FormSettings_generateMnemonicsCode" type="java.lang.Boolean" value="false"/>
+    <AuxValue id="FormSettings_i18nAutoMode" type="java.lang.Boolean" value="false"/>
+    <AuxValue id="FormSettings_layoutCodeTarget" type="java.lang.Integer" value="1"/>
+    <AuxValue id="FormSettings_listenerGenerationStyle" type="java.lang.Integer" value="0"/>
+    <AuxValue id="FormSettings_variablesLocal" type="java.lang.Boolean" value="false"/>
+    <AuxValue id="FormSettings_variablesModifier" type="java.lang.Integer" value="2"/>
   </AuxValues>
 
   <Layout>
@@ -38,23 +38,23 @@
     </DimensionLayout>
   </Layout>
   <SubComponents>
-    <Container class="javax.swing.JScrollPane" name="jsp">
+    <Container class="javax.swing.JScrollPane" id="jsp">
 
       <Layout class="org.netbeans.modules.form.compat2.layouts.support.JScrollPaneSupportLayout"/>
     </Container>
-    <Container class="javax.swing.JToolBar" name="jToolBar1">
+    <Container class="javax.swing.JToolBar" id="jToolBar1">
       <Properties>
-        <Property name="rollover" type="boolean" value="true"/>
+        <Property id="rollover" type="boolean" value="true"/>
       </Properties>
 
       <Layout class="org.netbeans.modules.form.compat2.layouts.DesignBoxLayout"/>
       <SubComponents>
-        <Component class="javax.swing.JButton" name="bRefresh">
+        <Component class="javax.swing.JButton" id="bRefresh">
           <Properties>
-            <Property name="text" type="java.lang.String" value="Refresh"/>
-            <Property name="focusable" type="boolean" value="false"/>
-            <Property name="horizontalTextPosition" type="int" value="0"/>
-            <Property name="verticalTextPosition" type="int" value="3"/>
+            <Property id="text" type="java.lang.String" value="Refresh"/>
+            <Property id="focusable" type="boolean" value="false"/>
+            <Property id="horizontalTextPosition" type="int" value="0"/>
+            <Property id="verticalTextPosition" type="int" value="3"/>
           </Properties>
           <Events>
             <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="bRefreshActionPerformed"/>

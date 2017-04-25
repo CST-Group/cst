@@ -6,35 +6,18 @@ package br.unicamp.cst.motivational;
 import br.unicamp.cst.core.entities.Codelet;
 import br.unicamp.cst.core.entities.Memory;
 import br.unicamp.cst.core.exceptions.CodeletActivationBoundsException;
-import br.unicamp.cst.representation.owrl.Configuration;
-
-import java.util.List;
+import br.unicamp.cst.representation.owrl.AbstractObject;
 
 public abstract class AppraisalCodelet extends Codelet {
 
-    public final static String OUTPUT_APPRAISAL_MEMORY = "OUTPUT_APPRAISAL_MEMORY";
-    public final static String INPUT_CONFIGURATIONS_MEMORY = "INPUT_CONFIGURATIONS_MEMORY";
-
-    private String name;
-    private List<Configuration> inputConfigurations;
+    private String id;
+    private AbstractObject inputAbstractObject;
     private Appraisal appraisal;
-    private Memory inputConfigurationsMO;
-    private Memory appraisalMO;
+    private Memory inputAbstractObjectMO;
+    private Memory outputAppraisalMO;
 
-    public AppraisalCodelet(String name) {
-        setName(name);
-    }
-
-    @Override
-    public void accessMemoryObjects() {
-        if (getInputConfigurationsMO() != null) {
-            setInputConfigurationsMO(getInput(INPUT_CONFIGURATIONS_MEMORY, 0));
-            setInputConfigurations((List<Configuration>) getInputConfigurationsMO().getI());
-        }
-
-        if (getAppraisalMO() != null) {
-            setAppraisalMO(getOutput(OUTPUT_APPRAISAL_MEMORY, 0));
-        }
+    public AppraisalCodelet(String id) {
+        setId(id);
     }
 
     @Override
@@ -48,39 +31,29 @@ public abstract class AppraisalCodelet extends Codelet {
 
     @Override
     public void proc() {
-        setAppraisal(appraisalGeneration(getInputConfigurations()));
-        getAppraisal().setName(getName());
-        getAppraisalMO().setI(getAppraisal());
+        setAppraisal(appraisalGeneration(getInputAbstractObject()));
+        getAppraisal().setId(getId());
+        getOutputAppraisalMO().setI(getAppraisal());
     }
 
 
-    public abstract Appraisal appraisalGeneration(List<Configuration> inputConfigurations);
+    public abstract Appraisal appraisalGeneration(AbstractObject inputAbstractObject);
 
-    @Override
-    public String getName() {
-        return name;
+
+    public Memory getOutputAppraisalMO() {
+        return outputAppraisalMO;
     }
 
-    @Override
-    public void setName(String name) {
-        this.name = name;
+    public void setOutputAppraisalMO(Memory outputAppraisalMO) {
+        this.outputAppraisalMO = outputAppraisalMO;
     }
 
-
-    public Memory getAppraisalMO() {
-        return appraisalMO;
+    public AbstractObject getInputAbstractObject() {
+        return inputAbstractObject;
     }
 
-    public void setAppraisalMO(Memory appraisalMO) {
-        this.appraisalMO = appraisalMO;
-    }
-
-    public List<Configuration> getInputConfigurations() {
-        return inputConfigurations;
-    }
-
-    public void setInputConfigurations(List<Configuration> inputConfigurations) {
-        this.inputConfigurations = inputConfigurations;
+    public void setInputAbstractObject(AbstractObject inputAbstractObject) {
+        this.inputAbstractObject = inputAbstractObject;
     }
 
     public Appraisal getAppraisal() {
@@ -91,12 +64,20 @@ public abstract class AppraisalCodelet extends Codelet {
         this.appraisal = appraisal;
     }
 
-    public Memory getInputConfigurationsMO() {
-        return inputConfigurationsMO;
+    public Memory getInputAbstractObjectMO() {
+        return inputAbstractObjectMO;
     }
 
-    public void setInputConfigurationsMO(Memory inputConfigurationsMO) {
-        this.inputConfigurationsMO = inputConfigurationsMO;
+    public void setInputAbstractObjectMO(Memory inputAbstractObjectMO) {
+        this.inputAbstractObjectMO = inputAbstractObjectMO;
+    }
+
+    public String getId() {
+        return id;
+    }
+
+    public void setId(String id) {
+        this.id = id;
     }
 }
 

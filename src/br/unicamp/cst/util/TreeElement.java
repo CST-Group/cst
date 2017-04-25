@@ -62,7 +62,7 @@ public class TreeElement {
         setColor(node_type);
         setIcon(typeIcon);
         setId_node(id);
-        //setName(name+"_"+getId_node());
+        //setId(name+"_"+getId_node());
         setName(name+" ["+getId_node()+"]");
         
         this.element = element;

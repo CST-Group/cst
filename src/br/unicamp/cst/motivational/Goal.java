@@ -7,20 +7,20 @@ import br.unicamp.cst.representation.owrl.Configuration;
  */
 public class Goal {
 
-    private String name;
+    private String id;
     private Configuration goalConfiguration;
 
-    public Goal(String name, Configuration goalConfiguration){
-        this.setName(name);
+    public Goal(String id, Configuration goalConfiguration){
+        this.setId(id);
         this.setGoalConfiguration(goalConfiguration);
     }
 
-    public String getName() {
-        return name;
+    public String getId() {
+        return id;
     }
 
-    public void setName(String name) {
-        this.name = name;
+    public void setId(String id) {
+        this.id = id;
     }
 
     public Configuration getGoalConfiguration() {

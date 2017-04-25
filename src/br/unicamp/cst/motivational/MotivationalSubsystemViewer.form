@@ -2,34 +2,34 @@
 
 <Form version="1.3" maxVersion="1.9" type="org.netbeans.modules.form.forminfo.JFrameFormInfo">
   <NonVisualComponents>
-    <Menu class="javax.swing.JMenuBar" name="mbMenu">
+    <Menu class="javax.swing.JMenuBar" id="mbMenu">
       <SubComponents>
-        <Menu class="javax.swing.JMenu" name="jmFile">
+        <Menu class="javax.swing.JMenu" id="jmFile">
           <Properties>
-            <Property name="text" type="java.lang.String" value="File"/>
+            <Property id="text" type="java.lang.String" value="File"/>
           </Properties>
         </Menu>
       </SubComponents>
     </Menu>
   </NonVisualComponents>
   <Properties>
-    <Property name="defaultCloseOperation" type="int" value="3"/>
+    <Property id="defaultCloseOperation" type="int" value="3"/>
   </Properties>
   <SyntheticProperties>
-    <SyntheticProperty name="menuBar" type="java.lang.String" value="mbMenu"/>
-    <SyntheticProperty name="formSizePolicy" type="int" value="1"/>
-    <SyntheticProperty name="generateCenter" type="boolean" value="false"/>
+    <SyntheticProperty id="menuBar" type="java.lang.String" value="mbMenu"/>
+    <SyntheticProperty id="formSizePolicy" type="int" value="1"/>
+    <SyntheticProperty id="generateCenter" type="boolean" value="false"/>
   </SyntheticProperties>
   <AuxValues>
-    <AuxValue name="FormSettings_autoResourcing" type="java.lang.Integer" value="0"/>
-    <AuxValue name="FormSettings_autoSetComponentName" type="java.lang.Boolean" value="false"/>
-    <AuxValue name="FormSettings_generateFQN" type="java.lang.Boolean" value="true"/>
-    <AuxValue name="FormSettings_generateMnemonicsCode" type="java.lang.Boolean" value="false"/>
-    <AuxValue name="FormSettings_i18nAutoMode" type="java.lang.Boolean" value="false"/>
-    <AuxValue name="FormSettings_layoutCodeTarget" type="java.lang.Integer" value="1"/>
-    <AuxValue name="FormSettings_listenerGenerationStyle" type="java.lang.Integer" value="0"/>
-    <AuxValue name="FormSettings_variablesLocal" type="java.lang.Boolean" value="false"/>
-    <AuxValue name="FormSettings_variablesModifier" type="java.lang.Integer" value="2"/>
+    <AuxValue id="FormSettings_autoResourcing" type="java.lang.Integer" value="0"/>
+    <AuxValue id="FormSettings_autoSetComponentName" type="java.lang.Boolean" value="false"/>
+    <AuxValue id="FormSettings_generateFQN" type="java.lang.Boolean" value="true"/>
+    <AuxValue id="FormSettings_generateMnemonicsCode" type="java.lang.Boolean" value="false"/>
+    <AuxValue id="FormSettings_i18nAutoMode" type="java.lang.Boolean" value="false"/>
+    <AuxValue id="FormSettings_layoutCodeTarget" type="java.lang.Integer" value="1"/>
+    <AuxValue id="FormSettings_listenerGenerationStyle" type="java.lang.Integer" value="0"/>
+    <AuxValue id="FormSettings_variablesLocal" type="java.lang.Boolean" value="false"/>
+    <AuxValue id="FormSettings_variablesModifier" type="java.lang.Integer" value="2"/>
   </AuxValues>
 
   <Layout>
@@ -51,25 +51,25 @@
     </DimensionLayout>
   </Layout>
   <SubComponents>
-    <Container class="javax.swing.JTabbedPane" name="tbTab">
+    <Container class="javax.swing.JTabbedPane" id="tbTab">
 
       <Layout class="org.netbeans.modules.form.compat2.layouts.support.JTabbedPaneSupportLayout"/>
       <SubComponents>
-        <Container class="javax.swing.JSplitPane" name="splDrives">
+        <Container class="javax.swing.JSplitPane" id="splDrives">
           <Properties>
-            <Property name="dividerLocation" type="int" value="300"/>
+            <Property id="dividerLocation" type="int" value="300"/>
           </Properties>
           <Constraints>
             <Constraint layoutClass="org.netbeans.modules.form.compat2.layouts.support.JTabbedPaneSupportLayout" value="org.netbeans.modules.form.compat2.layouts.support.JTabbedPaneSupportLayout$JTabbedPaneConstraintsDescription">
               <JTabbedPaneConstraints tabName="Drives">
-                <Property name="tabTitle" type="java.lang.String" value="Drives"/>
+                <Property id="tabTitle" type="java.lang.String" value="Drives"/>
               </JTabbedPaneConstraints>
             </Constraint>
           </Constraints>
 
           <Layout class="org.netbeans.modules.form.compat2.layouts.support.JSplitPaneSupportLayout"/>
           <SubComponents>
-            <Container class="javax.swing.JScrollPane" name="spMotivationalCodelets">
+            <Container class="javax.swing.JScrollPane" id="spMotivationalCodelets">
               <Constraints>
                 <Constraint layoutClass="org.netbeans.modules.form.compat2.layouts.support.JSplitPaneSupportLayout" value="org.netbeans.modules.form.compat2.layouts.support.JSplitPaneSupportLayout$JSplitPaneConstraintsDescription">
                   <JSplitPaneConstraints position="left"/>
@@ -78,7 +78,7 @@
 
               <Layout class="org.netbeans.modules.form.compat2.layouts.support.JScrollPaneSupportLayout"/>
             </Container>
-            <Container class="javax.swing.JPanel" name="pnDrives">
+            <Container class="javax.swing.JPanel" id="pnDrives">
               <Constraints>
                 <Constraint layoutClass="org.netbeans.modules.form.compat2.layouts.support.JSplitPaneSupportLayout" value="org.netbeans.modules.form.compat2.layouts.support.JSplitPaneSupportLayout$JSplitPaneConstraintsDescription">
                   <JSplitPaneConstraints position="right"/>
@@ -100,21 +100,21 @@
             </Container>
           </SubComponents>
         </Container>
-        <Container class="javax.swing.JSplitPane" name="splEmotional">
+        <Container class="javax.swing.JSplitPane" id="splEmotional">
           <Properties>
-            <Property name="dividerLocation" type="int" value="300"/>
+            <Property id="dividerLocation" type="int" value="300"/>
           </Properties>
           <Constraints>
             <Constraint layoutClass="org.netbeans.modules.form.compat2.layouts.support.JTabbedPaneSupportLayout" value="org.netbeans.modules.form.compat2.layouts.support.JTabbedPaneSupportLayout$JTabbedPaneConstraintsDescription">
               <JTabbedPaneConstraints tabName="Emotional Drives">
-                <Property name="tabTitle" type="java.lang.String" value="Emotional Drives"/>
+                <Property id="tabTitle" type="java.lang.String" value="Emotional Drives"/>
               </JTabbedPaneConstraints>
             </Constraint>
           </Constraints>
 
           <Layout class="org.netbeans.modules.form.compat2.layouts.support.JSplitPaneSupportLayout"/>
           <SubComponents>
-            <Container class="javax.swing.JScrollPane" name="spEmotionalCodelets">
+            <Container class="javax.swing.JScrollPane" id="spEmotionalCodelets">
               <Constraints>
                 <Constraint layoutClass="org.netbeans.modules.form.compat2.layouts.support.JSplitPaneSupportLayout" value="org.netbeans.modules.form.compat2.layouts.support.JSplitPaneSupportLayout$JSplitPaneConstraintsDescription">
                   <JSplitPaneConstraints position="left"/>
@@ -123,7 +123,7 @@
 
               <Layout class="org.netbeans.modules.form.compat2.layouts.support.JScrollPaneSupportLayout"/>
             </Container>
-            <Container class="javax.swing.JPanel" name="pnEmotional">
+            <Container class="javax.swing.JPanel" id="pnEmotional">
               <Constraints>
                 <Constraint layoutClass="org.netbeans.modules.form.compat2.layouts.support.JSplitPaneSupportLayout" value="org.netbeans.modules.form.compat2.layouts.support.JSplitPaneSupportLayout$JSplitPaneConstraintsDescription">
                   <JSplitPaneConstraints position="right"/>
@@ -145,33 +145,33 @@
             </Container>
           </SubComponents>
         </Container>
-        <Container class="javax.swing.JScrollPane" name="spMoodCodelets">
+        <Container class="javax.swing.JScrollPane" id="spMoodCodelets">
           <Constraints>
             <Constraint layoutClass="org.netbeans.modules.form.compat2.layouts.support.JTabbedPaneSupportLayout" value="org.netbeans.modules.form.compat2.layouts.support.JTabbedPaneSupportLayout$JTabbedPaneConstraintsDescription">
               <JTabbedPaneConstraints tabName="Moods">
-                <Property name="tabTitle" type="java.lang.String" value="Moods"/>
+                <Property id="tabTitle" type="java.lang.String" value="Moods"/>
               </JTabbedPaneConstraints>
             </Constraint>
           </Constraints>
 
           <Layout class="org.netbeans.modules.form.compat2.layouts.support.JScrollPaneSupportLayout"/>
         </Container>
-        <Container class="javax.swing.JScrollPane" name="spAppraisalCodelets">
+        <Container class="javax.swing.JScrollPane" id="spAppraisalCodelets">
           <Constraints>
             <Constraint layoutClass="org.netbeans.modules.form.compat2.layouts.support.JTabbedPaneSupportLayout" value="org.netbeans.modules.form.compat2.layouts.support.JTabbedPaneSupportLayout$JTabbedPaneConstraintsDescription">
               <JTabbedPaneConstraints tabName="Appraisals">
-                <Property name="tabTitle" type="java.lang.String" value="Appraisals"/>
+                <Property id="tabTitle" type="java.lang.String" value="Appraisals"/>
               </JTabbedPaneConstraints>
             </Constraint>
           </Constraints>
 
           <Layout class="org.netbeans.modules.form.compat2.layouts.support.JScrollPaneSupportLayout"/>
         </Container>
-        <Container class="javax.swing.JScrollPane" name="spGoalCodelets">
+        <Container class="javax.swing.JScrollPane" id="spGoalCodelets">
           <Constraints>
             <Constraint layoutClass="org.netbeans.modules.form.compat2.layouts.support.JTabbedPaneSupportLayout" value="org.netbeans.modules.form.compat2.layouts.support.JTabbedPaneSupportLayout$JTabbedPaneConstraintsDescription">
               <JTabbedPaneConstraints tabName="Goals">
-                <Property name="tabTitle" type="java.lang.String" value="Goals"/>
+                <Property id="tabTitle" type="java.lang.String" value="Goals"/>
               </JTabbedPaneConstraints>
             </Constraint>
           </Constraints>
@@ -180,9 +180,9 @@
         </Container>
       </SubComponents>
     </Container>
-    <Container class="javax.swing.JToolBar" name="tbFootBar">
+    <Container class="javax.swing.JToolBar" id="tbFootBar">
       <Properties>
-        <Property name="rollover" type="boolean" value="true"/>
+        <Property id="rollover" type="boolean" value="true"/>
       </Properties>
 
       <Layout class="org.netbeans.modules.form.compat2.layouts.DesignBoxLayout"/>

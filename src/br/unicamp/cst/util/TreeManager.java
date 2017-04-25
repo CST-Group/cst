@@ -46,7 +46,7 @@ public class TreeManager {
     
     private static boolean compareNodes(DefaultMutableTreeNode node_1, DefaultMutableTreeNode node_2) {
         boolean returnValue = false;
-        //System.out.println("Comparando " + ((TreeElement) node_1.getUserObject()).getName() + " e " + ((TreeElement) node_2.getUserObject()).getName());
+        //System.out.println("Comparando " + ((TreeElement) node_1.getUserObject()).getId() + " e " + ((TreeElement) node_2.getUserObject()).getId());
 
         TreeElement v_node_1 = (TreeElement) node_1.getUserObject();
         TreeElement v_node_2 = (TreeElement) node_2.getUserObject();

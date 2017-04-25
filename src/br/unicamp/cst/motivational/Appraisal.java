@@ -13,7 +13,7 @@ package br.unicamp.cst.motivational;
 
 public class Appraisal {
 
-    private String name;
+    private String id;
 
     private double evaluation;
 
@@ -21,17 +21,17 @@ public class Appraisal {
 
 
     public Appraisal(String name, String currentState, double evaluation){
-        setName(name);
+        setId(name);
         setEvaluation(evaluation);
         setCurrentState(currentState);
     }
 
-    public String getName() {
-        return name;
+    public String getId() {
+        return id;
     }
 
-    public void setName(String name) {
-        this.name = name;
+    public void setId(String id) {
+        this.id = id;
     }
 
     public double getEvaluation() {

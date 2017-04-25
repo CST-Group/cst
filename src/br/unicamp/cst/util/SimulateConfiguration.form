@@ -2,7 +2,7 @@
 
 <Form version="1.3" maxVersion="1.9" type="org.netbeans.modules.form.forminfo.JFrameFormInfo">
   <NonVisualComponents>
-    <Container class="javax.swing.JPanel" name="jPanel1">
+    <Container class="javax.swing.JPanel" id="jPanel1">
 
       <Layout>
         <DimensionLayout dim="0">
@@ -17,44 +17,44 @@
         </DimensionLayout>
       </Layout>
     </Container>
-    <Component class="javax.swing.JButton" name="jButton4">
+    <Component class="javax.swing.JButton" id="jButton4">
       <Properties>
-        <Property name="text" type="java.lang.String" value="jButton4"/>
+        <Property id="text" type="java.lang.String" value="jButton4"/>
       </Properties>
     </Component>
-    <Menu class="javax.swing.JMenuBar" name="jMenuBar1">
+    <Menu class="javax.swing.JMenuBar" id="jMenuBar1">
       <SubComponents>
-        <Menu class="javax.swing.JMenu" name="jMenu1">
+        <Menu class="javax.swing.JMenu" id="jMenu1">
           <Properties>
-            <Property name="text" type="java.lang.String" value="File"/>
+            <Property id="text" type="java.lang.String" value="File"/>
           </Properties>
         </Menu>
-        <Menu class="javax.swing.JMenu" name="jMenu2">
+        <Menu class="javax.swing.JMenu" id="jMenu2">
           <Properties>
-            <Property name="text" type="java.lang.String" value="Edit"/>
+            <Property id="text" type="java.lang.String" value="Edit"/>
           </Properties>
         </Menu>
       </SubComponents>
     </Menu>
   </NonVisualComponents>
   <Properties>
-    <Property name="defaultCloseOperation" type="int" value="3"/>
+    <Property id="defaultCloseOperation" type="int" value="3"/>
   </Properties>
   <SyntheticProperties>
-    <SyntheticProperty name="menuBar" type="java.lang.String" value="jMenuBar1"/>
-    <SyntheticProperty name="formSizePolicy" type="int" value="1"/>
-    <SyntheticProperty name="generateCenter" type="boolean" value="false"/>
+    <SyntheticProperty id="menuBar" type="java.lang.String" value="jMenuBar1"/>
+    <SyntheticProperty id="formSizePolicy" type="int" value="1"/>
+    <SyntheticProperty id="generateCenter" type="boolean" value="false"/>
   </SyntheticProperties>
   <AuxValues>
-    <AuxValue name="FormSettings_autoResourcing" type="java.lang.Integer" value="0"/>
-    <AuxValue name="FormSettings_autoSetComponentName" type="java.lang.Boolean" value="false"/>
-    <AuxValue name="FormSettings_generateFQN" type="java.lang.Boolean" value="true"/>
-    <AuxValue name="FormSettings_generateMnemonicsCode" type="java.lang.Boolean" value="false"/>
-    <AuxValue name="FormSettings_i18nAutoMode" type="java.lang.Boolean" value="false"/>
-    <AuxValue name="FormSettings_layoutCodeTarget" type="java.lang.Integer" value="1"/>
-    <AuxValue name="FormSettings_listenerGenerationStyle" type="java.lang.Integer" value="0"/>
-    <AuxValue name="FormSettings_variablesLocal" type="java.lang.Boolean" value="false"/>
-    <AuxValue name="FormSettings_variablesModifier" type="java.lang.Integer" value="2"/>
+    <AuxValue id="FormSettings_autoResourcing" type="java.lang.Integer" value="0"/>
+    <AuxValue id="FormSettings_autoSetComponentName" type="java.lang.Boolean" value="false"/>
+    <AuxValue id="FormSettings_generateFQN" type="java.lang.Boolean" value="true"/>
+    <AuxValue id="FormSettings_generateMnemonicsCode" type="java.lang.Boolean" value="false"/>
+    <AuxValue id="FormSettings_i18nAutoMode" type="java.lang.Boolean" value="false"/>
+    <AuxValue id="FormSettings_layoutCodeTarget" type="java.lang.Integer" value="1"/>
+    <AuxValue id="FormSettings_listenerGenerationStyle" type="java.lang.Integer" value="0"/>
+    <AuxValue id="FormSettings_variablesLocal" type="java.lang.Boolean" value="false"/>
+    <AuxValue id="FormSettings_variablesModifier" type="java.lang.Integer" value="2"/>
   </AuxValues>
 
   <Layout>
@@ -107,39 +107,39 @@
     </DimensionLayout>
   </Layout>
   <SubComponents>
-    <Component class="javax.swing.JButton" name="jButtonApply">
+    <Component class="javax.swing.JButton" id="jButtonApply">
       <Properties>
-        <Property name="text" type="java.lang.String" value="Apply"/>
+        <Property id="text" type="java.lang.String" value="Apply"/>
       </Properties>
       <Events>
         <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="jButtonApplyActionPerformed"/>
       </Events>
     </Component>
-    <Container class="javax.swing.JScrollPane" name="jSPConfigA">
+    <Container class="javax.swing.JScrollPane" id="jSPConfigA">
 
       <Layout class="org.netbeans.modules.form.compat2.layouts.support.JScrollPaneSupportLayout"/>
     </Container>
-    <Container class="javax.swing.JScrollPane" name="jSPConfigB">
+    <Container class="javax.swing.JScrollPane" id="jSPConfigB">
 
       <Layout class="org.netbeans.modules.form.compat2.layouts.support.JScrollPaneSupportLayout"/>
     </Container>
-    <Component class="javax.swing.JButton" name="jButtonCompare">
+    <Component class="javax.swing.JButton" id="jButtonCompare">
       <Properties>
-        <Property name="text" type="java.lang.String" value="Compare"/>
+        <Property id="text" type="java.lang.String" value="Compare"/>
       </Properties>
     </Component>
-    <Container class="javax.swing.JScrollPane" name="jScrollPane1">
+    <Container class="javax.swing.JScrollPane" id="jScrollPane1">
       <AuxValues>
-        <AuxValue name="autoScrollPane" type="java.lang.Boolean" value="true"/>
+        <AuxValue id="autoScrollPane" type="java.lang.Boolean" value="true"/>
       </AuxValues>
 
       <Layout class="org.netbeans.modules.form.compat2.layouts.support.JScrollPaneSupportLayout"/>
       <SubComponents>
-        <Component class="javax.swing.JTextArea" name="jTextAreaComand">
+        <Component class="javax.swing.JTextArea" id="jTextAreaComand">
           <Properties>
-            <Property name="columns" type="int" value="20"/>
-            <Property name="lineWrap" type="boolean" value="true"/>
-            <Property name="rows" type="int" value="5"/>
+            <Property id="columns" type="int" value="20"/>
+            <Property id="lineWrap" type="boolean" value="true"/>
+            <Property id="rows" type="int" value="5"/>
           </Properties>
         </Component>
       </SubComponents>

@@ -829,10 +829,10 @@ public class SOARPlugin {
         try {
              Field[] fieldList = type.getFields();
              for(Field field : fieldList){
-                //String valueClass = value.getClass().getName();
+                //String valueClass = value.getClass().getId();
                 String fieldClass = field.getType().getCanonicalName(); 
                 if(field.getName().equals(fieldName)){
-                    //System.out.println("Class: "+o.getClass().getName()+" Field: "+field.getName()+" type: "+fieldClass+" Value: "+valueClass); 
+                    //System.out.println("Class: "+o.getClass().getId()+" Field: "+field.getId()+" type: "+fieldClass+" Value: "+valueClass);
                     field.set(o, convertObject(value,fieldClass));
                 }    
               }
@@ -843,7 +843,7 @@ public class SOARPlugin {
     }
     
     public Object getJavaObject(Identifier id, Object parent, String package_with_beans_classes) {
-        //String commandType = command.getName();
+        //String commandType = command.getId();
         
         Object javaObject = null;
         Class type = null;
