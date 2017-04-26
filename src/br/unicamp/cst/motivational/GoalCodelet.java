@@ -7,6 +7,9 @@ import br.unicamp.cst.representation.owrl.AbstractObject;
 
 public abstract class GoalCodelet extends Codelet {
 
+    private static final String INPUT_HYPOTHETICAL_SITUATIONS_MEMORY = "INPUT_HYPOTHETICAL_SITUATIONS_MEMORY";
+    private static final String OUTPUT_GOAL_MEMORY = "OUTPUT_GOAL_MEMORY";
+
     private String id;
     private Memory inputHypotheticalSituationsMO;
     private Memory goalMO;
@@ -14,6 +17,22 @@ public abstract class GoalCodelet extends Codelet {
     private AbstractObject hypotheticalSituation;
     private Goal goal;
 
+    public GoalCodelet(String id){
+        this.setId(id);
+    }
+
+    @Override
+    public void accessMemoryObjects() {
+        if(getInputHypotheticalSituationsMO() == null)
+        {
+            setInputHypotheticalSituationsMO(this.getInput(INPUT_HYPOTHETICAL_SITUATIONS_MEMORY, 0));
+            setHypotheticalSituation((AbstractObject) getInputHypotheticalSituationsMO().getI());
+        }
+
+        if(getGoalMO() == null){
+            setGoalMO(this.getOutput(OUTPUT_GOAL_MEMORY, 0));
+        }
+    }
 
     @Override
     public void calculateActivation() {

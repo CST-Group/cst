@@ -51,7 +51,7 @@ public class BHMonitor extends Codelet
 				synchronized(module){
 					if(behaviorsIWantShownInGraphics!=null && !behaviorsIWantShownInGraphics.isEmpty()){
 						if(behaviorsIWantShownInGraphics.contains(module.getName())){
-							dataset.addSeries(new XYSeries(module.getName()));	
+							dataset.addSeries(new XYSeries(module.getName()));
 						}
 					}else{
 						dataset.addSeries(new XYSeries(module.getName()));

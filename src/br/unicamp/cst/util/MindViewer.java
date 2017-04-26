@@ -9,7 +9,6 @@ import br.unicamp.cst.core.entities.Codelet;
 import br.unicamp.cst.core.entities.Memory;
 import br.unicamp.cst.core.entities.MemoryContainer;
 import br.unicamp.cst.core.entities.MemoryObject;
-import br.unicamp.cst.representation.owrl.*;
 import br.unicamp.cst.core.entities.Mind;
 import br.unicamp.cst.core.entities.TestCodelet;
 import java.util.List;
@@ -287,7 +286,7 @@ public class MindViewer extends javax.swing.JFrame {
     
     public void tick() {
         if (wog != null) updateTree(wog);
-        else System.out.println("Mind é null");
+        else System.out.println("Mind ï¿½ null");
         System.out.println("update");
     }
 
