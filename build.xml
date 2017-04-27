@@ -7,7 +7,7 @@
 <!-- the Compile on Save feature is turned off for the project. -->
 <!-- You can turn off the Compile on Save (or Deploy on Save) setting -->
 <!-- in the project's Project Properties dialog box.-->
-<project id="cst" default="default" basedir=".">
+<project name="cst" default="default" basedir=".">
     <description>Builds, tests, and runs the project cst.</description>
     <import file="nbproject/build-impl.xml"/>
     <!--
@@ -34,7 +34,7 @@
 
     Example of inserting an obfuscator after compilation could look like this:
 
-        <target id="-post-compile">
+        <target name="-post-compile">
             <obfuscate>
                 <fileset dir="${build.classes.dir}"/>
             </obfuscate>
@@ -58,7 +58,7 @@
 
     An example of overriding the target for project execution could look like this:
 
-        <target id="run" depends="cst-impl.jar">
+        <target name="run" depends="cst-impl.jar">
             <exec dir="bin" executable="launcher.exe">
                 <arg file="${dist.jar}"/>
             </exec>
