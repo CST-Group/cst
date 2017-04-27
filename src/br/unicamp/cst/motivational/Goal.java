@@ -1,6 +1,6 @@
 package br.unicamp.cst.motivational;
 
-import br.unicamp.cst.representation.owrl.AbstractObject;
+import br.unicamp.cst.representation.owrl.Configuration;
 
 /**
  * Created by du on 19/12/16.
@@ -8,11 +8,11 @@ import br.unicamp.cst.representation.owrl.AbstractObject;
 public class Goal {
 
     private String id;
-    private AbstractObject goalAbstractObjects;
+    private Configuration goalConfiguration;
 
-    public Goal(String id, AbstractObject goalConfiguration){
+    public Goal(String id, Configuration goalConfiguration){
         this.setId(id);
-        this.setGoalAbstractObjects(goalConfiguration);
+        this.setGoalConfiguration(goalConfiguration);
     }
 
     public String getId() {
@@ -23,11 +23,11 @@ public class Goal {
         this.id = id;
     }
 
-    public AbstractObject getGoalAbstractObjects() {
-        return goalAbstractObjects;
+    public Configuration getGoalConfiguration() {
+        return goalConfiguration;
     }
 
-    public void setGoalAbstractObjects(AbstractObject goalAbstractObjects) {
-        this.goalAbstractObjects = goalAbstractObjects;
+    public void setGoalConfiguration(Configuration goalConfiguration) {
+        this.goalConfiguration = goalConfiguration;
     }
 }
