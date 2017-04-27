@@ -10,8 +10,6 @@
  ***************************************************************************** */
 package br.unicamp.cst.representation.owrl;
 
-import br.unicamp.cst.motivational.Appraisal;
-
 import java.util.ArrayList;
 import java.util.List;
 
@@ -21,7 +19,6 @@ import java.util.List;
  */
 public class AbstractObject implements Cloneable {
 
-    private Appraisal appraisal;
     private List<Property> properties;//1-n;
     private List<AbstractObject> compositeList;//1-n;
     private List<AbstractObject> aggregateList;//1-n;
@@ -171,13 +168,5 @@ public class AbstractObject implements Cloneable {
             properties.remove(child);
         }
         
-    }
-
-    public Appraisal getAppraisal() {
-        return appraisal;
-    }
-
-    public void setAppraisal(Appraisal appraisal) {
-        this.appraisal = appraisal;
     }
 }
