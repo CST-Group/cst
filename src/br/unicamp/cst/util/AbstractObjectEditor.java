@@ -60,13 +60,13 @@ public class AbstractObjectEditor extends javax.swing.JFrame {
                         Object element=null;
                         if (parentnode != null) {
                             parent = (TreeElement)(parentnode).getUserObject();
-                            //System.out.println("Parent: "+parent.getId());
+                            //System.out.println("Parent: "+parent.getName());
                             element = parent.getElement();
                         }
-                        final Object parentelement = element;
+                        Object parentelement = element;
                         String classname = te.getElement().getClass().getCanonicalName();
                         if (classname.equals("br.unicamp.cst.representation.owrl.AbstractObject")) {
-                            final AbstractObject ao = (AbstractObject) te.getElement();
+                            AbstractObject ao = (AbstractObject) te.getElement();
                             JPopupMenu popup = new JPopupMenu();
                             JMenuItem jm1 = new JMenuItem("Edit AbstractObject");
                             ActionListener al = new ActionListener() {
@@ -117,7 +117,7 @@ public class AbstractObjectEditor extends javax.swing.JFrame {
                             popup.show(jtree, e.getX(), e.getY());
                         }
                         else if (classname.equals("br.unicamp.cst.representation.owrl.Property")) {
-                            final Property p = (Property) te.getElement();
+                            Property p = (Property) te.getElement();
                             JPopupMenu popup = new JPopupMenu();
                             JMenuItem jm1 = new JMenuItem("Edit Property");
                             ActionListener al = new ActionListener() {
@@ -150,7 +150,7 @@ public class AbstractObjectEditor extends javax.swing.JFrame {
                             popup.show(jtree, e.getX(), e.getY());
                         }
                         else if (classname.equals("br.unicamp.cst.representation.owrl.QualityDimension")) {
-                            final QualityDimension qd = (QualityDimension) te.getElement();
+                            QualityDimension qd = (QualityDimension) te.getElement();
                             JPopupMenu popup = new JPopupMenu();
                             JMenuItem jm1 = new JMenuItem("Edit QualityDimension");
                             ActionListener al = new ActionListener() {
@@ -324,7 +324,7 @@ public class AbstractObjectEditor extends javax.swing.JFrame {
     
     private DefaultMutableTreeNode addObject(AbstractObject wo, boolean composite) {
         DefaultMutableTreeNode objectNode;
-        //String name = wo.getId() + " &lt;" + wo.getID()+">";
+        //String name = wo.getName() + " &lt;" + wo.getID()+">";
         String name = wo.getName();
         if (composite) objectNode = new DefaultMutableTreeNode(new TreeElement(name, TreeElement.NODE_NORMAL, wo, TreeElement.ICON_COMPOSITE));
         else objectNode = new DefaultMutableTreeNode(new TreeElement(name, TreeElement.NODE_NORMAL, wo, TreeElement.ICON_AGGREGATE));

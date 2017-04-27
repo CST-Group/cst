@@ -45,23 +45,23 @@
               <EmptySpace min="-2" max="-2" attributes="0"/>
               <Group type="103" groupAlignment="0" max="-2" attributes="0">
                   <Group type="102" attributes="0">
-                      <Component name="jLabel3" min="-2" max="-2" attributes="0"/>
+                      <Component id="jLabel3" min="-2" max="-2" attributes="0"/>
                       <EmptySpace min="-2" pref="3" max="-2" attributes="0"/>
-                      <Component name="jComboBoxInitial" max="32767" attributes="0"/>
+                      <Component id="jComboBoxInitial" max="32767" attributes="0"/>
                   </Group>
-                  <Component name="jspInitial" alignment="1" min="-2" pref="306" max="-2" attributes="0"/>
+                  <Component id="jspInitial" alignment="1" min="-2" pref="306" max="-2" attributes="0"/>
               </Group>
               <EmptySpace max="-2" attributes="0"/>
-              <Component name="jButton1" min="-2" pref="60" max="-2" attributes="0"/>
+              <Component id="jButton1" min="-2" pref="60" max="-2" attributes="0"/>
               <EmptySpace min="-2" pref="6" max="-2" attributes="0"/>
               <Group type="103" groupAlignment="0" attributes="0">
                   <Group type="102" attributes="0">
-                      <Component name="jLabel4" min="-2" max="-2" attributes="0"/>
+                      <Component id="jLabel4" min="-2" max="-2" attributes="0"/>
                       <EmptySpace min="-2" pref="4" max="-2" attributes="0"/>
-                      <Component name="jComboBoxFinal" min="-2" pref="181" max="-2" attributes="0"/>
+                      <Component id="jComboBoxFinal" min="-2" pref="181" max="-2" attributes="0"/>
                       <EmptySpace min="0" pref="0" max="32767" attributes="0"/>
                   </Group>
-                  <Component name="jspFinal" max="32767" attributes="0"/>
+                  <Component id="jspFinal" max="32767" attributes="0"/>
               </Group>
               <EmptySpace max="-2" attributes="0"/>
           </Group>
@@ -72,19 +72,19 @@
           <Group type="102" attributes="0">
               <EmptySpace min="-2" pref="17" max="-2" attributes="0"/>
               <Group type="103" groupAlignment="3" attributes="0">
-                  <Component name="jLabel3" alignment="3" min="-2" max="-2" attributes="0"/>
-                  <Component name="jComboBoxInitial" alignment="3" min="-2" max="-2" attributes="0"/>
-                  <Component name="jLabel4" alignment="3" min="-2" max="-2" attributes="0"/>
-                  <Component name="jComboBoxFinal" alignment="3" min="-2" max="-2" attributes="0"/>
+                  <Component id="jLabel3" alignment="3" min="-2" max="-2" attributes="0"/>
+                  <Component id="jComboBoxInitial" alignment="3" min="-2" max="-2" attributes="0"/>
+                  <Component id="jLabel4" alignment="3" min="-2" max="-2" attributes="0"/>
+                  <Component id="jComboBoxFinal" alignment="3" min="-2" max="-2" attributes="0"/>
               </Group>
               <EmptySpace max="-2" attributes="0"/>
               <Group type="103" groupAlignment="0" attributes="0">
-                  <Component name="jspInitial" alignment="1" max="32767" attributes="0"/>
+                  <Component id="jspInitial" alignment="1" max="32767" attributes="0"/>
                   <Group type="102" attributes="0">
-                      <Component name="jButton1" min="-2" max="-2" attributes="0"/>
+                      <Component id="jButton1" min="-2" max="-2" attributes="0"/>
                       <EmptySpace min="0" pref="439" max="32767" attributes="0"/>
                   </Group>
-                  <Component name="jspFinal" max="32767" attributes="0"/>
+                  <Component id="jspFinal" max="32767" attributes="0"/>
               </Group>
               <EmptySpace max="-2" attributes="0"/>
           </Group>

@@ -26,19 +26,19 @@
           <Group type="102" attributes="0">
               <EmptySpace min="-2" pref="34" max="-2" attributes="0"/>
               <Group type="103" groupAlignment="0" attributes="0">
-                  <Component name="jLabel2" min="-2" max="-2" attributes="0"/>
-                  <Component name="jLabel3" min="-2" max="-2" attributes="0"/>
+                  <Component id="jLabel2" min="-2" max="-2" attributes="0"/>
+                  <Component id="jLabel3" min="-2" max="-2" attributes="0"/>
               </Group>
               <EmptySpace max="32767" attributes="0"/>
               <Group type="103" groupAlignment="0" attributes="0">
                   <Group type="102" alignment="0" attributes="0">
-                      <Component name="jOK" min="-2" max="-2" attributes="0"/>
+                      <Component id="jOK" min="-2" max="-2" attributes="0"/>
                       <EmptySpace min="-2" pref="64" max="-2" attributes="0"/>
-                      <Component name="jCancel" min="-2" max="-2" attributes="0"/>
+                      <Component id="jCancel" min="-2" max="-2" attributes="0"/>
                       <EmptySpace min="-2" pref="67" max="-2" attributes="0"/>
                   </Group>
-                  <Component name="jName" alignment="0" max="32767" attributes="0"/>
-                  <Component name="jValue" alignment="0" max="32767" attributes="0"/>
+                  <Component id="jName" alignment="0" max="32767" attributes="0"/>
+                  <Component id="jValue" alignment="0" max="32767" attributes="0"/>
               </Group>
               <EmptySpace min="-2" pref="46" max="-2" attributes="0"/>
           </Group>
@@ -49,18 +49,18 @@
           <Group type="102" attributes="0">
               <EmptySpace min="-2" pref="22" max="-2" attributes="0"/>
               <Group type="103" groupAlignment="3" attributes="0">
-                  <Component name="jLabel2" alignment="3" min="-2" max="-2" attributes="0"/>
-                  <Component name="jName" alignment="3" min="-2" max="-2" attributes="0"/>
+                  <Component id="jLabel2" alignment="3" min="-2" max="-2" attributes="0"/>
+                  <Component id="jName" alignment="3" min="-2" max="-2" attributes="0"/>
               </Group>
               <EmptySpace type="unrelated" max="-2" attributes="0"/>
               <Group type="103" groupAlignment="3" attributes="0">
-                  <Component name="jLabel3" alignment="3" min="-2" max="-2" attributes="0"/>
-                  <Component name="jValue" alignment="3" min="-2" max="-2" attributes="0"/>
+                  <Component id="jLabel3" alignment="3" min="-2" max="-2" attributes="0"/>
+                  <Component id="jValue" alignment="3" min="-2" max="-2" attributes="0"/>
               </Group>
               <EmptySpace pref="19" max="32767" attributes="0"/>
               <Group type="103" groupAlignment="3" attributes="0">
-                  <Component name="jOK" alignment="3" min="-2" max="-2" attributes="0"/>
-                  <Component name="jCancel" alignment="3" min="-2" max="-2" attributes="0"/>
+                  <Component id="jOK" alignment="3" min="-2" max="-2" attributes="0"/>
+                  <Component id="jCancel" alignment="3" min="-2" max="-2" attributes="0"/>
               </Group>
               <EmptySpace min="-2" pref="24" max="-2" attributes="0"/>
           </Group>
