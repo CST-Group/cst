@@ -19,6 +19,7 @@ import java.awt.Color;
 public class TreeElement {
 
     private String name;
+    private String value="";
     private Color color;
     private Object element;
     private int icon_type;
@@ -53,6 +54,12 @@ public class TreeElement {
         this(name,node_type,element,typeIcon,ncode++);
     }
     
+    public TreeElement(String name, String value, int node_type, Object element, int typeIcon) {
+        //this(name,node_type,element,typeIcon,0);
+        this(name, node_type,element,typeIcon,ncode++);
+        this.value = value;
+    }
+    
     public static void reset() {
         ncode = 0;
     }
@@ -63,14 +70,16 @@ public class TreeElement {
         setIcon(typeIcon);
         setId_node(id);
         //setName(name+"_"+getId_node());
-        setName(name+" ["+getId_node()+"]");
-        
+        //setName(name+" ["+getId_node()+"]");
+         setName(name);        
         this.element = element;
         this.icon_type = typeIcon;
     }
     
     
-    
+     public String getNamePlusValuePlusId() {
+        return getName()+ getValue()+" ["+getId_node()+"]";
+    }
 
     public String getName() {
         return name;
@@ -79,6 +88,16 @@ public class TreeElement {
     public void setName(String name) {
         this.name = name;
     }
+
+    public String getValue() {
+        return value;
+    }
+
+    public void setValue(String value) {
+        this.value = value;
+    }
+    
+    
 
     public Color getColor() {
         return color;

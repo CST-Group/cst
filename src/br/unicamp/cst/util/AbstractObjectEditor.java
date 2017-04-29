@@ -13,8 +13,12 @@ import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
+import java.util.ArrayList;
+import java.util.Enumeration;
 import java.util.List;
+import java.util.Random;
 import javax.swing.JMenuItem;
+import javax.swing.JOptionPane;
 import javax.swing.JPopupMenu;
 import javax.swing.JTree;
 import javax.swing.tree.DefaultMutableTreeNode;
@@ -38,9 +42,6 @@ public class AbstractObjectEditor extends javax.swing.JFrame {
         if (rootAO == null) root = new AbstractObject("AbstractObject");
         initComponents();
         updateTree(root);
-        //TreeModel tm = createTreeModel(rootAO);
-        //jtree = new JTree(tm);
-        //expandAllNodes(jtree);
         jsp.setViewportView(jtree);
         jtree.setCellRenderer(new RendererJTree());
         setTitle(root.getName());
@@ -239,6 +240,7 @@ public class AbstractObjectEditor extends javax.swing.JFrame {
         jToolBar1 = new javax.swing.JToolBar();
         zoom_in = new javax.swing.JButton();
         zoom_out = new javax.swing.JButton();
+        search = new javax.swing.JButton();
         jsp = new javax.swing.JScrollPane();
         jtree = new javax.swing.JTree();
 
@@ -268,6 +270,17 @@ public class AbstractObjectEditor extends javax.swing.JFrame {
         });
         jToolBar1.add(zoom_out);
 
+        search.setIcon(new javax.swing.ImageIcon(getClass().getResource("/br/unicamp/cst/images/binoculars.png"))); // NOI18N
+        search.setFocusable(false);
+        search.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
+        search.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
+        search.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                searchActionPerformed(evt);
+            }
+        });
+        jToolBar1.add(search);
+
         jsp.setViewportView(jtree);
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
@@ -296,13 +309,38 @@ public class AbstractObjectEditor extends javax.swing.JFrame {
         collapseAllNodes(jtree);
     }//GEN-LAST:event_zoom_outActionPerformed
 
+    private void searchActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_searchActionPerformed
+        // TODO add your handling code here:
+
+        //É so um teste!
+        TreeElement.reset();
+        DefaultMutableTreeNode ao = addObject(root, true);
+        TreeModel ttm = new DefaultTreeModel(ao);
+        jtree.setModel(ttm);
+        expandAllNodes(jtree);
+
+        String nameNode = null;
+        nameNode = JOptionPane.showInputDialog("Node Name:");
+        DefaultMutableTreeNode o = find(((DefaultMutableTreeNode) jtree.getModel().getRoot()), nameNode);
+
+        //É so um teste!
+        TreeModel tm = new DefaultTreeModel(o);
+        jtree.setModel(tm);
+        expandAllNodes(jtree);
+
+
+    }//GEN-LAST:event_searchActionPerformed
+
     /**
      * @param args the command line arguments
      */
     public static void main(String args[]) {
         AbstractObject robot = new AbstractObject("Robot");
+        // System.out.println("XXXXX"+robot.hashCode());
         AbstractObject sensor = new AbstractObject("Sensor");
+        // System.out.println("XXXXX"+sensor.hashCode());
         Property position = new Property("Position");
+        // System.out.println("XXXXX"+position.hashCode());
         position.addQualityDimension(new QualityDimension("x",0.5));
         position.addQualityDimension(new QualityDimension("y",0.6));
         sensor.addProperty(position);
@@ -313,6 +351,7 @@ public class AbstractObjectEditor extends javax.swing.JFrame {
         robot.addAggregatePart(actuator);
         robot.addProperty(new Property("Model",new QualityDimension("Serial#","1234XDr56")));   
         AbstractObjectEditor ov = new AbstractObjectEditor(robot);
+        System.out.println("XXXXX"+robot.hashCode());
         //AbstractObjectEditor ov = new AbstractObjectEditor(null);
         ov.setVisible(true);
     }
@@ -354,7 +393,8 @@ public class AbstractObjectEditor extends javax.swing.JFrame {
             QualityDimension qd = ((Property) p).getQualityDimensions().get(s);
             String chave = qd.getName();
             String value = qd.getValue().toString();
-            DefaultMutableTreeNode qualityDimensionNode = new DefaultMutableTreeNode(new TreeElement(chave+" : "+value, TreeElement.NODE_NORMAL, qd, TreeElement.ICON_QUALITYDIM));
+            //DefaultMutableTreeNode qualityDimensionNode = new DefaultMutableTreeNode(new TreeElement(chave+" : "+value, TreeElement.NODE_NORMAL, qd, TreeElement.ICON_QUALITYDIM));
+            DefaultMutableTreeNode qualityDimensionNode = new DefaultMutableTreeNode(new TreeElement(chave,": "+value, TreeElement.NODE_NORMAL, qd, TreeElement.ICON_QUALITYDIM));
             propertyNode.add(qualityDimensionNode);
             
 
@@ -362,19 +402,7 @@ public class AbstractObjectEditor extends javax.swing.JFrame {
         return(propertyNode);
     }
     
-//    public TreeModel createRootTreeModel(AbstractObject wo) {
-//        //DefaultMutableTreeNode o = addObject(wo,true);
-//        DefaultMutableTreeNode o = addRootNode(wo);
-//        TreeModel tm = new DefaultTreeModel(o);
-//        return(tm);
-//    }
-//    
-//    public TreeModel createTreeModel(AbstractObject wo) {
-//        DefaultMutableTreeNode o = addObject(wo,true);
-//        //DefaultMutableTreeNode o = addRootNode(wo);
-//        TreeModel tm = new DefaultTreeModel(o);
-//        return(tm);
-//    }
+
     
     public void updateTree(AbstractObject wo) {
        TreeElement.reset();
@@ -413,11 +441,54 @@ public class AbstractObjectEditor extends javax.swing.JFrame {
           row--;
        }
     }
+    
+    //private TreePath find(DefaultMutableTreeNode root, String s) {
+    private DefaultMutableTreeNode find(DefaultMutableTreeNode root, String s) {    
+        
+         DefaultMutableTreeNode root2 = root;
+        
+        Enumeration<DefaultMutableTreeNode> e = root2.depthFirstEnumeration();
+        List<TreePath> listPath = new ArrayList<>();
+        TreePath raffledPath = null;
+        int cont = 0;
+        
+        while (e.hasMoreElements()) {
+            DefaultMutableTreeNode node = e.nextElement();
+             TreeElement te = (TreeElement)node.getUserObject();
+                        
+            if (te.getName().toString().equalsIgnoreCase(s)) {
+                cont++;
+                listPath.add(new TreePath(node.getPath()));
+                
+                //return new TreePath(node.getPath());
+            }
+        }
+        
+        if( listPath.size()> 0){
+            Random r = new Random();
+            raffledPath = listPath.get(r.nextInt(listPath.size()));
+
+            DefaultMutableTreeNode tn = (DefaultMutableTreeNode) raffledPath.getLastPathComponent();
+            TreeElement te = (TreeElement) tn.getUserObject();
+            te.setColor(TreeElement.NODE_CHANGE);
+            
+            
+            
+        
+        }
+       
+        
+        System.out.println("Achei: "+cont);
+       // return raffledPath;
+       return root2; 
+        
+    }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JToolBar jToolBar1;
     private javax.swing.JScrollPane jsp;
     private javax.swing.JTree jtree;
+    private javax.swing.JButton search;
     private javax.swing.JButton zoom_in;
     private javax.swing.JButton zoom_out;
     // End of variables declaration//GEN-END:variables

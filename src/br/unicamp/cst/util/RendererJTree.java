@@ -85,7 +85,7 @@ public class RendererJTree extends DefaultTreeCellRenderer {
         setLeafIcon(img);
 
         String hex = "#" + Integer.toHexString(node.getColor().getRGB()).substring(2);
-        objectNode = new DefaultMutableTreeNode("<html><font color=\"" + hex + "\">" + node.getName() + "</font></html>");
+        objectNode = new DefaultMutableTreeNode("<html><font color=\"" + hex + "\">" + node.getNamePlusValuePlusId() + "</font></html>");
         value = objectNode;
         super.getTreeCellRendererComponent(tree, value, sel, exp, leaf, row, hasFocus);
 
