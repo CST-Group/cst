@@ -69,11 +69,11 @@ public class AbstractObject implements Cloneable {
 
     }
     
-    //To do: está dando conflito por causa do código anterior. A assinatura dos métodos
-    // são iguais
+    //To do: estï¿½ dando conflito por causa do cï¿½digo anterior. A assinatura dos mï¿½todos
+    // sï¿½o iguais
   /*  public AbstractObject(String name, int id, List<Property> props, List<AbstractObject> aggregate) {
         setID(id);
-        setName(name);
+        setId(name);
         setAggregatedPart(aggregate);
         setProperties(props);
 

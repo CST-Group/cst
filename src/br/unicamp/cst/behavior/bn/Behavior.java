@@ -179,7 +179,7 @@ public abstract class Behavior extends Codelet
 				}
 			}
 		}
-		//		System.out.println("====> "+this.getName()+" worldState: "+worldState);
+		//		System.out.println("====> "+this.getId()+" worldState: "+worldState);
 
 	}
 
@@ -198,9 +198,9 @@ public abstract class Behavior extends Codelet
 		predecessors.clear();
 		conflicters.clear();
 
-//		if(this.getName().contains("TV")){
+//		if(this.getId().contains("TV")){
 //			int a=4;
-//			System.out.println(this.getName());
+//			System.out.println(this.getId());
 //			
 //		}
 		
@@ -208,9 +208,9 @@ public abstract class Behavior extends Codelet
 		ArrayList<Memory> intersection = new ArrayList<Memory>();
 		for (Behavior competence : coalition)
 		{
-//			if(competence.getName().contains("ROOM13")){
+//			if(competence.getId().contains("ROOM13")){
 //				int a=4;
-//				System.out.println(competence.getName());
+//				System.out.println(competence.getId());
 //				
 //			}
 			if (impendingAccess(competence))
@@ -797,7 +797,7 @@ public abstract class Behavior extends Codelet
 	public String getName()
 	{
 		return name;
-		// return Thread.currentThread().getName();
+		// return Thread.currentThread().getId();
 	}
 
 	/**

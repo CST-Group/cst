@@ -128,7 +128,7 @@ public class BehaviorsWTA extends Codelet
 
 				//ACTIVATES EXECUTABLE CODELET WITH HIGHEST ACTIVATION LEVEL
 
-				//				System.out.println("I believe this guy should become active (A="+chosen_codelet.getValue()+"): "+chosen_codelet.getName());
+				//				System.out.println("I believe this guy should become active (A="+chosen_codelet.getValue()+"): "+chosen_codelet.getId());
 				if(chosenBehavior!=null){//otherwise, it means it could not find a suitable behavior for activation
 					if (impendingAccess(chosenBehavior)){
 						try
@@ -225,7 +225,7 @@ public class BehaviorsWTA extends Codelet
 //				if(competence.isExecutable()&&competence.getValue()>=globalVariables.getThetaTemp()){
 //					codeletsActivation.put(competence, competence.getValue());
 //
-//					tempListOfExecutableCodelets.add(competence.getName());//Assumes each behavior has a particular name
+//					tempListOfExecutableCodelets.add(competence.getId());//Assumes each behavior has a particular name
 //				}
 //				
 ////TODO Where should I put this?						
@@ -296,7 +296,7 @@ public class BehaviorsWTA extends Codelet
 //		
 //		//ACTIVATES EXECUTABLE CODELET WITH HIGHEST ACTIVATION LEVEL
 //		if(chosen_codelet!=null){
-//			//				System.out.println("I believe this guy should become active (A="+chosen_codelet.getValue()+"): "+chosen_codelet.getName());
+//			//				System.out.println("I believe this guy should become active (A="+chosen_codelet.getValue()+"): "+chosen_codelet.getId());
 //			if (impendingAccess(chosen_codelet)){
 //				try
 //				{
@@ -332,7 +332,7 @@ public class BehaviorsWTA extends Codelet
 //
 ////	System.out.println("behaviorsStillActive: ");
 ////	for(Behavior be: behaviorsStillActive){
-////		System.out.println(be.getName());
+////		System.out.println(be.getId());
 ////	}
 ////	System.out.println("---");
 //	

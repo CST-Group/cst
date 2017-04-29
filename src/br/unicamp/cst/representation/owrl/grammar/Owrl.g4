@@ -8,13 +8,13 @@ conf: '['(stat)+ ']' NEWLINE
      
 stat: command '[' (expr)+ ']' ;
     
-expr: '[' name atrib* ']' ;
+expr: '[' id atrib* ']' ;
      
 atrib: '[' part*  property* ']';
 
-part: '['name part* property*']';
+part: '['id part* property*']';
 
-name: '[' object cod ']';
+id: '[' object cod ']';
 
 object : '<' ID '>';
  

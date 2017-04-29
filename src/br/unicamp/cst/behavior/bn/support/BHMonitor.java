@@ -51,7 +51,7 @@ public class BHMonitor extends Codelet
 				synchronized(module){
 					if(behaviorsIWantShownInGraphics!=null && !behaviorsIWantShownInGraphics.isEmpty()){
 						if(behaviorsIWantShownInGraphics.contains(module.getName())){
-							dataset.addSeries(new XYSeries(module.getName()));	
+							dataset.addSeries(new XYSeries(module.getName()));
 						}
 					}else{
 						dataset.addSeries(new XYSeries(module.getName()));
@@ -103,7 +103,7 @@ public class BHMonitor extends Codelet
 
 			for(Behavior module:tempBehaviors){
 				synchronized(module){
-					//System.out.println(module.getName()+": "+module.getValue());
+					//System.out.println(module.getId()+": "+module.getValue());
 					double instant=Calendar.getInstance().getTimeInMillis()-initialTime;
 
 					

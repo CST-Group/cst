@@ -31,7 +31,7 @@ The main contributors of this project are:
 * [Suelen Mapa de Paula](https://github.com/suelenmapa)
 * Vera Aparecida de Figueiredo
 * [Elisa Calhau de Castro](https://github.com/ecalhau)
-* [Eduardo Fróes](https://github.com/eduardofroes)
+* [Eduardo de Moraes Fróes](https://github.com/eduardofroes)
 * [Wandemberg Santana Pharaoh Gibaut](https://github.com/wandergibaut)
 
 License

@@ -32,7 +32,7 @@ public abstract class EmotionalCodelet extends Codelet {
     public final static String OUTPUT_AFFECTED_DRIVE_MEMORY = "OUTPUT_AFFECTED_DRIVE_MEMORY";
 
 
-    private String name;
+    private String id;
     private Mood mood;
     private Drive affectedDrive;
 
@@ -42,10 +42,10 @@ public abstract class EmotionalCodelet extends Codelet {
     private Memory outputAffectedDriveMO;
     private Memory inputMoodMO;
 
-    public EmotionalCodelet(String name) throws CodeletActivationBoundsException {
-        this.setName(name);
+    public EmotionalCodelet(String id) throws CodeletActivationBoundsException {
+        this.setId(id);
         this.setActivation(0.0d);
-        setAffectedDrive(new Drive(name));
+        setAffectedDrive(new Drive(id));
     }
 
     @Override
@@ -109,18 +109,18 @@ public abstract class EmotionalCodelet extends Codelet {
 
     }
 
-    public String getName() {
-        return name;
+    public String getId() {
+        return id;
     }
 
-    public void setName(String name) {
+    public void setId(String id) {
 
         try {
-            if (name.equals("")) {
+            if (id.equals("")) {
                 throw new Exception(CSTMessages.MSG_VAR_EMOTIONAL_NAME_NULL);
             }
 
-            this.name = name;
+            this.id = id;
 
         } catch (Exception me) {
             me.printStackTrace();

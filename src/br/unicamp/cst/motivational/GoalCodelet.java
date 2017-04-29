@@ -3,25 +3,30 @@ package br.unicamp.cst.motivational;
 import br.unicamp.cst.core.entities.Codelet;
 import br.unicamp.cst.core.entities.Memory;
 import br.unicamp.cst.core.exceptions.CodeletActivationBoundsException;
-import br.unicamp.cst.representation.owrl.Configuration;
+import br.unicamp.cst.representation.owrl.AbstractObject;
 
 public abstract class GoalCodelet extends Codelet {
 
     private static final String INPUT_HYPOTHETICAL_SITUATIONS_MEMORY = "INPUT_HYPOTHETICAL_SITUATIONS_MEMORY";
     private static final String OUTPUT_GOAL_MEMORY = "OUTPUT_GOAL_MEMORY";
 
+    private String id;
     private Memory inputHypotheticalSituationsMO;
     private Memory goalMO;
 
-    private Configuration hypotheticalSituation;
+    private AbstractObject hypotheticalSituation;
     private Goal goal;
+
+    public GoalCodelet(String id){
+        this.setId(id);
+    }
 
     @Override
     public void accessMemoryObjects() {
         if(getInputHypotheticalSituationsMO() == null)
         {
             setInputHypotheticalSituationsMO(this.getInput(INPUT_HYPOTHETICAL_SITUATIONS_MEMORY, 0));
-            setHypotheticalSituation((Configuration) getInputHypotheticalSituationsMO().getI());
+            setHypotheticalSituation((AbstractObject) getInputHypotheticalSituationsMO().getI());
         }
 
         if(getGoalMO() == null){
@@ -41,11 +46,12 @@ public abstract class GoalCodelet extends Codelet {
     @Override
     public void proc() {
         setGoal(goalGeneration(getHypotheticalSituation()));
+        getGoal().setId(getId());
         getGoalMO().setI(getGoal());
     }
 
 
-    public abstract Goal goalGeneration(Configuration currentPerception);
+    public abstract Goal goalGeneration(AbstractObject hypoteticalSituation);
 
     public Memory getInputHypotheticalSituationsMO() {
         return inputHypotheticalSituationsMO;
@@ -63,11 +69,11 @@ public abstract class GoalCodelet extends Codelet {
         this.goalMO = goalMO;
     }
 
-    public Configuration getHypotheticalSituation() {
+    public AbstractObject getHypotheticalSituation() {
         return hypotheticalSituation;
     }
 
-    public void setHypotheticalSituation(Configuration hypotheticalSituation) {
+    public void setHypotheticalSituation(AbstractObject hypotheticalSituation) {
         this.hypotheticalSituation = hypotheticalSituation;
     }
 
@@ -77,5 +83,13 @@ public abstract class GoalCodelet extends Codelet {
 
     public void setGoal(Goal goal) {
         this.goal = goal;
+    }
+
+    public String getId() {
+        return id;
+    }
+
+    public void setId(String id) {
+        this.id = id;
     }
 }

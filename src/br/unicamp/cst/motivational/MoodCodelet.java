@@ -27,7 +27,7 @@ public abstract class MoodCodelet extends Codelet {
 
     public static final String OUTPUT_MOOD_MEMORY = "OUTPUT_MOOD_MEMORY";
 
-    private String name;
+    private String id;
     private List<Drive> listOfDrives;
     private Appraisal appraisal;
     private EpisodicMemory episodicRecallMemory;
@@ -37,8 +37,8 @@ public abstract class MoodCodelet extends Codelet {
     private Memory inputSensoryMO;
     private Memory outputMoodMO;
 
-    public MoodCodelet(String name){
-        this.setName(name);
+    public MoodCodelet(String id){
+        this.setId(id);
         this.setListOfDrives(new ArrayList<Drive>());
     }
 
@@ -81,18 +81,16 @@ public abstract class MoodCodelet extends Codelet {
     @Override
     public void proc() {
         Mood mood = moodGeneration(getListOfDrives(), getAppraisal(), getEpisodicRecallMemory());
-        mood.setName(getName());
+        mood.setName(getId());
         getOutputMoodMO().setI(mood);
     }
 
-    @Override
-    public String getName() {
-        return name;
+    public String getId() {
+        return id;
     }
 
-    @Override
-    public void setName(String name) {
-        this.name = name;
+    public void setId(String id) {
+        this.id = id;
     }
 
     public List<Drive> getListOfDrives() {

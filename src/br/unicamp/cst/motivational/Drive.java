@@ -11,6 +11,8 @@
 
 package br.unicamp.cst.motivational;
 
+import br.unicamp.cst.core.entities.Memory;
+
 import java.io.Serializable;
 
 public class Drive implements Serializable {
