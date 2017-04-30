@@ -123,14 +123,14 @@ public class ObjectViewer extends javax.swing.JFrame {
     
     private DefaultMutableTreeNode addObject(AbstractObject wo, boolean composite) {
         DefaultMutableTreeNode objectNode;
-        if (composite) objectNode = new DefaultMutableTreeNode(new TreeElement(wo.getName() + " [" + wo.getID()+"]", TreeElement.NODE_NORMAL, wo, TreeElement.ICON_COMPOSITE));
-        else objectNode = new DefaultMutableTreeNode(new TreeElement(wo.getName() + " [" + wo.getID()+"]", TreeElement.NODE_NORMAL, wo, TreeElement.ICON_AGGREGATE));
+        if (composite) objectNode = new DefaultMutableTreeNode(new TreeElement(wo.getName(), TreeElement.NODE_NORMAL, wo, TreeElement.ICON_COMPOSITE));
+        else objectNode = new DefaultMutableTreeNode(new TreeElement(wo.getName(), TreeElement.NODE_NORMAL, wo, TreeElement.ICON_AGGREGATE));
         List<AbstractObject> parts = wo.getCompositeParts();
         for (AbstractObject oo : parts) {
             DefaultMutableTreeNode part = addObject(oo,true);
             objectNode.add(part);
         }
-        List<AbstractObject> aggregates = wo.getAggregatePart();
+        List<AbstractObject> aggregates = wo.getAggregateParts();
         for (AbstractObject oo : aggregates) {
             DefaultMutableTreeNode part = addObject(oo,false);
             objectNode.add(part);

@@ -35,7 +35,7 @@ public class ConfigurationManager {
 
     private boolean destroy(AbstractObject obj, List<AbstractObject> list) {
         for (AbstractObject obj_search : list) {
-            if (obj_search.getID() == obj.getID()) {
+            if (obj_search == obj) {
                 list.remove(obj_search);
                 return true;
             } else {
@@ -58,8 +58,8 @@ public class ConfigurationManager {
                     break;
                 case "destroy":
                     for (AbstractObject obj : entry.second) {
-                        if (!(destroy(obj, listConfs.get(currentConfiguration).second.getAggregatePart()))) {
-                            String message = "Unknown object: " + obj.getID();
+                        if (!(destroy(obj, listConfs.get(currentConfiguration).second.getAggregateParts()))) {
+                            String message = "Unknown object: " + obj.getName();
                             JOptionPane.showMessageDialog(null, message);
                             System.err.println(message);
                         }
@@ -67,8 +67,8 @@ public class ConfigurationManager {
                     break;
                 case "modify":
                     for (AbstractObject obj : entry.second) {
-                        if (!destroy(obj, listConfs.get(currentConfiguration).second.getAggregatePart())) {
-                            String message = "Unknown object: " + obj.getID();
+                        if (!destroy(obj, listConfs.get(currentConfiguration).second.getAggregateParts())) {
+                            String message = "Unknown object: " + obj.getName();
                             JOptionPane.showMessageDialog(null, message);
                             System.err.println(message);
                         } else {
@@ -81,10 +81,10 @@ public class ConfigurationManager {
                     return false;
             }
             for (AbstractObject wo : entry.second) {
-                System.out.println(wo.getID() + ", " + wo.getName());
+                System.out.println(wo.getName());
             }
         }
-        if (listConfs.size() == 1 && listConfs.get(0).second.getAggregatePart().isEmpty()) {
+        if (listConfs.size() == 1 && listConfs.get(0).second.getAggregateParts().isEmpty()) {
             removeConfiguration(0);
         }
         return true;

@@ -52,11 +52,11 @@ public class CustomizedListener extends OwrlBaseListener {
 
         if (!ctx.atrib().isEmpty()) {
 
-            wo = new AbstractObject(name, id, readProperty(ctx.atrib(0).property()), readPart(ctx.atrib(0).part()));
+            wo = new AbstractObject(name, readProperty(ctx.atrib(0).property()), readPart(ctx.atrib(0).part()));
 
         } else {
 
-            wo = new AbstractObject(name, id);
+            wo = new AbstractObject(name);
         }
 
         return wo;
@@ -76,7 +76,7 @@ public class CustomizedListener extends OwrlBaseListener {
                 List<Property> listPropertiesPart = readProperty(ctxPart.get(i).property());
                 List<AbstractObject> subparts = readPart(ctxPart.get(i).part());
 
-                onePart = new AbstractObject(namePart, id, listPropertiesPart, subparts);
+                onePart = new AbstractObject(namePart, listPropertiesPart, subparts);
                 parts.add(onePart);
 
             }

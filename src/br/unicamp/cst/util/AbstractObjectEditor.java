@@ -17,6 +17,7 @@ import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.List;
 import java.util.Random;
+import java.util.concurrent.atomic.AtomicReference;
 import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
 import javax.swing.JPopupMenu;
@@ -321,10 +322,14 @@ public class AbstractObjectEditor extends javax.swing.JFrame {
 
         String nameNode = null;
         nameNode = JOptionPane.showInputDialog("Node Name:");
-        DefaultMutableTreeNode o = find(((DefaultMutableTreeNode) jtree.getModel().getRoot()), nameNode);
+        DefaultMutableTreeNode root = (DefaultMutableTreeNode) jtree.getModel().getRoot();
+        List<DefaultMutableTreeNode> ol = find(root, nameNode);
+        for (DefaultMutableTreeNode o : ol) {
+            ((TreeElement) o.getUserObject()).setColor(TreeElement.NODE_CHANGE);
+        }
 
         //É so um teste!
-        TreeModel tm = new DefaultTreeModel(o);
+        TreeModel tm = new DefaultTreeModel(root);
         jtree.setModel(tm);
         expandAllNodes(jtree);
 
@@ -336,11 +341,11 @@ public class AbstractObjectEditor extends javax.swing.JFrame {
      */
     public static void main(String args[]) {
         AbstractObject robot = new AbstractObject("Robot");
-        // System.out.println("XXXXX"+robot.hashCode());
+       
         AbstractObject sensor = new AbstractObject("Sensor");
-        // System.out.println("XXXXX"+sensor.hashCode());
+      
         Property position = new Property("Position");
-        // System.out.println("XXXXX"+position.hashCode());
+      
         position.addQualityDimension(new QualityDimension("x",0.5));
         position.addQualityDimension(new QualityDimension("y",0.6));
         sensor.addProperty(position);
@@ -348,16 +353,18 @@ public class AbstractObjectEditor extends javax.swing.JFrame {
         AbstractObject actuator = new AbstractObject("Actuator");
         actuator.addProperty(new Property("velocity",new QualityDimension("intensity",-0.12)));
         robot.addCompositePart(actuator);
-        robot.addAggregatePart(actuator);
+        robot.addAggregatePart(actuator.clone());
         robot.addProperty(new Property("Model",new QualityDimension("Serial#","1234XDr56")));   
         AbstractObjectEditor ov = new AbstractObjectEditor(robot);
-        System.out.println("XXXXX"+robot.hashCode());
-        //AbstractObjectEditor ov = new AbstractObjectEditor(null);
+       
+       
         ov.setVisible(true);
+        
+         
     }
     
     private DefaultMutableTreeNode addRootNode(AbstractObject wo) {
-        DefaultMutableTreeNode root = new DefaultMutableTreeNode(new TreeElement(wo.getName() + " [" + wo.getID()+"]", TreeElement.NODE_NORMAL, wo, TreeElement.ICON_CONFIGURATION));
+        DefaultMutableTreeNode root = new DefaultMutableTreeNode(new TreeElement(wo.getName() , TreeElement.NODE_NORMAL, wo, TreeElement.ICON_CONFIGURATION));
         return(root);
     }
     
@@ -372,7 +379,7 @@ public class AbstractObjectEditor extends javax.swing.JFrame {
             DefaultMutableTreeNode part = addObject(oo,true);
             objectNode.add(part);
         }
-        List<AbstractObject> aggregates = wo.getAggregatePart();
+        List<AbstractObject> aggregates = wo.getAggregateParts();
         for (AbstractObject oo : aggregates) {
             DefaultMutableTreeNode part = addObject(oo,false);
             objectNode.add(part);
@@ -442,10 +449,55 @@ public class AbstractObjectEditor extends javax.swing.JFrame {
        }
     }
     
-    //private TreePath find(DefaultMutableTreeNode root, String s) {
-    private DefaultMutableTreeNode find(DefaultMutableTreeNode root, String s) {    
+    private List<DefaultMutableTreeNode> findObject(DefaultMutableTreeNode root, Object obj, AtomicReference<String> path) {
+        List<DefaultMutableTreeNode> results = new ArrayList<>();
+        AtomicReference<String> rootPath = new AtomicReference<>(path.get());
+        for (Enumeration children = root.children(); children.hasMoreElements(); ) {
+            DefaultMutableTreeNode child = (DefaultMutableTreeNode) children.nextElement();
+            if (((TreeElement) child.getUserObject()).getElement() == obj) {
+                results.add(child);
+            }
+        }
+        if (!results.isEmpty()) {
+            int dot = path.get().lastIndexOf(".");
+            path.set(path.get().substring(0, (dot < 0 ? 0 : dot)));
+        }
+        for (Enumeration children = root.children(); children.hasMoreElements(); ) {
+            AtomicReference<String> rootPath2 = new AtomicReference<>(rootPath.get());
+            List<DefaultMutableTreeNode> result = findObject((DefaultMutableTreeNode) children.nextElement(), obj, rootPath2);
+            if (!result.isEmpty()) {
+                results.addAll(result);
+                int dot = rootPath2.get().lastIndexOf(".");
+                rootPath2.set(rootPath2.get().substring(0, (dot < 0 ? 0 : dot)));
+                if (path.get().equals(rootPath.get()) || path.get().length() < rootPath2.get().length()) {
+                    path.set(rootPath2.get());
+                }
+            }
+        }
+        if (!results.isEmpty() && !path.get().isEmpty() && !path.get().equals(rootPath.get())) {
+            results.add(0, root);
+        }
+        return results;
+    }
+    
+    
+    private List<DefaultMutableTreeNode> find(DefaultMutableTreeNode root, String s) {    
         
-         DefaultMutableTreeNode root2 = root;
+        AbstractObject aoRoot = (AbstractObject) ((TreeElement) root.getUserObject()).getElement();
+        List<Object> results = aoRoot.search(s);
+        List<DefaultMutableTreeNode> treeResults = new ArrayList<>();
+        for (Object result : results) {
+            if (((TreeElement) root.getUserObject()).getElement() == result) {
+                treeResults.add(root);
+            } else {
+                List<DefaultMutableTreeNode> treeResult = findObject(root, result, new AtomicReference<>(s));
+                treeResults.addAll(treeResult);
+            }
+        }
+        return treeResults;
+        
+        
+        /*DefaultMutableTreeNode root2 = root;
         
         Enumeration<DefaultMutableTreeNode> e = root2.depthFirstEnumeration();
         List<TreePath> listPath = new ArrayList<>();
@@ -480,7 +532,7 @@ public class AbstractObjectEditor extends javax.swing.JFrame {
         
         System.out.println("Achei: "+cont);
        // return raffledPath;
-       return root2; 
+       return root2; */
         
     }
 

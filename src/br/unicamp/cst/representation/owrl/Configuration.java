@@ -46,16 +46,16 @@ public class Configuration {
     }
 
     public boolean removeObject(int id) {
-        for (int i = 0; i < objects.size(); ++i) {
+        /*for (int i = 0; i < objects.size(); ++i) {
             if (objects.get(i).getID() == id) {
                 objects.remove(i);
                 return true;
             }
-        }
+        }*/
         return false;
     }
 
-    public boolean changeObject(int id, AbstractObject modifications) {
+   /* public boolean changeObject(int id, AbstractObject modifications) {
         for (int i = 0; i < objects.size(); ++i) {
             if (objects.get(i).getID() == id) {
                 objects.get(i).modify(modifications);
@@ -63,7 +63,7 @@ public class Configuration {
             }
         }
         return false;
-    }
+    }*/
 
     public Appraisal getAppraisal() {
         return appraisal;

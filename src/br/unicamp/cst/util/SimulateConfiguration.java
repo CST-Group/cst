@@ -44,11 +44,11 @@ public class SimulateConfiguration extends javax.swing.JFrame {
     }
 
     private void buildTree() {
-        if (configurations.getAggregatePart().size() > 0) {
+        if (configurations.getAggregateParts().size() > 0) {
             parentNodeB = new DefaultMutableTreeNode(new TreeElement("CONFIGURATION", TreeElement.NODE_NORMAL, null, TreeElement.ICON_CONFIGURATION));
             configurationTreeB = new JTree(parentNodeB);
             jSPConfigB.setViewportView(configurationTreeB);
-            if (configurations.getAggregatePart().size() > 1) {
+            if (configurations.getAggregateParts().size() > 1) {
                 parentNodeA = new DefaultMutableTreeNode(new TreeElement("CONFIGURATION", TreeElement.NODE_NORMAL, null, TreeElement.ICON_CONFIGURATION));
                 configurationTreeA = new JTree(parentNodeA);
                 jSPConfigA.setViewportView(configurationTreeA);
@@ -57,7 +57,7 @@ public class SimulateConfiguration extends javax.swing.JFrame {
 
             configurationTreeB = TreeManager.addNodeJTree(configurations, jSPConfigB, parentNodeB, configurationTreeB);
             configurationTreeB.setCellRenderer(new RendererJTree());
-            if (configurations.getAggregatePart().size() > 1) {
+            if (configurations.getAggregateParts().size() > 1) {
                 configurationTreeA = TreeManager.addNodeJTree(configurations, jSPConfigA, parentNodeA, configurationTreeA);
                 configurationTreeA.setCellRenderer(new RendererJTree());
 

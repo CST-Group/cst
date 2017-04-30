@@ -138,7 +138,7 @@ public class TreeManager {
     
     public static JTree addNodeJTree(AbstractObject listObjects, JScrollPane where, DefaultMutableTreeNode node, JTree tree) {
 
-        List<AbstractObject> listWO = listObjects.getAggregatePart();
+        List<AbstractObject> listWO = listObjects.getAggregateParts();
 
         for (AbstractObject wo : listWO) {
 
@@ -253,15 +253,15 @@ public class TreeManager {
     //Add a complete object: object, property and qualityDimensions
     private static DefaultMutableTreeNode addObject(AbstractObject wo, boolean composite) {
         DefaultMutableTreeNode objectNode;
-        if (composite) objectNode = new DefaultMutableTreeNode(new TreeElement(wo.getName() + " [" + wo.getID() + "]", TreeElement.NODE_NORMAL, wo, TreeElement.ICON_COMPOSITE));
-        else objectNode = new DefaultMutableTreeNode(new TreeElement(wo.getName() + " [" + wo.getID() + "]", TreeElement.NODE_NORMAL, wo, TreeElement.ICON_AGGREGATE));
+        if (composite) objectNode = new DefaultMutableTreeNode(new TreeElement(wo.getName(), TreeElement.NODE_NORMAL, wo, TreeElement.ICON_COMPOSITE));
+        else objectNode = new DefaultMutableTreeNode(new TreeElement(wo.getName(), TreeElement.NODE_NORMAL, wo, TreeElement.ICON_AGGREGATE));
         List<AbstractObject> parts = wo.getCompositeParts();
         for (AbstractObject oo : parts) {
             DefaultMutableTreeNode part = addObject(oo,true);
             objectNode.add(part);
         }
         
-        List<AbstractObject> aggregates = wo.getAggregatePart();
+        List<AbstractObject> aggregates = wo.getAggregateParts();
         for (AbstractObject oo : aggregates) {
             DefaultMutableTreeNode part = addObject(oo,false);
             objectNode.add(part);

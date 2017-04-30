@@ -139,7 +139,7 @@ public class TreeViewer extends javax.swing.JFrame {
                 TreeElement cn_final = (TreeElement) ((DefaultMutableTreeNode) rootFinal.getChildAt(i)).getUserObject();
                 AbstractObject wo_final = (AbstractObject) cn_final.getElement();
 
-                if (wo_initial.getID() == wo_final.getID()) {
+                if (wo_initial == wo_final) {
                     found = true;
                     break;
                 }
@@ -157,7 +157,7 @@ public class TreeViewer extends javax.swing.JFrame {
 
     private JTree addNodeJTree(AbstractObject listObjects, JScrollPane where, DefaultMutableTreeNode node, JTree tree) {
 
-        List<AbstractObject> listWO = listObjects.getAggregatePart(); 
+        List<AbstractObject> listWO = listObjects.getAggregateParts(); 
 
         for (AbstractObject wo : listWO) {
 
@@ -178,16 +178,16 @@ public class TreeViewer extends javax.swing.JFrame {
     private DefaultMutableTreeNode addObject(AbstractObject wo, boolean composite) {
         DefaultMutableTreeNode objectNode;
         if (composite)
-          objectNode  = new DefaultMutableTreeNode(new TreeElement(wo.getName() + " [" + wo.getID() + "]", TreeElement.NODE_NORMAL, wo, TreeElement.ICON_COMPOSITE));
+          objectNode  = new DefaultMutableTreeNode(new TreeElement(wo.getName(), TreeElement.NODE_NORMAL, wo, TreeElement.ICON_COMPOSITE));
         else 
-          objectNode  = new DefaultMutableTreeNode(new TreeElement(wo.getName() + " [" + wo.getID() + "]", TreeElement.NODE_NORMAL, wo, TreeElement.ICON_AGGREGATE));  
+          objectNode  = new DefaultMutableTreeNode(new TreeElement(wo.getName(), TreeElement.NODE_NORMAL, wo, TreeElement.ICON_AGGREGATE));  
         List<AbstractObject> parts = wo.getCompositeParts();
         for (AbstractObject oo : parts) {
             DefaultMutableTreeNode part = addObject(oo,true);
             objectNode.add(part);
         }
         
-        List<AbstractObject> aggregates = wo.getAggregatePart();
+        List<AbstractObject> aggregates = wo.getAggregateParts();
         for (AbstractObject oo : aggregates) {
             DefaultMutableTreeNode part = addObject(oo,false);
             objectNode.add(part);

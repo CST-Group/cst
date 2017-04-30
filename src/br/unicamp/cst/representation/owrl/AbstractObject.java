@@ -10,6 +10,7 @@
  ***************************************************************************** */
 package br.unicamp.cst.representation.owrl;
 
+import com.sun.javafx.scene.control.skin.VirtualFlow;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -22,74 +23,152 @@ public class AbstractObject implements Cloneable {
     private List<Property> properties;//1-n;
     private List<AbstractObject> compositeList;//1-n;
     private List<AbstractObject> aggregateList;//1-n;
+    private List<Affordance> affordances;
     private String name;
-    private int ID;
-    static int ncode = 0;
+    
 
     public AbstractObject(String name) {
         setName(name);
-        setID(ncode++);
         properties = new ArrayList<Property>();
         compositeList = new ArrayList<AbstractObject>();
         aggregateList = new ArrayList<AbstractObject>();
+        affordances = new ArrayList<>();
+        
     }
 
-    public AbstractObject(String name, int id) {
-        setName(name);
-        setID(id);
-        properties = new ArrayList<Property>();
-        compositeList = new ArrayList<AbstractObject>();
-        aggregateList = new ArrayList<AbstractObject>();
-    }
+   
 
-    public AbstractObject(String name, int id, List<Property> props) {
-        setID(id);
+    public AbstractObject(String name, List<Property> props) {
         setName(name);
         setProperties(props);
         compositeList = new ArrayList<AbstractObject>();
         aggregateList = new ArrayList<AbstractObject>();
+        affordances = new ArrayList<>();
 
     }
     
     
-    public AbstractObject(String name, int id, List<Property> props, List<AbstractObject> composite, List<AbstractObject> aggregate) {
-        setID(id);
+    public AbstractObject(String name, List<Property> props, List<AbstractObject> composite, List<AbstractObject> aggregate) {
+       
         setName(name);
         setCompositeParts(composite);
         setAggregatePart(aggregate);
         setProperties(props);
+        affordances = new ArrayList<>();
 
     }
     
-    public AbstractObject(String name, int id, List<Property> props, List<AbstractObject> composite) {
-        setID(id);
+    public AbstractObject(String name, List<Property> props, List<AbstractObject> composite) {
+       
         setName(name);
         setCompositeParts(composite);
         setProperties(props);
+        affordances = new ArrayList<>();
+    }
+    
+  
+   public AbstractObject(List<AbstractObject> aggregate, List<Property> props, String name) {
+        
+        setName(name);
+        setAggregatePart(aggregate);
+        setProperties(props);
+        affordances = new ArrayList<>();
 
     }
     
-    //To do: est� dando conflito por causa do c�digo anterior. A assinatura dos m�todos
-    // s�o iguais
-  /*  public AbstractObject(String name, int id, List<Property> props, List<AbstractObject> aggregate) {
-        setID(id);
-        setId(name);
-        setAggregatedPart(aggregate);
-        setProperties(props);
-
-    }*/
-    
-    
-
-    public void modify(AbstractObject modifications) {
-        for (Property prop_change : modifications.getProperties()) {
-            for (Property prop_base : getProperties()) {
-                if (prop_base.getName().compareTo(prop_change.getName()) == 0) {
-                    // prop_base.setQualityDimension(prop_change.getQualityDimensions());
+    public List<Object> search(String path) {
+        path = path.trim();
+        int dot = path.indexOf(".");
+        String name = path;
+        String subPath = null;
+        if (dot > -1) {
+            name = path.substring(0, dot);
+            subPath = path.substring(dot + 1);
+        }
+        List<Object> results = new ArrayList<>();
+        if (getName().equals(name)) {
+            if (subPath != null) {
+                results.addAll(search(subPath));
+            } else {
+                results.add(this);
+            }
+        }
+        for (AbstractObject composite : compositeList) {
+            if (composite.getName().equals(name)) {
+                if (subPath != null) {
+                    results.addAll(composite.search(subPath));
+                } else {
+                    results.add(composite);
                 }
+            }
+            results.addAll(composite.search(path));
+        }
+        for (AbstractObject aggregate : aggregateList) {
+            if (aggregate.getName().equals(name)) {
+                if (subPath != null) {
+                    results.addAll(aggregate.search(subPath));
+                } else {
+                    results.add(aggregate);
+                }
+            }
+            results.addAll(aggregate.search(path));
+        }
+        for (Property property : properties) {
+            if (property.getName().equals(name)) {
+                if (subPath != null) {
+                    results.addAll(property.search(subPath));
+                } else {
+                    results.add(property);
+                }
+            }
+            results.addAll(property.search(path));
+        }
+        return results;
+    }
+    
+    
+    public void delete(String path) {
+        String parentPath = null;
+        String name = path;
+        int dot = path.lastIndexOf(".");
+        if (dot > -1) {
+            parentPath = path.substring(0, dot);
+            name = path.substring(dot + 1);
+        }
+        Object parent = this;
+        List<Object> children = new ArrayList<>();
+        if (parentPath != null) {
+            List<Object> parents = search(parentPath);
+            int p = parents.size();
+            do {
+                p--;
+                parent = parents.get(p);
+                if (parent instanceof AbstractObject) {
+                    children = ((AbstractObject) parent).search(name);
+                } else {
+                    children = ((Property) parent).search(name);
+                }
+            } while (p > 0 && children.isEmpty());
+        } else {
+            children = search(name);
+        }
+        if (!children.isEmpty()) {
+            Object child = children.get(children.size() - 1);
+            if (parent instanceof AbstractObject) {
+                AbstractObject ao = (AbstractObject) parent;
+                if (child instanceof AbstractObject) {
+                    ao.removeAggregatePart((AbstractObject) child);
+                    ao.removeCompositePart((AbstractObject) child);
+                } else {
+                    ao.removeProperty((Property) child);
+                }
+            } else {
+                ((Property) parent).deleteChild(child);
             }
         }
     }
+
+   
 
     public List<AbstractObject> getCompositeParts() {
         return compositeList;
@@ -103,7 +182,11 @@ public class AbstractObject implements Cloneable {
         compositeList.add(part);
     }
 
-    public List<AbstractObject> getAggregatePart() {
+    public void removeCompositePart(AbstractObject part) {
+        compositeList.remove(part);
+    }
+
+    public List<AbstractObject> getAggregateParts() {
         return aggregateList;
     }
 
@@ -114,6 +197,10 @@ public class AbstractObject implements Cloneable {
     public void addAggregatePart(AbstractObject part) {
         aggregateList.add(part);
     }
+    
+    public void removeAggregatePart(AbstractObject part) {
+        aggregateList.remove(part);
+    }
 
     public String getName() {
         return name;
@@ -123,13 +210,7 @@ public class AbstractObject implements Cloneable {
         this.name = name;
     }
 
-    public int getID() {
-        return ID;
-    }
-
-    public void setID(int ID) {
-        this.ID = ID;
-    }
+   
 
     public List<Property> getProperties() {
         return properties;
@@ -143,17 +224,35 @@ public class AbstractObject implements Cloneable {
         properties.add(prop);
     }
 
+    public void removeProperty(Property prop) {
+        properties.remove(prop);
+    }
+
+    public List<Affordance> getAffordances() {
+        return affordances;
+    }
+
+    public void setAffordances(List<Affordance> affordances) {
+        this.affordances = affordances;
+    }
+
     @Override
     public AbstractObject clone() {
         List<Property> newProperties = new ArrayList<>();
         for (Property p : getProperties()) {
             newProperties.add(p.clone());
         }
-        List<AbstractObject> newParts = new ArrayList<>();
+        List<AbstractObject> newComposite = new ArrayList<>();
         for (AbstractObject wo : getCompositeParts()) {
-            newParts.add(wo.clone());
+            newComposite.add(wo.clone());
         }
-        return new AbstractObject(getName(), getID(), newProperties, newParts);
+        List<AbstractObject> newAggregate = new ArrayList<>();
+        for (AbstractObject wo : getAggregateParts()) {
+            newAggregate.add(wo.clone());
+        }
+        AbstractObject result = new AbstractObject(getName(), newProperties, newComposite, newAggregate);
+        result.setAffordances(getAffordances());
+        return result;
     }
     
     public void deleteChild(Object child) {

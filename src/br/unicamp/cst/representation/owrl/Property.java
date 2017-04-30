@@ -76,5 +76,15 @@ public final class Property {
             //System.out.println("qdres: "+qdres);
         }
     }
+    
+    public List<Object> search(String name) {
+        List<Object> results = new ArrayList<>();
+        for (QualityDimension qd : qualityDimensions) {
+            if (qd.getName().equals(name)) {
+                results.add(qd);
+            }
+        }
+        return results;
+    }
 
 }
