@@ -354,7 +354,7 @@ public class AbstractObjectEditor extends javax.swing.JFrame {
         actuator.addProperty(new Property("velocity",new QualityDimension("intensity",-0.12)));
         robot.addCompositePart(actuator);
         robot.addAggregatePart(actuator.clone());
-        robot.addProperty(new Property("Model",new QualityDimension("Serial#","1234XDr56")));   
+        robot.addProperty(new Property("Model",new QualityDimension("Serial#","1234XDr56")));
         AbstractObjectEditor ov = new AbstractObjectEditor(robot);
        
        

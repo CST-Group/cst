@@ -10,7 +10,6 @@
  ***************************************************************************** */
 package br.unicamp.cst.representation.owrl;
 
-import com.sun.javafx.scene.control.skin.VirtualFlow;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -168,7 +167,14 @@ public class AbstractObject implements Cloneable {
         }
     }
 
-   
+    public Affordance detectAffordance(AbstractObject after) {
+        for (Affordance affordance : getAffordances()) {
+            if (affordance.getDetector().compare(this, after) == 1) {
+                return affordance;
+            }
+        }
+        return null;
+    }
 
     public List<AbstractObject> getCompositeParts() {
         return compositeList;

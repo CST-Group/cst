@@ -15,11 +15,11 @@ public abstract class Affordance {
     
     private String name;
     private String descriptor; //???? Qual a utilidade do descritor????
-    private Comparator detector;
+    private Comparator<AbstractObject> detector;
     
     
     
-    public Affordance(String name, String descriptor, Comparator detector) {
+    public Affordance(String name, String descriptor, Comparator<AbstractObject> detector) {
         this.name = name;
         this.descriptor = descriptor;
         this.detector = detector;
@@ -45,10 +45,10 @@ public abstract class Affordance {
         return detector;
     }
 
-    public void setDetector(Comparator detector) {
+    public void setDetector(Comparator<AbstractObject> detector) {
         this.detector = detector;
     }
     
-    public abstract void apply(AbstractObject object, double[] factor);
+    public abstract void apply(AbstractObject object, Object[] factors);
     
 }
