@@ -10,9 +10,9 @@ public class Goal {
     private String id;
     private AbstractObject goalAbstractObjects;
 
-    public Goal(String id, AbstractObject goalConfiguration){
+    public Goal(String id, AbstractObject goalAbstractObjects){
         this.setId(id);
-        this.setGoalAbstractObjects(goalConfiguration);
+        this.setGoalAbstractObjects(goalAbstractObjects);
     }
 
     public String getId() {
