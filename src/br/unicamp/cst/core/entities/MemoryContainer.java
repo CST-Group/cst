@@ -381,12 +381,12 @@ public class MemoryContainer implements Memory {
 		mc.setI("Terceiro", 0.7d);    
 
 		/*
-		 * Exemplo filtrando por predicado
+		 * Example filtering by predicate
 		 */
 		System.out.println(mc.getI(x -> x.getEvaluation().equals(0.6d)));
 		
 		/*
-		 * Exemplo de passar uma regra para retornar elemento com maior evaluation
+		 * Example passing a lambda expression to get the element with greatest evaluation
 		 */
 		System.out.println(mc.getI((a,b) -> { 
 			   if (a.getEvaluation() > b.getEvaluation()) return a;     
@@ -396,7 +396,7 @@ public class MemoryContainer implements Memory {
 			}));
 		
 		/*
-		 * Exemplo de passar uma regra para retornar elemento com menor evaluation
+		 * Example passing a lambda expression to get the element with smallest evaluation
 		 */
 		System.out.println(mc.getI((a,b) -> { 
 			   if (a.getEvaluation() < b.getEvaluation()) return a;     
