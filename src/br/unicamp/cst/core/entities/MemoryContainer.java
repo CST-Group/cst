@@ -4,6 +4,9 @@
 package br.unicamp.cst.core.entities;
 
 import java.util.ArrayList;
+import java.util.Optional;
+import java.util.function.BinaryOperator;
+import java.util.function.Predicate;
 
 /**
  * @author andre
@@ -60,16 +63,66 @@ public class MemoryContainer implements Memory {
 
 		return I;
 	}
-        
-        public synchronized Object getI(int index) {
+
+	public synchronized Object getI(int index) {
 
 		if (index >= 0 && index < memories.size()) {
-                    return(memories.get(index).getI());
-                }
-                else {
-                    System.out.println("Index for the "+getName()+".getI(index) method greater than the number of MemoryObjects within the MemoryContainer");
-                    return(null);
-                }
+			return(memories.get(index).getI());
+		}
+		else {
+			System.out.println("Index for the "+getName()+".getI(index) method greater than the number of MemoryObjects within the MemoryContainer");
+			return(null);
+		}
+	}
+
+	/**
+	 * 
+	 * @param predicate
+	 * @return
+	 */
+	public synchronized Object getI(Predicate<Memory> predicate){
+
+		Object object = null;
+
+		if(memories!=null && memories.size()>0){
+
+			Optional<Memory> optional = memories.stream().filter(predicate).findFirst();
+
+			if(optional.isPresent()) {//Check whether optional has element you are looking for
+
+				Memory memory = optional.get();//get it from optional
+				object = memory.getI();
+			}
+
+		}
+
+		return object;
+
+	}
+	
+	/**
+	 * 
+	 * @param accumulator
+	 * @return
+	 */
+	public synchronized Object getI(BinaryOperator<Memory> accumulator){
+
+		Object object = null;
+
+		if(memories!=null && memories.size()>0){
+
+			Optional<Memory> optional = memories.stream().reduce(accumulator);
+
+			if(optional.isPresent()) {//Check whether optional has element you are looking for
+
+				Memory memory = optional.get();//get it from optional
+				object = memory.getI();
+			}
+
+		}
+
+		return object;
+
 	}
 
 	/** 
@@ -79,7 +132,7 @@ public class MemoryContainer implements Memory {
 	public synchronized int setI(Object info) {
 		return setI(info,-1.0d);
 	}
-	
+
 	public synchronized int setI(Object info, Double evaluation) {
 
 		MemoryObject mo = new MemoryObject(); 
@@ -89,7 +142,7 @@ public class MemoryContainer implements Memory {
 		mo.setType("");
 
 		memories.add(mo);
-		
+
 		return memories.indexOf(mo);
 
 	}
@@ -191,15 +244,15 @@ public class MemoryContainer implements Memory {
 	public synchronized int add(Memory memory) {
 
 		int index = -1;
-		
+
 		if(memory != null){
 
 			memories.add(memory);
-			
+
 			index = memories.indexOf(memory);
 
 		} 
-		
+
 		return index;
 
 	}
@@ -212,7 +265,7 @@ public class MemoryContainer implements Memory {
 	 * @return
 	 */
 	public synchronized int setI(String info, double evaluation, String type) {
-		
+
 		int index = -1;
 
 		if(memories != null){
@@ -220,7 +273,7 @@ public class MemoryContainer implements Memory {
 			boolean set = false;
 
 			for(int i = 0; i < memories.size(); i++){
-				
+
 				Memory memory = memories.get(i);
 
 				if(memory != null && memory instanceof MemoryObject){
@@ -248,15 +301,15 @@ public class MemoryContainer implements Memory {
 				mo.setType(type);
 
 				memories.add(mo);
-				
+
 				index = memories.indexOf(mo);
 
 			}
 		}
-		
+
 		return index;
 	}
-	
+
 	/**
 	 * 
 	 * @param info
@@ -265,7 +318,7 @@ public class MemoryContainer implements Memory {
 	 * @return
 	 */
 	public synchronized int setI(Object info, double evaluation, String type) {
-		
+
 		int index = -1;
 
 		if(memories != null){
@@ -273,7 +326,7 @@ public class MemoryContainer implements Memory {
 			boolean set = false;
 
 			for(int i = 0; i < memories.size(); i++){
-				
+
 				Memory memory = memories.get(i);
 
 				if(memory != null && memory instanceof MemoryObject){
@@ -301,17 +354,57 @@ public class MemoryContainer implements Memory {
 				mo.setType(type);
 
 				memories.add(mo);
-				
+
 				index = memories.indexOf(mo);
 
 			}
 		}
-		
+
 		return index;
 	}
 
 	public synchronized ArrayList<Memory> getAllMemories() {
 		return memories;
+	}
+
+	/**
+	 * This method is only to test lambda expressions passed as a way of getting an element from memories (code passed as data)
+	 * 
+	 */
+	public static void main(String[] args) {
+
+
+		MemoryContainer mc = new MemoryContainer();
+
+		mc.setI("Primeiro", 0.5d);
+		mc.setI("Segundo", 0.6d);
+		mc.setI("Terceiro", 0.7d);    
+
+		/*
+		 * Exemplo filtrando por predicado
+		 */
+		System.out.println(mc.getI(x -> x.getEvaluation().equals(0.6d)));
+		
+		/*
+		 * Exemplo de passar uma regra para retornar elemento com maior evaluation
+		 */
+		System.out.println(mc.getI((a,b) -> { 
+			   if (a.getEvaluation() > b.getEvaluation()) return a;     
+			   if (a.getEvaluation()<b.getEvaluation()) return b;
+			   if (a.getEvaluation()==b.getEvaluation()) return a;
+			return a;
+			}));
+		
+		/*
+		 * Exemplo de passar uma regra para retornar elemento com menor evaluation
+		 */
+		System.out.println(mc.getI((a,b) -> { 
+			   if (a.getEvaluation() < b.getEvaluation()) return a;     
+			   if (a.getEvaluation()> b.getEvaluation()) return b;
+			   if (a.getEvaluation()== b.getEvaluation()) return a;
+			return a;
+			}));
+
 	}
 
 }
