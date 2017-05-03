@@ -28,6 +28,7 @@ public abstract class MotivationalCodelet extends Codelet {
     private double priority;
     private double urgencyThreshold;
     private double level;
+    private boolean urgencyState = false;
 
     private Map<Memory, Double> drivesRelevance;
     private List<Memory> sensoryVariables;
@@ -132,8 +133,13 @@ public abstract class MotivationalCodelet extends Codelet {
 
         if (driveActivation > getUrgencyThreshold()) {
             evaluation = 0.5 + drive.getPriority();
+            drive.setUrgencyState(true);
         } else {
-            evaluation = (driveActivation + drive.getEmotionalDistortion()) / 2;
+
+            double emotionalDistortion = drive.getEmotionalDistortion();
+
+            evaluation = emotionalDistortion > 0? (driveActivation + drive.getEmotionalDistortion()) / 2 : driveActivation;
+            drive.setUrgencyState(false);
         }
 
         return evaluation;

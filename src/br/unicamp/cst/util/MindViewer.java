@@ -14,9 +14,7 @@ import br.unicamp.cst.core.entities.TestCodelet;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.Timer;
 import java.util.TimerTask;
 import java.util.logging.Level;
@@ -39,7 +37,8 @@ import org.jfree.data.category.DefaultCategoryDataset;
  * @author gudwin
  */
 public class MindViewer extends javax.swing.JFrame {
-    
+
+    private String windowName;
     private JTree jtree;
     Mind wog;
     
@@ -48,13 +47,6 @@ public class MindViewer extends javax.swing.JFrame {
     private List<Codelet> goalCodelets;
     private List<Codelet> appraisalCodelets;
     private List<Codelet> moodCodelets;
-
-    private DefaultTreeModel dtMotivationalCodelets;
-    private DefaultTreeModel dtEmotionalCodelets;
-    private DefaultTreeModel dtAppraisalCodelets;
-    private DefaultTreeModel dtMoodCodelets;
-    private DefaultTreeModel dtGoalCodelets;
-    private DefaultTreeModel dtMindEntities;
 
     private Thread threadDrives;
     private Thread threadEmotionalDrives;
@@ -74,7 +66,10 @@ public class MindViewer extends javax.swing.JFrame {
         jspMindsEntities.setViewportView(jtree);
         jtree.setCellRenderer(new RendererJTree());*/
         setWO(mind);
-        setDtMindEntities(createTreeModelGUI(jspMindsEntities, wog.getCodeRack().getAllCodelets(), windowName));
+
+        setWindowName(windowName);
+
+        createTreeModelGUI(jspMindsEntities, wog.getCodeRack().getAllCodelets(), windowName);
         setTitle(windowName);
         startMindEntitiesThread();
         //StartTimer();
@@ -255,11 +250,11 @@ public class MindViewer extends javax.swing.JFrame {
         setAppraisalCodelets(appraisalCodelets);
         setMoodCodelets(moodCodelets);
 
-        setDtMotivationalCodelets(createTreeModelGUI(spMotivationalCodelets, motivationalCodelets, "Motivational Codelets"));
-        setDtGoalCodelets(createTreeModelGUI(spGoalCodelets, goalCodelets, "Goal Codelets"));
-        setDtAppraisalCodelets(createTreeModelGUI(spAppraisalCodelets, appraisalCodelets, "Appraisal Codelets"));
-        setDtMoodCodelets(createTreeModelGUI(spMoodCodelets, moodCodelets, "Mood Codelets"));
-        setDtGoalCodelets(createTreeModelGUI(spEmotionalCodelets, emotionalCodelets, "Emotional Codelets"));
+        createTreeModelGUI(spMotivationalCodelets, motivationalCodelets, "Motivational Codelets");
+        createTreeModelGUI(spGoalCodelets, goalCodelets, "Goal Codelets");
+        createTreeModelGUI(spAppraisalCodelets, appraisalCodelets, "Appraisal Codelets");
+        createTreeModelGUI(spMoodCodelets, moodCodelets, "Mood Codelets");
+        createTreeModelGUI(spEmotionalCodelets, emotionalCodelets, "Emotional Codelets");
 
         startMotivationalThreads();
     }
@@ -290,9 +285,9 @@ public class MindViewer extends javax.swing.JFrame {
                             Logger.getLogger(MindViewer.class.getName()).log(Level.SEVERE, null, ex);
                         }
                     }
-                    
-                    updateValuesInTree(wog.getCodeRack().getAllCodelets(), getDtMindEntities());
-                    
+
+                    createTreeModelGUI(jspMindsEntities, wog.getCodeRack().getAllCodelets(), getWindowName());
+
                     try {
                         int refreshTime = txtRefreshTime.getText().trim().equals("") ? 100 : Integer.parseInt(txtRefreshTime.getText());
                         Thread.currentThread().sleep(refreshTime);
@@ -328,10 +323,8 @@ public class MindViewer extends javax.swing.JFrame {
                             Logger.getLogger(MindViewer.class.getName()).log(Level.SEVERE, null, ex);
                         }
                     }
-                    
-                    updateValuesInTree(motivationalCodelets, getDtMotivationalCodelets());
-                    spMotivationalCodelets.revalidate();
-                    spMotivationalCodelets.repaint();
+
+                    createTreeModelGUI(spMotivationalCodelets, motivationalCodelets, "Motivational Codelets");
                     updateValuesInChart(dataset, motivationalCodelets);
                     try {
                         int refreshTime = txtRefreshTime.getText().trim().equals("") ? 100 : Integer.parseInt(txtRefreshTime.getText());
@@ -364,8 +357,8 @@ public class MindViewer extends javax.swing.JFrame {
                             Logger.getLogger(MindViewer.class.getName()).log(Level.SEVERE, null, ex);
                         }
                     }
-                    
-                    updateValuesInTree(emotionalCodelets, getDtMotivationalCodelets());
+
+                    createTreeModelGUI(spEmotionalCodelets, emotionalCodelets, "Emotional Codelets");
                     updateValuesInChart(dataset, emotionalCodelets);
                     try {
                         int refreshTime = txtRefreshTime.getText().trim().equals("") ? 100 : Integer.parseInt(txtRefreshTime.getText());
@@ -418,36 +411,6 @@ public class MindViewer extends javax.swing.JFrame {
         }
     }
 
-    private void updateValuesInTree(List<Codelet> codelets, DefaultTreeModel defaultTreeModel) {
-        for (Codelet codelet : codelets) {
-
-            ArrayList<Memory> allMemories = new ArrayList<>();
-            allMemories.addAll(codelet.getInputs());
-            allMemories.addAll(codelet.getOutputs());
-
-            for (Memory memory : allMemories) {
-                DefaultMutableTreeNode node = (DefaultMutableTreeNode)defaultTreeModel.getRoot();
-
-
-                if(node !=null) {
-                    String value = memory.getName() + " : ";
-                    Object mval = memory.getI();
-
-                    if (mval != null) {
-                        value += mval.toString();
-                    } else {
-                        value += "null";
-                    }
-
-                    Object o = new TreeElement(value, TreeElement.NODE_NORMAL, value, ((TreeElement)node.getUserObject()).getIcon());
-                    node.setUserObject(o);
-                    defaultTreeModel.nodeChanged(node);
-                }
-            }
-        }
-    }
-
-    
     /**
      * @param args the command line arguments
      */
@@ -641,7 +604,7 @@ public class MindViewer extends javax.swing.JFrame {
        expandAllNodes(jtree);
     }
     
-     public void StartTimer() {
+    public void StartTimer() {
         Timer t = new Timer();
         WOVTimerTask tt = new WOVTimerTask(this);
         t.scheduleAtFixedRate(tt,0,3000);
@@ -653,12 +616,12 @@ public class MindViewer extends javax.swing.JFrame {
         System.out.println("update");
     }
 
-    public DefaultTreeModel getDtMindEntities() {
-        return dtMindEntities;
+    public String getWindowName() {
+        return windowName;
     }
 
-    public void setDtMindEntities(DefaultTreeModel dtMindEntities) {
-        this.dtMindEntities = dtMindEntities;
+    public void setWindowName(String windowName) {
+        this.windowName = windowName;
     }
 
     class WOVTimerTask extends TimerTask {
@@ -807,76 +770,6 @@ public class MindViewer extends javax.swing.JFrame {
      */
     public void setbStopRefresh(boolean bStopRefresh) {
         this.bStopRefresh = bStopRefresh;
-    }
-
-    /**
-     * @return the dtMotivationalCodelets
-     */
-    public DefaultTreeModel getDtMotivationalCodelets() {
-        return dtMotivationalCodelets;
-    }
-
-    /**
-     * @param dtMotivationalCodelets the dtMotivationalCodelets to set
-     */
-    public void setDtMotivationalCodelets(DefaultTreeModel dtMotivationalCodelets) {
-        this.dtMotivationalCodelets = dtMotivationalCodelets;
-    }
-
-    /**
-     * @return the dtEmotionalCodelets
-     */
-    public DefaultTreeModel getDtEmotionalCodelets() {
-        return dtEmotionalCodelets;
-    }
-
-    /**
-     * @param dtEmotionalCodelets the dtEmotionalCodelets to set
-     */
-    public void setDtEmotionalCodelets(DefaultTreeModel dtEmotionalCodelets) {
-        this.dtEmotionalCodelets = dtEmotionalCodelets;
-    }
-
-    /**
-     * @return the dtAppraisalCodelets
-     */
-    public DefaultTreeModel getDtAppraisalCodelets() {
-        return dtAppraisalCodelets;
-    }
-
-    /**
-     * @param dtAppraisalCodelets the dtAppraisalCodelets to set
-     */
-    public void setDtAppraisalCodelets(DefaultTreeModel dtAppraisalCodelets) {
-        this.dtAppraisalCodelets = dtAppraisalCodelets;
-    }
-
-    /**
-     * @return the dtMoodCodelets
-     */
-    public DefaultTreeModel getDtMoodCodelets() {
-        return dtMoodCodelets;
-    }
-
-    /**
-     * @param dtMoodCodelets the dtMoodCodelets to set
-     */
-    public void setDtMoodCodelets(DefaultTreeModel dtMoodCodelets) {
-        this.dtMoodCodelets = dtMoodCodelets;
-    }
-
-    /**
-     * @return the dtGoalCodelets
-     */
-    public DefaultTreeModel getDtGoalCodelets() {
-        return dtGoalCodelets;
-    }
-
-    /**
-     * @param dtGoalCodelets the dtGoalCodelets to set
-     */
-    public void setDtGoalCodelets(DefaultTreeModel dtGoalCodelets) {
-        this.dtGoalCodelets = dtGoalCodelets;
     }
 
     /**

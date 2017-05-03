@@ -25,6 +25,7 @@ public class Drive implements Serializable {
     private double level;
     private double urgencyThreshold;
     private double emotionalDistortion = 0;
+    private boolean urgencyState = false;
 
     public Drive(String name){
         setName(name);
@@ -98,7 +99,15 @@ public class Drive implements Serializable {
     @Override
     public String toString(){
 
-        return"Drive [name="+getName()+", activation="+getActivation()+", priority="+getPriority()+", level="+getLevel()
+        return"Drive [name="+getName()+", activation="+getActivation()+", urgency state="+isUrgencyState()+", priority="+getPriority()+", level="+getLevel()
                 +", urgency threshold="+getUrgencyThreshold()+", emotional distortion="+getEmotionalDistortion()+"]";
+    }
+
+    public boolean isUrgencyState() {
+        return urgencyState;
+    }
+
+    public void setUrgencyState(boolean urgencyState) {
+        this.urgencyState = urgencyState;
     }
 }
