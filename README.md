@@ -23,6 +23,10 @@ The definition and choice of a particular cognitive architecture is constructed 
 
 Figure 2 - The CST Overall Architecture: Codelets
 
+## Requirements
+
+CST requires at minimum Java 8.
+
 ### Authors and Contributors
 The main contributors of this project are: 
 * [Ricardo Ribeiro Gudwin](https://github.com/rgudwin)
