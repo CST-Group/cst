@@ -1,11 +1,10 @@
 /dist/
 /build/
-/nbproject/private/
 /bin/
 /out/
 /.project
 /.classpath
 /.idea/
 .idea/
-/.DS_Store
 cst.iml
+**/.DS_Store
