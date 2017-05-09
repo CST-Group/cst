@@ -188,7 +188,7 @@ public class BehaviorNetwork
 
 
 	/**
-	 * @param behaviors the competences to set
+	 * @param codelet the competences to set
 	 */
 	public void addCodelet(Codelet codelet) 
 	{
@@ -204,7 +204,7 @@ public class BehaviorNetwork
 	
 
 	/**
-	 * @param behaviors the competences to set
+	 * @param codelet the competences to set
 	 */
 	public void removeCodelet(Codelet codelet) 
 	{

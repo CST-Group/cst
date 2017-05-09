@@ -364,7 +364,7 @@ public class QLearning {
 	 * and a random one with probability (1-e) 
 	 *  If a given state has no record of one or more actions, it will consider them as valued 0.
 	 * @param state
-	 * @param e
+	 * 
          * @return selectedAction
 	 */
 	public String getAction(String state){//TODO should improve this. It should consider all non explored actions as being equally 0 for all purposes

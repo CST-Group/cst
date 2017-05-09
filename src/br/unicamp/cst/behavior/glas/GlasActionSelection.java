@@ -26,7 +26,7 @@ public class GlasActionSelection {
 	private int[] solution_tree_phenotype;//Phenotype
 /**
  * Chromossome (Phenotype) of the new StateMachine
- * @param chromossome
+ * @param solution_tree_phenotype
  */
 	public GlasActionSelection(int[] solution_tree_phenotype) {
 		this.solution_tree_phenotype=solution_tree_phenotype;

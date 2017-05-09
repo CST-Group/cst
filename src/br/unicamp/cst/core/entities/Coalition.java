@@ -37,7 +37,7 @@ public class Coalition
    private double activation;
    
    /**
-    * @param isSpotLightHere
+    * 
     * @param codeletsList
     */
    public Coalition(List<Codelet> codeletsList)

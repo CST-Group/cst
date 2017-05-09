@@ -580,8 +580,8 @@ public class LearnerCodelet extends Codelet
 
 	/**
 	 * Higher bound for number of nodes the solution tree can have.
-	 * Must be: minNumberOfNodes<= maxNumberOfNodes
-	 * Default: maxNumberOfNodes=10
+	 * Must be: minNumberOfNodes less or equal maxNumberOfNodes
+	 * Default: maxNumberOfNodes equals 10
 	 * 
 	 * Warning: Large values of maxNumberOfNodes might make learning too slow
 	 * @param maxNumberOfNodes the maxNumberOfNodes to set
@@ -595,8 +595,8 @@ public class LearnerCodelet extends Codelet
 
 	/**
 	 * Lower bound for number of nodes the solution tree can have.
-	 * Must be: minNumberOfNodes>=1 and minNumberOfNodes<= maxNumberOfNodes
-	 * Default: minNumberOfNodes=1
+	 * Must be: minNumberOfNodes less or equals 1 and minNumberOfNodes less or equals maxNumberOfNodes
+	 * Default: minNumberOfNodes equals 1
 	 * @return the minNumberOfNodes
 	 */
 	public int getMinNumberOfNodes() {

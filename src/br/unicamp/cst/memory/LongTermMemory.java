@@ -109,8 +109,7 @@ public class LongTermMemory
 	 *  Stores Information of a given type in long term memory.
 	 *  /TODO At this moment, long term memory is persisted in a json file in hard disk. This should be changed to use a DB such as postgre or mysql. 
 	 *  
-	 * @param type
-	 * @param string
+	 * @param mo
 	 */
 	public void learn(MemoryObject mo) {
 		MemoryObject hasMemory=this.checksIfMemoryExists(mo.getName(),mo.getI());

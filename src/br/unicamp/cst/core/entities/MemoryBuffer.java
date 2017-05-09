@@ -86,7 +86,7 @@ public class MemoryBuffer
 
 
 	/**
-	 * @param list of Memory Objects to be added
+	 * @param contents list of Memory Objects to be added
 	 */
 	public synchronized void putList(List<MemoryObject> contents)
 	{

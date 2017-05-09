@@ -157,7 +157,8 @@ public class Simple2dRLearn {
 	/**
 	 * Gets the best action for state s.
 	 * If there is a tie between best actions, it chooses randomly between them. 
-	 * @param s input state
+	 * @param s1 first 
+         * @param s2 second 
 	 * @return best action for state s
 	 */
 	public int getBestAction(int s1, int s2){

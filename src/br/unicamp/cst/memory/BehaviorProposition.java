@@ -62,7 +62,7 @@ private String behaviorPropositionString;
 
         /**
          * This method return action list.
-	 * @return ArrayList<String>.
+	 * @return List of Actions
 	 */
 	public ArrayList<String> getActionList() {
 		return actionList;
@@ -70,7 +70,7 @@ private String behaviorPropositionString;
         
         /**
          * This method set action list.
-	 * @params actionList.
+	 * @param actionList.
 	 */
 	public void setActionList(ArrayList<String> actionList) {
 		this.actionList = actionList;

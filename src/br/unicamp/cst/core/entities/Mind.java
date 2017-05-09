@@ -59,7 +59,7 @@ public class Mind
 	/**
 	 * Creates a new MemoryObject (Java style) and adds it to the Raw Memory, using provided info and type
 	 * 
-	 * @param type memory object type
+	 * @param name memory object name
 	 * @param info memory object info
 	 * @return mo created MemoryObject
 	 */
