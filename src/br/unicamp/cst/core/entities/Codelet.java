@@ -69,32 +69,32 @@ public abstract class Codelet implements Runnable
 	 * Input memories, the ones that were broadcasted.
 	 */
 	protected List<Memory> broadcast=new ArrayList<Memory>();
-	
+
 	/** defines if proc() should be automatically called in a loop */
 	protected boolean loop=true; //
-	
+
 	/** If the proc() method is set to be called automatically in a loop, this
-         * variable stores the time step for such a loop. A timeStep of value 0 means
-         * that the proc() method should be called continuously, without interval.
-         */
+	 * variable stores the time step for such a loop. A timeStep of value 0 means
+	 * that the proc() method should be called continuously, without interval.
+	 */
 	protected long timeStep=0; //
-	
+
 	/** A codelet is a priori enabled to run its proc(). However, if it tries to read from a given output and fails, it becomes not able to do so.*/
 	private boolean enabled=true; 
-	
+
 	/** Must be zero for this codelet to be enabled*/
 	private int enable_count=0;
-	
+
 	/** Gives this codelet a name, mainly for debugging purposes */
 	protected String name=Thread.currentThread().getName();
-	
+
 	/** This variable is a safe lock for multithread access */
 	public Lock lock= new ReentrantLock();
 
 	/** 
 	 * This method is used in every Codelet to capture input, broadcast and output MemoryObjects
-         * which shall be used in the proc() method. 
-         * This abstract method must be implemented by the user. Here, the user must get the inputs and outputs it needs to perform proc.
+	 * which shall be used in the proc() method. 
+	 * This abstract method must be implemented by the user. Here, the user must get the inputs and outputs it needs to perform proc.
 	 */
 	public abstract void accessMemoryObjects();
 
@@ -134,17 +134,17 @@ public abstract class Codelet implements Runnable
 
 				if(timeStep > 0)
 				{
-									
+
 					long timeMarker = System.currentTimeMillis();
 
 					while(System.currentTimeMillis() < timeMarker + timeStep){}
 				}	
-				
+
 			}catch(Exception e)
 			{
 				e.printStackTrace();
 			}
-		
+
 		}while(this.shouldLoop());
 	}
 
@@ -251,7 +251,7 @@ public abstract class Codelet implements Runnable
 		this.name = name;
 	}
 
-	
+
 	/**
 	 * @return the loop
 	 */
@@ -311,7 +311,7 @@ public abstract class Codelet implements Runnable
 		this.inputs.add(input);
 	}
 
-        /**
+	/**
 	 * @param adds a list of inputs
 	 */
 	public synchronized void addInputs(List<Memory> inputs)
@@ -346,12 +346,12 @@ public abstract class Codelet implements Runnable
 	{
 		this.outputs.removeAll(outputs);
 	}
-	
+
 	public synchronized void removeFromInput(List<Memory> inputs)
 	{
 		this.inputs.removeAll(inputs);
 	}
-        public synchronized void addOutputs(List<Memory> outputs)
+	public synchronized void addOutputs(List<Memory> outputs)
 	{
 		this.outputs.addAll(outputs);
 	}
@@ -371,7 +371,7 @@ public abstract class Codelet implements Runnable
 	private synchronized ArrayList<Memory> getOutputsOfType(String type) 
 	{
 		ArrayList<Memory> outputsOfType = new ArrayList<Memory>();
-		
+
 		if(outputs!=null&&outputs.size()>0)
 			for(Memory mo:this.outputs)
 			{
@@ -390,7 +390,7 @@ public abstract class Codelet implements Runnable
 	public synchronized ArrayList<Memory> getInputsOfType(String type) 
 	{
 		ArrayList<Memory> inputsOfType = new ArrayList<Memory>();
-		
+
 		if(inputs!=null&&inputs.size()>0)
 			for(Memory mo:this.inputs)
 			{
@@ -399,7 +399,7 @@ public abstract class Codelet implements Runnable
 					inputsOfType.add(mo);
 				}
 			}
-		
+
 		return inputsOfType;
 	}
 
@@ -443,180 +443,188 @@ public abstract class Codelet implements Runnable
 	/**
 	 * @param b one input to set
 	 */
-	 public synchronized void addBroadcast(Memory b)
-	 {
-		 this.broadcast.add(b);
-	 }
+	public synchronized void addBroadcast(Memory b)
+	{
+		this.broadcast.add(b);
+	}
 
-	 /**
-	  * 
-	  * @return The name of the thread running this Codelet
-	  */
-	 public synchronized String getThreadName(){
-		 return Thread.currentThread().getName();
-	 }
+	/**
+	 * @param b one input to set
+	 */
+	public synchronized void addBroadcasts(List<Memory> broadcast)
+	{
+		this.broadcast.addAll(broadcast);
+	}
 
-	 /* (non-Javadoc)
-	  * @see java.lang.Object#toString()
-	  */
-	 @Override
-	 public synchronized String toString()
-	 {
-		 final int maxLen = 10;
-		 return "Codelet [activation=" + activation + ", " + "name=" + name + ", " +(broadcast != null ? "broadcast=" + broadcast.subList(0, Math.min(broadcast.size(), maxLen)) + ", " : "") + (inputs != null ? "inputs=" + inputs.subList(0, Math.min(inputs.size(), maxLen)) + ", " : "") + (outputs != null ? "outputs=" + outputs.subList(0, Math.min(outputs.size(), maxLen)) : "") + "]";
-	 }
+	/**
+	 * 
+	 * @return The name of the thread running this Codelet
+	 */
+	public synchronized String getThreadName(){
+		return Thread.currentThread().getName();
+	}
 
-	 /**
-	  * This method returns an input memory from its input list.
-	  * If it couldn't find the given M, it sets this codelet as not able to perform proc(), and keeps trying to find it.
-	  * 
-	  * @param type type of memory it needs
-	  * @param index position of memory in the sublist
-	  * @return memory of type at position 
-	  */
-	 public synchronized Memory getInput(String type, int index)
-	 {
-		 Memory inputMO = null;
-		 ArrayList<Memory> listMO=new ArrayList<Memory>();
+	/* (non-Javadoc)
+	 * @see java.lang.Object#toString()
+	 */
+	@Override
+	public synchronized String toString()
+	{
+		final int maxLen = 10;
+		return "Codelet [activation=" + activation + ", " + "name=" + name + ", " +(broadcast != null ? "broadcast=" + broadcast.subList(0, Math.min(broadcast.size(), maxLen)) + ", " : "") + (inputs != null ? "inputs=" + inputs.subList(0, Math.min(inputs.size(), maxLen)) + ", " : "") + (outputs != null ? "outputs=" + outputs.subList(0, Math.min(outputs.size(), maxLen)) : "") + "]";
+	}
 
-		 if(inputs!=null&&inputs.size()>0)
-			 for(Memory mo:inputs)
-			 {
-				 if(mo.getName()!=null && mo.getName().equalsIgnoreCase(type))
-				 {
-					 listMO.add(mo);
-				 }
-			 }
+	/**
+	 * This method returns an input memory from its input list.
+	 * If it couldn't find the given M, it sets this codelet as not able to perform proc(), and keeps trying to find it.
+	 * 
+	 * @param type type of memory it needs
+	 * @param index position of memory in the sublist
+	 * @return memory of type at position 
+	 */
+	public synchronized Memory getInput(String type, int index)
+	{
+		Memory inputMO = null;
+		ArrayList<Memory> listMO=new ArrayList<Memory>();
 
-		 if(listMO.size()>=index+1){
-			 inputMO=listMO.get(index);
-			 this.enabled=true;
-		 }else{
-			 this.enabled=false; //It must not run proc yet, for it still needs to find this mo it wants
-			 enable_count++;
-		 }
+		if(inputs!=null&&inputs.size()>0)
+			for(Memory mo:inputs)
+			{
+				if(mo.getName()!=null && mo.getName().equalsIgnoreCase(type))
+				{
+					listMO.add(mo);
+				}
+			}
 
-		 return inputMO;
-	 }
+		if(listMO.size()>=index+1){
+			inputMO=listMO.get(index);
+			this.enabled=true;
+		}else{
+			this.enabled=false; //It must not run proc yet, for it still needs to find this mo it wants
+			enable_count++;
+		}
 
-	 public synchronized Memory getInput(String name) 
-	 {
-		 if(inputs!=null&&inputs.size()>0)
-			 for (Memory mo : inputs) 
-			 {
-				 if (mo.getName()!=null && mo.getName().equalsIgnoreCase(name)) 
-					 return mo;
-			 }
-		 
-		 return null;
-	 }
+		return inputMO;
+	}
 
-	 /**
-	  * This method returns an output memory from its output list.
-	  * If it couldn't find the given M, it sets this codelet as not able to perform proc(), and keeps trying to find it.
-	  * 
-	  * @param type type of memory it needs
-	  * @param position position of memory in the sublist
-	  * @return memory of type at position 
-	  */
-	 public synchronized Memory getOutput(String type, int index)
-	 {
-		 Memory outputMO = null;
-		 ArrayList<Memory> listMO=new ArrayList<Memory>();
+	public synchronized Memory getInput(String name) 
+	{
+		if(inputs!=null&&inputs.size()>0)
+			for (Memory mo : inputs) 
+			{
+				if (mo.getName()!=null && mo.getName().equalsIgnoreCase(name)) 
+					return mo;
+			}
 
-		 if(outputs!=null&&outputs.size()>0)
-			 for(Memory mo:outputs)
-			 {
-				 if(mo!=null && type!=null && mo.getName()!=null && mo.getName().equalsIgnoreCase(type))
-				 {
-					 listMO.add(mo);
-				 }
-			 }
+		return null;
+	}
 
-		 if(listMO.size()>=index+1)
-		 {
-			 outputMO=listMO.get(index);
-			 this.enabled=true;
-		 }else
-		 {
-			 this.enabled=false; //It must not run proc yet, for it still needs to find this mo it wants
-			 enable_count++;
-		 }
+	/**
+	 * This method returns an output memory from its output list.
+	 * If it couldn't find the given M, it sets this codelet as not able to perform proc(), and keeps trying to find it.
+	 * 
+	 * @param type type of memory it needs
+	 * @param position position of memory in the sublist
+	 * @return memory of type at position 
+	 */
+	public synchronized Memory getOutput(String type, int index)
+	{
+		Memory outputMO = null;
+		ArrayList<Memory> listMO=new ArrayList<Memory>();
 
-		 return outputMO;
-	 }
+		if(outputs!=null&&outputs.size()>0)
+			for(Memory mo:outputs)
+			{
+				if(mo!=null && type!=null && mo.getName()!=null && mo.getName().equalsIgnoreCase(type))
+				{
+					listMO.add(mo);
+				}
+			}
 
-	 public synchronized Memory getOutput(String name) 
-	 {
-		 if(outputs!=null&&outputs.size()>0)
-			 for (Memory mo : outputs) 
-			 {
-				 if (mo.getName()!=null && mo.getName().equalsIgnoreCase(name)) 
-					 return mo;
-			 }
-		 
-		 return null;
-	 }
+		if(listMO.size()>=index+1)
+		{
+			outputMO=listMO.get(index);
+			this.enabled=true;
+		}else
+		{
+			this.enabled=false; //It must not run proc yet, for it still needs to find this mo it wants
+			enable_count++;
+		}
 
-	 /**
-	  * 
-	  * @param type
-	  * @param index
-	  * @return
-	  */
-	 public synchronized Memory getBroadcast(String type, int index)
-	 {
-		 Memory broadcastMO = null;
-		 
-		 ArrayList<Memory> listMO=new ArrayList<Memory>();
+		return outputMO;
+	}
 
-		 if(broadcast!=null&&broadcast.size()>0)
-		 {
-			 for(Memory mo:broadcast)
-			 {
-				 if(mo.getName()!=null && mo.getName().equalsIgnoreCase(type))
-				 {
-					 listMO.add(mo);
-				 }
-			 }
-		 }		
+	public synchronized Memory getOutput(String name) 
+	{
+		if(outputs!=null&&outputs.size()>0)
+			for (Memory mo : outputs) 
+			{
+				if (mo.getName()!=null && mo.getName().equalsIgnoreCase(name)) 
+					return mo;
+			}
 
-		 if(listMO.size()>=index+1)
-		 {
-			 broadcastMO=listMO.get(index);
-		 }
+		return null;
+	}
 
-		 return broadcastMO;
-	 }
+	/**
+	 * 
+	 * @param type
+	 * @param index
+	 * @return
+	 */
+	public synchronized Memory getBroadcast(String type, int index)
+	{
+		Memory broadcastMO = null;
 
-	 /**
-	  * @return the threshold
-	  */
-	 public synchronized double getThreshold() 
-	 {
-		 return threshold;
-	 }
+		ArrayList<Memory> listMO=new ArrayList<Memory>();
 
-	 /**
-	  * 
-	  * @param threshold
-	  * @throws CodeletThresholdBoundsException
-	  */
-	 public synchronized void setThreshold(double threshold) throws CodeletThresholdBoundsException 
-	 {		
-		 if(threshold>1.0d)
-		 {
-			 this.threshold = 1.0d;
-			 throw (new CodeletThresholdBoundsException("Codelet threshold set to value > 1.0"));
-		 }else if(threshold<0.0d)
-		 {
-			 this.threshold = 0.0d;
-			 throw (new CodeletThresholdBoundsException("Codelet threshold set to value < 0.0"));
-		 }else
-		 {
-			 this.threshold = threshold;
-		 }
-	 }
+		if(broadcast!=null&&broadcast.size()>0)
+		{
+			for(Memory mo:broadcast)
+			{
+				if(mo.getName()!=null && mo.getName().equalsIgnoreCase(type))
+				{
+					listMO.add(mo);
+				}
+			}
+		}		
+
+		if(listMO.size()>=index+1)
+		{
+			broadcastMO=listMO.get(index);
+		}
+
+		return broadcastMO;
+	}
+
+	/**
+	 * @return the threshold
+	 */
+	public synchronized double getThreshold() 
+	{
+		return threshold;
+	}
+
+	/**
+	 * 
+	 * @param threshold
+	 * @throws CodeletThresholdBoundsException
+	 */
+	public synchronized void setThreshold(double threshold) throws CodeletThresholdBoundsException 
+	{		
+		if(threshold>1.0d)
+		{
+			this.threshold = 1.0d;
+			throw (new CodeletThresholdBoundsException("Codelet threshold set to value > 1.0"));
+		}else if(threshold<0.0d)
+		{
+			this.threshold = 0.0d;
+			throw (new CodeletThresholdBoundsException("Codelet threshold set to value < 0.0"));
+		}else
+		{
+			this.threshold = threshold;
+		}
+	}
 
 	/**
 	 * @return the timeStep

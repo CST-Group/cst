@@ -11,247 +11,260 @@
 
 package br.unicamp.cst.motivational;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import br.unicamp.cst.core.entities.CSTMessages;
 import br.unicamp.cst.core.entities.Codelet;
 import br.unicamp.cst.core.entities.Memory;
-import br.unicamp.cst.core.entities.CSTMessages;
 import br.unicamp.cst.core.exceptions.CodeletActivationBoundsException;
-
-import java.util.*;
 
 public abstract class MotivationalCodelet extends Codelet {
 
-    public static final String INPUT_DRIVES_MEMORY = "INPUT_DRIVES_MEMORY";
-    public static final String INPUT_SENSORS_MEMORY = "INPUT_SENSORS_MEMORY";
-    public static final String OUTPUT_DRIVE_MEMORY = "OUTPUT_DRIVE_MEMORY";
+	public static final String INPUT_DRIVES_MEMORY = "INPUT_DRIVES_MEMORY";
+	public static final String INPUT_SENSORS_MEMORY = "INPUT_SENSORS_MEMORY";
+	public static final String OUTPUT_DRIVE_MEMORY = "OUTPUT_DRIVE_MEMORY";
 
-    private String id;
-    private double priority;
-    private double urgencyThreshold;
-    private double level;
-    private boolean urgencyState = false;
+	private String id;
+	private double priority;
+	private double urgencyThreshold;
+	private double level;
+	private boolean urgencyState = false;
 
-    private Map<Memory, Double> drivesRelevance;
-    private List<Memory> sensoryVariables;
+	private Map<Memory, Double> drivesRelevance;
+	private List<Memory> sensoryVariables;
 
-    private Drive outputDrive;
-    private Memory inputDrivesMO;
-    private Memory inputSensorsMO;
-    private Memory outputDriveMO;
+	private Drive outputDrive;
+	private Memory inputDrivesMO;
+	private Memory inputSensorsMO;
+	private Memory outputDriveMO;
 
-    public MotivationalCodelet(String id, double level, double priority, double urgencyThreshold) {
-        setLevel(level);
-        setId(id);
-        setPriority(priority);
-        setUrgencyThreshold(urgencyThreshold);
-        setDrivesRelevance(new HashMap<Memory, Double>());
-        setSensoryVariables(new ArrayList<Memory>());
-        setOutputDrive(new Drive(getId(),
-                0,
-                getPriority(),
-                getLevel(),
-                getUrgencyThreshold(),
-                0));
+	public MotivationalCodelet(String id, double level, double priority, double urgencyThreshold) {
+		setLevel(level);
+		setId(id);
+		setPriority(priority);
+		setUrgencyThreshold(urgencyThreshold);
+		setDrivesRelevance(new HashMap<Memory, Double>());
+		setSensoryVariables(new ArrayList<Memory>());
+		setOutputDrive(new Drive(getId(),
+				0,
+				getPriority(),
+				getLevel(),
+				getUrgencyThreshold(),
+				0));
 
-    }
+	}
 
-    @Override
-    public void accessMemoryObjects() {
+	@Override
+	public void accessMemoryObjects() {
 
-        if (getInputDrivesMO() == null) {
-            setInputDrivesMO(this.getInput(INPUT_DRIVES_MEMORY, 0));
-            this.setDrivesRelevance((Map<Memory, Double>) getInputDrivesMO().getI());
-        }
+		if (getInputDrivesMO() == null) {
+			setInputDrivesMO(this.getInput(INPUT_DRIVES_MEMORY, 0));
+			this.setDrivesRelevance((Map<Memory, Double>) getInputDrivesMO().getI());
+		}
 
-        if (getInputSensorsMO() == null) {
-            setInputSensorsMO(this.getInput(INPUT_SENSORS_MEMORY, 0));
-            this.setSensoryVariables(Collections.synchronizedList((List<Memory>) getInputSensorsMO().getI()));
-        }
+		if (getInputSensorsMO() == null) {
+			setInputSensorsMO(this.getInput(INPUT_SENSORS_MEMORY, 0));
+			this.setSensoryVariables(Collections.synchronizedList((List<Memory>) getInputSensorsMO().getI()));
+		}
 
-        if (getOutputDriveMO() == null) {
-            setOutputDriveMO(this.getOutput(OUTPUT_DRIVE_MEMORY, 0));
-        }
+		if (getOutputDriveMO() == null) {
+			setOutputDriveMO(this.getOutput(OUTPUT_DRIVE_MEMORY, 0));
+		}
 
-    }
-
-
-    @Override
-    public synchronized void proc() {
-        synchronized (getOutputDriveMO()) {
-            getOutputDrive().setActivation(getActivation());
-            getOutputDriveMO().setEvaluation(getActivation());
-            getOutputDriveMO().setI(getOutputDrive());
-        }
-    }
+	}
 
 
-    public void addDrive(Memory drive, double relevance) {
-        getDrivesRelevance().put(drive, relevance);
-    }
+	@Override
+	public synchronized void proc() {
+		synchronized (getOutputDriveMO()) {
+			getOutputDrive().setActivation(getActivation());
+			getOutputDriveMO().setEvaluation(getActivation());
+			getOutputDriveMO().setI(getOutputDrive());
+		}
+	}
 
-    public void removeDrive(Memory drive) {
-        getDrivesRelevance().remove(drive);
-    }
 
-    @Override
-    public synchronized void calculateActivation() {
-        synchronized (this) {
-            try {
-                if (getDrivesRelevance().size() > 0) {
-                    List<Drive> listOfDrives = new ArrayList<Drive>();
+	public void addDrive(Memory drive, double relevance) {
+		getDrivesRelevance().put(drive, relevance);
+	}
 
-                    for (Map.Entry<Memory, Double> driveMO : getDrivesRelevance().entrySet()) {
+	public void removeDrive(Memory drive) {
+		getDrivesRelevance().remove(drive);
+	}
 
-                        Drive drive = (Drive) driveMO.getKey();
+	@Override
+	public synchronized void calculateActivation() {
+		synchronized (this) {
+			try {
+				if (getDrivesRelevance().size() > 0) {
+					List<Drive> listOfDrives = new ArrayList<Drive>();
 
-                        Drive driveClone = new Drive(drive.getName(), drive.getActivation(), drive.getPriority(), drive.getLevel(),
-                                drive.getUrgencyThreshold());
+					for (Map.Entry<Memory, Double> driveMO : getDrivesRelevance().entrySet()) {
 
-                        driveClone.setActivation(driveClone.getActivation() * driveMO.getValue());
+						Drive drive = (Drive) driveMO.getKey();
 
-                        listOfDrives.add(driveClone);
-                    }
+						Drive driveClone = new Drive(drive.getName(), drive.getActivation(), drive.getPriority(), drive.getLevel(),
+								drive.getUrgencyThreshold());
 
-                    this.setActivation(verifingUrgencyThreshold(calculateSecundaryDriveActivation(getSensoryVariables(), listOfDrives), getOutputDrive()));
+						driveClone.setActivation(driveClone.getActivation() * driveMO.getValue());
 
-                } else {
+						listOfDrives.add(driveClone);
+					}
 
-                    if (getSensoryVariables().size() > 0) {
-                        this.setActivation(verifingUrgencyThreshold(calculateSimpleActivation(getSensoryVariables()), getOutputDrive()));
-                    } else {
-                        this.setActivation(0);
-                    }
-                }
-            } catch (CodeletActivationBoundsException e) {
-                e.printStackTrace();
-            }
-        }
-    }
+					this.setActivation(verifingUrgencyThreshold(calculateSecundaryDriveActivation(getSensoryVariables(), listOfDrives), getOutputDrive()));
 
-    private synchronized double verifingUrgencyThreshold(double driveActivation, Drive drive) {
+				} else {
 
-        double evaluation = 0;
+					if (getSensoryVariables().size() > 0) {
 
-        if (driveActivation > getUrgencyThreshold()) {
-            evaluation = 0.5 + drive.getPriority();
-            drive.setUrgencyState(true);
-        } else {
+						double activation = verifingUrgencyThreshold(calculateSimpleActivation(getSensoryVariables()), getOutputDrive());
 
-            double emotionalDistortion = drive.getEmotionalDistortion();
+						if(activation<0.0d)
+							activation=0.0d;
 
-            evaluation = emotionalDistortion > 0? (driveActivation + drive.getEmotionalDistortion()) / 2 : driveActivation;
-            drive.setUrgencyState(false);
-        }
+						if(activation>1.0d)
+							activation=1.0d;
 
-        return evaluation;
-    }
+						this.setActivation(activation);
+					} else {
+						this.setActivation(0);
+					}
+				}
+			} catch (CodeletActivationBoundsException e) {
+				e.printStackTrace();
+			}
+		}
+	}
 
-    public abstract double calculateSimpleActivation(List<Memory> sensors);
+	private synchronized double verifingUrgencyThreshold(double driveActivation, Drive drive) {
 
-    public abstract double calculateSecundaryDriveActivation(List<Memory> sensors, List<Drive> listOfDrives);
+		double evaluation = 0;
 
-    public synchronized double getLevel() {
-        return level;
-    }
+		if (driveActivation > getUrgencyThreshold()) {
+			evaluation = 0.5 + drive.getPriority();
+			drive.setUrgencyState(true);
+		} else {
 
-    public synchronized Map<Memory, Double> getDrivesRelevance() {
-        return drivesRelevance;
-    }
+			double emotionalDistortion = drive.getEmotionalDistortion();
 
-    public synchronized String getId() {
-        return id;
-    }
+			evaluation = emotionalDistortion > 0? (driveActivation + drive.getEmotionalDistortion()) / 2 : driveActivation;
+			drive.setUrgencyState(false);
+		}
 
-    public synchronized void setId(String id) {
-        try {
-            if (id == null) {
-                throw new Exception(CSTMessages.MSG_VAR_NAME_NULL);
-            }
+		return evaluation;
+	}
 
-            this.id = id;
+	public abstract double calculateSimpleActivation(List<Memory> sensors);
 
-        } catch (Exception me) {
-            me.printStackTrace();
-        }
+	public abstract double calculateSecundaryDriveActivation(List<Memory> sensors, List<Drive> listOfDrives);
 
-    }
+	public synchronized double getLevel() {
+		return level;
+	}
 
-    public synchronized double getPriority() {
-        return priority;
-    }
+	public synchronized Map<Memory, Double> getDrivesRelevance() {
+		return drivesRelevance;
+	}
 
-    public synchronized void setPriority(double priority) {
-        try {
-            if (priority <= 0) {
-                throw new Exception(CSTMessages.MSG_VAR_PRIORITY_NULL);
-            }
+	public synchronized String getId() {
+		return id;
+	}
 
-            this.priority = priority;
-        } catch (Exception me) {
-            me.printStackTrace();
-        }
-    }
+	public synchronized void setId(String id) {
+		try {
+			if (id == null) {
+				throw new Exception(CSTMessages.MSG_VAR_NAME_NULL);
+			}
 
-    public Memory getInputDrivesMO() {
-        return inputDrivesMO;
-    }
+			this.id = id;
 
-    public void setInputDrivesMO(Memory inputDrivesMO) {
-        this.inputDrivesMO = inputDrivesMO;
-    }
+		} catch (Exception me) {
+			me.printStackTrace();
+		}
 
-    public Memory getInputSensorsMO() {
-        return inputSensorsMO;
-    }
+	}
 
-    public void setInputSensorsMO(Memory inputSensorsMO) {
-        this.inputSensorsMO = inputSensorsMO;
-    }
+	public synchronized double getPriority() {
+		return priority;
+	}
 
-    public Memory getOutputDriveMO() {
-        return outputDriveMO;
-    }
+	public synchronized void setPriority(double priority) {
+		try {
+			if (priority <= 0) {
+				throw new Exception(CSTMessages.MSG_VAR_PRIORITY_NULL);
+			}
 
-    public void setOutputDriveMO(Memory outputDriveMO) {
-        this.outputDriveMO = outputDriveMO;
-    }
+			this.priority = priority;
+		} catch (Exception me) {
+			me.printStackTrace();
+		}
+	}
 
-    public List<Memory> getSensoryVariables() {
-        return sensoryVariables;
-    }
+	public Memory getInputDrivesMO() {
+		return inputDrivesMO;
+	}
 
-    public void setSensoryVariables(List<Memory> sensoryVariables) {
-        this.sensoryVariables = sensoryVariables;
-    }
+	public void setInputDrivesMO(Memory inputDrivesMO) {
+		this.inputDrivesMO = inputDrivesMO;
+	}
 
-    public void setLevel(double level) {
-        try {
-            if (level < 0 || level > 1) {
-                throw new Exception(CSTMessages.MSG_VAR_URGENT_ACTIVATION_THRESHOLD_RANGE);
-            } else {
-                this.level = level;
-            }
-        } catch (Exception ex) {
-            ex.printStackTrace();
-        }
-    }
+	public Memory getInputSensorsMO() {
+		return inputSensorsMO;
+	}
 
-    private void setDrivesRelevance(Map<Memory, Double> drivesRelevance) {
-        this.drivesRelevance = drivesRelevance;
-    }
+	public void setInputSensorsMO(Memory inputSensorsMO) {
+		this.inputSensorsMO = inputSensorsMO;
+	}
 
-    private Drive getOutputDrive() {
-        return outputDrive;
-    }
+	public Memory getOutputDriveMO() {
+		return outputDriveMO;
+	}
 
-    private void setOutputDrive(Drive outputDrive) {
-        this.outputDrive = outputDrive;
-    }
+	public void setOutputDriveMO(Memory outputDriveMO) {
+		this.outputDriveMO = outputDriveMO;
+	}
 
-    public double getUrgencyThreshold() {
-        return urgencyThreshold;
-    }
+	public List<Memory> getSensoryVariables() {
+		return sensoryVariables;
+	}
 
-    public void setUrgencyThreshold(double urgencyThreshold) {
-        this.urgencyThreshold = urgencyThreshold;
-    }
+	public void setSensoryVariables(List<Memory> sensoryVariables) {
+		this.sensoryVariables = sensoryVariables;
+	}
+
+	public void setLevel(double level) {
+		try {
+			if (level < 0 || level > 1) {
+				throw new Exception(CSTMessages.MSG_VAR_URGENT_ACTIVATION_THRESHOLD_RANGE);
+			} else {
+				this.level = level;
+			}
+		} catch (Exception ex) {
+			ex.printStackTrace();
+		}
+	}
+
+	private void setDrivesRelevance(Map<Memory, Double> drivesRelevance) {
+		this.drivesRelevance = drivesRelevance;
+	}
+
+	private Drive getOutputDrive() {
+		return outputDrive;
+	}
+
+	private void setOutputDrive(Drive outputDrive) {
+		this.outputDrive = outputDrive;
+	}
+
+	public double getUrgencyThreshold() {
+		return urgencyThreshold;
+	}
+
+	public void setUrgencyThreshold(double urgencyThreshold) {
+		this.urgencyThreshold = urgencyThreshold;
+	}
 }
