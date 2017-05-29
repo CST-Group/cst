@@ -13,7 +13,7 @@ import java.util.Random;
  *
  * @author suelen
  */
-public class nameGenerator {
+public class NameGenerator {
 
     private static List<String> listNames = new ArrayList<String>();
 
@@ -73,7 +73,7 @@ public class nameGenerator {
         int cont = 0;
 
         while (cont < 10) {
-            nameGenerator ng = new nameGenerator();
+            NameGenerator ng = new NameGenerator();
             System.out.println(" >> " + ng.generateWord());
             cont++;
         }

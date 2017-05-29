@@ -13,6 +13,7 @@
 package br.unicamp.cst.representation.owrl;
 
 import br.unicamp.cst.util.CodeBuilder;
+import br.unicamp.cst.util.NameGenerator;
 import br.unicamp.cst.util.Pair;
 
 import java.util.*;
@@ -167,11 +168,11 @@ public class AbstractObject implements Cloneable {
         }
     }
 
-    public boolean detectAffordance(HashMap<String, AbstractObject> aggregateObjects,  HashMap<String, AbstractObject> compositeObjects, HashMap<String, Property> modifiedProperties){
+    public boolean detectAffordance(HashMap<String, AbstractObject> aggregateObjects, HashMap<String, AbstractObject> compositeObjects, HashMap<String, Property> modifiedProperties) {
 
         final boolean[] bVerify = {true};
 
-        if(getAffordances().size() != 0) {
+        if (getAffordances().size() != 0) {
             getAffordances().stream().forEach(affordance -> {
                 aggregateObjects.entrySet().stream().forEach(aggrDetect -> {
                     Optional<Map.Entry<String, AbstractObject>> first = affordance.getAggregateObjects().entrySet().stream().filter(aggr -> aggr.getKey().equals(aggrDetect.getKey())
@@ -202,10 +203,9 @@ public class AbstractObject implements Cloneable {
             });
         }
 
-        if (bVerify[0]){
+        if (bVerify[0]) {
             return false;
-        }
-        else {
+        } else {
             return true;
         }
     }
@@ -217,20 +217,25 @@ public class AbstractObject implements Cloneable {
         HashMap<String, AbstractObject> compositeObjects = verifyAbstractObjectsStatus(after.getCompositeParts(), getCompositeParts());
         HashMap<String, Property> modifiedProperties = verifyPropertiesStatus(path);
 
-        if(!detectAffordance(aggregateObjects, compositeObjects, modifiedProperties)){
+        if (!detectAffordance(aggregateObjects, compositeObjects, modifiedProperties)) {
             Pair<String, String> applyCode = createApplyCode(aggregateObjects, compositeObjects, modifiedProperties);
             Pair<String, String> detectorCode = createDetectorCode(aggregateObjects, compositeObjects, modifiedProperties);
 
             if (applyCode != null && detectorCode != null) {
-                DynamicAffordance newAffordance = new DynamicAffordance("x", applyCode.getFirst(), applyCode.getSecond(), detectorCode.getFirst(), detectorCode.getSecond(), aggregateObjects, compositeObjects, modifiedProperties);
+                DynamicAffordance newAffordance = new DynamicAffordance((new NameGenerator()).generateWord(),
+                        applyCode.getFirst(),
+                        applyCode.getSecond(),
+                        detectorCode.getFirst(),
+                        detectorCode.getSecond(),
+                        aggregateObjects,
+                        compositeObjects,
+                        modifiedProperties);
                 this.addAffordance(newAffordance);
             }
         }
 
 
     }
-
-
 
 
     private Pair<String, String> createDetectorCode(HashMap<String, AbstractObject> aggregateObjects, HashMap<String, AbstractObject> compositeObjects, HashMap<String, Property> properties) {
@@ -261,12 +266,11 @@ public class AbstractObject implements Cloneable {
             aggregateObjects.entrySet().stream().forEach(aggregateAO -> {
                 String aggregateParameter = "";
 
-                if(aggregateAO.getKey() == "added"){
+                if (aggregateAO.getKey() == "added") {
                     aggregateParameter = "AbstractObject added" + aggregateAO.getValue().getName().replace(" ", "") + "AO";
                     methodCodeIfStatement.add(this.getName().replace(" ", "").toLowerCase() + ".getAggregateParts().stream().filter(oa -> oa.getName().equals(added"
                             + aggregateAO.getValue().getName().replace(" ", "") + "AO.getName())).findFirst().isPresent()");
-                }
-                else{
+                } else {
                     aggregateParameter = "AbstractObject removed" + aggregateAO.getValue().getName().replace(" ", "") + "AO";
                     methodCodeIfStatement.add("!" + this.getName().replace(" ", "").toLowerCase() + ".getAggregateParts().stream().filter(oa -> oa.getName().equals(removed"
                             + aggregateAO.getValue().getName().replace(" ", "") + "AO.getName())).findFirst().isPresent()");
@@ -277,16 +281,15 @@ public class AbstractObject implements Cloneable {
             });
         }
 
-        if(compositeObjects!=null){
+        if (compositeObjects != null) {
             compositeObjects.entrySet().stream().forEach(compositeAO -> {
                 String compositeParameter = "";
 
-                if(compositeAO.getKey() == "added"){
+                if (compositeAO.getKey() == "added") {
                     compositeParameter = "AbstractObject added" + compositeAO.getValue().getName().replace(" ", "") + "CO";
                     methodCodeIfStatement.add(this.getName().replace(" ", "").toLowerCase() + ".getCompositeParts().stream().filter(oa -> oa.getName().equals(added"
                             + compositeAO.getValue().getName().replace(" ", "") + "CO.getName())).findFirst().isPresent()");
-                }
-                else{
+                } else {
                     compositeParameter = "AbstractObject removed" + compositeAO.getValue().getName().replace(" ", "") + "CO";
                     methodCodeIfStatement.add("!" + this.getName().replace(" ", "").toLowerCase() + ".getCompositeParts().stream().filter(oa -> oa.getName().equals(removed"
                             + compositeAO.getValue().getName().replace(" ", "") + "CO.getName())).findFirst().isPresent()");
@@ -297,7 +300,7 @@ public class AbstractObject implements Cloneable {
 
         }
 
-        if(properties!=null) {
+        if (properties != null) {
             properties.entrySet().stream().forEach(property -> {
                 String propertyParameter = "";
 
@@ -313,7 +316,7 @@ public class AbstractObject implements Cloneable {
                     } else {
                         propertyParameter = "Property mod" + property.getValue().getName().replace(" ", "");
                         methodCodeIfStatement.add(this.getName().replace(" ", "").toLowerCase() + ".getProperties().stream().filter(oa -> oa.getName().equals(mod"
-                                + property.getValue().getName().replace(" ", "") + ".getName())).findFirst().get().equals(mod"+ property.getValue().getName().replace(" ", "") +")");
+                                + property.getValue().getName().replace(" ", "") + ".getName())).findFirst().get().equals(mod" + property.getValue().getName().replace(" ", "") + ")");
                     }
                 }
 
@@ -355,12 +358,11 @@ public class AbstractObject implements Cloneable {
             aggregateObjects.entrySet().stream().forEach(aggregateAO -> {
                 String aggregateParameter = "";
 
-                if(aggregateAO.getKey() == "added"){
+                if (aggregateAO.getKey() == "added") {
                     aggregateParameter = "AbstractObject add" + aggregateAO.getValue().getName().replace(" ", "") + "AO";
                     methodCodeApply.add(this.getName().replace(" ", "").toLowerCase() + ".getAggregateParts().add(add"
                             + aggregateAO.getValue().getName().replace(" ", "") + "AO);");
-                }
-                else{
+                } else {
                     aggregateParameter = "AbstractObject remove" + aggregateAO.getValue().getName().replace(" ", "") + "AO";
                     methodCodeApply.add(this.getName().replace(" ", "").toLowerCase() + ".getAggregateParts().removeIf(agg -> agg.getName().equals(remove"
                             + aggregateAO.getValue().getName().replace(" ", "") + "AO.getName()));");
@@ -371,16 +373,15 @@ public class AbstractObject implements Cloneable {
             });
         }
 
-        if(compositeObjects!=null){
+        if (compositeObjects != null) {
             compositeObjects.entrySet().stream().forEach(compositeAO -> {
                 String compositeParameter = "";
 
-                if(compositeAO.getKey() == "added") {
+                if (compositeAO.getKey() == "added") {
                     compositeParameter = "AbstractObject add" + compositeAO.getValue().getName().replace(" ", "") + "CO";
                     methodCodeApply.add(this.getName().replace(" ", "").toLowerCase() + ".getCompositeParts().add(add"
                             + compositeAO.getValue().getName().replace(" ", "") + "CO);");
-                }
-                else{
+                } else {
                     compositeParameter = "AbstractObject remove" + compositeAO.getValue().getName().replace(" ", "") + "CO";
                     methodCodeApply.add(this.getName().toLowerCase() + ".getCompositeParts().removeIf(comp -> comp.getName().equals(remove"
                             + compositeAO.getValue().getName().replace(" ", "") + "CO.getName()));");
@@ -392,23 +393,20 @@ public class AbstractObject implements Cloneable {
         }
 
 
-        if(properties!=null){
+        if (properties != null) {
             properties.entrySet().stream().forEach(property -> {
                 String propertyParameter = "";
 
-                if(property.getKey() == "added") {
+                if (property.getKey() == "added") {
                     propertyParameter = "Property add" + property.getValue().getName().replace(" ", "");
                     methodCodeApply.add(this.getName().replace(" ", "").toLowerCase() + ".getProperties().add(add"
                             + property.getValue().getName().replace(" ", "") + ");");
-                }
-                else{
-                    if(property.getKey() == "removed") {
+                } else {
+                    if (property.getKey() == "removed") {
                         propertyParameter = "Property remove" + property.getValue().getName().replace(" ", "");
                         methodCodeApply.add(this.getName().toLowerCase() + ".getProperties().removeIf(prop -> prop.getName().equals(remove"
                                 + property.getValue().getName().replace(" ", "") + ".getName()));");
-                    }
-                    else
-                    {
+                    } else {
                         propertyParameter = "Property mod" + property.getValue().getName().replace(" ", "");
                         methodCodeApply.add(this.getName().toLowerCase() + ".getProperties().removeIf(prop -> prop.getName().equals(mod"
                                 + property.getValue().getName().replace(" ", "") + ".getName()));");
@@ -419,7 +417,6 @@ public class AbstractObject implements Cloneable {
 
                 methodParameterApply.add(propertyParameter);
             });
-
 
 
         }
@@ -450,7 +447,7 @@ public class AbstractObject implements Cloneable {
 
             HashMap<String, Property> checkProperties = new HashMap<>();
 
-            if(i+1 > path.size())
+            if (i + 1 > path.size())
                 break;
 
             int finalI = i;
@@ -459,32 +456,30 @@ public class AbstractObject implements Cloneable {
 
                 Optional<Property> propertyOptional = pathWithRoot.get(finalI + 1).getProperties().stream().filter(propertySecond -> propertySecond.getName().equals(propertyFirst.getName())).findFirst();
 
-                if(propertyOptional.isPresent()){
+                if (propertyOptional.isPresent()) {
 
-                    if(!propertyFirst.equals(propertyOptional.get())){
-                        if(!checkProperties.containsValue(propertyOptional.get())){
+                    if (!propertyFirst.equals(propertyOptional.get())) {
+                        if (!checkProperties.containsValue(propertyOptional.get())) {
                             checkProperties.put("modified", propertyOptional.get().clone());
                         }
                     }
-                }
-                else{
+                } else {
                     checkProperties.put("removed", propertyFirst.clone());
                 }
             });
 
-            pathWithRoot.get(i+1).getProperties().forEach(propertySecond -> {
+            pathWithRoot.get(i + 1).getProperties().forEach(propertySecond -> {
 
                 Optional<Property> propertyOptional = pathWithRoot.get(finalI).getProperties().stream().filter(propertyFirst -> propertySecond.getName().equals(propertySecond.getName())).findFirst();
 
-                if(!propertyOptional.isPresent()){
+                if (!propertyOptional.isPresent()) {
                     checkProperties.put("added", propertySecond.clone());
                 }
             });
 
-            if(checkProperties.size() == 0){
+            if (checkProperties.size() == 0) {
                 break;
-            }
-            else {
+            } else {
                 properties.putAll(checkProperties);
             }
         }
@@ -688,12 +683,12 @@ public class AbstractObject implements Cloneable {
 
         robot.discoveryAffordance(robot2, Arrays.asList(robot2));
 
-        System.out.println(((DynamicAffordance)robot.getAffordances().get(0)).getDetectorCode());
-        System.out.println(((DynamicAffordance)robot.getAffordances().get(0)).getApplyCode());
+        System.out.println(((DynamicAffordance) robot.getAffordances().get(0)).getDetectorCode());
+        System.out.println(((DynamicAffordance) robot.getAffordances().get(0)).getApplyCode());
 
     }
 
-    public void addAffordance(Affordance affordance){
+    public void addAffordance(Affordance affordance) {
         this.getAffordances().add(affordance);
     }
 

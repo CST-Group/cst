@@ -315,7 +315,7 @@ public class AbstractObjectEditor extends javax.swing.JFrame {
     private void searchActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_searchActionPerformed
         // TODO add your handling code here:
 
-        //É so um teste!
+        //ï¿½ so um teste!
         TreeElement.reset();
         DefaultMutableTreeNode ao = addObject(root, true);
         TreeModel ttm = new DefaultTreeModel(ao);
@@ -330,7 +330,7 @@ public class AbstractObjectEditor extends javax.swing.JFrame {
             ((TreeElement) o.getUserObject()).setColor(TreeElement.NODE_CHANGE);
         }
 
-        //É so um teste!
+        //ï¿½ so um teste!
         TreeModel tm = new DefaultTreeModel(root);
         jtree.setModel(tm);
         expandAllNodes(jtree);
@@ -379,7 +379,7 @@ public class AbstractObjectEditor extends javax.swing.JFrame {
         robot.addProperty(new Property("Model",new QualityDimension("Serial#","1234XDr56")));
         
         List<Affordance> affordances = new ArrayList<>();
-        affordances.add(new Affordance("heat up", "", new Comparator<AbstractObject>() {
+        /*affordances.add(new Affordance("heat up", "", new Comparator<AbstractObject>() {
             @Override
             public int compare(AbstractObject o1, AbstractObject o2) {
                 QualityDimension temperature_value1 = getTemperatureValue(o1);
@@ -435,8 +435,8 @@ public class AbstractObjectEditor extends javax.swing.JFrame {
                     }
                 }
             }
-        });
-        affordances.add(new Affordance("push", "", new Comparator<AbstractObject>() {
+        });*/
+        /*affordances.add(new Affordance("push", "", new Comparator<AbstractObject>() {
             @Override
             public int compare(AbstractObject o1, AbstractObject o2) {
                 List<QualityDimension> speed1 = getSpeedDimensions(o1);
@@ -488,8 +488,8 @@ public class AbstractObjectEditor extends javax.swing.JFrame {
                     }
                 }
             }
-        });
-        affordances.add(new Affordance("move", "", new Comparator<AbstractObject>() {
+        });*/
+        /*affordances.add(new Affordance("move", "", new Comparator<AbstractObject>() {
             @Override
             public int compare(AbstractObject o1, AbstractObject o2) {
                 List<QualityDimension> position1 = getPositionDimensions(o1);
@@ -525,7 +525,7 @@ public class AbstractObjectEditor extends javax.swing.JFrame {
                     }
                 }
             }
-        });
+        });*/
         robot.setAffordances(affordances);
         AbstractObjectEditor ov = new AbstractObjectEditor(robot);
        
