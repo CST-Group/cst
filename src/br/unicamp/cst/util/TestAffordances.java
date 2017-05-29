@@ -5,20 +5,12 @@
  */
 package br.unicamp.cst.util;
 
-import br.unicamp.cst.representation.owrl.AbstractObject;
-import br.unicamp.cst.representation.owrl.Affordance;
-import br.unicamp.cst.representation.owrl.Property;
-import br.unicamp.cst.representation.owrl.QualityDimension;
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.List;
-
 /**
  *
  * @author suelen
  */
 public class TestAffordances {
-    
+    /*
     public static void main(String args[]) {
         AbstractObject robot = new AbstractObject("Robot");
 
@@ -55,8 +47,8 @@ public class TestAffordances {
         robot.addAggregatePart(actuator.clone());
         robot.addProperty(new Property("Model",new QualityDimension("Serial#","1234XDr56")));
         
-        List<Affordance> affordances = new ArrayList<>();
-        affordances.add(new Affordance("heat up", "", new Comparator<AbstractObject>() {
+        List<DynamicAffordance> affordances = new ArrayList<>();
+        affordances.add(new DynamicAffordance("heat up", "", new Comparator<AbstractObject>() {
             @Override
             public int compare(AbstractObject o1, AbstractObject o2) {
                 QualityDimension temperature_value1 = getTemperatureValue(o1);
@@ -81,7 +73,7 @@ public class TestAffordances {
                 }
             }
         });
-        affordances.add(new Affordance("paint", "", new Comparator<AbstractObject>() {
+        affordances.add(new DynamicAffordance("paint", "", new Comparator<AbstractObject>() {
             @Override
             public int compare(AbstractObject o1, AbstractObject o2) {
                 List<QualityDimension> color1 = getColorDimensions(o1);
@@ -113,7 +105,7 @@ public class TestAffordances {
                 }
             }
         });
-        affordances.add(new Affordance("push", "", new Comparator<AbstractObject>() {
+        affordances.add(new DynamicAffordance("push", "", new Comparator<AbstractObject>() {
             @Override
             public int compare(AbstractObject o1, AbstractObject o2) {
                 List<QualityDimension> speed1 = getSpeedDimensions(o1);
@@ -166,7 +158,7 @@ public class TestAffordances {
                 }
             }
         });
-        affordances.add(new Affordance("move", "", new Comparator<AbstractObject>() {
+        affordances.add(new DynamicAffordance("move", "", new Comparator<AbstractObject>() {
             @Override
             public int compare(AbstractObject o1, AbstractObject o2) {
                 List<QualityDimension> position1 = getPositionDimensions(o1);
@@ -209,25 +201,25 @@ public class TestAffordances {
         affordances.get(0).apply(newRobot, new Object[] { 1.0 });
         
         System.out.println("New temperature: " + ((AbstractObject) newRobot.getCompositeParts().get(0)).getProperties().get(3).getQualityDimensions().get(0).getValue());
-        System.out.println("Affordance detected: " + robot.detectAffordance(newRobot).getName());
+        System.out.println("DynamicAffordance detected: " + robot.detectAffordance(newRobot).getName());
         
         newRobot = robot.clone();
         affordances.get(1).apply(newRobot, new Object[] { 255.0, 255.0, 255.0 });
         
         System.out.println("\nNew color: " + ((AbstractObject) newRobot.getCompositeParts().get(0)).getProperties().get(2).getQualityDimensions().get(0).getValue() + ", " + ((AbstractObject) newRobot.getCompositeParts().get(0)).getProperties().get(2).getQualityDimensions().get(1).getValue() + ", " + ((AbstractObject) newRobot.getCompositeParts().get(0)).getProperties().get(2).getQualityDimensions().get(2).getValue());
-        System.out.println("Affordance detected: " + robot.detectAffordance(newRobot).getName());
+        System.out.println("DynamicAffordance detected: " + robot.detectAffordance(newRobot).getName());
         
         newRobot = robot.clone();
         affordances.get(2).apply(newRobot, new Object[] { 10.0, 10.0, 0.1 });
         
         System.out.println("\nNew speed: " + ((AbstractObject) newRobot.getCompositeParts().get(0)).getProperties().get(1).getQualityDimensions().get(0).getValue() + ", " + ((AbstractObject) newRobot.getCompositeParts().get(0)).getProperties().get(1).getQualityDimensions().get(1).getValue());
-        System.out.println("Affordance detected: " + robot.detectAffordance(newRobot).getName());
+        System.out.println("DynamicAffordance detected: " + robot.detectAffordance(newRobot).getName());
         
         affordances.get(3).apply(newRobot, new Object[] { 0.1, 1.0 });
         
         System.out.println("\nNew speed: " + ((AbstractObject) newRobot.getCompositeParts().get(0)).getProperties().get(1).getQualityDimensions().get(0).getValue() + ", " + ((AbstractObject) newRobot.getCompositeParts().get(0)).getProperties().get(1).getQualityDimensions().get(1).getValue());
         System.out.println("New position: " + ((AbstractObject) newRobot.getCompositeParts().get(0)).getProperties().get(0).getQualityDimensions().get(0).getValue() + ", " + ((AbstractObject) newRobot.getCompositeParts().get(0)).getProperties().get(0).getQualityDimensions().get(1).getValue());
-        System.out.println("Affordance detected: " + robot.detectAffordance(newRobot).getName());
+        System.out.println("DynamicAffordance detected: " + robot.detectAffordance(newRobot).getName());
     }
         
     private static QualityDimension getTemperatureValue(AbstractObject object) {
@@ -292,6 +284,6 @@ public class TestAffordances {
             }
         }
         return null;
-    }
+    }*/
 
 }

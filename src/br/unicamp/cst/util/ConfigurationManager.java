@@ -30,7 +30,7 @@ public class ConfigurationManager {
     }
 
     private void create(AbstractObject obj) {
-        listConfs.get(currentConfiguration).second.addAggregatePart(obj);
+        listConfs.get(currentConfiguration).getSecond().addAggregatePart(obj);
     }
 
     private boolean destroy(AbstractObject obj, List<AbstractObject> list) {
@@ -50,15 +50,15 @@ public class ConfigurationManager {
     public boolean applyCommands(List<Pair<String, List<AbstractObject>>> commands) {
         newConfiguration(String.format("%04d", listConfs.size() + 1));
         for (Pair<String, List<AbstractObject>> entry : commands) {
-            switch (entry.first) {
+            switch (entry.getFirst()) {
                 case "create":
-                    for (AbstractObject obj : entry.second) {
+                    for (AbstractObject obj : entry.getSecond()) {
                         create(obj);
                     }
                     break;
                 case "destroy":
-                    for (AbstractObject obj : entry.second) {
-                        if (!(destroy(obj, listConfs.get(currentConfiguration).second.getAggregateParts()))) {
+                    for (AbstractObject obj : entry.getSecond()) {
+                        if (!(destroy(obj, listConfs.get(currentConfiguration).getSecond().getAggregateParts()))) {
                             String message = "Unknown object: " + obj.getName();
                             JOptionPane.showMessageDialog(null, message);
                             System.err.println(message);
@@ -66,8 +66,8 @@ public class ConfigurationManager {
                     }
                     break;
                 case "modify":
-                    for (AbstractObject obj : entry.second) {
-                        if (!destroy(obj, listConfs.get(currentConfiguration).second.getAggregateParts())) {
+                    for (AbstractObject obj : entry.getSecond()) {
+                        if (!destroy(obj, listConfs.get(currentConfiguration).getSecond().getAggregateParts())) {
                             String message = "Unknown object: " + obj.getName();
                             JOptionPane.showMessageDialog(null, message);
                             System.err.println(message);
@@ -77,14 +77,14 @@ public class ConfigurationManager {
                     }
                     break;
                 default:
-                    System.out.println("Unknown command: " + entry.first);
+                    System.out.println("Unknown command: " + entry.getFirst());
                     return false;
             }
-            for (AbstractObject wo : entry.second) {
+            for (AbstractObject wo : entry.getSecond()) {
                 System.out.println(wo.getName());
             }
         }
-        if (listConfs.size() == 1 && listConfs.get(0).second.getAggregateParts().isEmpty()) {
+        if (listConfs.size() == 1 && listConfs.get(0).getSecond().getAggregateParts().isEmpty()) {
             removeConfiguration(0);
         }
         return true;
@@ -92,7 +92,7 @@ public class ConfigurationManager {
 
     public boolean selectConfiguration(String name) {
         for (int i = 0; i < listConfs.size(); ++i) {
-            if (listConfs.get(i).first.compareTo(name) == 0) {
+            if (listConfs.get(i).getFirst().compareTo(name) == 0) {
                 currentConfiguration = i;
                 return true;
             }
@@ -104,7 +104,7 @@ public class ConfigurationManager {
         if (listConfs.isEmpty()) {
             listConfs.add(new Pair(name, new AbstractObject("")));
         } else {
-            listConfs.add(new Pair(name, listConfs.get(listConfs.size() - 1).second.clone()));
+            listConfs.add(new Pair(name, listConfs.get(listConfs.size() - 1).getSecond().clone()));
         }
         currentConfiguration = listConfs.size() - 1;
     }

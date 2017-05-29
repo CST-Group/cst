@@ -28,4 +28,9 @@ public class CSTMessages {
     public static final String MSG_VAR_EMOTIONAL_INTERVENTION_THRESHOLD = "Intervention threshold must be less equal than 1 and greater equal than 0.";
 
 
+    //AFFORDANCE MESSAGES.
+    public static final String MSG_VAR_DETECTOR_OBJECT = "Detector object is null.";
+    public static final String MSG_VAR_APPLY_OBJECT = "Apply object is null.";
+
+
 }

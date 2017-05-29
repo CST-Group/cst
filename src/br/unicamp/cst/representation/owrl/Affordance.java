@@ -1,29 +1,33 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package br.unicamp.cst.representation.owrl;
 
-import java.util.Comparator;
+import java.util.HashMap;
 
 /**
- *
- * @author suelen
+ * Created by du on 23/05/17.
  */
 public abstract class Affordance {
-    
+
     private String name;
-    private String descriptor; //???? Qual a utilidade do descritor????
-    private Comparator<AbstractObject> detector;
-    
-    
-    
-    public Affordance(String name, String descriptor, Comparator<AbstractObject> detector) {
-        this.name = name;
-        this.descriptor = descriptor;
-        this.detector = detector;
+    private HashMap<String, AbstractObject> aggregateObjects;
+    private HashMap<String, AbstractObject> compositeObjects;
+    private HashMap<String, Property> modifiedProperties;
+
+    public Affordance(String name) {
+        setName(name);
+
     }
+
+    public Affordance(String name, HashMap<String, AbstractObject> aggregateObjects,  HashMap<String, AbstractObject> compositeObjects, HashMap<String, Property> modifiedProperties) {
+        setName(name);
+        setAggregateObjects(aggregateObjects);
+        setCompositeObjects(compositeObjects);
+        setModifiedProperties(modifiedProperties);
+
+    }
+
+    public abstract Object apply(String applyName, Object... args);
+
+    public abstract Object detector(String detectorName, Object... args);
 
     public String getName() {
         return name;
@@ -33,22 +37,27 @@ public abstract class Affordance {
         this.name = name;
     }
 
-    public String getDescriptor() {
-        return descriptor;
+    public HashMap<String, AbstractObject> getAggregateObjects() {
+        return aggregateObjects;
     }
 
-    public void setDescriptor(String descriptor) {
-        this.descriptor = descriptor;
+    public void setAggregateObjects(HashMap<String, AbstractObject> aggregateObjects) {
+        this.aggregateObjects = aggregateObjects;
     }
 
-    public Comparator getDetector() {
-        return detector;
+    public HashMap<String, AbstractObject> getCompositeObjects() {
+        return compositeObjects;
     }
 
-    public void setDetector(Comparator<AbstractObject> detector) {
-        this.detector = detector;
+    public void setCompositeObjects(HashMap<String, AbstractObject> compositeObjects) {
+        this.compositeObjects = compositeObjects;
     }
-    
-    public abstract void apply(AbstractObject object, Object[] factors);
-    
+
+    public HashMap<String, Property> getModifiedProperties() {
+        return modifiedProperties;
+    }
+
+    public void setModifiedProperties(HashMap<String, Property> modifiedProperties) {
+        this.modifiedProperties = modifiedProperties;
+    }
 }
