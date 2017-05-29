@@ -122,6 +122,11 @@ public class AbstractObject implements Cloneable {
             }
             results.addAll(property.search(path));
         }
+        for (Affordance affordance : affordances) {
+            if (affordance.getName().equals(name)) {
+                results.add(affordance);
+            }
+        }
         return results;
     }
     
