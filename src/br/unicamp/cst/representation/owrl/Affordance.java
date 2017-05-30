@@ -8,20 +8,20 @@ import java.util.HashMap;
 public abstract class Affordance {
 
     private String name;
-    private HashMap<String, AbstractObject> aggregateObjects;
-    private HashMap<String, AbstractObject> compositeObjects;
-    private HashMap<String, Property> modifiedProperties;
+    private HashMap<String, AbstractObject> aggregateDetectorObjects;
+    private HashMap<String, AbstractObject> compositeDetectorObjects;
+    private HashMap<String, Property> propertyDetectorObjects;
 
     public Affordance(String name) {
         setName(name);
 
     }
 
-    public Affordance(String name, HashMap<String, AbstractObject> aggregateObjects,  HashMap<String, AbstractObject> compositeObjects, HashMap<String, Property> modifiedProperties) {
+    public Affordance(String name, HashMap<String, AbstractObject> aggregateDetectorObjects, HashMap<String, AbstractObject> compositeDetectorObjects, HashMap<String, Property> propertyDetectorObjects) {
         setName(name);
-        setAggregateObjects(aggregateObjects);
-        setCompositeObjects(compositeObjects);
-        setModifiedProperties(modifiedProperties);
+        setAggregateDetectorObjects(aggregateDetectorObjects);
+        setCompositeDetectorObjects(compositeDetectorObjects);
+        setPropertyDetectorObjects(propertyDetectorObjects);
 
     }
 
@@ -37,27 +37,27 @@ public abstract class Affordance {
         this.name = name;
     }
 
-    public HashMap<String, AbstractObject> getAggregateObjects() {
-        return aggregateObjects;
+    public HashMap<String, AbstractObject> getAggregateDetectorObjects() {
+        return aggregateDetectorObjects;
     }
 
-    public void setAggregateObjects(HashMap<String, AbstractObject> aggregateObjects) {
-        this.aggregateObjects = aggregateObjects;
+    public void setAggregateDetectorObjects(HashMap<String, AbstractObject> aggregateDetectorObjects) {
+        this.aggregateDetectorObjects = aggregateDetectorObjects;
     }
 
-    public HashMap<String, AbstractObject> getCompositeObjects() {
-        return compositeObjects;
+    public HashMap<String, AbstractObject> getCompositeDetectorObjects() {
+        return compositeDetectorObjects;
     }
 
-    public void setCompositeObjects(HashMap<String, AbstractObject> compositeObjects) {
-        this.compositeObjects = compositeObjects;
+    public void setCompositeDetectorObjects(HashMap<String, AbstractObject> compositeDetectorObjects) {
+        this.compositeDetectorObjects = compositeDetectorObjects;
     }
 
-    public HashMap<String, Property> getModifiedProperties() {
-        return modifiedProperties;
+    public HashMap<String, Property> getPropertyDetectorObjects() {
+        return propertyDetectorObjects;
     }
 
-    public void setModifiedProperties(HashMap<String, Property> modifiedProperties) {
-        this.modifiedProperties = modifiedProperties;
+    public void setPropertyDetectorObjects(HashMap<String, Property> propertyDetectorObjects) {
+        this.propertyDetectorObjects = propertyDetectorObjects;
     }
 }

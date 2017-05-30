@@ -17,6 +17,7 @@ import br.unicamp.cst.util.NameGenerator;
 import br.unicamp.cst.util.Pair;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 /**
  * @author Suelen Mapa and Eduardo Froes.
@@ -175,7 +176,7 @@ public class AbstractObject implements Cloneable {
         if (getAffordances().size() != 0) {
             getAffordances().stream().forEach(affordance -> {
                 aggregateObjects.entrySet().stream().forEach(aggrDetect -> {
-                    Optional<Map.Entry<String, AbstractObject>> first = affordance.getAggregateObjects().entrySet().stream().filter(aggr -> aggr.getKey().equals(aggrDetect.getKey())
+                    Optional<Map.Entry<String, AbstractObject>> first = affordance.getAggregateDetectorObjects().entrySet().stream().filter(aggr -> aggr.getKey().equals(aggrDetect.getKey())
                             && aggr.getValue().getName().equals(aggrDetect.getValue().getName())).findFirst();
                     if (!first.isPresent()) {
                         bVerify[0] = false;
@@ -184,7 +185,7 @@ public class AbstractObject implements Cloneable {
                 });
 
                 compositeObjects.entrySet().stream().forEach(compDetect -> {
-                    Optional<Map.Entry<String, AbstractObject>> first = affordance.getCompositeObjects().entrySet().stream().filter(comp -> comp.getKey().equals(compDetect.getKey())
+                    Optional<Map.Entry<String, AbstractObject>> first = affordance.getCompositeDetectorObjects().entrySet().stream().filter(comp -> comp.getKey().equals(compDetect.getKey())
                             && comp.getValue().getName().equals(compDetect.getValue().getName())).findFirst();
                     if (!first.isPresent()) {
                         bVerify[0] = false;
@@ -193,7 +194,7 @@ public class AbstractObject implements Cloneable {
                 });
 
                 modifiedProperties.entrySet().stream().forEach(propDetect -> {
-                    Optional<Map.Entry<String, Property>> first = affordance.getModifiedProperties().entrySet().stream().filter(prop -> prop.getKey().equals(propDetect.getKey())
+                    Optional<Map.Entry<String, Property>> first = affordance.getPropertyDetectorObjects().entrySet().stream().filter(prop -> prop.getKey().equals(propDetect.getKey())
                             && prop.getValue().getName().equals(propDetect.getValue().getName())).findFirst();
                     if (!first.isPresent()) {
                         bVerify[0] = false;
@@ -231,10 +232,33 @@ public class AbstractObject implements Cloneable {
                         compositeObjects,
                         modifiedProperties);
                 this.addAffordance(newAffordance);
+
+                getAggregateParts().forEach( aggr -> {
+
+                    Optional<AbstractObject> gotAggr = after.getAggregateParts().stream().filter(aAggr -> aAggr.getName().equals(aggr.getName())).findFirst();
+
+                    if(gotAggr.isPresent()){
+                        List<AbstractObject> pathAggr = new ArrayList<AbstractObject>();
+                        path.stream().forEach(p -> pathAggr.addAll(p.getAggregateParts().stream().filter(pAggr -> pAggr.getName().equals(aggr.getName())).collect(Collectors.toList())));
+
+                        aggr.discoveryAffordance(gotAggr.get(), pathAggr);
+                    }
+                });
+
+                getCompositeParts().forEach( comp -> {
+
+                    Optional<AbstractObject> gotComp = after.getCompositeParts().stream().filter(aAggr -> aAggr.getName().equals(comp.getName())).findFirst();
+
+                    if(gotComp.isPresent()){
+                        List<AbstractObject> pathComp = new ArrayList<AbstractObject>();
+                        path.stream().forEach(p -> pathComp.addAll(p.getCompositeParts().stream().filter(pAggr -> pAggr.getName().equals(comp.getName())).collect(Collectors.toList())));
+
+                        comp.discoveryAffordance(gotComp.get(), pathComp);
+                    }
+                });
+
             }
         }
-
-
     }
 
 
@@ -608,85 +632,6 @@ public class AbstractObject implements Cloneable {
 
     }
 
-    public static void main(String args[]) {
-
-
-        //------------- Objeto 1 --------------------------
-
-        AbstractObject robot = new AbstractObject("Robot");
-
-        AbstractObject sensor = new AbstractObject("Sensor");
-        Property position = new Property("position");
-        position.addQualityDimension(new QualityDimension("x", 0.5));
-        position.addQualityDimension(new QualityDimension("y", 0.6));
-        sensor.addProperty(position);
-
-        robot.addCompositePart(sensor);
-
-        Property color = new Property("Color");
-        color.addQualityDimension(new QualityDimension("R", 255.0));
-        color.addQualityDimension(new QualityDimension("G", 0.0));
-        color.addQualityDimension(new QualityDimension("B", 0.0));
-
-        robot.addProperty(color);
-
-        AbstractObject actuator = new AbstractObject("Actuator");
-        actuator.addProperty(new Property("velocity", new QualityDimension("intensity", -0.12)));
-
-        robot.addCompositePart(actuator);
-
-        AbstractObject sonar = new AbstractObject("Sonar");
-        sonar.addProperty(new Property("Distance", new QualityDimension("value", 215.0)));
-
-        robot.addAggregatePart(sonar);
-
-        AbstractObject gps = new AbstractObject("GPS");
-        Property coordinates = new Property("Coordinates");
-        coordinates.addQualityDimension(new QualityDimension("x", 12.0));
-        coordinates.addQualityDimension(new QualityDimension("y", 76.0));
-        coordinates.addQualityDimension(new QualityDimension("z", 60.0));
-        gps.addProperty(coordinates);
-
-        robot.addAggregatePart(gps);
-
-
-        //------------- Objeto 2 --------------------------
-        AbstractObject robot2 = new AbstractObject("Robot");
-
-        Property newcolor = new Property("Color");
-        newcolor.addQualityDimension(new QualityDimension("R", 0.0));
-        newcolor.addQualityDimension(new QualityDimension("G", 255.0));
-        newcolor.addQualityDimension(new QualityDimension("B", 255.0));
-
-        robot2.addProperty(newcolor);
-
-        AbstractObject actuator1 = new AbstractObject("Actuator");
-        actuator1.addProperty(new Property("velocity", new QualityDimension("intensity", -0.12)));
-
-        robot2.addCompositePart(actuator1);
-
-        AbstractObject temperatureSensor = new AbstractObject("Temperature Sensor");
-        temperatureSensor.addProperty(new Property("temperature", new QualityDimension("value", 35.0)));
-
-        robot2.addCompositePart(temperatureSensor);
-
-        AbstractObject radio = new AbstractObject("Radio");
-        radio.addProperty(new Property("frequency", new QualityDimension("value", 89.9)));
-        robot2.addAggregatePart(radio);
-
-        AbstractObject gps1 = new AbstractObject("GPS");
-        Property coordinates1 = new Property("Coordinates");
-        coordinates1.addQualityDimension(new QualityDimension("x", 12.0));
-        coordinates1.addQualityDimension(new QualityDimension("y", 76.0));
-        coordinates1.addQualityDimension(new QualityDimension("z", 60.0));
-        gps1.addProperty(coordinates);
-
-        robot.discoveryAffordance(robot2, Arrays.asList(robot2));
-
-        System.out.println(((DynamicAffordance) robot.getAffordances().get(0)).getDetectorCode());
-        System.out.println(((DynamicAffordance) robot.getAffordances().get(0)).getApplyCode());
-
-    }
 
     public void addAffordance(Affordance affordance) {
         this.getAffordances().add(affordance);

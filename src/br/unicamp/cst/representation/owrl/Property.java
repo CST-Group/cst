@@ -13,6 +13,7 @@ package br.unicamp.cst.representation.owrl;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 /**
  *
@@ -58,6 +59,41 @@ public final class Property {
     public void setName(String Name) {
         this.Name = Name;
     }
+
+    @Override
+    public boolean equals(Object property){
+
+        final boolean[] isEquals = {true};
+
+        if (!(property instanceof Property)) {
+            return false;
+        }
+
+        Property that = (Property) property;
+
+        if(!that.getName().equals(this.getName())){
+            return false;
+        }
+
+        this.getQualityDimensions().forEach(dimension -> {
+            Optional<QualityDimension> first = that.getQualityDimensions().stream().filter(tDimension -> tDimension.getName().equals(dimension.getName())).findFirst();
+
+            if(!first.isPresent()){
+                isEquals[0] = false;
+                return;
+            }
+            else{
+                if(!dimension.getValue().equals(first.get().getValue())){
+                    isEquals[0]=false;
+                    return;
+                }
+            }
+
+        });
+
+        return isEquals[0];
+    }
+
 
     @Override
     public Property clone() {
