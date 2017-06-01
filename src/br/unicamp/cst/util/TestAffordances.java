@@ -196,7 +196,8 @@ public class TestAffordances {
             }
         });
         robot.setAffordances(affordances);
-        
+        AbstractObjectEditor aoe = new AbstractObjectEditor(robot);
+        aoe.setVisible(true);
         AbstractObject newRobot = robot.clone();
         affordances.get(0).apply(newRobot, new Object[] { 1.0 });
         
