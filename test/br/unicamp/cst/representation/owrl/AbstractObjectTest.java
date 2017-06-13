@@ -1,6 +1,7 @@
 package br.unicamp.cst.representation.owrl;
 
 import org.junit.Test;
+
 import java.util.Arrays;
 
 /**
@@ -8,12 +9,12 @@ import java.util.Arrays;
  */
 public class AbstractObjectTest {
 
-    public void setUp(){
+    public void setUp() {
         System.out.println("########## AFFORDANCE TESTS ##########");
     }
 
     @Test
-    public void testDynamicAffordanceDetect(){
+    public void testDynamicAffordanceDetect() {
         //------------- Objeto 1 --------------------------
 
         AbstractObject robot = new AbstractObject("Robot");

@@ -30,7 +30,7 @@ public abstract class MoodCodelet extends Codelet {
     private String id;
     private List<Drive> listOfDrives;
     private Appraisal appraisal;
-    private EpisodicMemory episodicRecallMemory;
+    private List<Object> sensors;
 
     private Memory inputDrivesMemoryMO;
     private Memory inputAppraisalMO;
@@ -40,6 +40,7 @@ public abstract class MoodCodelet extends Codelet {
     public MoodCodelet(String id){
         this.setId(id);
         this.setListOfDrives(new ArrayList<Drive>());
+        this.setSensors(new ArrayList<Object>());
     }
 
     @Override
@@ -58,7 +59,7 @@ public abstract class MoodCodelet extends Codelet {
 
         if(getInputSensoryMO() != null){
             setInputSensoryMO(getInput(INPUT_SENSORY_MEMORY, 0));
-            setEpisodicRecallMemory((EpisodicMemory) getInputSensoryMO().getI());
+            setSensors((List<Object>) getInputSensoryMO().getI());
         }
 
         if(getOutputMoodMO() != null){
@@ -76,11 +77,11 @@ public abstract class MoodCodelet extends Codelet {
     }
 
 
-    public abstract Mood moodGeneration(List<Drive> listOfDrives, Appraisal appraisal, EpisodicMemory episodicMemory);
+    public abstract Mood moodGeneration(List<Drive> listOfDrives, Appraisal appraisal, List<Object> sensors);
 
     @Override
     public void proc() {
-        Mood mood = moodGeneration(getListOfDrives(), getAppraisal(), getEpisodicRecallMemory());
+        Mood mood = moodGeneration(getListOfDrives(), getAppraisal(), getSensors());
         mood.setName(getId());
         getOutputMoodMO().setI(mood);
     }
@@ -107,14 +108,6 @@ public abstract class MoodCodelet extends Codelet {
 
     public void setAppraisal(Appraisal appraisal) {
         this.appraisal = appraisal;
-    }
-
-    public EpisodicMemory getEpisodicRecallMemory() {
-        return episodicRecallMemory;
-    }
-
-    public void setEpisodicRecallMemory(EpisodicMemory episodicRecallMemory) {
-        this.episodicRecallMemory = episodicRecallMemory;
     }
 
     public Memory getInputDrivesMemoryMO() {
@@ -150,8 +143,11 @@ public abstract class MoodCodelet extends Codelet {
     }
 
 
+    public List<Object> getSensors() {
+        return sensors;
+    }
 
-
-
-
+    public void setSensors(List<Object> sensors) {
+        this.sensors = sensors;
+    }
 }
