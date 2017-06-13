@@ -11,12 +11,6 @@
 
 package br.unicamp.cst.bindings.soar;
 
-import br.unicamp.cst.core.entities.Codelet;
-import br.unicamp.cst.representation.owrl.Property;
-import br.unicamp.cst.representation.owrl.QualityDimension;
-import br.unicamp.cst.representation.owrl.AbstractObject;
-import com.google.gson.JsonElement;
-import com.google.gson.JsonObject;
 import java.io.File;
 import java.lang.reflect.Field;
 import java.util.ArrayList;
@@ -24,6 +18,14 @@ import java.util.Iterator;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
+
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+
+import br.unicamp.cst.core.entities.Codelet;
+import br.unicamp.cst.representation.owrl.AbstractObject;
+import br.unicamp.cst.representation.owrl.Property;
+import br.unicamp.cst.representation.owrl.QualityDimension;
 
 /**
  *
@@ -37,20 +39,10 @@ public abstract class JSoarCodelet extends Codelet {
     //arrumar isso
     public SOARPlugin jsoar = null;
     
-    @Override
-    public void accessMemoryObjects() {
-    }
-    
-    @Override
-    public void proc() {
-        
-    } 
-    
     public void initSoarPlugin(String _agentName, File _productionPath, Boolean startSOARDebugger){
         this.jsoar = new SOARPlugin(_agentName, _productionPath, startSOARDebugger);
     }
-    
-    
+     
     public ArrayList<Object> getCommandsOWRL(String package_with_beans_classes){
         ArrayList<Object> commandList = new ArrayList<Object>();
         AbstractObject ol = jsoar.getOutputLinkOWRL();
@@ -215,9 +207,5 @@ public abstract class JSoarCodelet extends Codelet {
     
     public void removeJson(String pathToOldBranch, JsonObject json){
         jsoar.removeBranchFromJson(pathToOldBranch, json);
-    }
-    
-    @Override
-    public void calculateActivation() {
     }
 }
