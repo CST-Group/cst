@@ -90,6 +90,9 @@ public abstract class Codelet implements Runnable
 
 	/** This variable is a safe lock for multithread access */
 	public Lock lock= new ReentrantLock();
+        
+        /** This variable selects if the threads beside the codelet are supposed to sleep or go busy waiting (for the sake of exact waiting time) between polls */
+        private boolean sleep = true; 
 
 	/** 
 	 * This method is used in every Codelet to capture input, broadcast and output MemoryObjects
@@ -134,10 +137,13 @@ public abstract class Codelet implements Runnable
 
 				if(timeStep > 0)
 				{
-
-					long timeMarker = System.currentTimeMillis();
-
-					while(System.currentTimeMillis() < timeMarker + timeStep){}
+                                    if (sleep)
+                                        Thread.sleep(timeStep);
+                                    else {
+					  long timeMarker = System.currentTimeMillis();
+					  while(System.currentTimeMillis() < timeMarker + timeStep){}
+                                    }    
+                                        
 				}	
 
 			}catch(Exception e)
@@ -638,5 +644,19 @@ public abstract class Codelet implements Runnable
 	 */
 	public synchronized void setTimeStep(long timeStep) {
 		this.timeStep = timeStep;
-	}	
+	}
+        
+        /**
+	 * @return the sleep flag
+	 */
+	public synchronized boolean getSleep() {
+		return sleep;
+	}
+
+	/**
+	 * @param nsleep the flag that sets if the Codelet is supposed to sleep or be maintained in busy waiting (default is to sleep)
+	 */
+	public synchronized void setSleep(boolean nsleep) {
+		this.sleep = nsleep;
+	}
 }
