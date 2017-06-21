@@ -135,7 +135,7 @@ public class RawMemory
    /**
     * Creates a new MemoryObject (Java style) and adds it to the Raw Memory, using provided info and type
     * 
-    * @param type memory object type
+    * @param name memory object type
     * @param info memory object info
     * @return mo created MemoryObject
     */

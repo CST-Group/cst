@@ -35,7 +35,7 @@ public class BNplot {
 
 	/**
 	 * 
-	 * @param smartEnv
+	 * @param behaviorList the Behavior list
 	 */
 	public BNplot(ArrayList<Behavior> behaviorList) {
 

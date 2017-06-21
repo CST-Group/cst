@@ -46,7 +46,7 @@ public interface Memory {
 
 	/**
 	 * 
-	 * @param eval
+	 * @param eval the value to be set as evaluation
 	 */
 	void setEvaluation(Double eval);
 

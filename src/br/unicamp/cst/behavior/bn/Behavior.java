@@ -505,7 +505,7 @@ public abstract class Behavior extends Codelet
 	}
 
 	/**
-	 * @param adds
+	 * @param condition
 	 *           condition to listOfPreconditions
 	 */
 	public void addPreconList(Memory condition)
@@ -525,7 +525,7 @@ public abstract class Behavior extends Codelet
 	}
 
 	/**
-	 * @param adds
+	 * @param condition
 	 *           condition to listOfPreconditions
 	 */
 	public void addSoftPreconList(Memory condition)
@@ -545,7 +545,7 @@ public abstract class Behavior extends Codelet
 	}
 
 	/**
-	 * @param adds
+	 * @param condition
 	 *           condition to addList
 	 */
 	public void addAddList(Memory condition)
@@ -564,7 +564,7 @@ public abstract class Behavior extends Codelet
 	}
 
 	/**
-	 * @param adds
+	 * @param condition
 	 *           condition to deleteList
 	 */
 	public void addDelList(Memory condition)
@@ -1196,12 +1196,12 @@ public abstract class Behavior extends Codelet
 	 * Returns a list of PROPOSITION MOs constituting the intersection between A and B.
 	 * For this method to work, at least one of the lists must be of propositions
 	 * 
-	 * @param list
+	 * @param A
 	 *           list A
 	 * @param B
 	 *           list B
 	 * @return the list with the intersection between A and B lists
-	 * @throws Exception 
+	 * 
 	 */
 
 	public ArrayList<Memory> getIntersectionSet(ArrayList<Memory> A, ArrayList<Memory> B)
@@ -1380,7 +1380,7 @@ public abstract class Behavior extends Codelet
 	/**
 	 * @param actionsSet
 	 *           the actionsSet to set
-	 * @return
+	 * 
 	 */
 	public void setActionList(ArrayList<String> actionsSet)
 	{

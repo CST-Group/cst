@@ -275,7 +275,7 @@ public class WorkingStorage  implements Subject
 	/**
 	 *  Removes this memory object from Working Storage if it is there, but keeps it in Raw Memory.
 	 *  Be careful when using this!
-	 * @param bpMo
+	 * @param mo
 	 */
 	public synchronized void removeFromWorkingStorageWithoutDelete(Memory mo) {
 		//		System.out.println("--> Working storage before removal: "+this.getAll());

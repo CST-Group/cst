@@ -129,7 +129,7 @@ public class MemoryObject implements Memory,Serializable
 
    
    /**
-    * @param type the type to set
+    * @param name the type to set
     */
    public synchronized void setType(String name)
    {

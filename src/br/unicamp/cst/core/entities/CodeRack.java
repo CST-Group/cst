@@ -72,7 +72,7 @@ public class CodeRack
 	 * 
 	 * @param co
 	 *           codelet to be created
-	 * @return
+	 * @return the own codelet inserted, if it is needed to concatenate to further methods calls
 	 */
 	public Codelet insertCodelet(Codelet co)
 	{
@@ -109,7 +109,7 @@ public class CodeRack
 	}
 	/**
 	 * removes a codelet from coderack
-	 * @param co
+	 * @param co the codelet to be destroyed
 	 */
 	public void destroyCodelet(Codelet co) 
 	{

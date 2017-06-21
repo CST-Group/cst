@@ -171,7 +171,7 @@ public abstract class Codelet implements Runnable
 	/**
 	 * Safe access to other Codelets through reentrant locks
 	 * 
-	 * @param accesing
+	 * @param accesing 
 	 * @return
 	 */
 	public boolean impendingAccess(Codelet accesing)
@@ -276,7 +276,7 @@ public abstract class Codelet implements Runnable
 
 	/**
 	 * @param activation the activation to set
-	 * @throws CodeletActivationBoundsException 
+	 * @throws CodeletActivationBoundsException exception triggered if an activation lower than 0 or bigger than 1 is set 
 	 */
 	public synchronized void setActivation(double activation) throws CodeletActivationBoundsException
 	{
@@ -310,7 +310,7 @@ public abstract class Codelet implements Runnable
 		this.inputs = inputs;
 	}
 	/**
-	 * @param adds one input to set
+	 * @param input one input to set
 	 */
 	public synchronized void addInput(Memory input)
 	{
@@ -318,7 +318,7 @@ public abstract class Codelet implements Runnable
 	}
 
 	/**
-	 * @param adds a list of inputs
+	 * @param inputs a list of inputs
 	 */
 	public synchronized void addInputs(List<Memory> inputs)
 	{
@@ -326,7 +326,7 @@ public abstract class Codelet implements Runnable
 	}
 
 	/**
-	 * @param adds one output to set
+	 * @param output one output to set
 	 */
 	public synchronized void addOutput(Memory output)
 	{
@@ -335,28 +335,41 @@ public abstract class Codelet implements Runnable
 
 	/**
 	 * Removes a given memory from output list
-	 * @param output
+	 * @param output the memory to be removed from output
 	 */
 	public synchronized void removesOutput(Memory output){
 		this.outputs.remove(output);
 	}
 	/**
 	 * Removes a given memory from input list
-	 * @param output
+	 * @param input the memory to be removed from input
 	 */
 	public synchronized void removesInput(Memory input){
 		this.inputs.remove(input);
 	}
 
+        /**
+	 * Removes a given memory from output list
+	 * @param outputs the list of memories to be removed from output
+	 */
 	public synchronized void removeFromOutput(List<Memory> outputs)
 	{
 		this.outputs.removeAll(outputs);
 	}
 
+        /**
+	 * Removes a given memory from ouput list
+	 * @param inputs the list of memories to be removed from input
+	 */
 	public synchronized void removeFromInput(List<Memory> inputs)
 	{
 		this.inputs.removeAll(inputs);
 	}
+        
+        /**
+	 * Adds a list of memories to the output list
+	 * @param outputs the list of memories to be added to the output
+	 */
 	public synchronized void addOutputs(List<Memory> outputs)
 	{
 		this.outputs.addAll(outputs);
@@ -390,7 +403,7 @@ public abstract class Codelet implements Runnable
 	}
 
 	/**
-	 * @param type
+	 * @param type the type of memories to be retrieved
 	 * @return list of memory objects in input of a given type
 	 */
 	public synchronized ArrayList<Memory> getInputsOfType(String type) 
@@ -434,7 +447,12 @@ public abstract class Codelet implements Runnable
 	{
 		this.broadcast = broadcast;
 	}
-
+        
+        /**
+	 * Returns a specific memory (with the given name) from the broadcast list of the Codelet
+	 * @param name the name of a memory to be retrieved at the broadcast list
+         * @return the list of memories in the broadcast list
+	 */
 	public synchronized Memory getBroadcast(String name) 
 	{
 		if(broadcast!=null&&broadcast.size()>0)
@@ -455,7 +473,7 @@ public abstract class Codelet implements Runnable
 	}
 
 	/**
-	 * @param b one input to set
+	 * @param broadcast one input to set
 	 */
 	public synchronized void addBroadcasts(List<Memory> broadcast)
 	{
@@ -530,7 +548,7 @@ public abstract class Codelet implements Runnable
 	 * If it couldn't find the given M, it sets this codelet as not able to perform proc(), and keeps trying to find it.
 	 * 
 	 * @param type type of memory it needs
-	 * @param position position of memory in the sublist
+	 * @param index position of memory in the sublist
 	 * @return memory of type at position 
 	 */
 	public synchronized Memory getOutput(String type, int index)
@@ -573,10 +591,10 @@ public abstract class Codelet implements Runnable
 	}
 
 	/**
-	 * 
-	 * @param type
-	 * @param index
-	 * @return
+	 * Return a memory if its name is found at the broadcast list ... if more than one memory with the same name, it return the one at the index position
+	 * @param type the name of the memory to be retrieved in the broadcast list
+	 * @param index the index to be considered while multiple equal names are found within the broadcast list
+	 * @return the memory
 	 */
 	public synchronized Memory getBroadcast(String type, int index)
 	{
@@ -613,8 +631,8 @@ public abstract class Codelet implements Runnable
 
 	/**
 	 * 
-	 * @param threshold
-	 * @throws CodeletThresholdBoundsException
+	 * @param threshold the threshold to be set
+	 * @throws CodeletThresholdBoundsException the exception thrown if the threshold value is less than zero or greater than 1
 	 */
 	public synchronized void setThreshold(double threshold) throws CodeletThresholdBoundsException 
 	{		
