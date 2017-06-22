@@ -13,25 +13,25 @@ package br.unicamp.cst.motivational;
 
 public class Appraisal {
 
-    private String id;
+    private String name;
 
     private double evaluation;
 
-    private String currentState;
+    private String currentStateEvaluation;
 
 
-    public Appraisal(String name, String currentState, double evaluation){
-        setId(name);
+    public Appraisal(String name, String currentStateEvaluation, double evaluation){
+        setName(name);
         setEvaluation(evaluation);
-        setCurrentState(currentState);
+        setCurrentStateEvaluation(currentStateEvaluation);
     }
 
-    public String getId() {
-        return id;
+    public String getName() {
+        return name;
     }
 
-    public void setId(String id) {
-        this.id = id;
+    public void setName(String name) {
+        this.name = name;
     }
 
     public double getEvaluation() {
@@ -42,12 +42,17 @@ public class Appraisal {
         this.evaluation = evaluation;
     }
 
-    public String getCurrentState() {
-        return currentState;
+    public String getCurrentStateEvaluation() {
+        return currentStateEvaluation;
     }
 
-    public void setCurrentState(String currentState) {
-        this.currentState = currentState;
+    public void setCurrentStateEvaluation(String currentState) {
+        this.currentStateEvaluation = currentState;
+    }
+
+    @Override
+    public String toString(){
+        return "Appraisal [name:"+ getName()+", evaluation:"+getEvaluation()+", currentStateEvaluation:"+getCurrentStateEvaluation()+"]";
     }
 
 }

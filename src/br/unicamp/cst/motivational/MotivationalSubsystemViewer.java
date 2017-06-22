@@ -4,9 +4,9 @@
  * are made available under the terms of the GNU Lesser Public License v3
  * which accompanies this distribution, and is available at
  * http://www.gnu.org/licenses/lgpl.html
- * 
+ *
  * Contributors:
- *     K. Raizer, A. L. O. Paraense, R. R. Gudwin - initial API and implementation
+ *     E. M. Froes, R. R. Gudwin - initial API and implementation
  ******************************************************************************/
 package br.unicamp.cst.motivational;
 
@@ -21,6 +21,8 @@ import org.jfree.chart.plot.PlotOrientation;
 import org.jfree.data.category.DefaultCategoryDataset;
 
 import javax.swing.*;
+import javax.swing.event.ChangeEvent;
+import javax.swing.event.ChangeListener;
 import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.DefaultTreeModel;
 import java.awt.*;
@@ -41,12 +43,18 @@ public class MotivationalSubsystemViewer extends javax.swing.JFrame {
     private List<Codelet> appraisalCodelets;
     private List<Codelet> moodCodelets;
     private int timeRefresh = 1000;
+    private int selectedIndex = 0;
 
     private Thread threadDrives;
     private Thread threadEmotionalDrives;
+    private Thread threadAppraisals;
+    private Thread threadMoods;
 
     private Map<String, DefaultMutableTreeNode> mapMemoryNodes;
     private boolean bStopRefresh = false;
+
+    private ChartPanel motivationalChart;
+    private ChartPanel emotionalChart;
 
     private DefaultTreeModel dtMotivationalCodelets;
     private DefaultTreeModel dtEmotionalCodelets;
@@ -83,12 +91,19 @@ public class MotivationalSubsystemViewer extends javax.swing.JFrame {
         setDtGoalCodelets(createTreeModelGUI(spGoalCodelets, goalCodelets, "Goal Codelets"));
         setDtAppraisalCodelets(createTreeModelGUI(spAppraisalCodelets, appraisalCodelets, "Appraisal Codelets"));
         setDtMoodCodelets(createTreeModelGUI(spMoodCodelets, moodCodelets, "Mood Codelets"));
-        setDtGoalCodelets(createTreeModelGUI(spEmotionalCodelets, emotionalCodelets, "Emotional Codelets"));
+        setDtEmotionalCodelets(createTreeModelGUI(spEmotionalCodelets, emotionalCodelets, "Emotional Codelets"));
+
 
         startThreads();
 
-    }
 
+        tbTab.addChangeListener(new ChangeListener() {
+            public void stateChanged(ChangeEvent e) {
+                selectedIndex = tbTab.getSelectedIndex();
+            }
+        });
+
+    }
 
     private void startThreads() {
         threadDrives = new Thread() {
@@ -98,15 +113,20 @@ public class MotivationalSubsystemViewer extends javax.swing.JFrame {
 
                 synchronized (pnDrives) {
                     pnDrives.setLayout(new BorderLayout());
-                    pnDrives.add(createChart(dataset, "Motivational Codelets", "Drives", "Activation", PlotOrientation.VERTICAL), BorderLayout.CENTER);
+                    motivationalChart =  createChart(dataset, "Motivational Codelets", "Drives", "Activation", PlotOrientation.VERTICAL);
+                    pnDrives.add(motivationalChart, BorderLayout.CENTER);
                     pnDrives.validate();
                 }
 
                 while (!bStopRefresh) {
-
-                    while (tbTab.getSelectedIndex() != 0 && !bStopRefresh) ;
-
-                    updateValuesInTree(motivationalCodelets, getDtMotivationalCodelets());
+                    while (selectedIndex != 0){
+                        try {
+                            Thread.sleep(getTimeRefresh());
+                        } catch (InterruptedException e) {
+                            e.printStackTrace();
+                        }
+                    }
+                    updateValuesInTree(getMotivationalCodelets(), getDtMotivationalCodelets());
 
                     spMotivationalCodelets.revalidate();
                     spMotivationalCodelets.repaint();
@@ -134,27 +154,106 @@ public class MotivationalSubsystemViewer extends javax.swing.JFrame {
                 }
 
                 while (!bStopRefresh) {
-
-
-                        while (tbTab.getSelectedIndex() != 1 && !bStopRefresh) ;
-
-                        updateValuesInTree(emotionalCodelets, getDtMotivationalCodelets());
-
-                        updateValuesInChart(dataset, emotionalCodelets);
+                    while (selectedIndex != 1){
                         try {
-                            Thread.currentThread().sleep(getTimeRefresh());
+                            Thread.sleep(getTimeRefresh());
                         } catch (InterruptedException e) {
                             e.printStackTrace();
                         }
+                    }
+                    updateValuesInTree(getEmotionalCodelets(), getDtEmotionalCodelets());
+
+                    spEmotionalCodelets.revalidate();
+                    spEmotionalCodelets.repaint();
+
+                    updateValueInChartByMemory(dataset, emotionalCodelets, EmotionalCodelet.OUTPUT_AFFECTED_DRIVE_MEMORY.toString());
+                    try {
+                        Thread.currentThread().sleep(getTimeRefresh());
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    }
 
                 }
             }
         };
 
-        threadEmotionalDrives.start();
+        threadMoods = new Thread() {
+            @Override
+            public void run() {
+                DefaultCategoryDataset dataset = new DefaultCategoryDataset();
+
+                while (!bStopRefresh) {
+                    while (selectedIndex != 2){
+                        try {
+                            Thread.sleep(getTimeRefresh());
+                        } catch (InterruptedException e) {
+                            e.printStackTrace();
+                        }
+                    }
+
+                    updateValuesInTree(getMoodCodelets(), getDtMoodCodelets());
+
+                    spMoodCodelets.revalidate();
+                    spMoodCodelets.repaint();
+
+                    try {
+                        Thread.currentThread().sleep(getTimeRefresh());
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    }
+
+                }
+            }
+        };
+
+        threadAppraisals = new Thread() {
+            @Override
+            public void run() {
+                DefaultCategoryDataset dataset = new DefaultCategoryDataset();
+
+                while (!bStopRefresh) {
+                    while (selectedIndex != 3){
+                        try {
+                            Thread.sleep(getTimeRefresh());
+                        } catch (InterruptedException e) {
+                            e.printStackTrace();
+                        }
+                    }
+
+                    updateValuesInTree(getAppraisalCodelets(), getDtAppraisalCodelets());
+
+                    spAppraisalCodelets.revalidate();
+                    spAppraisalCodelets.repaint();
+
+
+                    try {
+                        Thread.currentThread().sleep(getTimeRefresh());
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    }
+
+                }
+            }
+        };
+
+
         threadDrives.start();
+        threadAppraisals.start();
+        threadMoods.start();
+        threadEmotionalDrives.start();
     }
 
+
+    private synchronized void updateValueInChartByMemory(DefaultCategoryDataset dataset, List<Codelet> codelets, String memoryName){
+        ArrayList<Codelet> tempCodeletsList = new ArrayList<Codelet>();
+        tempCodeletsList.addAll(codelets);
+
+        synchronized (tempCodeletsList) {
+            for (Codelet co : tempCodeletsList) {
+                dataset.addValue(co.getOutput(memoryName).getEvaluation(), co.getName(), "activation");
+            }
+        }
+    }
 
     private synchronized void updateValuesInChart(DefaultCategoryDataset dataset, List<Codelet> codelets) {
         ArrayList<Codelet> tempCodeletsList = new ArrayList<Codelet>();
@@ -167,7 +266,7 @@ public class MotivationalSubsystemViewer extends javax.swing.JFrame {
         }
     }
 
-    private void updateValuesInTree(List<Codelet> codelets, DefaultTreeModel defaultTreeModel) {
+    private synchronized void updateValuesInTree(List<Codelet> codelets, DefaultTreeModel defaultTreeModel) {
         for (Codelet codelet : codelets) {
 
             ArrayList<Memory> allMemories = new ArrayList<>();
@@ -175,8 +274,8 @@ public class MotivationalSubsystemViewer extends javax.swing.JFrame {
             allMemories.addAll(codelet.getOutputs());
 
             for (Memory memory : allMemories) {
-                DefaultMutableTreeNode node = getMapMemoryNodes().get(memory.getName()+"_"+codelet.getName());
-                if(node !=null) {
+                DefaultMutableTreeNode node = getMapMemoryNodes().get(memory.getName() + "_" + codelet.getName());
+                if (node != null) {
                     String value = memory.getName() + " : ";
                     Object mval = memory.getI();
 
@@ -186,7 +285,7 @@ public class MotivationalSubsystemViewer extends javax.swing.JFrame {
                         value += "null";
                     }
 
-                    Object o = new TreeElement(value, TreeElement.NODE_NORMAL, value, ((TreeElement)node.getUserObject()).getIcon());
+                    Object o = new TreeElement(value, TreeElement.NODE_NORMAL, value, ((TreeElement) node.getUserObject()).getIcon());
                     node.setUserObject(o);
                     defaultTreeModel.nodeChanged(node);
                 }
@@ -244,7 +343,7 @@ public class MotivationalSubsystemViewer extends javax.swing.JFrame {
 
         DefaultMutableTreeNode memoryNode = addItem(value, icon);
 
-        getMapMemoryNodes().put(m.getName()+"_"+codeletName, memoryNode);
+        getMapMemoryNodes().put(m.getName() + "_" + codeletName, memoryNode);
 
         return memoryNode;
     }

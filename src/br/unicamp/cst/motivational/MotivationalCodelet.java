@@ -33,6 +33,7 @@ public abstract class MotivationalCodelet extends Codelet {
 	private double urgencyThreshold;
 	private double level;
 	private boolean urgencyState = false;
+	private double emotionalDistortion;
 
 	private Map<Memory, Double> drivesRelevance;
 	private List<Memory> sensoryVariables;
@@ -45,6 +46,7 @@ public abstract class MotivationalCodelet extends Codelet {
 	public MotivationalCodelet(String id, double level, double priority, double urgencyThreshold) {
 		setLevel(level);
 		setId(id);
+		setName(id);
 		setPriority(priority);
 		setUrgencyThreshold(urgencyThreshold);
 		setDrivesRelevance(new HashMap<Memory, Double>());
@@ -73,6 +75,7 @@ public abstract class MotivationalCodelet extends Codelet {
 
 		if (getOutputDriveMO() == null) {
 			setOutputDriveMO(this.getOutput(OUTPUT_DRIVE_MEMORY, 0));
+			getOutputDriveMO().setI(getOutputDrive());
 		}
 
 	}
@@ -82,6 +85,7 @@ public abstract class MotivationalCodelet extends Codelet {
 	public synchronized void proc() {
 		synchronized (getOutputDriveMO()) {
 			getOutputDrive().setActivation(getActivation());
+			//getOutputDrive().setEmotionalDistortion(getEmotionalDistortion());
 			getOutputDriveMO().setEvaluation(getActivation());
 			getOutputDriveMO().setI(getOutputDrive());
 		}
@@ -108,7 +112,7 @@ public abstract class MotivationalCodelet extends Codelet {
 						Drive drive = (Drive) driveMO.getKey();
 
 						Drive driveClone = new Drive(drive.getName(), drive.getActivation(), drive.getPriority(), drive.getLevel(),
-								drive.getUrgencyThreshold());
+								drive.getUrgencyThreshold(), drive.getEmotionalDistortion());
 
 						driveClone.setActivation(driveClone.getActivation() * driveMO.getValue());
 
@@ -151,8 +155,15 @@ public abstract class MotivationalCodelet extends Codelet {
 
 			double emotionalDistortion = drive.getEmotionalDistortion();
 
-			evaluation = emotionalDistortion > 0? (driveActivation + drive.getEmotionalDistortion()) / 2 : driveActivation;
-			drive.setUrgencyState(false);
+			evaluation = emotionalDistortion != 0? (driveActivation + drive.getEmotionalDistortion()) / 2 : driveActivation;
+
+			if (driveActivation > getUrgencyThreshold()) {
+				evaluation = 0.5 + drive.getPriority();
+				drive.setUrgencyState(true);
+			}
+			else {
+				drive.setUrgencyState(false);
+			}
 		}
 
 		return evaluation;
@@ -266,5 +277,13 @@ public abstract class MotivationalCodelet extends Codelet {
 
 	public void setUrgencyThreshold(double urgencyThreshold) {
 		this.urgencyThreshold = urgencyThreshold;
+	}
+
+	public double getEmotionalDistortion() {
+		return emotionalDistortion;
+	}
+
+	public void setEmotionalDistortion(double emotionalDistortion) {
+		this.emotionalDistortion = emotionalDistortion;
 	}
 }

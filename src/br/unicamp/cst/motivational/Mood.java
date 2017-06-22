@@ -15,11 +15,19 @@ package br.unicamp.cst.motivational;
 public class Mood {
 
     private String name;
+    private String emotionalState;
     private double value;
 
     public Mood(String name, double value){
         setName(name);
         setValue(value);
+        setEmotionalState("");
+    }
+
+    public Mood(String name, String emotionalState, double value){
+        setName(name);
+        setValue(value);
+        setEmotionalState(emotionalState);
     }
 
     public String getName() {
@@ -37,4 +45,18 @@ public class Mood {
     public void setValue(double value) {
         this.value = value;
     }
+
+    public String getEmotionalState() {
+        return emotionalState;
+    }
+
+    public void setEmotionalState(String emotionalState) {
+        this.emotionalState = emotionalState;
+    }
+
+    @Override
+    public String toString(){
+        return "Mood [name:"+getName()+", value:"+getValue()+", emotionalState:"+getEmotionalState()+"]";
+    }
+
 }

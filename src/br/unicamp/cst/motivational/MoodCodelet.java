@@ -14,7 +14,6 @@ package br.unicamp.cst.motivational;
 import br.unicamp.cst.core.entities.Codelet;
 import br.unicamp.cst.core.entities.Memory;
 import br.unicamp.cst.core.exceptions.CodeletActivationBoundsException;
-import br.unicamp.cst.memory.EpisodicMemory;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -28,9 +27,10 @@ public abstract class MoodCodelet extends Codelet {
     public static final String OUTPUT_MOOD_MEMORY = "OUTPUT_MOOD_MEMORY";
 
     private String id;
-    private List<Drive> listOfDrives;
+    private List<Memory> listOfDrivesMO;
     private Appraisal appraisal;
     private List<Object> sensors;
+    private Mood outputMood;
 
     private Memory inputDrivesMemoryMO;
     private Memory inputAppraisalMO;
@@ -39,52 +39,56 @@ public abstract class MoodCodelet extends Codelet {
 
     public MoodCodelet(String id){
         this.setId(id);
-        this.setListOfDrives(new ArrayList<Drive>());
+        this.setName(id);
+        this.setListOfDrivesMO(new ArrayList<Memory>());
         this.setSensors(new ArrayList<Object>());
+        this.setOutputMood(new Mood(getId(), "", 0d));
     }
 
     @Override
     public void accessMemoryObjects() {
 
-        if(getInputDrivesMemoryMO() != null){
+        if(getInputDrivesMemoryMO() == null){
             setInputDrivesMemoryMO(getInput(INPUT_DRIVES_MEMORY, 0));
-            setListOfDrives((List<Drive>) getInputDrivesMemoryMO().getI());
+            setListOfDrivesMO((List<Memory>) getInputDrivesMemoryMO().getI());
 
         }
 
-        if(getInputAppraisalMO() != null){
+        if(getInputAppraisalMO() == null){
             setInputAppraisalMO(getInput(INPUT_APPRAISAL_MEMORY, 0));
-            setAppraisal((Appraisal) getInputAppraisalMO().getI());
+            setAppraisal((Appraisal) ((Memory) getInputAppraisalMO().getI()).getI());
         }
 
-        if(getInputSensoryMO() != null){
+        if(getInputSensoryMO() == null){
             setInputSensoryMO(getInput(INPUT_SENSORY_MEMORY, 0));
             setSensors((List<Object>) getInputSensoryMO().getI());
         }
 
-        if(getOutputMoodMO() != null){
+        if(getOutputMoodMO() == null){
             setOutputMoodMO(getOutput(OUTPUT_MOOD_MEMORY, 0));
         }
     }
 
     @Override
     public void calculateActivation() {
-        try {
-            setActivation(0);
-        } catch (CodeletActivationBoundsException e) {
-            e.printStackTrace();
-        }
+        List<Drive> listOfDrive  = new ArrayList<>();
+
+        getListOfDrivesMO().stream().forEach(memory -> {
+            listOfDrive.add((Drive) memory.getI());
+        });
+
+        Mood mood = moodGeneration(listOfDrive, (Appraisal) ((Memory) getInputAppraisalMO().getI()).getI(), getSensors());
+        mood.setName(getId());
+        setOutputMood(mood);
+    }
+
+    @Override
+    public void proc(){
+        getOutputMoodMO().setI(getOutputMood());
     }
 
 
     public abstract Mood moodGeneration(List<Drive> listOfDrives, Appraisal appraisal, List<Object> sensors);
-
-    @Override
-    public void proc() {
-        Mood mood = moodGeneration(getListOfDrives(), getAppraisal(), getSensors());
-        mood.setName(getId());
-        getOutputMoodMO().setI(mood);
-    }
 
     public String getId() {
         return id;
@@ -94,12 +98,12 @@ public abstract class MoodCodelet extends Codelet {
         this.id = id;
     }
 
-    public List<Drive> getListOfDrives() {
-        return listOfDrives;
+    public List<Memory> getListOfDrivesMO() {
+        return listOfDrivesMO;
     }
 
-    public void setListOfDrives(List<Drive> listOfDrives) {
-        this.listOfDrives = listOfDrives;
+    public void setListOfDrivesMO(List<Memory> listOfDrivesMO) {
+        this.listOfDrivesMO = listOfDrivesMO;
     }
 
     public Appraisal getAppraisal() {
@@ -149,5 +153,13 @@ public abstract class MoodCodelet extends Codelet {
 
     public void setSensors(List<Object> sensors) {
         this.sensors = sensors;
+    }
+
+    public Mood getOutputMood() {
+        return outputMood;
+    }
+
+    public void setOutputMood(Mood outputMood) {
+        this.outputMood = outputMood;
     }
 }
