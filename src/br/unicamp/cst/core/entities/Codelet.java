@@ -13,6 +13,8 @@ package br.unicamp.cst.core.entities;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Timer;
+import java.util.TimerTask;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
@@ -77,7 +79,7 @@ public abstract class Codelet implements Runnable
 	 * variable stores the time step for such a loop. A timeStep of value 0 means
 	 * that the proc() method should be called continuously, without interval.
 	 */
-	protected long timeStep=0; //
+	protected long timeStep=300l; //
 
 	/** A codelet is a priori enabled to run its proc(). However, if it tries to read from a given output and fails, it becomes not able to do so.*/
 	private boolean enabled=true; 
@@ -89,10 +91,7 @@ public abstract class Codelet implements Runnable
 	protected String name=Thread.currentThread().getName();
 
 	/** This variable is a safe lock for multithread access */
-	public Lock lock= new ReentrantLock();
-        
-        /** This variable selects if the threads beside the codelet are supposed to sleep or go busy waiting (for the sake of exact waiting time) between polls */
-        private boolean sleep = true; 
+	public Lock lock= new ReentrantLock();       
 
 	/** 
 	 * This method is used in every Codelet to capture input, broadcast and output MemoryObjects
@@ -111,48 +110,28 @@ public abstract class Codelet implements Runnable
 	 * Main Codelet function, to be implemented in each subclass.
 	 */
 	public abstract void proc();
+	
+	
+	private Timer timer = new Timer();
 
 	/**
 	 * When first activated, the thread containing this codelet runs the proc() method 
 	 */
-	public void run() 
+	public synchronized void run() 
 	{ 
-
-		do
+		try
 		{
-			try
-			{
-				this.accessMemoryObjects();//tries to connect to memory objects			
+			this.timer.cancel(); //this will cancel the current task. if there is no active task, nothing happens
+		    this.timer = new Timer();
 
-				if (enable_count==0)
-				{
-					this.calculateActivation();
-					if(activation>=threshold)
-						proc(); 				
-				}else
-				{					
-					System.out.println("This codelet thread could not find a memory object it needs (Class):"+this.getClass().getCanonicalName());
-				}
-				enable_count=0;
+		    timer.schedule(new CodeletTimerTask(), 0l); //first execution should be immediate, hence the 0l in delay for scheduling
+		    
 
-				if(timeStep > 0)
-				{
-                                    if (sleep)
-                                        Thread.sleep(timeStep);
-                                    else {
-					  long timeMarker = System.currentTimeMillis();
-					  while(System.currentTimeMillis() < timeMarker + timeStep){}
-                                    }    
-                                        
-				}	
-
-			}catch(Exception e)
-			{
-				e.printStackTrace();
-			}
-
-		}while(this.shouldLoop());
-	}
+		}catch(Exception e)
+		{
+			e.printStackTrace();
+		}
+	}	
 
 	public synchronized void start()
 	{ 
@@ -174,7 +153,7 @@ public abstract class Codelet implements Runnable
 	 * @param accesing 
 	 * @return
 	 */
-	public boolean impendingAccess(Codelet accesing)
+	public synchronized boolean impendingAccess(Codelet accesing)
 	{
 		Boolean myLock = false;
 		Boolean yourLock = false;
@@ -204,7 +183,7 @@ public abstract class Codelet implements Runnable
 	 * @param accesing
 	 * @return
 	 */
-	public boolean impendingAccessBuffer(MemoryBuffer accesing)
+	public synchronized boolean impendingAccessBuffer(MemoryBuffer accesing)
 	{
 
 		Boolean myLock = false;
@@ -233,27 +212,27 @@ public abstract class Codelet implements Runnable
 	/**
 	 * @return the loop
 	 */
-	public boolean shouldLoop() 
+	public synchronized boolean shouldLoop() 
 	{
 		return loop;
 	}
 	/**
 	 * @param loop the loop to set
 	 */
-	public void setLoop(boolean loop) {
+	public synchronized void setLoop(boolean loop) {
 		this.loop = loop;
 	}	
 
 	/**
 	 * @return the name
 	 */
-	public String getName() {
+	public synchronized String getName() {
 		return name;
 	}
 	/**
 	 * @param name the name to set
 	 */
-	public void setName(String name) {
+	public synchronized void setName(String name) {
 		this.name = name;
 	}
 
@@ -261,7 +240,7 @@ public abstract class Codelet implements Runnable
 	/**
 	 * @return the loop
 	 */
-	public boolean isLoop() 
+	public synchronized boolean isLoop() 
 	{
 		return loop;
 	}
@@ -662,19 +641,31 @@ public abstract class Codelet implements Runnable
 	 */
 	public synchronized void setTimeStep(long timeStep) {
 		this.timeStep = timeStep;
-	}
-        
-        /**
-	 * @return the sleep flag
-	 */
-	public synchronized boolean getSleep() {
-		return sleep;
-	}
+	}       
+	
+	private class CodeletTimerTask extends TimerTask{
 
-	/**
-	 * @param nsleep the flag that sets if the Codelet is supposed to sleep or be maintained in busy waiting (default is to sleep)
-	 */
-	public synchronized void setSleep(boolean nsleep) {
-		this.sleep = nsleep;
+		@Override
+		public synchronized void run() {
+			
+			accessMemoryObjects();//tries to connect to memory objects			
+
+			if (enable_count==0)
+			{
+				calculateActivation();
+				if(activation>=threshold)
+					proc(); 				
+			}else
+			{					
+				System.out.println("This codelet thread could not find a memory object it needs (Class):"+this.getClass().getCanonicalName());
+			}
+			
+			enable_count=0;
+			
+			if(shouldLoop())
+		    	timer.schedule(new CodeletTimerTask(), timeStep);
+			
+		}
+		
 	}
 }
