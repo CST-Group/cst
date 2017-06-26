@@ -648,22 +648,33 @@ public abstract class Codelet implements Runnable
 		@Override
 		public synchronized void run() {
 			
-			accessMemoryObjects();//tries to connect to memory objects			
+			try{
+				
+				accessMemoryObjects();//tries to connect to memory objects			
 
-			if (enable_count==0)
-			{
-				calculateActivation();
-				if(activation>=threshold)
-					proc(); 				
-			}else
-			{					
-				System.out.println("This codelet thread could not find a memory object it needs (Class):"+this.getClass().getCanonicalName());
+				if (enable_count==0)
+				{
+					calculateActivation();
+					if(activation>=threshold)
+						proc(); 				
+				}else
+				{					
+					System.out.println("This codelet thread could not find a memory object it needs (Class):"+this.getClass().getCanonicalName());
+				}
+				
+				enable_count=0;		
+				
+				
+			}catch(Exception e){
+				
+				e.printStackTrace();
+				
+			}finally {
+				
+				if(shouldLoop())
+			    	timer.schedule(new CodeletTimerTask(), timeStep);
+				
 			}
-			
-			enable_count=0;
-			
-			if(shouldLoop())
-		    	timer.schedule(new CodeletTimerTask(), timeStep);
 			
 		}
 		
