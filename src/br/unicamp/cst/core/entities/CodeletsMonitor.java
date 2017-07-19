@@ -29,11 +29,21 @@ public class CodeletsMonitor implements Runnable {
     private List<Codelet> listOfCodelets = new ArrayList<Codelet>();
     private long refreshPeriod;
     private String title;
+    private boolean isAutoFixedRange = false;
+    private long autoRangeValue = 1000;
 
     public CodeletsMonitor(List<Codelet> listOfCodelets, long refreshPeriod, String title) {
         this.listOfCodelets = listOfCodelets;
         this.refreshPeriod = refreshPeriod;
         this.setTitle(title);
+    }
+
+    public CodeletsMonitor(List<Codelet> listOfCodelets, long refreshPeriod, String title, boolean isAutoFixedRange, long autoRangeValue) {
+        this.listOfCodelets = listOfCodelets;
+        this.refreshPeriod = refreshPeriod;
+        this.setTitle(title);
+        this.setAutoFixedRange(isAutoFixedRange);
+        this.setAutoRangeValue(autoRangeValue);
     }
 
     @Override
@@ -53,10 +63,8 @@ public class CodeletsMonitor implements Runnable {
 
             synchronized (tempCodeletsList) {
 
+                double instant = Calendar.getInstance().getTimeInMillis() - initialTime;
                 for (Codelet co : tempCodeletsList) {
-
-                    double instant = Calendar.getInstance().getTimeInMillis() - initialTime;
-
                     dataset.getSeries(co.getName()).add(instant, co.getActivation());
                 }
                 try {
@@ -64,7 +72,8 @@ public class CodeletsMonitor implements Runnable {
                 } catch (InterruptedException e) {
                     e.printStackTrace();
                 }
-
+                if(isAutoFixedRange())
+                    activationLevel.getXyplot().getDomainAxis().setFixedAutoRange(getAutoRangeValue());
             }
         }
     }
@@ -89,5 +98,21 @@ public class CodeletsMonitor implements Runnable {
      */
     public void setTitle(String title) {
         this.title = title;
+    }
+
+    public boolean isAutoFixedRange() {
+        return isAutoFixedRange;
+    }
+
+    public void setAutoFixedRange(boolean autoFixedRange) {
+        isAutoFixedRange = autoFixedRange;
+    }
+
+    public long getAutoRangeValue() {
+        return autoRangeValue;
+    }
+
+    public void setAutoRangeValue(long autoRangeValue) {
+        this.autoRangeValue = autoRangeValue;
     }
 }

@@ -23,11 +23,14 @@ import java.awt.*;
 
 public class Grafico {
 
+	private JFreeChart chart;
+	private XYPlot xyplot;
+
 	public Grafico(String frametitle, String charttitle, String xlabel, String ylabel, XYSeriesCollection dataset){
 		JFreeChart chart = ChartFactory.createXYLineChart(charttitle, xlabel, ylabel, dataset, PlotOrientation.VERTICAL, true, true, false);
 
 		XYPlot plot = (XYPlot) chart.getPlot();
-		
+
 		plot.setBackgroundPaint(Color.lightGray);
 		plot.setAxisOffset(new RectangleInsets(5.0, 5.0, 5.0, 5.0));
 		plot.setDomainGridlinePaint(Color.white);
@@ -36,12 +39,29 @@ public class Grafico {
 		renderer.setShapesVisible(true);
 		renderer.setShapesFilled(true);
 
+		setXyplot(plot);
+		setChart(chart);
 
 		ChartFrame frame= new ChartFrame(frametitle,chart);
 	
 		frame.pack();
 		frame.setVisible(true);
 	}
-	
-	
+
+
+	public JFreeChart getChart() {
+		return chart;
+	}
+
+	public void setChart(JFreeChart chart) {
+		this.chart = chart;
+	}
+
+	public XYPlot getXyplot() {
+		return xyplot;
+	}
+
+	public void setXyplot(XYPlot xyplot) {
+		this.xyplot = xyplot;
+	}
 }
