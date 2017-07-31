@@ -62,7 +62,7 @@ public abstract class AppraisalCodelet extends Codelet {
     }
 
     @Override
-    public void calculateActivation() {
+    public synchronized void calculateActivation() {
         setInputAbstractObject((AbstractObject) getInputAbstractObjectMO().getI());
         setAppraisal(appraisalGeneration(getInputAbstractObject().clone()));
         getAppraisal().setName(getId());
@@ -102,7 +102,7 @@ public abstract class AppraisalCodelet extends Codelet {
 
 
     @Override
-    public void proc(){
+    public synchronized void proc(){
 
         getOutputAppraisalMO().setI(getAppraisal());
         getOutputAbstractObjectMO().setI(getOutputAbstractObject());

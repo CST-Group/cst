@@ -70,7 +70,7 @@ public abstract class MoodCodelet extends Codelet {
     }
 
     @Override
-    public void calculateActivation() {
+    public synchronized void calculateActivation() {
         List<Drive> listOfDrive  = new ArrayList<>();
 
         getListOfDrivesMO().stream().forEach(memory -> {
@@ -83,7 +83,7 @@ public abstract class MoodCodelet extends Codelet {
     }
 
     @Override
-    public void proc(){
+    public synchronized void proc(){
         getOutputMoodMO().setI(getOutputMood());
     }
 
