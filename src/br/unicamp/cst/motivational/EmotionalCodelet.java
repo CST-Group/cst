@@ -87,10 +87,7 @@ public abstract class EmotionalCodelet extends Codelet {
         Mood mood = (Mood) ((Memory)getInputMoodMO().getI()).getI();
 
         if(mood != null) {
-            if (mood.getValue() != 0d) {
-
-                activation = this.calculateEmotionalDistortion(listOfDrives, mood);
-            }
+            activation = this.calculateEmotionalDistortion(listOfDrives, mood);
         } else{
             activation = 0;
         }
