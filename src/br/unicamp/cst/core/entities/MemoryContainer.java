@@ -107,7 +107,7 @@ public class MemoryContainer implements Memory {
 		return object;
 
 	}
-	
+
 	/**
 	 * 
 	 * @param accumulator
@@ -237,13 +237,32 @@ public class MemoryContainer implements Memory {
 	@Override
 	public synchronized void setEvaluation(Double eval) {
 
-		MemoryObject mo = new MemoryObject(); 		
-		mo.setEvaluation(eval);
-		mo.setType("");
-
-		memories.add(mo);
+		throw new UnsupportedOperationException("This method is not available for MemoryContainer. Use setEvaluation(Double eval, int index) instead");
 
 	}	
+
+	public synchronized void setEvaluation(Double eval, int index){
+
+		if(memories != null && memories.size() > index){
+
+			Memory memory = memories.get(index);
+
+			if(memory != null){
+
+				if(memory instanceof MemoryObject){
+
+					memory.setEvaluation(eval);
+
+				} else if(memory instanceof MemoryContainer){
+
+					((MemoryContainer) memory).setEvaluation(eval, index);
+
+				}	
+
+			}
+		}
+
+	}
 
 	/**
 	 * 
@@ -392,26 +411,26 @@ public class MemoryContainer implements Memory {
 		 * Example filtering by predicate
 		 */
 		System.out.println(mc.getI(x -> x.getEvaluation().equals(0.6d)));
-		
+
 		/*
 		 * Example passing a lambda expression to get the element with greatest evaluation
 		 */
 		System.out.println(mc.getI((a,b) -> { 
-			   if (a.getEvaluation() > b.getEvaluation()) return a;     
-			   if (a.getEvaluation()<b.getEvaluation()) return b;
-			   if (a.getEvaluation()==b.getEvaluation()) return a;
+			if (a.getEvaluation() > b.getEvaluation()) return a;     
+			if (a.getEvaluation()<b.getEvaluation()) return b;
+			if (a.getEvaluation()==b.getEvaluation()) return a;
 			return a;
-			}));
-		
+		}));
+
 		/*
 		 * Example passing a lambda expression to get the element with smallest evaluation
 		 */
 		System.out.println(mc.getI((a,b) -> { 
-			   if (a.getEvaluation() < b.getEvaluation()) return a;     
-			   if (a.getEvaluation()> b.getEvaluation()) return b;
-			   if (a.getEvaluation()== b.getEvaluation()) return a;
+			if (a.getEvaluation() < b.getEvaluation()) return a;     
+			if (a.getEvaluation()> b.getEvaluation()) return b;
+			if (a.getEvaluation()== b.getEvaluation()) return a;
 			return a;
-			}));
+		}));
 
 	}
 
