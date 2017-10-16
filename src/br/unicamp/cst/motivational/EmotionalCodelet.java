@@ -9,7 +9,6 @@
  *     E. M. Froes, R. R. Gudwin - initial API and implementation
  ******************************************************************************/
 
-
 package br.unicamp.cst.motivational;
 
 import br.unicamp.cst.core.entities.Codelet;
@@ -30,7 +29,6 @@ public abstract class EmotionalCodelet extends Codelet {
     public final static String INPUT_AFFECTED_DRIVE_MEMORY = "INPUT_AFFECTED_DRIVE_MEMORY";
     public final static String INPUT_MOOD_MEMORY = "INPUT_MOOD_MEMORY";
     public final static String OUTPUT_AFFECTED_DRIVE_MEMORY = "OUTPUT_AFFECTED_DRIVE_MEMORY";
-
 
     private String id;
     private Drive affectedDrive;
@@ -73,7 +71,6 @@ public abstract class EmotionalCodelet extends Codelet {
 
     public abstract double calculateEmotionalDistortion(List<Drive> listOfDrives, Mood mood);
 
-
     @Override
     public synchronized void calculateActivation() {
 
@@ -93,13 +90,16 @@ public abstract class EmotionalCodelet extends Codelet {
         }
 
         setAffectedDrive((Drive) ((Memory)getInputAffectedDriveMO().getI()).getI());
-        getAffectedDrive().setEmotionalDistortion(activation);
+        if(getAffectedDrive() != null)
+            getAffectedDrive().setEmotionalDistortion(activation);
     }
 
     @Override
     public void proc() {
-        getOutputAffectedDriveMO().setI(getAffectedDrive());
-        getOutputAffectedDriveMO().setEvaluation(getAffectedDrive().getEmotionalDistortion());
+        if(getAffectedDrive() != null) {
+            getOutputAffectedDriveMO().setI(getAffectedDrive());
+            getOutputAffectedDriveMO().setEvaluation(getAffectedDrive().getEmotionalDistortion());
+        }
     }
 
     public String getId() {

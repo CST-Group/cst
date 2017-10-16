@@ -3,19 +3,16 @@
     <editor-bookmarks xmlns="http://www.netbeans.org/ns/editor-bookmarks/2" lastBookmarkId="0"/>
     <open-files xmlns="http://www.netbeans.org/ns/projectui-open-files/2">
         <group>
-            <file>file:/Users/du/Repository/cst/src/br/unicamp/cst/motivational/MotivationalCodelet.java</file>
-            <file>file:/Users/du/Repository/cst/src/br/unicamp/cst/util/TreeManager.java</file>
-            <file>file:/Users/du/Repository/cst/src/br/unicamp/cst/util/ObjectViewer.java</file>
-            <file>file:/Users/du/Repository/cst/src/br/unicamp/cst/util/ConfigurationManager.java</file>
-            <file>file:/Users/du/Repository/cst/nbproject/build-impl.xml</file>
-            <file>file:/Users/du/Repository/cst/src/br/unicamp/cst/util/TreeViewer.java</file>
-            <file>file:/Users/du/Repository/cst/src/br/unicamp/cst/motivational/MotivationalSubsystemViewer.java</file>
-            <file>file:/Users/du/Repository/cst/src/br/unicamp/cst/util/AbstractObjectEditor.java</file>
-            <file>file:/Users/du/Repository/cst/src/br/unicamp/cst/motivational/MotivationalViewer.java</file>
-            <file>file:/Users/du/Repository/cst/src/br/unicamp/cst/util/DialogFactory.java</file>
-            <file>file:/Users/du/Repository/cst/src/br/unicamp/cst/util/SimulateConfiguration.java</file>
+            <file>file:/Users/du/Repository/cst/src/br/unicamp/cst/core/entities/Mind.java</file>
+            <file>file:/Users/du/Repository/cst/src/br/unicamp/cst/util/TreeViewerUtil.java</file>
+            <file>file:/Users/du/Repository/cst/src/br/unicamp/cst/motivational/MotivationalSubsystemModule.java</file>
+            <file>file:/Users/du/Repository/cst/src/br/unicamp/cst/bindings/soar/JSoarCodelet.java</file>
+            <file>file:/Users/du/Repository/cst/src/br/unicamp/cst/bindings/soar/SOARPlugin.java</file>
+            <file>file:/Users/du/Repository/cst/src/br/unicamp/cst/bindings/soar/PlansSubsystemViewer.java</file>
             <file>file:/Users/du/Repository/cst/src/br/unicamp/cst/util/MindViewer.java</file>
-            <file>file:/Users/du/Repository/cst/src/br/unicamp/cst/util/NameGenerator.java</file>
+            <file>file:/Users/du/Repository/cst/src/br/unicamp/cst/bindings/soar/PlansSubsystemModule.java</file>
+            <file>file:/Users/du/Repository/cst/src/br/unicamp/cst/motivational/MotivationalSubsystemViewer.java</file>
+            <file>file:/Users/du/Repository/cst/src/br/unicamp/cst/util/ChartViewerUtil.java</file>
         </group>
     </open-files>
 </project-private>

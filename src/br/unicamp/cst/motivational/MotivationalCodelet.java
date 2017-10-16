@@ -150,7 +150,7 @@ public abstract class MotivationalCodelet extends Codelet {
 
         double verifyUrgency = driveActivation + drive.getEmotionalDistortion() >= 1? 1 : driveActivation + drive.getEmotionalDistortion();
 
-        if (verifyUrgency > getUrgencyThreshold()) {
+        if (verifyUrgency >= getUrgencyThreshold()) {
             evaluation = 0.5 + drive.getPriority();
             drive.setUrgencyState(true);
         } else {

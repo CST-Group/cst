@@ -12,13 +12,21 @@
  */
 package br.unicamp.cst.util;
 
+import br.unicamp.cst.bindings.soar.PlansSubsystemViewer;
+import br.unicamp.cst.bindings.soar.JSoarCodelet;
+import br.unicamp.cst.bindings.soar.SOARPlugin;
 import br.unicamp.cst.core.entities.Codelet;
 import br.unicamp.cst.core.entities.Memory;
 import br.unicamp.cst.core.entities.MemoryContainer;
 import br.unicamp.cst.core.entities.MemoryObject;
 import br.unicamp.cst.core.entities.Mind;
 import br.unicamp.cst.core.entities.TestCodelet;
+import br.unicamp.cst.motivational.AppraisalCodelet;
 import br.unicamp.cst.motivational.EmotionalCodelet;
+import br.unicamp.cst.motivational.GoalCodelet;
+import br.unicamp.cst.motivational.MoodCodelet;
+import br.unicamp.cst.motivational.MotivationalCodelet;
+import br.unicamp.cst.motivational.MotivationalSubsystemViewer;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
@@ -27,10 +35,11 @@ import java.util.Calendar;
 import java.util.List;
 import java.util.Timer;
 import java.util.TimerTask;
+import java.util.logging.Handler;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import javax.swing.JScrollPane;
-import javax.swing.JTree;
+import java.util.stream.Collectors;
+import javax.swing.*;
 import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.DefaultTreeModel;
 import javax.swing.tree.TreeModel;
@@ -61,12 +70,15 @@ public class MindViewer extends javax.swing.JFrame {
     private List<Codelet> appraisalCodelets;
     private List<Codelet> moodCodelets;
     private List<Codelet> behavioralCodelets;
+    private JSoarCodelet soarPlansCodelet;
 
     private Thread threadMindEntities;
     private Thread threadDrives;
     private Thread threadEmotionalDrives;
     private Thread threadAppraisals;
     private Thread threadMoods;
+    private Thread threadGoals;
+    private Thread threadPlans;
 
     private int selectedIndex = 0;
     private double initialTime = Calendar.getInstance().getTimeInMillis();
@@ -81,27 +93,46 @@ public class MindViewer extends javax.swing.JFrame {
     private DefaultTreeModel dtMoodCodelets;
     private DefaultTreeModel dtGoalCodelets;
 
-    private double instant = 0;
+    private MotivationalSubsystemViewer motivationalModuleViewer;
+    private PlansSubsystemViewer plansSubsystemViewer;
+
+    private long instant = 0;
     private boolean bStopRefresh = false;
+
 
     /**
      * Creates new form WorldObjectViewer
      */
     public MindViewer(Mind mind, String windowName, List<Codelet> behavioralCodelets) {
         initComponents();
-        /*TreeModel tm = createTreeModel(new Mind());
-        jtree = new JTree(tm);
-        expandAllNodes(jtree);
-        jspMindsEntities.setViewportView(jtree);
-        jtree.setCellRenderer(new RendererJTree());*/
         setWO(mind);
         setWindowName(windowName);
         setBehavioralCodelets(behavioralCodelets);
         createTreeModelGUI(jspMindsEntities, getWog().getCodeRack().getAllCodelets(), windowName);
         setTitle(windowName);
         startMindEntitiesThread();
+        buildMindModulePanels(mind);
 
-        //StartTimer();
+        Logger.getLogger("ac.biu.nlp.nlp.engineml").setLevel(Level.OFF);
+        Logger.getLogger("org.BIU.utils.logging.ExperimentLogger").setLevel(Level.OFF);
+        Logger.getLogger("java.awt").setLevel(Level.OFF);
+        Logger.getLogger("sun.awt").setLevel(Level.OFF);
+        Logger.getLogger("javax.swing").setLevel(Level.OFF);
+
+
+    }
+    
+    
+    private void buildMindModulePanels(Mind mind){
+        if(mind.getMotivationalSubsystemModule().verifyExistCodelets()){
+            motivationalModuleViewer = new MotivationalSubsystemViewer(Long.parseLong(txtRefreshTime.getText()), mind);
+            tbModules.add("Motivational Subsystem", motivationalModuleViewer);
+        }
+
+        if(mind.getPlansSubsystemModule().verifyExistCodelets()){
+            plansSubsystemViewer = new PlansSubsystemViewer(Long.parseLong(txtRefreshTime.getText()), mind);
+            tbControl.add("Plans Subsystem", plansSubsystemViewer);
+        }
     }
 
     /**
@@ -114,13 +145,14 @@ public class MindViewer extends javax.swing.JFrame {
     private void initComponents() {
         java.awt.GridBagConstraints gridBagConstraints;
 
-        jPanel1 = new javax.swing.JPanel();
+        pnSimulationControl = new javax.swing.JPanel();
         lblRefreshTime = new javax.swing.JLabel();
         txtRefreshTime = new javax.swing.JFormattedTextField();
         btnPlus = new javax.swing.JButton();
         btnMinus = new javax.swing.JButton();
+        tbControl = new javax.swing.JTabbedPane();
         jspMainSplit = new javax.swing.JSplitPane();
-        jSplitPane2 = new javax.swing.JSplitPane();
+        splMainChart = new javax.swing.JSplitPane();
         pnMindEntities = new javax.swing.JPanel();
         cbRefreshMindsEntities = new javax.swing.JCheckBox();
         jtpMindsEntities = new javax.swing.JTabbedPane();
@@ -129,22 +161,12 @@ public class MindViewer extends javax.swing.JFrame {
         cbRefreshChart = new javax.swing.JCheckBox();
         pnCodelets = new javax.swing.JPanel();
         sdChart = new javax.swing.JSlider();
-        tbMotivationalSubsystem = new javax.swing.JTabbedPane();
-        splDrives = new javax.swing.JSplitPane();
-        pnTreeDrives = new javax.swing.JPanel();
-        cbRefreshDrives = new javax.swing.JCheckBox();
-        spMotivationalCodelets = new javax.swing.JScrollPane();
-        pnDrivesChart = new javax.swing.JPanel();
-        pnDrives = new javax.swing.JPanel();
-        cbDrivesChart = new javax.swing.JCheckBox();
-        splEmotional = new javax.swing.JSplitPane();
-        spEmotionalCodelets = new javax.swing.JScrollPane();
-        pnEmotional = new javax.swing.JPanel();
-        spMoodCodelets = new javax.swing.JScrollPane();
-        spAppraisalCodelets = new javax.swing.JScrollPane();
-        spGoalCodelets = new javax.swing.JScrollPane();
+        tbModules = new javax.swing.JTabbedPane();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
+        setMinimumSize(new java.awt.Dimension(800, 600));
+        setSize(new java.awt.Dimension(1024, 768));
+        getContentPane().setLayout(new java.awt.GridBagLayout());
 
         lblRefreshTime.setText("Refresh Time (ms):");
 
@@ -168,40 +190,48 @@ public class MindViewer extends javax.swing.JFrame {
             }
         });
 
-        javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
-        jPanel1.setLayout(jPanel1Layout);
-        jPanel1Layout.setHorizontalGroup(
-                jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                        .addGroup(jPanel1Layout.createSequentialGroup()
-                                .addContainerGap()
-                                .addComponent(lblRefreshTime)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addComponent(txtRefreshTime, javax.swing.GroupLayout.PREFERRED_SIZE, 150, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addComponent(btnPlus, javax.swing.GroupLayout.PREFERRED_SIZE, 25, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addComponent(btnMinus, javax.swing.GroupLayout.PREFERRED_SIZE, 25, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+        javax.swing.GroupLayout pnSimulationControlLayout = new javax.swing.GroupLayout(pnSimulationControl);
+        pnSimulationControl.setLayout(pnSimulationControlLayout);
+        pnSimulationControlLayout.setHorizontalGroup(
+            pnSimulationControlLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(pnSimulationControlLayout.createSequentialGroup()
+                .addContainerGap()
+                .addComponent(lblRefreshTime)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(txtRefreshTime, javax.swing.GroupLayout.PREFERRED_SIZE, 150, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(btnPlus, javax.swing.GroupLayout.PREFERRED_SIZE, 25, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(btnMinus, javax.swing.GroupLayout.PREFERRED_SIZE, 25, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addContainerGap(417, Short.MAX_VALUE))
         );
-        jPanel1Layout.setVerticalGroup(
-                jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                        .addGroup(jPanel1Layout.createSequentialGroup()
-                                .addContainerGap()
-                                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                        .addGroup(jPanel1Layout.createSequentialGroup()
-                                                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                                                        .addComponent(lblRefreshTime)
-                                                        .addComponent(txtRefreshTime, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                                                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-                                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                                                .addComponent(btnPlus, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                                                .addComponent(btnMinus, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))))
+        pnSimulationControlLayout.setVerticalGroup(
+            pnSimulationControlLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(pnSimulationControlLayout.createSequentialGroup()
+                .addContainerGap()
+                .addGroup(pnSimulationControlLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(pnSimulationControlLayout.createSequentialGroup()
+                        .addGroup(pnSimulationControlLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                            .addComponent(lblRefreshTime)
+                            .addComponent(txtRefreshTime, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                    .addGroup(pnSimulationControlLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                        .addComponent(btnPlus, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addComponent(btnMinus, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))))
         );
 
-        jspMainSplit.setDividerLocation(400);
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 0;
+        gridBagConstraints.gridy = 0;
+        gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.NORTHWEST;
+        gridBagConstraints.weightx = 0.1;
+        getContentPane().add(pnSimulationControl, gridBagConstraints);
+
+        jspMainSplit.setDividerLocation(220);
         jspMainSplit.setOrientation(javax.swing.JSplitPane.VERTICAL_SPLIT);
 
-        jSplitPane2.setDividerLocation(400);
+        splMainChart.setDividerLocation(400);
 
         pnMindEntities.setLayout(new java.awt.GridBagLayout());
 
@@ -219,7 +249,7 @@ public class MindViewer extends javax.swing.JFrame {
         gridBagConstraints.anchor = java.awt.GridBagConstraints.NORTHWEST;
         pnMindEntities.add(cbRefreshMindsEntities, gridBagConstraints);
 
-        jtpMindsEntities.addTab("Minds' Entities", jspMindsEntities);
+        jtpMindsEntities.addTab("Mind's Memories", jspMindsEntities);
 
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
@@ -235,7 +265,7 @@ public class MindViewer extends javax.swing.JFrame {
         gridBagConstraints.insets = new java.awt.Insets(5, 0, 0, 2);
         pnMindEntities.add(jtpMindsEntities, gridBagConstraints);
 
-        jSplitPane2.setLeftComponent(pnMindEntities);
+        splMainChart.setLeftComponent(pnMindEntities);
         pnMindEntities.getAccessibleContext().setAccessibleName("");
 
         pnChart.setLayout(new java.awt.GridBagLayout());
@@ -257,12 +287,12 @@ public class MindViewer extends javax.swing.JFrame {
         javax.swing.GroupLayout pnCodeletsLayout = new javax.swing.GroupLayout(pnCodelets);
         pnCodelets.setLayout(pnCodeletsLayout);
         pnCodeletsLayout.setHorizontalGroup(
-                pnCodeletsLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                        .addGap(0, 0, Short.MAX_VALUE)
+            pnCodeletsLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGap(0, 322, Short.MAX_VALUE)
         );
         pnCodeletsLayout.setVerticalGroup(
-                pnCodeletsLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                        .addGap(0, 0, Short.MAX_VALUE)
+            pnCodeletsLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGap(0, 161, Short.MAX_VALUE)
         );
 
         gridBagConstraints = new java.awt.GridBagConstraints();
@@ -293,156 +323,28 @@ public class MindViewer extends javax.swing.JFrame {
         gridBagConstraints.weighty = 0.1;
         pnChart.add(sdChart, gridBagConstraints);
 
-        jSplitPane2.setRightComponent(pnChart);
+        splMainChart.setRightComponent(pnChart);
 
-        jspMainSplit.setTopComponent(jSplitPane2);
+        jspMainSplit.setTopComponent(splMainChart);
+        jspMainSplit.setRightComponent(tbModules);
+        tbModules.getAccessibleContext().setAccessibleName("Motivational Subsystem");
+        tbModules.getAccessibleContext().setAccessibleDescription("");
 
-        tbMotivationalSubsystem.addChangeListener(new javax.swing.event.ChangeListener() {
-            public void stateChanged(javax.swing.event.ChangeEvent evt) {
-                tbMotivationalSubsystemStateChanged(evt);
-            }
-        });
-
-        splDrives.setDividerLocation(400);
-
-        pnTreeDrives.setLayout(new java.awt.GridBagLayout());
-
-        cbRefreshDrives.setSelected(true);
-        cbRefreshDrives.setText("Auto Refresh");
-        cbRefreshDrives.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                cbRefreshDrivesActionPerformed(evt);
-            }
-        });
-        pnTreeDrives.add(cbRefreshDrives, new java.awt.GridBagConstraints());
-        gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.gridx = 0;
-        gridBagConstraints.gridy = 1;
-        gridBagConstraints.gridwidth = 12;
-        gridBagConstraints.gridheight = 16;
-        gridBagConstraints.fill = java.awt.GridBagConstraints.BOTH;
-        gridBagConstraints.anchor = java.awt.GridBagConstraints.FIRST_LINE_START;
-        gridBagConstraints.weightx = 0.1;
-        gridBagConstraints.weighty = 0.1;
-        pnTreeDrives.add(spMotivationalCodelets, gridBagConstraints);
-
-        splDrives.setLeftComponent(pnTreeDrives);
-
-        pnDrivesChart.setLayout(new java.awt.GridBagLayout());
-
-        pnDrives.setBackground(new java.awt.Color(102, 102, 102));
-
-        javax.swing.GroupLayout pnDrivesLayout = new javax.swing.GroupLayout(pnDrives);
-        pnDrives.setLayout(pnDrivesLayout);
-        pnDrivesLayout.setHorizontalGroup(
-                pnDrivesLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                        .addGap(0, 0, Short.MAX_VALUE)
-        );
-        pnDrivesLayout.setVerticalGroup(
-                pnDrivesLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                        .addGap(0, 0, Short.MAX_VALUE)
-        );
+        tbControl.addTab("Mind's Entities", jspMainSplit);
 
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
         gridBagConstraints.gridy = 1;
-        gridBagConstraints.gridwidth = 18;
-        gridBagConstraints.gridheight = 16;
         gridBagConstraints.fill = java.awt.GridBagConstraints.BOTH;
-        gridBagConstraints.anchor = java.awt.GridBagConstraints.LINE_START;
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.NORTHWEST;
         gridBagConstraints.weightx = 0.1;
         gridBagConstraints.weighty = 0.1;
-        pnDrivesChart.add(pnDrives, gridBagConstraints);
-
-        cbDrivesChart.setSelected(true);
-        cbDrivesChart.setText("Auto Refresh");
-        gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.gridx = 0;
-        gridBagConstraints.gridy = 0;
-        gridBagConstraints.anchor = java.awt.GridBagConstraints.FIRST_LINE_START;
-        pnDrivesChart.add(cbDrivesChart, gridBagConstraints);
-
-        splDrives.setRightComponent(pnDrivesChart);
-
-        tbMotivationalSubsystem.addTab("Drives", splDrives);
-
-        splEmotional.setDividerLocation(300);
-        splEmotional.setLeftComponent(spEmotionalCodelets);
-
-        pnEmotional.setBackground(new java.awt.Color(102, 102, 102));
-
-        javax.swing.GroupLayout pnEmotionalLayout = new javax.swing.GroupLayout(pnEmotional);
-        pnEmotional.setLayout(pnEmotionalLayout);
-        pnEmotionalLayout.setHorizontalGroup(
-                pnEmotionalLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                        .addGap(0, 0, Short.MAX_VALUE)
-        );
-        pnEmotionalLayout.setVerticalGroup(
-                pnEmotionalLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                        .addGap(0, 396, Short.MAX_VALUE)
-        );
-
-        splEmotional.setRightComponent(pnEmotional);
-
-        tbMotivationalSubsystem.addTab("Emotional Drives", splEmotional);
-        tbMotivationalSubsystem.addTab("Moods", spMoodCodelets);
-        tbMotivationalSubsystem.addTab("Appraisals", spAppraisalCodelets);
-        tbMotivationalSubsystem.addTab("Goals", spGoalCodelets);
-
-        jspMainSplit.setRightComponent(tbMotivationalSubsystem);
-
-        javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
-        getContentPane().setLayout(layout);
-        layout.setHorizontalGroup(
-                layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                        .addGroup(layout.createSequentialGroup()
-                                .addContainerGap()
-                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                        .addComponent(jPanel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                                        .addComponent(jspMainSplit, javax.swing.GroupLayout.DEFAULT_SIZE, 954, Short.MAX_VALUE))
-                                .addContainerGap())
-        );
-        layout.setVerticalGroup(
-                layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                        .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                                .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addComponent(jspMainSplit, javax.swing.GroupLayout.DEFAULT_SIZE, 757, Short.MAX_VALUE)
-                                .addContainerGap())
-        );
+        getContentPane().add(tbControl, gridBagConstraints);
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
-    private void tbMotivationalSubsystemStateChanged(javax.swing.event.ChangeEvent evt) {//GEN-FIRST:event_tbMotivationalSubsystemStateChanged
-        setSelectedIndex(tbMotivationalSubsystem.getSelectedIndex());
-        if (getThreadDrives() != null) {
-            synchronized (getThreadDrives()) {
-                getThreadDrives().notify();
-            }
-        }
-
-        if (getThreadEmotionalDrives() != null) {
-            synchronized (getThreadEmotionalDrives()) {
-                getThreadEmotionalDrives().notify();
-            }
-        }
-
-        if (getThreadMoods() != null) {
-            synchronized (getThreadMoods()) {
-                getThreadMoods().notify();
-            }
-
-        }
-        if (getThreadAppraisals() != null) {
-            synchronized (getThreadAppraisals()) {
-                getThreadAppraisals().notify();
-            }
-        }
-
-    }
-
-    private void cbRefreshMindsEntitiesActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_cbRefreshMindsEntitiesActionPerformed
+    private void cbRefreshMindsEntitiesActionPerformed(java.awt.event.ActionEvent evt) {                                                       
         if (cbRefreshMindsEntities.isSelected()) {
             synchronized (getThreadMindEntities()) {
                 if (getThreadMindEntities() != null) {
@@ -452,31 +354,36 @@ public class MindViewer extends javax.swing.JFrame {
         }
     }
 
-    private void cbRefreshDrivesActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_cbRefreshDrivesActionPerformed
-        if (cbRefreshDrives.isSelected()) {
-            synchronized (getThreadDrives()) {
-                if (getThreadDrives() != null) {
-                    getThreadDrives().notify();
-                }
-            }
-        }
-    }
-
-    private void btnPlusActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnPlusActionPerformed
+    private void btnPlusActionPerformed(java.awt.event.ActionEvent evt) {                                        
         int value = Integer.parseInt(txtRefreshTime.getText());
         value += 10;
         txtRefreshTime.setText(String.valueOf(value));
+        setRefreshTimeToModules(value);
+
+
     }
 
     private void btnMinusActionPerformed(java.awt.event.ActionEvent evt) {
         int value = Integer.parseInt(txtRefreshTime.getText());
         value -= 10;
         txtRefreshTime.setText(String.valueOf(value < 100 ? 100 : value));
+
+        setRefreshTimeToModules(value < 100 ? 100 : value);
+
     }
 
-    private void cbRefreshChartActionPerformed(java.awt.event.ActionEvent evt) {
-        XYPlot plot = (XYPlot) getCodeletsChart().getChart().getPlot();
+    private void setRefreshTimeToModules(long value){
+        if(motivationalModuleViewer != null){
+            motivationalModuleViewer.setRefreshTime(value);
+        }
 
+        if(plansSubsystemViewer != null){
+            plansSubsystemViewer.setRefreshTime(value);
+        }
+    }
+
+
+    private void cbRefreshChartActionPerformed(java.awt.event.ActionEvent evt) {
         sdChart.setValue(100);
         if (cbRefreshChart.isSelected()) {
             synchronized (getThreadMindEntities()) {
@@ -488,7 +395,6 @@ public class MindViewer extends javax.swing.JFrame {
     }
 
     private void sdChartStateChanged(javax.swing.event.ChangeEvent evt) {
-
         if (sdChart.getValue() == 100) {
             getCodeletsChart().restoreAutoDomainBounds();
         } else {
@@ -498,33 +404,22 @@ public class MindViewer extends javax.swing.JFrame {
         }
 
     }
-
-    public void initMotivationalSubsystemViewer(List<Codelet> motivationalCodelets,
-                                                List<Codelet> emotionalCodelets,
-                                                List<Codelet> goalCodelets,
-                                                List<Codelet> appraisalCodelets,
-                                                List<Codelet> moodCodelets) {
-        setMotivationalCodelets(motivationalCodelets);
-        setEmotionalCodelets(emotionalCodelets);
-        setGoalCodelets(goalCodelets);
-        setAppraisalCodelets(appraisalCodelets);
-        setMoodCodelets(moodCodelets);
-
-        startMotivationalThreads();
-    }
-
+    
     private DefaultTreeModel createTreeModelGUI(JScrollPane scrollPane, List<Codelet> codelets, String title) {
-        DefaultTreeModel treeCodelets = createTreeModel(codelets, title, TreeElement.ICON_CODELETS);
+        DefaultTreeModel treeCodelets = TreeViewerUtil.createTreeModel(codelets, title, TreeElement.ICON_CODELETS);
 
         JTree jtTree = new JTree(treeCodelets);
-        expandAllNodes(jtTree);
+        TreeViewerUtil.expandAllNodes(jtTree);
         scrollPane.setViewportView(jtTree);
         jtTree.setCellRenderer(new RendererJTree());
 
         return treeCodelets;
     }
-
+    
     private void startMindEntitiesThread() {
+
+        long initialTime = Calendar.getInstance().getTimeInMillis();
+
         setThreadMindEntities(new Thread() {
             @Override
             public void run() {
@@ -537,7 +432,7 @@ public class MindViewer extends javax.swing.JFrame {
 
                 synchronized (pnCodelets) {
                     pnCodelets.setLayout(new BorderLayout());
-                    setCodeletsChart(createLineXYChart(dataset, "CodeRack Inspection", "Codelets", "Activation", PlotOrientation.VERTICAL));
+                    setCodeletsChart(ChartViewerUtil.createLineXYChart(dataset, "CodeRack Inspection", "Codelets", "Activation", 100));
                     pnCodelets.add(getCodeletsChart(), BorderLayout.CENTER);
                     pnCodelets.validate();
                 }
@@ -555,11 +450,12 @@ public class MindViewer extends javax.swing.JFrame {
                     }
 
                     if (cbRefreshMindsEntities.isSelected()) {
-                        createTreeModelGUI(jspMindsEntities, getWog().getCodeRack().getAllCodelets(), getWindowName());
+                        TreeViewerUtil.createTreeModelGUI(jspMindsEntities, getWog().getCodeRack().getAllCodelets(), getWindowName());
                     }
 
                     if (cbRefreshChart.isSelected()) {
-                        updateValuesInXYLineChart(dataset, getBehavioralCodelets());
+                        setInstant(Calendar.getInstance().getTimeInMillis() - initialTime);
+                        ChartViewerUtil.updateValuesInXYLineChart(dataset, getBehavioralCodelets(), getInstant());
                     }
 
                     try {
@@ -575,223 +471,6 @@ public class MindViewer extends javax.swing.JFrame {
         getThreadMindEntities().start();
     }
 
-    private void startMotivationalThreads() {
-        setThreadDrives(new Thread() {
-            @Override
-            public void run() {
-                DefaultCategoryDataset dataset = new DefaultCategoryDataset();
-
-                synchronized (pnDrives) {
-                    pnDrives.setLayout(new BorderLayout());
-                    setMotivationalChart(createChart(dataset, "Motivational Codelets", "Drives", "Activation", PlotOrientation.VERTICAL));
-                    pnDrives.add(getMotivationalChart(), BorderLayout.CENTER);
-                    pnDrives.validate();
-                }
-
-                while (!isbStopRefresh()) {
-
-                    while ((!cbRefreshDrives.isSelected() && !cbDrivesChart.isSelected()) || getSelectedIndex() != 0) {
-                        try {
-                            synchronized (getThreadDrives()) {
-                                getThreadDrives().wait();
-                            }
-                        } catch (InterruptedException ex) {
-                            Logger.getLogger(MindViewer.class.getName()).log(Level.SEVERE, null, ex);
-                        }
-                    }
-
-                    if (cbRefreshDrives.isSelected()) {
-                        createTreeModelGUI(spMotivationalCodelets, getMotivationalCodelets(), "Motivational Codelets");
-                    }
-                    //updateValuesInTree(getMotivationalCodelets(), getDtMotivationalCodelets());
-
-                    if (cbDrivesChart.isSelected()) {
-                        updateValuesInChart(dataset, getMotivationalCodelets());
-                    }
-
-                    try {
-                        Thread.sleep(Long.parseLong(txtRefreshTime.getText()));
-                    } catch (InterruptedException e) {
-                        e.printStackTrace();
-                    }
-
-                }
-            }
-        });
-
-        setThreadEmotionalDrives(new Thread() {
-            @Override
-            public void run() {
-                DefaultCategoryDataset dataset = new DefaultCategoryDataset();
-
-                synchronized (pnEmotional) {
-                    pnEmotional.setLayout(new BorderLayout());
-                    pnEmotional.add(createChart(dataset, "Emotional Codelets", "Emotional Drives", "Activation", PlotOrientation.VERTICAL), BorderLayout.CENTER);
-                    pnEmotional.validate();
-                }
-
-                while (!isbStopRefresh()) {
-                    while (getSelectedIndex() != 1) {
-                        try {
-                            synchronized (getThreadEmotionalDrives()) {
-                                getThreadEmotionalDrives().wait();
-                            }
-                        } catch (InterruptedException e) {
-                            e.printStackTrace();
-                        }
-                    }
-                    createTreeModelGUI(spEmotionalCodelets, getEmotionalCodelets(), "Emotional Codelets");
-
-                    updateValueInChartByMemory(dataset, getEmotionalCodelets(), EmotionalCodelet.OUTPUT_AFFECTED_DRIVE_MEMORY.toString());
-                    try {
-                        Thread.sleep(Long.parseLong(txtRefreshTime.getText()));
-                    } catch (InterruptedException e) {
-                        e.printStackTrace();
-                    }
-
-                }
-            }
-        });
-
-        setThreadMoods(new Thread() {
-            @Override
-            public void run() {
-                DefaultCategoryDataset dataset = new DefaultCategoryDataset();
-
-                while (!isbStopRefresh()) {
-                    while (getSelectedIndex() != 2) {
-                        try {
-                            synchronized (getThreadMoods()) {
-                                getThreadMoods().wait();
-                            }
-                        } catch (InterruptedException e) {
-                            e.printStackTrace();
-                        }
-                    }
-
-                    createTreeModelGUI(spMoodCodelets, getMoodCodelets(), "Mood Codelets");
-
-                    try {
-                        Thread.sleep(Long.parseLong(txtRefreshTime.getText()));
-                    } catch (InterruptedException e) {
-                        e.printStackTrace();
-                    }
-
-                }
-            }
-        });
-
-        setThreadAppraisals(new Thread() {
-            @Override
-            public void run() {
-                DefaultCategoryDataset dataset = new DefaultCategoryDataset();
-
-                while (!isbStopRefresh()) {
-                    while (getSelectedIndex() != 3) {
-                        try {
-                            synchronized (getThreadAppraisals()) {
-                                getThreadAppraisals().wait();
-                            }
-                        } catch (InterruptedException e) {
-                            e.printStackTrace();
-                        }
-                    }
-                    createTreeModelGUI(spAppraisalCodelets, getAppraisalCodelets(), "Appraisal Codelets");
-                    //updateValuesInTree(getAppraisalCodelets(), getDtAppraisalCodelets());
-
-                    try {
-                        Thread.sleep(Long.parseLong(txtRefreshTime.getText()));
-                    } catch (InterruptedException e) {
-                        e.printStackTrace();
-                    }
-
-                }
-            }
-        });
-
-        getThreadDrives().start();
-        getThreadAppraisals().start();
-        getThreadMoods().start();
-        getThreadEmotionalDrives().start();
-    }
-
-    private synchronized ChartPanel createChart(DefaultCategoryDataset dataset, String title, String categoryAxisLabel, String valueAxisLabel, PlotOrientation chartType) {
-
-        final JFreeChart chart = ChartFactory.createBarChart(
-                title,
-                categoryAxisLabel,
-                valueAxisLabel,
-                dataset,
-                chartType,
-                true,
-                true,
-                false
-        );
-
-        final CategoryPlot plot = chart.getCategoryPlot();
-        plot.setBackgroundPaint(Color.lightGray);
-        plot.setDomainGridlinePaint(Color.white);
-        plot.setRangeGridlinePaint(Color.white);
-        chart.setBackgroundPaint(Color.lightGray);
-
-        ChartPanel localChartPanel = new ChartPanel(chart);
-        localChartPanel.setVisible(true);
-        localChartPanel.setDomainZoomable(true);
-
-        return localChartPanel;
-    }
-
-    private synchronized ChartPanel createLineXYChart(XYSeriesCollection dataset, String title, String categoryAxisLabel, String valueAxisLabel, PlotOrientation chartType) {
-
-        final JFreeChart chart = ChartFactory.createXYLineChart(title, categoryAxisLabel, valueAxisLabel, dataset, PlotOrientation.VERTICAL, true, true, false);
-
-        final XYPlot plot = chart.getXYPlot();
-        plot.setBackgroundPaint(Color.lightGray);
-        plot.setDomainGridlinePaint(Color.white);
-        plot.setRangeGridlinePaint(Color.white);
-        plot.getDomainAxis().setFixedAutoRange(Integer.parseInt(txtRefreshTime.getText()) * 100);
-        chart.setBackgroundPaint(Color.lightGray);
-
-        ChartPanel localChartPanel = new ChartPanel(chart);
-        localChartPanel.setVisible(true);
-        localChartPanel.setDomainZoomable(true);
-
-        return localChartPanel;
-    }
-
-    private synchronized void updateValuesInChart(DefaultCategoryDataset dataset, List<Codelet> codelets) {
-        ArrayList<Codelet> tempCodeletsList = new ArrayList<Codelet>();
-        tempCodeletsList.addAll(codelets);
-
-        synchronized (tempCodeletsList) {
-            for (Codelet co : tempCodeletsList) {
-                dataset.addValue(co.getActivation(), co.getName(), "activation");
-            }
-        }
-    }
-
-    private synchronized void updateValuesInXYLineChart(XYSeriesCollection dataset, List<Codelet> codelets) {
-        ArrayList<Codelet> tempCodeletsList = new ArrayList<Codelet>();
-        tempCodeletsList.addAll(codelets);
-
-        synchronized (tempCodeletsList) {
-            setInstant(Calendar.getInstance().getTimeInMillis() - getInitialTime());
-            for (Codelet co : tempCodeletsList) {
-                dataset.getSeries(co.getName()).add(getInstant(), co.getActivation());
-            }
-        }
-    }
-
-    private synchronized void updateValueInChartByMemory(DefaultCategoryDataset dataset, List<Codelet> codelets, String memoryName) {
-        ArrayList<Codelet> tempCodeletsList = new ArrayList<Codelet>();
-        tempCodeletsList.addAll(codelets);
-
-        synchronized (tempCodeletsList) {
-            for (Codelet co : tempCodeletsList) {
-                dataset.addValue(co.getOutput(memoryName).getEvaluation(), co.getName(), "activation");
-            }
-        }
-    }
 
     /**
      * @param args the command line arguments
@@ -854,137 +533,11 @@ public class MindViewer extends javax.swing.JFrame {
     public void setWO(Mind newwog) {
         setWog(newwog);
     }
-
-    private DefaultMutableTreeNode addRootNode(String rootNodeName) {
-        DefaultMutableTreeNode root = new DefaultMutableTreeNode(new TreeElement(rootNodeName, TreeElement.NODE_NORMAL, null, TreeElement.ICON_CONFIGURATION));
-        return (root);
-    }
-
-    private DefaultMutableTreeNode addMind(Mind m) {
-
-        DefaultMutableTreeNode mindNode = addItem("Mind", TreeElement.ICON_MIND);
-        DefaultMutableTreeNode codeletsNode = addItem("Codelets", TreeElement.ICON_CODELETS);
-        mindNode.add(codeletsNode);
-        List<Codelet> codelets = m.getCodeRack().getAllCodelets();
-        for (Codelet oo : codelets) {
-            DefaultMutableTreeNode newcodeletNode = addCodelet(oo);
-            codeletsNode.add(newcodeletNode);
-        }
-        DefaultMutableTreeNode memoriesNode = addItem("Memories", TreeElement.ICON_MEMORIES);
-        mindNode.add(memoriesNode);
-        List<Memory> memories = m.getRawMemory().getAllMemoryObjects();
-        for (Memory mo : memories) {
-            DefaultMutableTreeNode memoryNode = addMemory(mo);
-            memoriesNode.add(memoryNode);
-        }
-
-        return (mindNode);
-    }
-
-    private DefaultMutableTreeNode addIO(Memory m, int icon) {
-        String value = m.getName() + " : ";
-        Object mval = m.getI();
-        if (mval != null) {
-            value += mval.toString();
-        } else {
-            value += null;
-        }
-        DefaultMutableTreeNode memoryNode = addItem(value, icon);
-        return (memoryNode);
-    }
-
-    private DefaultMutableTreeNode addCodelet(Codelet p) {
-        DefaultMutableTreeNode codeletNode = addItem(p.getName(), TreeElement.ICON_CODELET);
-        List<Memory> inputs = p.getInputs();
-        List<Memory> outputs = p.getOutputs();
-        List<Memory> broadcasts = p.getBroadcast();
-        for (Memory i : inputs) {
-            DefaultMutableTreeNode memoryNode = addIO(i, TreeElement.ICON_INPUT);
-            codeletNode.add(memoryNode);
-        }
-        for (Memory o : outputs) {
-            DefaultMutableTreeNode memoryNode = addIO(o, TreeElement.ICON_OUTPUT);
-            codeletNode.add(memoryNode);
-        }
-        for (Memory b : broadcasts) {
-            DefaultMutableTreeNode memoryNode = addIO(b, TreeElement.ICON_BROADCAST);
-            codeletNode.add(memoryNode);
-        }
-        return (codeletNode);
-    }
-
-    private DefaultMutableTreeNode addItem(String p, int icon_type) {
-        Object o = new TreeElement(p, TreeElement.NODE_NORMAL, p, icon_type);
-        DefaultMutableTreeNode memoryNode = new DefaultMutableTreeNode(o);
-        return (memoryNode);
-    }
-
-    private DefaultMutableTreeNode addMemory(Memory p) {
-        String name = p.getName();
-        DefaultMutableTreeNode memoryNode = addItem(name, TreeElement.ICON_MEMORIES);
-        if (p.getClass().getCanonicalName().equals("br.unicamp.cst.core.entities.MemoryObject")) {
-            String value = "";
-            Object pval = p.getI();
-            if (pval != null) {
-                value += pval.toString();
-            } else {
-                value += "null";
-            }
-            memoryNode = addItem(name + " : " + value, TreeElement.ICON_MO);
-        } else if (p.getClass().getCanonicalName().equals("br.unicamp.cst.core.entities.MemoryContainer")) {
-            String value = "";
-            Object pval = p.getI();
-            if (pval != null) {
-                value += pval.toString();
-            } else {
-                value += "null";
-            }
-            memoryNode = addItem(name + " : " + value, TreeElement.ICON_CONTAINER);
-            MemoryContainer mc = (MemoryContainer) p;
-            for (Memory mo : mc.getAllMemories()) {
-                DefaultMutableTreeNode newmemo = addMemory(mo);
-                memoryNode.add(newmemo);
-            }
-        }
-        return (memoryNode);
-    }
-
-    public TreeModel createTreeModel(Mind m) {
-        DefaultMutableTreeNode o = addMind(m);
-        TreeModel tm = new DefaultTreeModel(o);
-        return (tm);
-    }
-
-    private DefaultTreeModel createTreeModel(List<Codelet> codelts, String title, int icon) {
-        DefaultMutableTreeNode dmtCodelets = addItem(title, icon);
-
-        for (Codelet codelet : codelts) {
-            DefaultMutableTreeNode dmtCodelet = addCodelet(codelet);
-            dmtCodelets.add(dmtCodelet);
-        }
-
-        DefaultTreeModel tm = new DefaultTreeModel(dmtCodelets);
-        return tm;
-    }
-
-    private void expandAllNodes(JTree tree) {
-        expandAllNodes(tree, 0, tree.getRowCount());
-    }
-
-    private void expandAllNodes(JTree tree, int startingIndex, int rowCount) {
-        for (int i = startingIndex; i < rowCount; ++i) {
-            tree.expandRow(i);
-        }
-        if (tree.getRowCount() != rowCount) {
-            expandAllNodes(tree, rowCount, tree.getRowCount());
-        }
-    }
-
     public void updateTree(Mind m) {
         setWog(m);
-        TreeModel tm = createTreeModel(m);
+        TreeModel tm = TreeViewerUtil.createTreeModel(m);
         getJtree().setModel(tm);
-        expandAllNodes(getJtree());
+        TreeViewerUtil.expandAllNodes(getJtree());
     }
 
     public void StartTimer() {
@@ -1090,13 +643,15 @@ public class MindViewer extends javax.swing.JFrame {
         this.emotionalChart = emotionalChart;
     }
 
-    public double getInstant() {
+    public long getInstant() {
         return instant;
     }
 
-    public void setInstant(double instant) {
+    public void setInstant(long instant) {
         this.instant = instant;
     }
+
+
 
     class WOVTimerTask extends TimerTask {
 
@@ -1121,32 +676,20 @@ public class MindViewer extends javax.swing.JFrame {
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton btnMinus;
     private javax.swing.JButton btnPlus;
-    private javax.swing.JCheckBox cbDrivesChart;
     private javax.swing.JCheckBox cbRefreshChart;
-    private javax.swing.JCheckBox cbRefreshDrives;
     private javax.swing.JCheckBox cbRefreshMindsEntities;
-    private javax.swing.JPanel jPanel1;
-    private javax.swing.JSplitPane jSplitPane2;
     private javax.swing.JSplitPane jspMainSplit;
     private javax.swing.JScrollPane jspMindsEntities;
     private javax.swing.JTabbedPane jtpMindsEntities;
     private javax.swing.JLabel lblRefreshTime;
     private javax.swing.JPanel pnChart;
     private javax.swing.JPanel pnCodelets;
-    private javax.swing.JPanel pnDrives;
-    private javax.swing.JPanel pnDrivesChart;
-    private javax.swing.JPanel pnEmotional;
     private javax.swing.JPanel pnMindEntities;
-    private javax.swing.JPanel pnTreeDrives;
+    private javax.swing.JPanel pnSimulationControl;
     private javax.swing.JSlider sdChart;
-    private javax.swing.JScrollPane spAppraisalCodelets;
-    private javax.swing.JScrollPane spEmotionalCodelets;
-    private javax.swing.JScrollPane spGoalCodelets;
-    private javax.swing.JScrollPane spMoodCodelets;
-    private javax.swing.JScrollPane spMotivationalCodelets;
-    private javax.swing.JSplitPane splDrives;
-    private javax.swing.JSplitPane splEmotional;
-    private javax.swing.JTabbedPane tbMotivationalSubsystem;
+    private javax.swing.JSplitPane splMainChart;
+    private javax.swing.JTabbedPane tbControl;
+    private javax.swing.JTabbedPane tbModules;
     private javax.swing.JFormattedTextField txtRefreshTime;
     // End of variables declaration//GEN-END:variables
 
@@ -1344,5 +887,47 @@ public class MindViewer extends javax.swing.JFrame {
      */
     public void setDtGoalCodelets(DefaultTreeModel dtGoalCodelets) {
         this.dtGoalCodelets = dtGoalCodelets;
+    }
+
+    /**
+     * @return the threadGoals
+     */
+    public Thread getThreadGoals() {
+        return threadGoals;
+    }
+
+    /**
+     * @param threadGoals the threadGoals to set
+     */
+    public void setThreadGoals(Thread threadGoals) {
+        this.threadGoals = threadGoals;
+    }
+
+    /**
+     * @return the soarPlanningCodelet
+     */
+    public JSoarCodelet getSoarPlanningCodelet() {
+        return soarPlansCodelet;
+    }
+
+    /**
+     * @param soarPlansCodelet the soarPlansCodelet to set
+     */
+    public void setSoarPlanningCodelet(JSoarCodelet soarPlansCodelet) {
+        this.soarPlansCodelet = soarPlansCodelet;
+    }
+
+    /**
+     * @return the threadPlans
+     */
+    public Thread getThreadPlans() {
+        return threadPlans;
+    }
+
+    /**
+     * @param threadPlans the threadPlans to set
+     */
+    public void setThreadPlans(Thread threadPlans) {
+        this.threadPlans = threadPlans;
     }
 }

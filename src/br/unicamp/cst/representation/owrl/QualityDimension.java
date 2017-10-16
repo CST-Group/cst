@@ -11,6 +11,8 @@
 
 package br.unicamp.cst.representation.owrl;
 
+import java.util.HashMap;
+
 /**
  *
  * @author suelenmapa
@@ -63,6 +65,13 @@ public class QualityDimension {
     public boolean isNumber() {
         String objectClassName = value.getClass().getName();
         if (objectClassName.equals("java.lang.Float") || objectClassName.equals("java.lang.Double") || objectClassName.equals("java.lang.Integer") || objectClassName.equals("java.lang.Long"))
+            return(true);
+        return(false);
+    }
+
+    public boolean isHashMap(){
+        String objectClassName = value.getClass().getName();
+        if (objectClassName.equals("java.util.HashMap"))
             return(true);
         return(false);
     }

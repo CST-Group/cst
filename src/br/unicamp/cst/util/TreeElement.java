@@ -31,6 +31,7 @@ public class TreeElement {
     public static final int NODE_EXCLUSION = 3;
     public static final int NODE_CREATION = 4;
 
+    public static final int ICON_OBJECT = 2;
     public static final int ICON_CONFIGURATION = 1;
     public static final int ICON_COMPOSITE = 2;
     public static final int ICON_AGGREGATE = 3;
@@ -97,8 +98,6 @@ public class TreeElement {
     public void setValue(String value) {
         this.value = value;
     }
-    
-    
 
     public Color getColor() {
         return color;

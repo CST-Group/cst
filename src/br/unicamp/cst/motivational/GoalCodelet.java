@@ -4,7 +4,7 @@
  * are made available under the terms of the GNU Lesser Public License v3
  * which accompanies this distribution, and is available at
  * http://www.gnu.org/licenses/lgpl.html
- * 
+ *
  * Contributors:
  *     K. Raizer, A. L. O. Paraense, R. R. Gudwin - initial API and implementation
  ******************************************************************************/
@@ -17,8 +17,8 @@ import br.unicamp.cst.representation.owrl.AbstractObject;
 
 public abstract class GoalCodelet extends Codelet {
 
-    private static final String INPUT_HYPOTHETICAL_SITUATIONS_MEMORY = "INPUT_HYPOTHETICAL_SITUATIONS_MEMORY";
-    private static final String OUTPUT_GOAL_MEMORY = "OUTPUT_GOAL_MEMORY";
+    public static final String INPUT_HYPOTHETICAL_SITUATIONS_MEMORY = "INPUT_HYPOTHETICAL_SITUATIONS_MEMORY";
+    public static final String OUTPUT_GOAL_MEMORY = "OUTPUT_GOAL_MEMORY";
 
     private String id;
     private Memory inputHypotheticalSituationsMO;
@@ -27,19 +27,20 @@ public abstract class GoalCodelet extends Codelet {
     private AbstractObject hypotheticalSituation;
     private Goal goal;
 
-    public GoalCodelet(String id){
+    private boolean init = false;
+
+
+    public GoalCodelet(String id) {
         this.setId(id);
     }
 
     @Override
     public void accessMemoryObjects() {
-        if(getInputHypotheticalSituationsMO() == null)
-        {
+        if (getInputHypotheticalSituationsMO() == null) {
             setInputHypotheticalSituationsMO(this.getInput(INPUT_HYPOTHETICAL_SITUATIONS_MEMORY, 0));
-            setHypotheticalSituation((AbstractObject) getInputHypotheticalSituationsMO().getI());
         }
 
-        if(getGoalMO() == null){
+        if (getGoalMO() == null) {
             setGoalMO(this.getOutput(OUTPUT_GOAL_MEMORY, 0));
         }
     }
@@ -55,11 +56,14 @@ public abstract class GoalCodelet extends Codelet {
 
     @Override
     public void proc() {
-        setGoal(goalGeneration(getHypotheticalSituation()));
-        getGoal().setId(getId());
-        getGoalMO().setI(getGoal());
-    }
+        if (isInit()) {
+            setHypotheticalSituation((AbstractObject) ((Memory) getInputHypotheticalSituationsMO().getI()).getI());
+            setGoal(goalGeneration(getHypotheticalSituation()));
+            getGoalMO().setI(getGoal());
+        }
 
+        setInit(true);
+    }
 
     public abstract Goal goalGeneration(AbstractObject hypoteticalSituation);
 
@@ -101,5 +105,13 @@ public abstract class GoalCodelet extends Codelet {
 
     public void setId(String id) {
         this.id = id;
+    }
+
+    public boolean isInit() {
+        return init;
+    }
+
+    public void setInit(boolean init) {
+        this.init = init;
     }
 }
