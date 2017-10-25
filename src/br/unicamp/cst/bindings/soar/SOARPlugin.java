@@ -104,7 +104,7 @@ public class SOARPlugin {
         processInputLink();
 
         if (getDebugState() == 0)
-            setPhase(stepSOAR(30, RunType.PHASES));
+            setPhase(stepSOAR(1, RunType.PHASES));
         else
             setPhase(stepSOAR(1, RunType.PHASES));
 
@@ -123,7 +123,7 @@ public class SOARPlugin {
         if (getPhase() == 5) {
 
             try {
-                Thread.sleep(1000);
+                Thread.sleep(1);
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }

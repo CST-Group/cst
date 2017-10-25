@@ -8,6 +8,7 @@ package br.unicamp.cst.bindings.soar;
 import br.unicamp.cst.core.entities.Mind;
 import br.unicamp.cst.util.TreeElement;
 import br.unicamp.cst.util.TreeViewerUtil;
+
 import java.util.Arrays;
 
 import java.util.List;
@@ -28,7 +29,7 @@ public class PlansSubsystemViewer extends javax.swing.JPanel {
     private Thread threadPlans;
 
     private JSoarCodelet soarPlanningCodelet;
-    
+
     private PlanSelectionCodelet planSelectionCodelet;
 
     private Mind mind;
@@ -52,7 +53,7 @@ public class PlansSubsystemViewer extends javax.swing.JPanel {
         setPlayIcon(new ImageIcon(getClass().getResource("/br/unicamp/cst/images/play-icon.png")));
 
         initPlansSubsystemViewer(mind.getPlansSubsystemModule());
-        
+
     }
 
     private void initPlansSubsystemViewer(PlansSubsystemModule module) {
@@ -85,7 +86,7 @@ public class PlansSubsystemViewer extends javax.swing.JPanel {
                         if (getSoarPlanningCodelet().getOutputLinkAsString().trim() != "") {
                             txtPlanOutput.setText(getSoarPlanningCodelet().getOutputLinkAsString());
                         }
-                        
+
                         updateTreePanelCreatedPlans();
                     }
 
@@ -104,13 +105,15 @@ public class PlansSubsystemViewer extends javax.swing.JPanel {
         }
     }
 
-    public void updateTreePanelCreatedPlans(){
-        spCreatedPlans.setEnabled(true); 
-        TreeViewerUtil.createTreeModelGUI(spCreatedPlans, Arrays.asList(planSelectionCodelet), "Plan Selection Codelet");
+    public void updateTreePanelCreatedPlans() {
+        if (getPlanSelectionCodelet() != null) {
+            spCreatedPlans.setEnabled(true);
+            TreeViewerUtil.createTreeModelGUI(spCreatedPlans, Arrays.asList(planSelectionCodelet), "Plan Selection Codelet");
+        }
     }
-    
+
     public void updateTreePanel() {
-        spPlanSubsystem.setEnabled(true); 
+        spPlanSubsystem.setEnabled(true);
         TreeViewerUtil.createTreeModelGUIbyIdentifiers(spPlanSubsystem, getSoarPlanningCodelet().getJsoar().getStates(), "WMEs Debugger");
         TreeViewerUtil.createTreeModelGUIbyIdentifiers(spPlanOperators, getSoarPlanningCodelet().getOperatorsPathList(), "Operators Path Debugger");
     }
