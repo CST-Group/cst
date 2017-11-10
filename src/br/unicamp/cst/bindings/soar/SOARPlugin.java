@@ -11,18 +11,17 @@
 
 package br.unicamp.cst.bindings.soar;
 
-import br.unicamp.cst.representation.owrl.Property;
-import br.unicamp.cst.representation.owrl.QualityDimension;
-import br.unicamp.cst.representation.owrl.AbstractObject;
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
-import com.google.gson.JsonElement;
-import com.google.gson.JsonObject;
-
 import java.io.File;
 import java.lang.reflect.Field;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Set;
 import java.util.logging.Logger;
 
 import org.jsoar.kernel.Agent;
@@ -30,11 +29,25 @@ import org.jsoar.kernel.Phase;
 import org.jsoar.kernel.RunType;
 import org.jsoar.kernel.io.InputWme;
 import org.jsoar.kernel.memory.Wme;
-
 import org.jsoar.kernel.memory.Wmes;
-import org.jsoar.kernel.symbols.*;
+import org.jsoar.kernel.symbols.DoubleSymbol;
+import org.jsoar.kernel.symbols.Identifier;
+import org.jsoar.kernel.symbols.IdentifierImpl;
+import org.jsoar.kernel.symbols.StringSymbol;
+import org.jsoar.kernel.symbols.Symbol;
+import org.jsoar.kernel.symbols.SymbolFactory;
+import org.jsoar.kernel.symbols.SymbolFactoryImpl;
 import org.jsoar.runtime.ThreadedAgent;
 import org.jsoar.util.commands.SoarCommands;
+
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+
+import br.unicamp.cst.representation.owrl.AbstractObject;
+import br.unicamp.cst.representation.owrl.Property;
+import br.unicamp.cst.representation.owrl.QualityDimension;
 
 /**
  * @author wander
@@ -138,7 +151,8 @@ public class SOARPlugin {
 
         double diff = (new Date()).getTime() - initDate.getTime();
 
-        logger.info("Time of Soar Cycle :" + diff);
+        if(getDebugState() == 1)
+        	logger.info("Time of Soar Cycle :" + diff);
 
     }
 
