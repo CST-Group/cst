@@ -14,43 +14,27 @@ package br.unicamp.cst.util;
 
 import br.unicamp.cst.bindings.soar.PlansSubsystemViewer;
 import br.unicamp.cst.bindings.soar.JSoarCodelet;
-import br.unicamp.cst.bindings.soar.SOARPlugin;
 import br.unicamp.cst.core.entities.Codelet;
-import br.unicamp.cst.core.entities.Memory;
 import br.unicamp.cst.core.entities.MemoryContainer;
 import br.unicamp.cst.core.entities.MemoryObject;
 import br.unicamp.cst.core.entities.Mind;
 import br.unicamp.cst.core.entities.TestCodelet;
-import br.unicamp.cst.motivational.AppraisalCodelet;
-import br.unicamp.cst.motivational.EmotionalCodelet;
-import br.unicamp.cst.motivational.GoalCodelet;
-import br.unicamp.cst.motivational.MoodCodelet;
-import br.unicamp.cst.motivational.MotivationalCodelet;
 import br.unicamp.cst.motivational.MotivationalSubsystemViewer;
 
 import java.awt.BorderLayout;
-import java.awt.Color;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
 import java.util.Timer;
 import java.util.TimerTask;
-import java.util.logging.Handler;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import java.util.stream.Collectors;
 import javax.swing.*;
-import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.DefaultTreeModel;
 import javax.swing.tree.TreeModel;
 
-import org.jfree.chart.ChartFactory;
 import org.jfree.chart.ChartPanel;
-import org.jfree.chart.JFreeChart;
-import org.jfree.chart.plot.CategoryPlot;
-import org.jfree.chart.plot.PlotOrientation;
 import org.jfree.chart.plot.XYPlot;
-import org.jfree.data.category.DefaultCategoryDataset;
 import org.jfree.data.xy.XYSeries;
 import org.jfree.data.xy.XYSeriesCollection;
 
@@ -177,6 +161,10 @@ public class MindViewer extends javax.swing.JFrame {
         txtRefreshTime.setEnabled(false);
 
         btnPlus.setText("+");
+        btnPlus.setMargin(new java.awt.Insets(0, 0, 0, 0));
+        btnPlus.setMaximumSize(new java.awt.Dimension(25, 25));
+        btnPlus.setMinimumSize(new java.awt.Dimension(25, 25));
+        btnPlus.setPreferredSize(new java.awt.Dimension(25, 25));
         btnPlus.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 btnPlusActionPerformed(evt);
@@ -184,6 +172,10 @@ public class MindViewer extends javax.swing.JFrame {
         });
 
         btnMinus.setText("-");
+        btnMinus.setMargin(new java.awt.Insets(0, 0, 0, 0));
+        btnMinus.setMaximumSize(new java.awt.Dimension(25, 25));
+        btnMinus.setMinimumSize(new java.awt.Dimension(25, 25));
+        btnMinus.setPreferredSize(new java.awt.Dimension(25, 25));
         btnMinus.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 btnMinusActionPerformed(evt);
@@ -209,15 +201,13 @@ public class MindViewer extends javax.swing.JFrame {
             pnSimulationControlLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(pnSimulationControlLayout.createSequentialGroup()
                 .addContainerGap()
-                .addGroup(pnSimulationControlLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(pnSimulationControlLayout.createSequentialGroup()
-                        .addGroup(pnSimulationControlLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                            .addComponent(lblRefreshTime)
-                            .addComponent(txtRefreshTime, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                        .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addGroup(pnSimulationControlLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                    .addComponent(btnPlus, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addGroup(pnSimulationControlLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                        .addComponent(btnPlus, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                        .addComponent(btnMinus, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))))
+                        .addComponent(lblRefreshTime)
+                        .addComponent(txtRefreshTime, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(btnMinus, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
 
         gridBagConstraints = new java.awt.GridBagConstraints();
@@ -233,6 +223,7 @@ public class MindViewer extends javax.swing.JFrame {
 
         splMainChart.setDividerLocation(400);
 
+        pnMindEntities.setMinimumSize(new java.awt.Dimension(0, 0));
         pnMindEntities.setLayout(new java.awt.GridBagLayout());
 
         cbRefreshMindsEntities.setSelected(true);
@@ -268,6 +259,8 @@ public class MindViewer extends javax.swing.JFrame {
         splMainChart.setLeftComponent(pnMindEntities);
         pnMindEntities.getAccessibleContext().setAccessibleName("");
 
+        pnChart.setMinimumSize(new java.awt.Dimension(0, 0));
+        pnChart.setName(""); // NOI18N
         pnChart.setLayout(new java.awt.GridBagLayout());
 
         cbRefreshChart.setSelected(true);
@@ -288,11 +281,11 @@ public class MindViewer extends javax.swing.JFrame {
         pnCodelets.setLayout(pnCodeletsLayout);
         pnCodeletsLayout.setHorizontalGroup(
             pnCodeletsLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 322, Short.MAX_VALUE)
+            .addGap(0, 366, Short.MAX_VALUE)
         );
         pnCodeletsLayout.setVerticalGroup(
             pnCodeletsLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 161, Short.MAX_VALUE)
+            .addGap(0, 177, Short.MAX_VALUE)
         );
 
         gridBagConstraints = new java.awt.GridBagConstraints();
@@ -326,6 +319,8 @@ public class MindViewer extends javax.swing.JFrame {
         splMainChart.setRightComponent(pnChart);
 
         jspMainSplit.setTopComponent(splMainChart);
+
+        tbModules.setMinimumSize(new java.awt.Dimension(0, 0));
         jspMainSplit.setRightComponent(tbModules);
         tbModules.getAccessibleContext().setAccessibleName("Motivational Subsystem");
         tbModules.getAccessibleContext().setAccessibleDescription("");

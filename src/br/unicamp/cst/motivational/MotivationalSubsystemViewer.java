@@ -283,6 +283,8 @@ public class MotivationalSubsystemViewer extends javax.swing.JPanel {
         cbRefreshGoals = new javax.swing.JCheckBox();
         spGoalCodelets = new javax.swing.JScrollPane();
 
+        setMinimumSize(new java.awt.Dimension(1049, 0));
+        setPreferredSize(new java.awt.Dimension(1030, 250));
         setLayout(new java.awt.GridBagLayout());
 
         tbMotivationalSubsystem.addChangeListener(new javax.swing.event.ChangeListener() {
@@ -293,6 +295,7 @@ public class MotivationalSubsystemViewer extends javax.swing.JPanel {
 
         splDrives.setDividerLocation(400);
 
+        pnTreeDrives.setMinimumSize(new java.awt.Dimension(0, 0));
         pnTreeDrives.setLayout(new java.awt.GridBagLayout());
 
         cbRefreshDrives.setSelected(true);
