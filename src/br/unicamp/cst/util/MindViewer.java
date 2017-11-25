@@ -404,10 +404,10 @@ public class MindViewer extends javax.swing.JFrame {
         DefaultTreeModel treeCodelets = TreeViewerUtil.createTreeModel(codelets, title, TreeElement.ICON_CODELETS);
 
         JTree jtTree = new JTree(treeCodelets);
+        jtTree.setCellRenderer(new RendererJTree());
         TreeViewerUtil.expandAllNodes(jtTree);
         scrollPane.setViewportView(jtTree);
-        jtTree.setCellRenderer(new RendererJTree());
-
+        
         return treeCodelets;
     }
     

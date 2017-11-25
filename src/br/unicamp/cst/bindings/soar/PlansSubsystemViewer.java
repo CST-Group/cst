@@ -250,7 +250,10 @@ public class PlansSubsystemViewer extends javax.swing.JPanel {
 
         jspPlanSubsystem.setOrientation(javax.swing.JSplitPane.VERTICAL_SPLIT);
 
+        pnPlanSubsystem.setMinimumSize(new java.awt.Dimension(0, 0));
         pnPlanSubsystem.setLayout(new java.awt.GridBagLayout());
+
+        tpPlanInput.setMinimumSize(new java.awt.Dimension(0, 0));
 
         txtPlanInput.setEditable(false);
         txtPlanInput.setColumns(20);
@@ -268,6 +271,8 @@ public class PlansSubsystemViewer extends javax.swing.JPanel {
         gridBagConstraints.weightx = 0.1;
         gridBagConstraints.weighty = 0.1;
         pnPlanSubsystem.add(tpPlanInput, gridBagConstraints);
+
+        tpPlanOutput.setMinimumSize(new java.awt.Dimension(0, 0));
 
         txtPlanOutput.setEditable(false);
         txtPlanOutput.setColumns(20);
@@ -339,6 +344,7 @@ public class PlansSubsystemViewer extends javax.swing.JPanel {
         jspPlanSubsystem.setLeftComponent(pnPlanSubsystem);
 
         jspPlanDebugger.setDividerLocation(200);
+        jspPlanDebugger.setMinimumSize(new java.awt.Dimension(0, 0));
 
         tpPlanOperators.addTab("Operators", spPlanOperators);
 
@@ -367,11 +373,11 @@ public class PlansSubsystemViewer extends javax.swing.JPanel {
     }//GEN-LAST:event_startstopActionPerformed
 
     private void mstepActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_mstepActionPerformed
-        moveToFinalStepDebugState();
+        stepDebugState();
     }//GEN-LAST:event_mstepActionPerformed
 
     private void stepActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_stepActionPerformed
-        stepDebugState();
+        moveToFinalStepDebugState();
     }//GEN-LAST:event_stepActionPerformed
 
 

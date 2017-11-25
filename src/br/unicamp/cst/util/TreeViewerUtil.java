@@ -36,10 +36,10 @@ public class TreeViewerUtil {
         DefaultTreeModel treeCodelets = createTreeModel(codelets, title, TreeElement.ICON_CODELETS);
 
         JTree jtTree = new JTree(treeCodelets);
+        jtTree.setCellRenderer(new RendererJTree());
         expandAllNodes(jtTree);
         scrollPane.setViewportView(jtTree);
-        jtTree.setCellRenderer(new RendererJTree());
-
+        
         return treeCodelets;
     }
 
