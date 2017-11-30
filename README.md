@@ -31,7 +31,7 @@ CST requires at minimum Java 8.
 The main contributors of this project are: 
 * [Ricardo Ribeiro Gudwin](https://github.com/rgudwin)
 * [Klaus Raizer](https://github.com/KRaizer)
-* [André Luís Ogando Paraense](https://github.com/andre-paraense-mobwise)
+* [André Luís Ogando Paraense](https://github.com/andre-paraense)
 * [Suelen Mapa de Paula](https://github.com/suelenmapa)
 * Vera Aparecida de Figueiredo
 * [Elisa Calhau de Castro](https://github.com/ecalhau)
