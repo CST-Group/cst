@@ -20,6 +20,7 @@ import java.util.concurrent.locks.ReentrantLock;
 
 import br.unicamp.cst.core.exceptions.CodeletActivationBoundsException;
 import br.unicamp.cst.core.exceptions.CodeletThresholdBoundsException;
+import br.unicamp.cst.util.ExecutionTimeWriter;
 
 
 
@@ -113,6 +114,16 @@ public abstract class Codelet implements Runnable
 	
 	
 	private Timer timer = new Timer();
+	
+	/**
+	 * Option for profiling execution times
+	 */
+	private boolean isProfiling = false;
+	
+	/**
+	 * Execution times for profiling
+	 */
+	private List<Long> executionTimes = new ArrayList<>();
 
 	/**
 	 * When first activated, the thread containing this codelet runs the proc() method 
@@ -641,14 +652,39 @@ public abstract class Codelet implements Runnable
 	 */
 	public synchronized void setTimeStep(long timeStep) {
 		this.timeStep = timeStep;
-	}       
+	} 
 	
+	
+	
+	/**
+	 * @return the isProfiling
+	 */
+	public synchronized boolean isProfiling() {
+		return isProfiling;
+	}
+
+	/**
+	 * @param isProfiling the isProfiling to set
+	 */
+	public synchronized void setProfiling(boolean isProfiling) {
+		this.isProfiling = isProfiling;
+	}
+
+
+
 	private class CodeletTimerTask extends TimerTask{
 
 		@Override
 		public synchronized void run() {
 			
+			long startTime = 0l;
+			long endTime = 0l;
+			long duration = 0l; 
+			
 			try{
+				
+				if(isProfiling)
+					startTime = System.currentTimeMillis();
 				
 				accessMemoryObjects();//tries to connect to memory objects			
 
@@ -673,6 +709,28 @@ public abstract class Codelet implements Runnable
 				
 				if(shouldLoop())
 			    	timer.schedule(new CodeletTimerTask(), timeStep);
+				
+				if(isProfiling){
+					
+					endTime = System.currentTimeMillis();
+					duration = (endTime - startTime); 					
+					executionTimes.add(duration);
+					
+					if(executionTimes.size()>=50){
+						
+						ExecutionTimeWriter executionTimeWriter = new ExecutionTimeWriter();
+						executionTimeWriter.setCodeletName(name);
+						executionTimeWriter.setExecutionTimes(executionTimes);
+						
+						Thread thread = new Thread(executionTimeWriter);
+						thread.start();
+						
+						executionTimes = new ArrayList<>();				
+						
+					}
+					
+				}
+				
 				
 			}
 			
