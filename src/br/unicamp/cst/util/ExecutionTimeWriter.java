@@ -17,6 +17,8 @@ public class ExecutionTimeWriter implements Runnable {
 	private String codeletName;
 	
 	private List<Long> executionTimes;
+        
+        public static String path = "";
 	
 	/* (non-Javadoc)
 	 * @see java.lang.Runnable#run()
@@ -28,10 +30,10 @@ public class ExecutionTimeWriter implements Runnable {
 			
 			BufferedWriter writer = null;
 	        try {	            
-	            File logFile = new File(codeletName+"_profile.txt");
+	            File logFile = new File(path+codeletName+"_profile.txt");
 
 	            // This will output the full path where the file will be written to...
-	            System.out.println(logFile.getCanonicalPath());
+	            System.out.println("Creating log with profile at ... "+logFile.getCanonicalPath());
 	            
 	            writer = new BufferedWriter(new FileWriter(logFile, true));
 	            
