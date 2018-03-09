@@ -29,11 +29,19 @@ public class ExecutionTimeWriter implements Runnable {
 		if(codeletName!=null && executionTimes!=null && executionTimes.size()>0){								
 			
 			BufferedWriter writer = null;
-	        try {	            
+	        try {
+                    
+                     File directory = new File(path);
+                     if (! directory.exists()){
+                            directory.mkdir();
+                        // If you require it to make the entire directory path including parents,
+                        // use directory.mkdirs(); here instead.
+                    }
+                    
 	            File logFile = new File(path+codeletName+"_profile.txt");
 
 	            // This will output the full path where the file will be written to...
-	            System.out.println("Creating log with profile at ... "+logFile.getCanonicalPath());
+	            //System.out.println("Creating log with profile at ... "+logFile.getCanonicalPath());
 	            
 	            writer = new BufferedWriter(new FileWriter(logFile, true));
 	            
