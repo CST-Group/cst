@@ -82,6 +82,7 @@ public class MindViewer extends javax.swing.JFrame {
 
     private long instant = 0;
     private boolean bStopRefresh = false;
+    private Refresher refresher = null;
 
 
     /**
@@ -449,7 +450,8 @@ public class MindViewer extends javax.swing.JFrame {
                     }
 
                     if (cbRefreshChart.isSelected()) {
-                        setInstant(Calendar.getInstance().getTimeInMillis() - initialTime);
+                        if (refresher != null) setInstant(refresher.refresh());
+                        else setInstant(Calendar.getInstance().getTimeInMillis() - initialTime);
                         ChartViewerUtil.updateValuesInXYLineChart(dataset, getBehavioralCodelets(), getInstant());
                     }
 
@@ -896,6 +898,20 @@ public class MindViewer extends javax.swing.JFrame {
      */
     public void setThreadGoals(Thread threadGoals) {
         this.threadGoals = threadGoals;
+    }
+    
+    /**
+     * @return the Refresher used in the Codelet Monitor
+     */
+    public Refresher getRefresher() {
+        return refresher;
+    }
+
+    /**
+     * @param ref the Refresher used in the Codelet Monitor
+     */
+    public void setRefresher(Refresher ref) {
+        this.refresher = ref;
     }
 
     /**
