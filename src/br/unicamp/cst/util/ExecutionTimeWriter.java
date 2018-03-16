@@ -50,7 +50,7 @@ public class ExecutionTimeWriter implements Runnable {
 					
 	            	//writer.write(profile.executionTime+" "+profile.callingTime+" "+profile.lastCallingTime+" "+(profile.callingTime-profile.lastCallingTime)+"\n");
                         // We will be profiling just the proc() execution time and the codelet calling interval 
-                        writer.write(profile.executionTime+" "+(profile.callingTime-profile.lastCallingTime)+"\n");
+                        writer.write(TimeStamp.getStringTimeStamp(profile.callingTime, "dd/MM/yyyy HH:mm:ss.SSS")+" "+profile.executionTime+" "+(profile.callingTime-profile.lastCallingTime)+"\n");
 					
 				}	            
 	            
