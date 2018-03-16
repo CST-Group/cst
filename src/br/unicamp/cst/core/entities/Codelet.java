@@ -21,6 +21,7 @@ import java.util.concurrent.locks.ReentrantLock;
 import br.unicamp.cst.core.exceptions.CodeletActivationBoundsException;
 import br.unicamp.cst.core.exceptions.CodeletThresholdBoundsException;
 import br.unicamp.cst.util.ExecutionTimeWriter;
+import br.unicamp.cst.util.ProfileInfo;
 
 
 
@@ -90,6 +91,9 @@ public abstract class Codelet implements Runnable
 
 	/** Gives this codelet a name, mainly for debugging purposes */
 	protected String name=Thread.currentThread().getName();
+        
+        /** The time for the last proc() execution for profiling purposes */
+        long laststarttime = 0l;
 
 	/** This variable is a safe lock for multithread access */
 	public Lock lock= new ReentrantLock();       
@@ -121,11 +125,11 @@ public abstract class Codelet implements Runnable
 	private boolean isProfiling = false;
 	
 	/**
-	 * Execution times for profiling
+	 * Information for profiling
 	 */
-	private List<Long> executionTimes = new ArrayList<>();
-
-	/**
+	private List<ProfileInfo> profileInfo = new ArrayList<>();
+        
+        /**
 	 * When first activated, the thread containing this codelet runs the proc() method 
 	 */
 	public synchronized void run() 
@@ -673,6 +677,7 @@ public abstract class Codelet implements Runnable
 
 
 	private class CodeletTimerTask extends TimerTask{
+            
 
 		@Override
 		public synchronized void run() {
@@ -713,19 +718,22 @@ public abstract class Codelet implements Runnable
 				if(isProfiling){
 					
 					endTime = System.currentTimeMillis();
-					duration = (endTime - startTime); 					
-					executionTimes.add(duration);
+					duration = (endTime - startTime);
+                                        ProfileInfo pi = new ProfileInfo(duration,startTime,laststarttime);
+					profileInfo.add(pi);
+                                        laststarttime = startTime;
+                        
 					
-					if(executionTimes.size()>=50){
+					if(profileInfo.size()>=50){
 						
 						ExecutionTimeWriter executionTimeWriter = new ExecutionTimeWriter();
 						executionTimeWriter.setCodeletName(name);
-						executionTimeWriter.setExecutionTimes(executionTimes);
+						executionTimeWriter.setProfileInfo(profileInfo);
 						
 						Thread thread = new Thread(executionTimeWriter);
 						thread.start();
 						
-						executionTimes = new ArrayList<>();				
+						profileInfo = new ArrayList<>();
 						
 					}
 					

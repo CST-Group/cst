@@ -16,7 +16,8 @@ public class ExecutionTimeWriter implements Runnable {
 
 	private String codeletName;
 	
-	private List<Long> executionTimes;
+	private List<ProfileInfo> profileInfo;
+        
         
         public static String path = "";
 	
@@ -26,7 +27,7 @@ public class ExecutionTimeWriter implements Runnable {
 	@Override
 	public void run() {
 		
-		if(codeletName!=null && executionTimes!=null && executionTimes.size()>0){								
+		if(codeletName!=null && profileInfo!=null && profileInfo.size()>0){								
 			
 			BufferedWriter writer = null;
 	        try {
@@ -38,16 +39,18 @@ public class ExecutionTimeWriter implements Runnable {
                         // use directory.mkdirs(); here instead.
                     }
                     
-	            File logFile = new File(path+codeletName+"_profile.txt");
+	            File logFile = new File(path+codeletName+"_profile.csv");
 
 	            // This will output the full path where the file will be written to...
 	            //System.out.println("Creating log with profile at ... "+logFile.getCanonicalPath());
 	            
 	            writer = new BufferedWriter(new FileWriter(logFile, true));
 	            
-	            for(Long duration: executionTimes){
+	            for(ProfileInfo profile : profileInfo){
 					
-	            	writer.write(codeletName+" cycle took "+duration+" ms.\n");
+	            	//writer.write(profile.executionTime+" "+profile.callingTime+" "+profile.lastCallingTime+" "+(profile.callingTime-profile.lastCallingTime)+"\n");
+                        // We will be profiling just the proc() execution time and the codelet calling interval 
+                        writer.write(profile.executionTime+" "+(profile.callingTime-profile.lastCallingTime)+"\n");
 					
 				}	            
 	            
@@ -72,12 +75,10 @@ public class ExecutionTimeWriter implements Runnable {
 	}
 
 	/**
-	 * @param executionTimes the executionTimes to set
+	 * @param profileInfo the list of profile info collected 
 	 */
-	public void setExecutionTimes(List<Long> executionTimes) {
-		this.executionTimes = executionTimes;
+	public void setProfileInfo(List<ProfileInfo> profileInfo) {
+		this.profileInfo = profileInfo;
 	}
-	
-	
 
 }
