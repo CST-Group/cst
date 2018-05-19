@@ -533,7 +533,7 @@ public class AbstractObjectEditor extends javax.swing.JFrame {
         });*/
         robot.setAffordances(affordances);
         AbstractObjectEditor ov = new AbstractObjectEditor(robot);
-       
+        System.out.println(robot);
        
         ov.setVisible(true);
         

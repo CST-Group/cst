@@ -652,4 +652,27 @@ public class AbstractObject implements Cloneable {
     public void setAggregateList(List<AbstractObject> aggregateList) {
         this.aggregateList = aggregateList;
     }
+    
+    public String toString() {
+        String out = this.toString(1);
+        return(out);
+    }
+    
+    public String toString(int level) {
+        String out="";
+        out += name+"\n";
+        for (AbstractObject ao : compositeList) {
+            for (int i=0;i<level;i++) out += "   ";
+            out += "* "+ ao.toString(level+1);
+        }
+        for (AbstractObject ao : aggregateList) {
+            for (int i=0;i<level;i++) out += "   ";
+            out += "+ "+ ao.toString(level+1);
+        }
+        for (Property p : properties) {
+            for (int i=0;i<level;i++) out += "   ";
+            out += "> "+ p.toString(level+1);
+        }
+       return(out); 
+    }
 }
