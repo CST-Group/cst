@@ -93,5 +93,11 @@ public class QualityDimension {
     protected QualityDimension clone() {
         return new QualityDimension(getName(), getValue());
     }
+    
+    public String toString(int level) {
+        String out="";
+        out += name+" : "+value+"\n";
+        return out;
+    }
 
 }

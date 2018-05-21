@@ -76,7 +76,10 @@ public abstract class JSoarCodelet extends Codelet {
                 commandList.add(buildObject(command, package_with_beans_classes));
             }
         }
-         return commandList;
+        else {
+            System.out.println("Error in cst.JSoarCodelet: getOutputInObject was not able to get a reference to Soar OutputLink");
+        }
+        return commandList;
     }
 
 

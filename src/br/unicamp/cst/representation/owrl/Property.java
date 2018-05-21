@@ -122,5 +122,15 @@ public final class Property {
         }
         return results;
     }
+    
+    public String toString(int level) {
+        String out="";
+        out += Name+"\n";
+        for (QualityDimension qd : qualityDimensions) {
+            for (int i=0;i<level;i++) out += "   ";
+            out += "- "+qd.toString(level+1);
+        }
+        return out;
+    }
 
 }
