@@ -23,7 +23,10 @@ import br.unicamp.cst.core.entities.Codelet;
 import br.unicamp.cst.representation.owrl.AbstractObject;
 import br.unicamp.cst.representation.owrl.Property;
 import br.unicamp.cst.representation.owrl.QualityDimension;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import org.jsoar.kernel.symbols.Identifier;
+import org.slf4j.LoggerFactory;
 
 /**
  *
@@ -39,6 +42,11 @@ public abstract class JSoarCodelet extends Codelet {
     private static final String ARRAY = "ARRAY";
 
     public static final String OUTPUT_COMMAND_MO = "OUTPUT_COMMAND_MO";
+    
+    public void SilenceLoggers() {
+        ((ch.qos.logback.classic.Logger) LoggerFactory.getLogger("org.jsoar")).setLevel(ch.qos.logback.classic.Level.OFF);
+        Logger.getLogger("Simulation").setLevel(Level.SEVERE);
+    }
     
     public void initSoarPlugin(String _agentName, File _productionPath, Boolean startSOARDebugger){
         this.setJsoar(new SOARPlugin(_agentName, _productionPath, startSOARDebugger));

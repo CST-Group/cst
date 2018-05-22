@@ -109,13 +109,73 @@ public class SOARPlugin {
         }
 
     }
+    
+    /**************************************************/
+    
+    /**
+     * Perform a complete SOAR step
+     * 
+     */
+    public void step() 
+    {
+        if (phase != -1) finish_msteps();
+        resetSimulation();
+        //c.updateState();
+        processInputLink();
+        getInputLinkAsString();
+        runSOAR();
+        getOutputLinkAsString();
+        processOutputLink();
+    }
+    
+    public void prepare_mstep() {
+        resetSimulation();
+        //c.updateState();
+        processInputLink();
+        getInputLinkAsString();
+    }
+    
+    public void mstep()
+    {
+        if (phase == -1) prepare_mstep();
+        phase = stepSOAR(1,RunType.PHASES);
+        if (getPhase() == 3 && getDebugState() == 1) {
+            getOperatorsPathList().addAll(getOperatorsInCurrentPhase(getStates()));
+        }
+        if (phase == 5) {
+            post_mstep();
+            phase = -1;
+        }
+    }
+    
+    public void finish_msteps() {
+        while (phase != -1) mstep();
+    }
+    
+    public void dofullcycle() {
+        do mstep(); while (phase != -1); 
+    }
+    
+    public void post_mstep()  {
+        getOutputLinkAsString();
+        processOutputLink();
+        try {
+                Thread.sleep(1); // why this is needed ? 
+        } catch (InterruptedException e) {
+                e.printStackTrace();
+        }
+        setOperatorsPathList(new ArrayList<>());
+    }
+    
+    
+    
+    /*************************************************/
 
-    public void step() {
-        //System.out.println("Starting SOAR step ... debug-state: "+getDebugState());
-
-        Date initDate = new Date();
-
+    public void step_old() {
+        Date initDate=null;
+        
         if (getDebugState() == 1) {
+            initDate = new Date();
             if (getPhase() == 0) processInputLink();           
             setPhase(stepSOAR(1, RunType.PHASES));
         }    
@@ -147,12 +207,11 @@ public class SOARPlugin {
             setOperatorsPathList(new ArrayList<>());
         }
 
-        double diff = (new Date()).getTime() - initDate.getTime();
-
-        if(getDebugState() == 1)
-        	logger.info("Time of Soar Cycle :" + diff);
-
-        //System.out.println("Finishing SOAR step ...");
+        if(getDebugState() == 1) {
+            double diff = (new Date()).getTime() - initDate.getTime();
+            logger.info("Time of Soar Cycle :" + diff);
+        }
+        	
     }
 
     public void moveToFinalStep() {

@@ -2,6 +2,7 @@
 /build/
 /bin/
 /out/
+/nbproject/private/
 /.project
 /.classpath
 /.idea/
