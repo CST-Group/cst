@@ -6,6 +6,7 @@
 package br.unicamp.cst.bindings.soar;
 
 import java.io.File;
+import javax.swing.JFileChooser;
 
 /**
  *
@@ -13,9 +14,9 @@ import java.io.File;
  */
 class TestJSoarCodelet extends JSoarCodelet {
     
-        public TestJSoarCodelet() {
+        public TestJSoarCodelet(String rulebase) {
             SilenceLoggers();
-            initSoarPlugin("TestAgent",new File("soarRules.soar"),false);
+            initSoarPlugin("TestAgent",new File(rulebase),false);
         }
     
         public TestJSoarCodelet(String _agentName, File _productionPath, Boolean startSOARDebugger) {
@@ -24,7 +25,7 @@ class TestJSoarCodelet extends JSoarCodelet {
         
         @Override
         public void proc() {
-            
+            getJsoar().step();
         }
         
         @Override

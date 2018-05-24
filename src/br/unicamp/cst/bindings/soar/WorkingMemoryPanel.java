@@ -7,9 +7,11 @@ package br.unicamp.cst.bindings.soar;
 
 import br.unicamp.cst.util.RendererJTree;
 import br.unicamp.cst.util.TreeElement;
+import java.awt.Dimension;
+import java.awt.Graphics;
 import java.util.Iterator;
 import java.util.List;
-import javax.swing.JFileChooser;
+import javax.swing.JScrollPane;
 import javax.swing.JTree;
 import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.DefaultTreeModel;
@@ -22,12 +24,12 @@ import org.jsoar.kernel.symbols.Symbol;
  *
  * @author rgudwin
  */
-public class WorkingMemoryViewer extends javax.swing.JFrame {
+public class WorkingMemoryPanel extends javax.swing.JPanel {
 
     /**
-     * Creates new form WorkingMemoryViewer
+     * Creates new form WMPanel
      */
-    public WorkingMemoryViewer() {
+    public WorkingMemoryPanel() {
         initComponents();
     }
     
@@ -35,71 +37,26 @@ public class WorkingMemoryViewer extends javax.swing.JFrame {
     JSoarCodelet sc;
 
     /**
-     * Creates new form WorkingMemoryViewer
+     * Creates new form WorkingMemoryPanel
      */
-    public WorkingMemoryViewer(String windowName, JSoarCodelet sco) {
-        initComponents();
+    public WorkingMemoryPanel(JSoarCodelet sco) {
+        //initComponents();
         sc = sco;
         wog = sc.getJsoar().getStates();
+        for (Identifier i : wog)
+            System.out.println(i);
+        initComponents();
         TreeModel tm = createTreeModel(wog);
         jTree1 = new JTree(tm);
         collapseAllNodes(jTree1);
         jScrollPane1.setViewportView(jTree1);
         jTree1.setCellRenderer(new RendererJTree());
-        setTitle(windowName);
-        setDefaultCloseOperation(javax.swing.WindowConstants.HIDE_ON_CLOSE);
     }
 
-
-    /**
-     * @param args the command line arguments
-     */
-    public static void main(String args[]) {
-        /* Set the Nimbus look and feel */
-        //<editor-fold defaultstate="collapsed" desc=" Look and feel setting code (optional) ">
-        /* If Nimbus (introduced in Java SE 6) is not available, stay with the default look and feel.
-         * For details see http://download.oracle.com/javase/tutorial/uiswing/lookandfeel/plaf.html 
-         */
-        try {
-            for (javax.swing.UIManager.LookAndFeelInfo info : javax.swing.UIManager.getInstalledLookAndFeels()) {
-                if ("Nimbus".equals(info.getName())) {
-                    javax.swing.UIManager.setLookAndFeel(info.getClassName());
-                    break;
-                }
-            }
-        } catch (ClassNotFoundException ex) {
-            java.util.logging.Logger.getLogger(WorkingMemoryViewer.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        } catch (InstantiationException ex) {
-            java.util.logging.Logger.getLogger(WorkingMemoryViewer.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        } catch (IllegalAccessException ex) {
-            java.util.logging.Logger.getLogger(WorkingMemoryViewer.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        } catch (javax.swing.UnsupportedLookAndFeelException ex) {
-            java.util.logging.Logger.getLogger(WorkingMemoryViewer.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        }
-        //</editor-fold>
-//        try {
-//           NativeUtils.loadFileFromJar("/soar-rules.soar");
-//        } catch(Exception e) {
-//            e.printStackTrace();
-//        }   
-        String soarRulesPath = "soar-rules.soar";
-        try {
-		JFileChooser chooser = new JFileChooser();
-		if (chooser.showOpenDialog(null) == JFileChooser.APPROVE_OPTION) {
-		  soarRulesPath = chooser.getSelectedFile().getCanonicalPath();
-		  //System.out.println("You chose to open this file: "+soarRulesPath);
-                }
-            } catch (Exception e) { e.printStackTrace(); }
-        JSoarCodelet soarCodelet = new TestJSoarCodelet(soarRulesPath);
-        WorkingMemoryViewer ov = new WorkingMemoryViewer("Teste",soarCodelet);
-        ov.setVisible(true);
-        ov.updateTree(soarCodelet.getJsoar().getStates());
-    }
-  
-    public void setWO(List<Identifier> newwog) {
+        public void setWO(List<Identifier> newwog) {
         wog = newwog;
     }
-    
+        
     private DefaultMutableTreeNode addRootNode(String rootNodeName) {
         DefaultMutableTreeNode root = new DefaultMutableTreeNode(new TreeElement(rootNodeName, TreeElement.NODE_NORMAL, null, TreeElement.ICON_CONFIGURATION));
         return(root);
@@ -195,8 +152,26 @@ public class WorkingMemoryViewer extends javax.swing.JFrame {
     }
     
     public void updateTree() {
-       wog = sc.getJsoar().getStates();
+       //printStates();
+       SOARPlugin sp = sc.getJsoar();
+       //wog = sc.getJsoar().getStates();
+       wog = sp.getStates();
        updateTree(wog);
+    }
+    
+    public void attachToJScrollPane(JScrollPane father) {
+        javax.swing.GroupLayout epLayout = new javax.swing.GroupLayout(this);
+        this.setLayout(epLayout);
+        Dimension d = this.getSize();
+        epLayout.setHorizontalGroup(
+            epLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGap(0, d.width, Short.MAX_VALUE)
+        );
+        epLayout.setVerticalGroup(
+            epLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGap(0, d.height, Short.MAX_VALUE)
+        );
+        father.setViewportView(this);
     }
 
     /**
@@ -209,14 +184,17 @@ public class WorkingMemoryViewer extends javax.swing.JFrame {
     private void initComponents() {
 
         jToolBar1 = new javax.swing.JToolBar();
+        filler1 = new javax.swing.Box.Filler(new java.awt.Dimension(0, 0), new java.awt.Dimension(0, 0), new java.awt.Dimension(32767, 0));
         zoom_in = new javax.swing.JButton();
         zoom_out = new javax.swing.JButton();
         jScrollPane1 = new javax.swing.JScrollPane();
         jTree1 = new javax.swing.JTree();
+        jLabel1 = new javax.swing.JLabel();
 
-        setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
-
+        jToolBar1.setBorder(null);
+        jToolBar1.setFloatable(false);
         jToolBar1.setRollover(true);
+        jToolBar1.add(filler1);
 
         zoom_in.setIcon(new javax.swing.ImageIcon(getClass().getResource("/images/zoom-in-icon.png"))); // NOI18N
         zoom_in.setFocusable(false);
@@ -242,22 +220,30 @@ public class WorkingMemoryViewer extends javax.swing.JFrame {
 
         jScrollPane1.setViewportView(jTree1);
 
-        javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
-        getContentPane().setLayout(layout);
+        jLabel1.setText("Working Memory: ");
+
+        javax.swing.GroupLayout layout = new javax.swing.GroupLayout(this);
+        this.setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addComponent(jScrollPane1)
-            .addComponent(jToolBar1, javax.swing.GroupLayout.DEFAULT_SIZE, 400, Short.MAX_VALUE)
+            .addGroup(layout.createSequentialGroup()
+                .addContainerGap()
+                .addComponent(jLabel1)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 172, Short.MAX_VALUE)
+                .addComponent(jToolBar1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
-                .addComponent(jToolBar1, javax.swing.GroupLayout.PREFERRED_SIZE, 56, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(jToolBar1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addGroup(layout.createSequentialGroup()
+                        .addContainerGap()
+                        .addComponent(jLabel1)))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 526, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 350, Short.MAX_VALUE))
         );
-
-        pack();
     }// </editor-fold>//GEN-END:initComponents
 
     private void zoom_inActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_zoom_inActionPerformed
@@ -270,7 +256,10 @@ public class WorkingMemoryViewer extends javax.swing.JFrame {
         collapseAllNodes(jTree1);
     }//GEN-LAST:event_zoom_outActionPerformed
 
+
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.Box.Filler filler1;
+    private javax.swing.JLabel jLabel1;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JToolBar jToolBar1;
     private javax.swing.JTree jTree1;
