@@ -43,8 +43,6 @@ public class WorkingMemoryPanel extends javax.swing.JPanel {
         //initComponents();
         sc = sco;
         wog = sc.getJsoar().getStates();
-        for (Identifier i : wog)
-            System.out.println(i);
         initComponents();
         TreeModel tm = createTreeModel(wog);
         jTree1 = new JTree(tm);
@@ -156,6 +154,8 @@ public class WorkingMemoryPanel extends javax.swing.JPanel {
        SOARPlugin sp = sc.getJsoar();
        //wog = sc.getJsoar().getStates();
        wog = sp.getStates();
+       //for (Identifier i : wog)
+       //     System.out.println(i+" formed by NameLetter: "+i.getNameLetter()+" plus "+i.getNameNumber());
        updateTree(wog);
     }
     

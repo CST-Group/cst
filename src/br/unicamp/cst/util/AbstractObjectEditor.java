@@ -12,6 +12,7 @@ package br.unicamp.cst.util;
 
 import br.unicamp.cst.representation.owrl.AbstractObject;
 import br.unicamp.cst.representation.owrl.Affordance;
+import br.unicamp.cst.representation.owrl.Entity;
 import br.unicamp.cst.representation.owrl.Property;
 import br.unicamp.cst.representation.owrl.QualityDimension;
 import java.awt.event.ActionEvent;
@@ -19,11 +20,16 @@ import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
+import java.io.BufferedReader;
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileReader;
+import java.io.FileWriter;
 import java.util.ArrayList;
-import java.util.Comparator;
 import java.util.Enumeration;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicReference;
+import javax.swing.JFileChooser;
 import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
 import javax.swing.JPopupMenu;
@@ -40,6 +46,7 @@ import javax.swing.tree.TreePath;
 public class AbstractObjectEditor extends javax.swing.JFrame {
     
     AbstractObject root;
+    List<AbstractObjectEditorListener> listeners;
 
     /**
      * Creates new form AbstractObjectEditor
@@ -47,6 +54,7 @@ public class AbstractObjectEditor extends javax.swing.JFrame {
     public AbstractObjectEditor(AbstractObject rootAO) {
         root = rootAO;
         if (rootAO == null) root = new AbstractObject("AbstractObject");
+        listeners = new ArrayList<AbstractObjectEditorListener>();
         initComponents();
         updateTree(root);
         jsp.setViewportView(jtree);
@@ -191,6 +199,16 @@ public class AbstractObjectEditor extends javax.swing.JFrame {
         jtree.addMouseListener(ml);
     }
     
+    public void addListener(AbstractObjectEditorListener listener) {
+        listeners.add(listener);
+    }
+    
+    private void notifyListeners() {
+        for (AbstractObjectEditorListener listener : listeners) {
+            listener.notifyRootChange(root);
+        }
+    }
+    
     private void createCompositeObject(AbstractObject a) {
         AbstractObject newao = DialogFactory.getAbstractObject();
         a.addCompositePart(newao);
@@ -251,9 +269,16 @@ public class AbstractObjectEditor extends javax.swing.JFrame {
         search = new javax.swing.JButton();
         jsp = new javax.swing.JScrollPane();
         jtree = new javax.swing.JTree();
+        jMenuBar1 = new javax.swing.JMenuBar();
+        jMenu1 = new javax.swing.JMenu();
+        mLoad = new javax.swing.JMenuItem();
+        mSave = new javax.swing.JMenuItem();
+        mClose = new javax.swing.JMenuItem();
+        jMenu2 = new javax.swing.JMenu();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
+        jToolBar1.setFloatable(false);
         jToolBar1.setRollover(true);
 
         zoom_in.setIcon(new javax.swing.ImageIcon(getClass().getResource("/br/unicamp/cst/images/zoom-in-icon.png"))); // NOI18N
@@ -291,6 +316,39 @@ public class AbstractObjectEditor extends javax.swing.JFrame {
 
         jsp.setViewportView(jtree);
 
+        jMenu1.setText("File");
+
+        mLoad.setText("Load");
+        mLoad.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                mLoadActionPerformed(evt);
+            }
+        });
+        jMenu1.add(mLoad);
+
+        mSave.setText("Save");
+        mSave.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                mSaveActionPerformed(evt);
+            }
+        });
+        jMenu1.add(mSave);
+
+        mClose.setText("Close");
+        mClose.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                mCloseActionPerformed(evt);
+            }
+        });
+        jMenu1.add(mClose);
+
+        jMenuBar1.add(jMenu1);
+
+        jMenu2.setText("Edit");
+        jMenuBar1.add(jMenu2);
+
+        setJMenuBar(jMenuBar1);
+
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
@@ -303,7 +361,7 @@ public class AbstractObjectEditor extends javax.swing.JFrame {
             .addGroup(layout.createSequentialGroup()
                 .addComponent(jToolBar1, javax.swing.GroupLayout.PREFERRED_SIZE, 56, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jsp, javax.swing.GroupLayout.DEFAULT_SIZE, 441, Short.MAX_VALUE))
+                .addComponent(jsp, javax.swing.GroupLayout.DEFAULT_SIZE, 420, Short.MAX_VALUE))
         );
 
         pack();
@@ -342,6 +400,31 @@ public class AbstractObjectEditor extends javax.swing.JFrame {
 
 
     }//GEN-LAST:event_searchActionPerformed
+
+    private void mSaveActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_mSaveActionPerformed
+        String filename = "";
+        try {JFileChooser chooser = new JFileChooser();
+             if (chooser.showOpenDialog(null) == JFileChooser.APPROVE_OPTION) {
+                  filename = chooser.getSelectedFile().getCanonicalPath();
+             }
+             if (!filename.equals("")) {
+                File logFile = new File(filename);
+	        BufferedWriter writer = new BufferedWriter(new FileWriter(logFile, true));
+                writer.write(root.toString());
+                writer.close();
+             }
+        } catch (Exception e) { e.printStackTrace(); }
+    }//GEN-LAST:event_mSaveActionPerformed
+
+    private void mCloseActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_mCloseActionPerformed
+        // TODO add your handling code here:
+        this.dispose();
+    }//GEN-LAST:event_mCloseActionPerformed
+
+    private void mLoadActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_mLoadActionPerformed
+        // TODO add your handling code here:
+        load();
+    }//GEN-LAST:event_mLoadActionPerformed
 
     /**
      * @param args the command line arguments
@@ -533,11 +616,126 @@ public class AbstractObjectEditor extends javax.swing.JFrame {
         });*/
         robot.setAffordances(affordances);
         AbstractObjectEditor ov = new AbstractObjectEditor(robot);
-        System.out.println(robot);
+        //System.out.println(robot);
        
         ov.setVisible(true);
         
          
+    }
+    
+//    public enum mode {NULL, COMPOSITE, AGGREGATE, PROPERTY, QUALITY_DIMENSION}
+//    
+//    private int getLevel(String splitted[]) {
+//        int level = 0;
+//        for (int i=0;i<splitted.length;i++) {
+//            if (splitted[i].equals("")) level++;
+//        }
+//        return(level/3);
+//    }
+//    
+//    private mode getMode(String splitted[]) {
+//        mode m = mode.NULL;
+//        for (int i=0;i<splitted.length;i++) {
+//            if (splitted[i].equals("*")) {
+//                m = mode.COMPOSITE;
+//                break;
+//            }
+//            if (splitted[i].equals("+")) {
+//                m = mode.AGGREGATE;
+//                break;
+//            }
+//            if (splitted[i].equals(">")) {
+//                m = mode.PROPERTY;
+//                break;
+//            }
+//            if (splitted[i].equals("-")) {
+//                m = mode.QUALITY_DIMENSION;
+//                break;
+//            }
+//        }
+//        return(m);
+//    }
+//    
+//    private String getName(String splitted[]) {
+//        int level = getLevel(splitted);
+//        if (level == 0) return(splitted[0]);
+//        else return(splitted[3*level+1]);
+//    }
+//    
+//    private String getValue(String splitted[]) {
+//        String value = "";
+//        for (int i=0;i<splitted.length;i++) {
+//            if (splitted[i].equals(":")) {
+//                value = splitted[i+1];
+//                break;
+//            }
+//        }    
+//        return(value);    
+//    }
+    
+    private boolean load() {
+        boolean result = false;
+        String line;
+        String filename = "";
+        AbstractObject newAO = null;
+        List<Entity> parseAOs = new ArrayList<Entity>();
+        try {JFileChooser chooser = new JFileChooser();
+             if (chooser.showOpenDialog(null) == JFileChooser.APPROVE_OPTION) {
+                  filename = chooser.getSelectedFile().getCanonicalPath();
+             }
+             if (!filename.equals("")) {
+//                File logFile = new File(filename);
+//	        BufferedReader reader = new BufferedReader(new FileReader(logFile));
+//                while ((line = reader.readLine()) != null) {
+//                    String linesplitted[] = line.split(" ");
+//                    int level = getLevel(linesplitted);
+//                    mode m = getMode(linesplitted);
+//                    String name = getName(linesplitted);
+//                    String value = getValue(linesplitted);
+//                    AbstractObject ao;
+//                    AbstractObject father;
+//                    Property pfather;
+//                    if (level == 0) {
+//                        newAO = new AbstractObject(name);
+//                        parseAOs.add(newAO);
+//                    }
+//                    else {
+//                          switch(m) {
+//                                case COMPOSITE:ao = new AbstractObject(name);
+//                                               parseAOs.add(ao);
+//                                               father = (AbstractObject) parseAOs.get(level-1);
+//                                               father.addCompositePart(ao);
+//                                               if (level >= parseAOs.size()) parseAOs.add(ao);
+//                                               else parseAOs.set(level, ao);
+//                                               break;
+//                                case AGGREGATE:ao = new AbstractObject(name);
+//                                               parseAOs.add(ao);
+//                                               father = (AbstractObject) parseAOs.get(level-1);
+//                                               father.addAggregatePart(ao);
+//                                               if (level >= parseAOs.size()) parseAOs.add(ao);
+//                                               else parseAOs.set(level, ao);
+//                                               break;
+//                                case PROPERTY:Property p = new Property(name);
+//                                              father = (AbstractObject) parseAOs.get(level-1);
+//                                              father.addProperty(p);
+//                                              if (level >= parseAOs.size()) parseAOs.add(p);
+//                                              else parseAOs.set(level, p);
+//                                              break;
+//                                case QUALITY_DIMENSION:QualityDimension qd = new QualityDimension(name,value);
+//                                                       pfather = (Property) parseAOs.get(level-1);
+//                                                       pfather.addQualityDimension(qd);
+//                                                       break;
+//                          }                            
+//                    }
+//                    //System.out.println(line+" -> level: "+level+" mode: "+m+" name: "+name+" value: "+value);
+//                }
+                newAO = new AbstractObject(new File(filename));
+                updateTree(newAO);
+                notifyListeners();
+                //reader.close();
+             }
+        } catch (Exception e) { e.printStackTrace(); }
+        return(result);
     }
         
     private static QualityDimension getTemperatureValue(AbstractObject object) {
@@ -793,9 +991,15 @@ public class AbstractObjectEditor extends javax.swing.JFrame {
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JMenu jMenu1;
+    private javax.swing.JMenu jMenu2;
+    private javax.swing.JMenuBar jMenuBar1;
     private javax.swing.JToolBar jToolBar1;
     private javax.swing.JScrollPane jsp;
     private javax.swing.JTree jtree;
+    private javax.swing.JMenuItem mClose;
+    private javax.swing.JMenuItem mLoad;
+    private javax.swing.JMenuItem mSave;
     private javax.swing.JButton search;
     private javax.swing.JButton zoom_in;
     private javax.swing.JButton zoom_out;

@@ -488,6 +488,7 @@ public class SOARPlugin {
             Set<Wme> allmem = Collections.synchronizedSet(getAgent().getAllWmesInRete());
 
             for (Wme w : allmem) {
+                
                 Identifier id = w.getIdentifier();
                 if (id.isGoal()) {
                     boolean alreadythere = false;
@@ -1099,6 +1100,14 @@ public class SOARPlugin {
         }
         if (parent == null) return (javaObject);
         else return (parent);
+    }
+    
+    public void loadRules(String path) {
+        try {
+           SoarCommands.source(getAgent().getInterpreter(), path);
+           resetSOAR();
+           
+        } catch (Exception e) {e.printStackTrace();}
     }
 
     public int getPhase() {

@@ -19,11 +19,11 @@ import java.util.Optional;
  *
  * @author suelenmapa
  */
-public final class Property {
+public final class Property implements Entity {
 
     private List<QualityDimension> qualityDimensions;//1-n
 
-    private String Name;
+    private String name;
 
     public Property(String name) {
         setName(name);
@@ -53,11 +53,11 @@ public final class Property {
     }
 
     public String getName() {
-        return Name;
+        return name;
     }
 
     public void setName(String Name) {
-        this.Name = Name;
+        this.name = Name;
     }
 
     @Override
@@ -125,7 +125,7 @@ public final class Property {
     
     public String toString(int level) {
         String out="";
-        out += Name+"\n";
+        out += name+"\n";
         for (QualityDimension qd : qualityDimensions) {
             for (int i=0;i<level;i++) out += "   ";
             out += "- "+qd.toString(level+1);

@@ -7,17 +7,17 @@ package br.unicamp.cst.bindings.soar;
 
 import br.unicamp.cst.representation.owrl.AbstractObject;
 import br.unicamp.cst.util.AbstractObjectEditor;
+import br.unicamp.cst.util.AbstractObjectEditorListener;
 import java.util.Observable;
 import java.util.Observer;
 import javax.swing.ImageIcon;
 import javax.swing.JFileChooser;
-import javax.swing.JPanel;
 
 /**
  *
  * @author gudwin
  */
-public class SOARInspector extends javax.swing.JFrame implements Observer {
+public class SOARInspector extends javax.swing.JFrame implements Observer,AbstractObjectEditorListener {
     
     int debugstate = 0;
     JSoarCodelet SoarCodelet;
@@ -69,6 +69,7 @@ public class SOARInspector extends javax.swing.JFrame implements Observer {
         jScrollPane1 = new javax.swing.JScrollPane();
         jMenuBar1 = new javax.swing.JMenuBar();
         jFile = new javax.swing.JMenu();
+        mLoadRules = new javax.swing.JMenuItem();
         jExit = new javax.swing.JMenuItem();
         jDebug = new javax.swing.JMenu();
         jStart = new javax.swing.JMenuItem();
@@ -123,10 +124,12 @@ public class SOARInspector extends javax.swing.JFrame implements Observer {
         currentPhase.setPreferredSize(new java.awt.Dimension(100000, 44));
         jToolBar1.add(currentPhase);
 
+        jSplitPane2.setDividerLocation(220);
         jSplitPane2.setOrientation(javax.swing.JSplitPane.VERTICAL_SPLIT);
 
         jSplitPane1.setDividerLocation(500);
         jSplitPane1.setLastDividerLocation(451);
+        jSplitPane1.setPreferredSize(new java.awt.Dimension(902, 450));
 
         jPanel1.setAlignmentX(0.0F);
         jPanel1.setLayout(new javax.swing.BoxLayout(jPanel1, javax.swing.BoxLayout.Y_AXIS));
@@ -145,7 +148,7 @@ public class SOARInspector extends javax.swing.JFrame implements Observer {
             .addGroup(jPanel3Layout.createSequentialGroup()
                 .addContainerGap()
                 .addComponent(jLabel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(416, Short.MAX_VALUE))
+                .addContainerGap(402, Short.MAX_VALUE))
         );
         jPanel3Layout.setVerticalGroup(
             jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -156,7 +159,8 @@ public class SOARInspector extends javax.swing.JFrame implements Observer {
 
         jPanel1.add(jPanel3);
 
-        input_link.setPreferredSize(new java.awt.Dimension(6, 40));
+        input_link.setMinimumSize(new java.awt.Dimension(6, 300));
+        input_link.setPreferredSize(new java.awt.Dimension(6, 300));
         jScrollPane2.setViewportView(input_link);
 
         jPanel1.add(jScrollPane2);
@@ -179,7 +183,7 @@ public class SOARInspector extends javax.swing.JFrame implements Observer {
             .addGroup(jPanel4Layout.createSequentialGroup()
                 .addContainerGap()
                 .addComponent(jLabel2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(295, Short.MAX_VALUE))
+                .addContainerGap(4, Short.MAX_VALUE))
         );
         jPanel4Layout.setVerticalGroup(
             jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -203,6 +207,14 @@ public class SOARInspector extends javax.swing.JFrame implements Observer {
         jSplitPane2.setRightComponent(jScrollPane1);
 
         jFile.setText("File");
+
+        mLoadRules.setText("Load Rules");
+        mLoadRules.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                mLoadRulesActionPerformed(evt);
+            }
+        });
+        jFile.add(mLoadRules);
 
         jExit.setText("Exit");
         jExit.addActionListener(new java.awt.event.ActionListener() {
@@ -259,14 +271,14 @@ public class SOARInspector extends javax.swing.JFrame implements Observer {
             .addGroup(layout.createSequentialGroup()
                 .addComponent(jToolBar1, javax.swing.GroupLayout.PREFERRED_SIZE, 0, Short.MAX_VALUE)
                 .addContainerGap())
-            .addComponent(jSplitPane2)
+            .addComponent(jSplitPane2, javax.swing.GroupLayout.DEFAULT_SIZE, 599, Short.MAX_VALUE)
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
                 .addComponent(jToolBar1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jSplitPane2, javax.swing.GroupLayout.DEFAULT_SIZE, 506, Short.MAX_VALUE))
+                .addComponent(jSplitPane2, javax.swing.GroupLayout.DEFAULT_SIZE, 656, Short.MAX_VALUE))
         );
 
         pack();
@@ -311,9 +323,24 @@ public class SOARInspector extends javax.swing.JFrame implements Observer {
     private void mInsertInputLinkActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_mInsertInputLinkActionPerformed
         AbstractObject il = new AbstractObject("InputLink");
         AbstractObjectEditor aoe = new AbstractObjectEditor(il);
+        aoe.addListener(this);
         aoe.setVisible(true);
         SoarCodelet.getJsoar().setInputLinkAO(il);
     }//GEN-LAST:event_mInsertInputLinkActionPerformed
+
+    private void mLoadRulesActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_mLoadRulesActionPerformed
+        // TODO add your handling code here:
+        String soarRulesPath="";
+        try {
+		JFileChooser chooser = new JFileChooser();
+		if (chooser.showOpenDialog(null) == JFileChooser.APPROVE_OPTION) {
+		  soarRulesPath = chooser.getSelectedFile().getCanonicalPath();
+		  //System.out.println("You chose to open this file: "+soarRulesPath);
+                }
+            } catch (Exception e) { e.printStackTrace(); }
+        if (!soarRulesPath.equals(""))
+           SoarCodelet.getJsoar().loadRules(soarRulesPath);
+    }//GEN-LAST:event_mLoadRulesActionPerformed
 
     public void update(Observable arg0, Object arg1) {
         this.repaint();
@@ -409,6 +436,11 @@ public class SOARInspector extends javax.swing.JFrame implements Observer {
         output_link.setText(text);
     }
     
+    @Override
+    public void notifyRootChange(AbstractObject ao) {
+        SoarCodelet.getJsoar().setInputLinkAO(ao);
+    }
+    
     /**
      * @param args the command line arguments
      */
@@ -471,6 +503,7 @@ public class SOARInspector extends javax.swing.JFrame implements Observer {
     private javax.swing.JToolBar jToolBar1;
     private javax.swing.JMenuItem jWatch;
     private javax.swing.JMenuItem mInsertInputLink;
+    private javax.swing.JMenuItem mLoadRules;
     private javax.swing.JButton mstep;
     private javax.swing.JTextPane output_link;
     private javax.swing.JButton startstop;

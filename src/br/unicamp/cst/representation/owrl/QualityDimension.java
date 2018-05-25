@@ -17,7 +17,7 @@ import java.util.HashMap;
  *
  * @author suelenmapa
  */
-public class QualityDimension {
+public class QualityDimension implements Entity {
 
     private String name;
     private Object value;

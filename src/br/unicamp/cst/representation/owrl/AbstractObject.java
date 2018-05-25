@@ -12,9 +12,13 @@
  */
 package br.unicamp.cst.representation.owrl;
 
+import br.unicamp.cst.util.AbstractObjectEditor;
 import br.unicamp.cst.util.CodeBuilder;
 import br.unicamp.cst.util.NameGenerator;
 import br.unicamp.cst.util.Pair;
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileReader;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -22,7 +26,7 @@ import java.util.stream.Collectors;
 /**
  * @author Suelen Mapa and Eduardo Froes.
  */
-public class AbstractObject implements Cloneable {
+public class AbstractObject implements Cloneable, Entity {
 
     private List<Property> properties;//1-n;
     private List<AbstractObject> compositeList;//1-n;
@@ -70,6 +74,113 @@ public class AbstractObject implements Cloneable {
         setAggregatePart(aggregate);
         setProperties(props);
         setAffordances(new ArrayList<>());
+    }
+    
+    public AbstractObject(File file) {
+        String line;
+        //AbstractObject newAO = null;
+        List<Entity> parseAOs = new ArrayList<Entity>();
+        try {
+            BufferedReader reader = new BufferedReader(new FileReader(file));
+            while ((line = reader.readLine()) != null) {
+                    String linesplitted[] = line.split(" ");
+                    int level = getLevel(linesplitted);
+                    mode m = getMode(linesplitted);
+                    String name = getName(linesplitted);
+                    String value = getValue(linesplitted);
+                    AbstractObject ao;
+                    AbstractObject father;
+                    Property pfather;
+                    if (level == 0) {
+                        setName(name);
+                        setProperties(new ArrayList<Property>());
+                        setCompositeList(new ArrayList<AbstractObject>());
+                        setAggregateList(new ArrayList<AbstractObject>());
+                        setAffordances(new ArrayList<>());
+                        parseAOs.add(this);
+                    }
+                    else {
+                          switch(m) {
+                                case COMPOSITE:ao = new AbstractObject(name);
+                                               parseAOs.add(ao);
+                                               father = (AbstractObject) parseAOs.get(level-1);
+                                               father.addCompositePart(ao);
+                                               if (level >= parseAOs.size()) parseAOs.add(ao);
+                                               else parseAOs.set(level, ao);
+                                               break;
+                                case AGGREGATE:ao = new AbstractObject(name);
+                                               parseAOs.add(ao);
+                                               father = (AbstractObject) parseAOs.get(level-1);
+                                               father.addAggregatePart(ao);
+                                               if (level >= parseAOs.size()) parseAOs.add(ao);
+                                               else parseAOs.set(level, ao);
+                                               break;
+                                case PROPERTY:Property p = new Property(name);
+                                              father = (AbstractObject) parseAOs.get(level-1);
+                                              father.addProperty(p);
+                                              if (level >= parseAOs.size()) parseAOs.add(p);
+                                              else parseAOs.set(level, p);
+                                              break;
+                                case QUALITY_DIMENSION:QualityDimension qd = new QualityDimension(name,value);
+                                                       pfather = (Property) parseAOs.get(level-1);
+                                                       pfather.addQualityDimension(qd);
+                                                       break;
+                          }                            
+                    }
+                    //System.out.println(line+" -> level: "+level+" mode: "+m+" name: "+name+" value: "+value);
+                }
+            reader.close();
+        } catch (Exception e) {e.printStackTrace();}
+    }
+    
+    public enum mode {NULL, COMPOSITE, AGGREGATE, PROPERTY, QUALITY_DIMENSION}
+    
+    private int getLevel(String splitted[]) {
+        int level = 0;
+        for (int i=0;i<splitted.length;i++) {
+            if (splitted[i].equals("")) level++;
+        }
+        return(level/3);
+    }
+    
+    private mode getMode(String splitted[]) {
+        mode m = mode.NULL;
+        for (int i=0;i<splitted.length;i++) {
+            if (splitted[i].equals("*")) {
+                m = mode.COMPOSITE;
+                break;
+            }
+            if (splitted[i].equals("+")) {
+                m = mode.AGGREGATE;
+                break;
+            }
+            if (splitted[i].equals(">")) {
+                m = mode.PROPERTY;
+                break;
+            }
+            if (splitted[i].equals("-")) {
+                m = mode.QUALITY_DIMENSION;
+                break;
+            }
+        }
+        return(m);
+    }
+    
+    private String getName(String splitted[]) {
+        int level = getLevel(splitted);
+        if (level == 0) return(splitted[0]);
+        else return(splitted[3*level+1]);
+    }
+    
+    private String getValue(String splitted[]) {
+        String value = "";
+        for (int i=0;i<splitted.length;i++) {
+            if (splitted[i].equals(":")) {
+                value = splitted[i+1];
+                break;
+            }
+        }    
+        return(value);    
     }
 
     public List<Object> search(String path) {
@@ -674,5 +785,10 @@ public class AbstractObject implements Cloneable {
             out += "> "+ p.toString(level+1);
         }
        return(out); 
+    }
+
+    public boolean isEmpty() {
+        if (properties.isEmpty() && compositeList.isEmpty() && aggregateList.isEmpty() && affordances.isEmpty()) return true;
+        else return false;
     }
 }
