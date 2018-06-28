@@ -12,19 +12,35 @@
 package br.unicamp.cst.core.exceptions;
 
 /**
- * @author klaus
+ * This class represents a Java exception to be thrown when the codelet's
+ * threshold is set to more than 1.0 or less than 0.0.
+ * 
+ * @author A. L. O. Paraense
+ * @author K. Raizer
  *
  */
-public class CodeletThresholdBoundsException extends Exception 
-{
+public class CodeletThresholdBoundsException extends Exception {
 	private static final long serialVersionUID = 1L;
 
-	public CodeletThresholdBoundsException(String message) 
-	{
+	/**
+	 * Creates a CodeletThresholdBoundsException.
+	 * 
+	 * @param message
+	 *            the exception message.
+	 */
+	public CodeletThresholdBoundsException(String message) {
 		super(message);
 	}
-	public CodeletThresholdBoundsException(String message, Throwable cause) 
-	{
+
+	/**
+	 * Creates a CodeletThresholdBoundsException.
+	 * 
+	 * @param message
+	 *            the exception message.
+	 * @param cause
+	 *            the exception cause.
+	 */
+	public CodeletThresholdBoundsException(String message, Throwable cause) {
 		super(message, cause);
 	}
 

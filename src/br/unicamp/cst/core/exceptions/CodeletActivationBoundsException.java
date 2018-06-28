@@ -11,23 +11,37 @@
 
 package br.unicamp.cst.core.exceptions;
 
-
 /**
- * @author andre.paraense
- * @author klaus.raizer
+ * This class represents a Java exception to be thrown when the codelet's
+ * activation is set to more than 1.0 or less than 0.0.
+ * 
+ * @author A. L. O. Paraense
+ * @author K. Raizer
  *
  */
-public class CodeletActivationBoundsException extends Exception
-{
-   private static final long serialVersionUID = 6550752642966697942L;
-   
-   public CodeletActivationBoundsException(String message) 
-   {
-      super(message);
-   }
-   public CodeletActivationBoundsException(String message, Throwable cause) 
-   {
-      super(message, cause);
-   }
-   
+public class CodeletActivationBoundsException extends Exception {
+	private static final long serialVersionUID = 6550752642966697942L;
+
+	/**
+	 * Creates a CodeletActivationBoundsException.
+	 * 
+	 * @param message
+	 *            the exception message.
+	 */
+	public CodeletActivationBoundsException(String message) {
+		super(message);
+	}
+
+	/**
+	 * Creates a CodeletActivationBoundsException.
+	 * 
+	 * @param message
+	 *            the exception message.
+	 * @param cause
+	 *            the exception cause.
+	 */
+	public CodeletActivationBoundsException(String message, Throwable cause) {
+		super(message, cause);
+	}
+
 }
