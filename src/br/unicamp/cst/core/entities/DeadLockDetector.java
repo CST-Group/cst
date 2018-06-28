@@ -15,30 +15,36 @@ import java.lang.management.ManagementFactory;
 import java.lang.management.ThreadInfo;
 import java.lang.management.ThreadMXBean;
 
-
-
 /**
- *  This codelet detects deadlocks in the system and warns the user about it.
- *  
- *  
- * @author klauslocal
+ * This codelet detects deadlocks in the system and warns the user about it.
+ * 
+ * @author K. Raizer
  *
  */
+public class DeadLockDetector implements Runnable {
 
-public class DeadLockDetector implements Runnable{
+	private int ddRefreshPeriod = 1000;
+	private boolean shouldLoop = true;
 
-	private int ddRefreshPeriod=1000;
-	private boolean shouldLoop=true;
-
-	public DeadLockDetector(int ddRefreshPeriod){
-		this.ddRefreshPeriod=ddRefreshPeriod;
+	/**
+	 * Creates a DeadLockDetector.
+	 * 
+	 * @param ddRefreshPeriod
+	 *            the refresh period of detection.
+	 */
+	public DeadLockDetector(int ddRefreshPeriod) {
+		this.ddRefreshPeriod = ddRefreshPeriod;
 	}
-	public DeadLockDetector(){
+
+	/**
+	 * Creates a DeadLockDetector.
+	 */
+	public DeadLockDetector() {
 	}
 
 	@Override
 	public void run() {
-		do{
+		do {
 			ThreadMXBean tmx = ManagementFactory.getThreadMXBean();
 			long[] ids = tmx.findDeadlockedThreads();
 			if (ids != null) {
@@ -48,27 +54,43 @@ public class DeadLockDetector implements Runnable{
 					System.out.println(ti);
 				}
 			}
-			try {Thread.currentThread().sleep(this.ddRefreshPeriod);} catch (InterruptedException e) {e.printStackTrace();}
-		}while(shouldLoop);
+			try {
+				Thread.currentThread().sleep(this.ddRefreshPeriod);
+			} catch (InterruptedException e) {
+				e.printStackTrace();
+			}
+		} while (shouldLoop);
 	}
 
-	public void start()
-	{ 		this.shouldLoop=true;
-			new Thread(this).start();
-	}
-	public synchronized void stop(){
-		this.shouldLoop=false;
-	}
-	
 	/**
-	 * @return the ddRefreshPeriod
+	 * Starts the DeadLockDetector.
+	 */
+	public void start() {
+		this.shouldLoop = true;
+		new Thread(this).start();
+	}
+
+	/**
+	 * Stops the DeadLockDetector.
+	 */
+	public synchronized void stop() {
+		this.shouldLoop = false;
+	}
+
+	/**
+	 * Gets the detector refresh period.
+	 * 
+	 * @return the ddRefreshPeriod.
 	 */
 	public int getDdRefreshPeriod() {
 		return ddRefreshPeriod;
 	}
 
 	/**
-	 * @param ddRefreshPeriod the ddRefreshPeriod to set
+	 * Sets the detector refresh period.
+	 * 
+	 * @param ddRefreshPeriod
+	 *            the ddRefreshPeriod to set.
 	 */
 	public void setDdRefreshPeriod(int ddRefreshPeriod) {
 		this.ddRefreshPeriod = ddRefreshPeriod;
