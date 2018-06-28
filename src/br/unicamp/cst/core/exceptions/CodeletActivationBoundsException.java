@@ -17,6 +17,7 @@ package br.unicamp.cst.core.exceptions;
  * 
  * @author A. L. O. Paraense
  * @author K. Raizer
+ * @see Exception
  *
  */
 public class CodeletActivationBoundsException extends Exception {

@@ -17,7 +17,7 @@ package br.unicamp.cst.core.exceptions;
  * 
  * @author A. L. O. Paraense
  * @author K. Raizer
- *
+ * @see Exception
  */
 public class CodeletThresholdBoundsException extends Exception {
 	private static final long serialVersionUID = 1L;
