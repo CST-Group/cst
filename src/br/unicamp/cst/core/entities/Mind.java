@@ -13,119 +13,170 @@ package br.unicamp.cst.core.entities;
 
 import br.unicamp.cst.bindings.soar.PlansSubsystemModule;
 import br.unicamp.cst.motivational.MotivationalSubsystemModule;
-import br.unicamp.cst.bindings.soar.PlansSubsystemViewer;
 
 /**
- * @author andre
+ * This class represents the Mind of the agent, wrapping all the CST's core
+ * entities.
+ * 
+ * @author A. L. O. Paraense
+ * @author E. M. Froes
  */
 public class Mind {
 
-    protected CodeRack codeRack;
+	protected CodeRack codeRack;
 
-    protected RawMemory rawMemory;
+	protected RawMemory rawMemory;
 
-    private MotivationalSubsystemModule motivationalSubsystemModule;
+	private MotivationalSubsystemModule motivationalSubsystemModule;
 
-    private PlansSubsystemModule plansSubsystemModule;
+	private PlansSubsystemModule plansSubsystemModule;
 
-    public Mind() {
-        codeRack = new CodeRack();
+	/**
+	 * Creates the Mind.
+	 */
+	public Mind() {
+		codeRack = new CodeRack();
 
-        rawMemory = new RawMemory();
+		rawMemory = new RawMemory();
 
-        motivationalSubsystemModule = new MotivationalSubsystemModule();
+		motivationalSubsystemModule = new MotivationalSubsystemModule();
 
-        plansSubsystemModule = new PlansSubsystemModule();
-    }
+		plansSubsystemModule = new PlansSubsystemModule();
+	}
 
-    /**
-     * @return the codeRack
-     */
-    public synchronized CodeRack getCodeRack() {
-        return codeRack;
-    }
+	/**
+	 * Gets the CodeRack.
+	 * 
+	 * @return the codeRack.
+	 */
+	public synchronized CodeRack getCodeRack() {
+		return codeRack;
+	}
 
-    /**
-     * @return the rawMemory
-     */
-    public synchronized RawMemory getRawMemory() {
-        return rawMemory;
-    }
+	/**
+	 * Gets the RawMemory.
+	 * 
+	 * @return the rawMemory.
+	 */
+	public synchronized RawMemory getRawMemory() {
+		return rawMemory;
+	}
 
-    public synchronized MemoryContainer createMemoryContainer(String name) {
+	/**
+	 * Creates a Memory Container inside the Mind of a given type.
+	 * 
+	 * @param name
+	 *            the type of the Memory Container to be created inside the
+	 *            Mind.
+	 * @return the Memory Container created.
+	 */
+	public synchronized MemoryContainer createMemoryContainer(String name) {
 
-        MemoryContainer mc = null;
+		MemoryContainer mc = null;
 
-        if (rawMemory != null)
-            mc = rawMemory.createMemoryContainer(name);
+		if (rawMemory != null)
+			mc = rawMemory.createMemoryContainer(name);
 
-        return mc;
+		return mc;
 
-    }
+	}
 
+	/**
+	 * Creates a new MemoryObject and adds it to the Raw Memory, using provided
+	 * info and type.
+	 *
+	 * @param name
+	 *            memory object name.
+	 * @param info
+	 *            memory object info.
+	 * @return mo created MemoryObject.
+	 */
+	public synchronized MemoryObject createMemoryObject(String name, Object info) {
+		MemoryObject mo = null;
 
-    /**
-     * Creates a new MemoryObject (Java style) and adds it to the Raw Memory, using provided info and type
-     *
-     * @param name memory object name
-     * @param info memory object info
-     * @return mo created MemoryObject
-     */
-    public synchronized MemoryObject createMemoryObject(String name, Object info) {
-        MemoryObject mo = null;
+		if (rawMemory != null)
+			mo = rawMemory.createMemoryObject(name, info);
 
-        if (rawMemory != null)
-            mo = rawMemory.createMemoryObject(name, info);
+		return mo;
+	}
 
-        return mo;
-    }
+	/**
+	 * Creates a new MemoryObject and adds it to the Raw Memory, using provided
+	 * type.
+	 * 
+	 * @param name
+	 *            memory object type.
+	 * @return created MemoryObject.
+	 */
+	public synchronized MemoryObject createMemoryObject(String name) {
+		return createMemoryObject(name, null);
+	}
 
-    public synchronized MemoryObject createMemoryObject(String name) {
-        return createMemoryObject(name, null);
-    }
+	/**
+	 * Inserts the Codelet passed in the Mind's CodeRack.
+	 * 
+	 * @param co
+	 *            the Codelet passed
+	 * @return the Codelet.
+	 */
+	public Codelet insertCodelet(Codelet co) {
+		if (codeRack != null)
+			codeRack.addCodelet(co);
 
-    public Codelet insertCodelet(Codelet co) {
-        if (codeRack != null)
-            codeRack.addCodelet(co);
+		return co;
+	}
 
-        return co;
-    }
+	/**
+	 * Starts all codelets in coderack.
+	 */
+	public void start() {
+		if (codeRack != null)
+			codeRack.start();
+	}
 
-    /**
-     * Starts all codelets in coderack.
-     */
-    public void start() {
-        if (codeRack != null)
-            codeRack.start();
-    }
+	/**
+	 * Stops codelets thread.
+	 */
+	public void shutDown() {
+		if (codeRack != null)
+			codeRack.shutDown();
+	}
 
-    /**
-     * Stops codelets thread.
-     */
-    public void shutDown() {
-        if (codeRack != null)
-            codeRack.shutDown();
-    }
+	/**
+	 * Gets the Motivational Subsystem Module.
+	 * 
+	 * @return the motivationalSubsystemModule.
+	 */
+	public MotivationalSubsystemModule getMotivationalSubsystemModule() {
+		return motivationalSubsystemModule;
+	}
 
-    /**
-     * @return the motivationalSubsystemModule
-     */
-    public MotivationalSubsystemModule getMotivationalSubsystemModule() {
-        return motivationalSubsystemModule;
-    }
+	/**
+	 * Sets the Motivational Subsystem Module.
+	 * 
+	 * @param motivationalSubsystemModule
+	 *            the motivationalSubsystemModule to set.
+	 */
+	public void setMotivationalSubsystemModule(MotivationalSubsystemModule motivationalSubsystemModule) {
+		this.motivationalSubsystemModule = motivationalSubsystemModule;
+	}
 
-    /**
-     * @param motivationalSubsystemModule the motivationalSubsystemModule to set
-     */
-    public void setMotivationalSubsystemModule(MotivationalSubsystemModule motivationalSubsystemModule) {
-        this.motivationalSubsystemModule = motivationalSubsystemModule;
-    }
+	/**
+	 * Gets the Plans Subsystem Module.
+	 * 
+	 * @return the Plans Subsystem Module.
+	 */
+	public PlansSubsystemModule getPlansSubsystemModule() {
+		return plansSubsystemModule;
+	}
 
-    public PlansSubsystemModule getPlansSubsystemModule() {
-        return plansSubsystemModule;
-    }
-
-    public void setPlansSubsystemModule(PlansSubsystemModule plansSubsystemModule) {
-        this.plansSubsystemModule = plansSubsystemModule;
-    }
+	/**
+	 * Sets the Plans Subsystem Module.
+	 * 
+	 * @param plansSubsystemModule
+	 *            the Plans Subsystem Module to set.
+	 */
+	public void setPlansSubsystemModule(PlansSubsystemModule plansSubsystemModule) {
+		this.plansSubsystemModule = plansSubsystemModule;
+	}
 }
