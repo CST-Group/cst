@@ -16,4 +16,7 @@ package br.unicamp.cst.core.entities;
  *
  */
 public interface Observer {
-public void update(String operation, String record); }
+	
+	public void update(String operation, String record);
+	
+}
