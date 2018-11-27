@@ -20,20 +20,24 @@ import java.util.logging.Logger;
  */
 public class SynchronizationMethods {
 
-    private static Lock synchronizerLock = new ReentrantLock();
-    private static Lock destroyerLock = new ReentrantLock();
+    private static final Lock SYNCHRONIZER_LOCK = new ReentrantLock();
+    private static final Logger LOGGER = Logger.getLogger(SynchronizationMethods.class.getName());
     
     public SynchronizationMethods() {
     }
     
+    public static Lock getSynchronizerLock(){
+        return SYNCHRONIZER_LOCK;
+    }
+    
     public static void createLock(String lockName, MemoryObject synchronizerMO){
-        synchronizerLock.lock();
+        getSynchronizerLock().lock();
         Map<String,MyLock> myLocks = (Map<String,MyLock>) synchronizerMO.getI();
         try{
             MyLock ml = new MyLock();
             myLocks.put(lockName, ml);         
         } finally {
-            synchronizerLock.unlock();
+            getSynchronizerLock().unlock();
         }
     }
     
@@ -75,7 +79,7 @@ public class SynchronizationMethods {
     
     
     public static void synchronize(String codeletName, MemoryObject synchronizerMO){
-        synchronizerLock.lock();
+        getSynchronizerLock().lock();
         
         Map<String, MyLock> myLocks = (Map<String, MyLock>) synchronizerMO.getI();
         MyLock myLock = myLocks.get(codeletName);
@@ -83,12 +87,12 @@ public class SynchronizationMethods {
             
         if (isUnlockTime(myLocks)) {
             unLockAll(myLocks);
-            synchronizerLock.unlock();
+            getSynchronizerLock().unlock();
         } else{ //wait to lock
 
             synchronized(myLock.lock){
                 try {
-                    synchronizerLock.unlock();
+                    getSynchronizerLock().unlock();
                     while(myLock.isLocked){
                         myLock.lock.wait();
                     }
@@ -102,23 +106,23 @@ public class SynchronizationMethods {
     }
     
     public static void synchronizeOperation(String operationName, MemoryObject synchronizerMO){
-        synchronizerLock.lock();
+        getSynchronizerLock().lock();
         Map<String, MyLock> myLocks = (Map<String, MyLock>) synchronizerMO.getI();
         try{
             destroyLock(operationName,myLocks);
         } finally{
-            synchronizerLock.unlock();
+            getSynchronizerLock().unlock();
         }
     }
     
     public static void synchronizeExecutor(String executorName, Codelet codelet, MemoryObject synchronizerMO){
-        synchronizerLock.lock();
+        getSynchronizerLock().lock();
         Map<String, MyLock> myLocks = (Map<String, MyLock>) synchronizerMO.getI();
         try{
             codelet.setLoop(Boolean.FALSE);
             destroyLock(executorName, myLocks);
         } finally{
-            synchronizerLock.unlock();
+            getSynchronizerLock().unlock();
         }
     }
     

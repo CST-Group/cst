@@ -12,6 +12,8 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  *
@@ -116,6 +118,8 @@ public class ActionSelectionMechanism {
         this.m.insertCodelet(countCodelet);
         
         this.driveMO.setI(this.drives);
+        
+        Logger.getLogger(SynchronizationMethods.class.getName()).setLevel(Level.SEVERE);
         
     }
     
