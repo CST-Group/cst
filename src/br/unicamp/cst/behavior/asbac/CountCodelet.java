@@ -5,6 +5,7 @@
  */
 package br.unicamp.cst.behavior.asbac;
 
+import br.unicamp.cst.motivational.Drive;
 import br.unicamp.cst.core.entities.Codelet;
 import br.unicamp.cst.core.entities.MemoryObject;
 import java.util.ArrayList;
@@ -61,7 +62,7 @@ public class CountCodelet extends Codelet{
             for (ComposeAffordanceType compAff : composeAffordances) {
                 for (IntermediateAffordanceType interAff : compAff.getIntermediateAffordances()) {
                     
-                    localBenefit += factor.getValue() * 
+                    localBenefit += factor.getActivation() * 
                         (
                             ( 
                                 compAff.computeComposeAffordanceTypeBenefitToParent(this.workingMemory, compAff.getComposePermutation(), compAff.getParentPermutation(interAff)) + 
@@ -79,7 +80,7 @@ public class CountCodelet extends Codelet{
         } else{ //NOT compose affordance
             for (IntermediateAffordanceType interAff : consummatoryPath.getIntermediateAffordancesToDrive(factor)) {
                 
-                localBenefit += factor.getValue() *  
+                localBenefit += factor.getActivation() *  
                         (
                             (
                                 interAff.computeAffordanceTypeBenefit(this.workingMemory,extAff.getPerceptsPermutation()) + 
@@ -101,7 +102,7 @@ public class CountCodelet extends Codelet{
         double globalBenefit = 0.0;
         
         if (extAff.getAffordanceType().equals((AffordanceType) consummatoryAffordance)) {
-            globalBenefit += factor.getValue() *  
+            globalBenefit += factor.getActivation() *  
                 (
                     (
                         consummatoryAffordance.calculateConsummatoryAffordanceTypeBenefit(factor, this.workingMemory, extAff.getPerceptsPermutation()) + 

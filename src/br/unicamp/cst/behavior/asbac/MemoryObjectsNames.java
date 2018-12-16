@@ -9,9 +9,9 @@ package br.unicamp.cst.behavior.asbac;
  *
  * @author rgpolizeli
  */
-public class MemoryObjectsNames {
-    public static final String DRIVE_MO = "DRIVE"; 
+public class MemoryObjectsNames { 
     public static final String WORKING_MO = "WORKING_MEMORY"; 
+    public static final String AFFORDANCES_HIERARCHIES_MO = "AFFORDANCES_HIERARCHIES"; 
     public static final String EXTRACTED_AFFORDANCES_MO = "EXTRACTED_AFFORDANCE";
     public static final String ACTIVATED_AFFORDANCE_MO = "ACTIVATED_AFFORDANCE";
     public static final String SYNCHRONIZER_MO = "SYNCHRONIZER";

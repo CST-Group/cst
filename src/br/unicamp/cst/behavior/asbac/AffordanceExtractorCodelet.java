@@ -10,6 +10,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.Queue;
 import java.util.concurrent.CopyOnWriteArrayList;
+import br.unicamp.cst.motivational.Drive;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  *
@@ -19,23 +22,25 @@ public class AffordanceExtractorCodelet extends Codelet {
     
     private MemoryObject workingMO;
     private MemoryObject extractedAffordancesMO; 
-    private MemoryObject driveMO;
+    private MemoryObject affordancesHierarchiesMO;
     private MemoryObject activatedAffordanceMO;
     private MemoryObject synchronizerMO;
     
     private Map<String, List<Percept>> workingMemory;
-    private List<Drive> drives;
+    private Map<Drive, List<ConsummatoryAffordanceType>> drivesAffordancesMap;
     private List<ExtractedAffordance> extractedAffordances;
     private ExtractedAffordance activatedAffordance;
+    
+    private final Logger LOGGER = Logger.getLogger(AffordanceExtractorCodelet.class.getName());
     
     public AffordanceExtractorCodelet() {
     }
     
     public void extract(){
         
-        for(Drive factor : this.drives){
+        for(Drive drive : this.drivesAffordancesMap.keySet()){
   
-            for (ConsummatoryAffordanceType consummatoryAffordance : factor.getConsummatoryAffordances()) {
+            for (ConsummatoryAffordanceType consummatoryAffordance : this.drivesAffordancesMap.get(drive)) {
             
                 Map< AffordanceType, Map<String, List<Percept>> > allRelevantConcepts = new HashMap<>();
                 Map< AffordanceType, List<Map<String, Percept>> > allPermutations = new HashMap<>();
@@ -49,7 +54,7 @@ public class AffordanceExtractorCodelet extends Codelet {
                     executableAffordances = this.searchExecutables(consummatoryAffordance, this.workingMemory,allRelevantConcepts,allPermutations);
                 }
                 
-                createExtractedAffordances(consummatoryAffordance,factor,executableAffordances, allPermutations);
+                createExtractedAffordances(consummatoryAffordance,drive,executableAffordances, allPermutations);
             }
             
         }
@@ -498,11 +503,32 @@ public class AffordanceExtractorCodelet extends Codelet {
             this.activatedAffordance = (ExtractedAffordance) this.activatedAffordanceMO.getI();
             if (deletedExtractedAffordances.contains(this.activatedAffordance)) {
                 this.activatedAffordanceMO.setI(null);
+                LOGGER.log(Level.INFO, "Removed activated affordance: {0}", activatedAffordance.getAffordanceType().getAffordanceName());
             }
         }   
     }
     
-    
+    private void mountDriveAffordancesMap(){
+        this.drivesAffordancesMap = new HashMap<>();
+        List<ConsummatoryAffordanceType> consummatoryAffordances = new CopyOnWriteArrayList( (List<ConsummatoryAffordanceType>) this.affordancesHierarchiesMO.getI());
+        for(ConsummatoryAffordanceType consummatoryAffordance : consummatoryAffordances){
+            for(Drive drive : consummatoryAffordance.getDrives()){
+                
+                List<ConsummatoryAffordanceType> consummatoryAffordancesForDrive = drivesAffordancesMap.get(drive);
+                
+                if(consummatoryAffordancesForDrive==null){
+                    consummatoryAffordancesForDrive = new ArrayList<>();
+                    consummatoryAffordancesForDrive.add(consummatoryAffordance);
+                    this.drivesAffordancesMap.put(drive, consummatoryAffordancesForDrive);
+                } else{
+                    if(!consummatoryAffordancesForDrive.contains(consummatoryAffordance)){
+                        consummatoryAffordancesForDrive.add(consummatoryAffordance);
+                    }
+                }
+              
+            }
+        }
+    }
     
     //////////////////////
     // OVERRIDE METHODS //
@@ -515,7 +541,9 @@ public class AffordanceExtractorCodelet extends Codelet {
         
         if (this.workingMemory.size() > 0) {
             this.extractedAffordances = (List<ExtractedAffordance>) this.extractedAffordancesMO.getI();
-            this.drives = new CopyOnWriteArrayList( (List<Drive>) driveMO.getI());
+            
+            this.mountDriveAffordancesMap();
+            
             this.extract();
                 
             for (ExtractedAffordance extAff : new ArrayList<>(this.extractedAffordances)) {
@@ -536,7 +564,7 @@ public class AffordanceExtractorCodelet extends Codelet {
     @Override
     public void accessMemoryObjects() {
         this.workingMO = (MemoryObject) this.getInput(MemoryObjectsNames.WORKING_MO);
-        this.driveMO = (MemoryObject) this.getInput(MemoryObjectsNames.DRIVE_MO);
+        this.affordancesHierarchiesMO = (MemoryObject) this.getInput(MemoryObjectsNames.AFFORDANCES_HIERARCHIES_MO);
         this.synchronizerMO = (MemoryObject) this.getInput(MemoryObjectsNames.SYNCHRONIZER_MO);
         this.extractedAffordancesMO = (MemoryObject) this.getInput(MemoryObjectsNames.EXTRACTED_AFFORDANCES_MO);
         this.activatedAffordanceMO = (MemoryObject) this.getInput(MemoryObjectsNames.ACTIVATED_AFFORDANCE_MO);
