@@ -25,12 +25,10 @@ public abstract class ConsummatoryAffordanceType extends AffordanceType{
    
     private List<Drive> drives;
     
-    
-    public ConsummatoryAffordanceType(String affordanceName, String affordanceCodeletName, double minCost, double maxCost){
-        super(affordanceName, affordanceCodeletName, true, minCost, maxCost);
+    public ConsummatoryAffordanceType(String affordanceName, double minCost, double maxCost){
+        super(affordanceName, true, minCost, maxCost);
         this.drives = new ArrayList<>();
     }
-    
     
     //////////////////////
     // AUXILIARY METHODS //
@@ -58,11 +56,6 @@ public abstract class ConsummatoryAffordanceType extends AffordanceType{
     @Override
     public ComposeAffordanceType getComposeAffordance(){
         return super.getComposeAffordance();
-    }
-    
-    @Override
-    public String getAffordanceCodeletName(){
-        return super.getAffordanceCodeletName();
     }
     
     @Override
@@ -115,7 +108,6 @@ public abstract class ConsummatoryAffordanceType extends AffordanceType{
      */
     public abstract double calculateConsummatoryAffordanceTypeBenefit(Drive factor, Map<String,List<Percept>> situation, Map<String,Percept> relevantPercepts);
     
-    
     /**
      * Define if this affordance is executable for the actual context.
      * @param relevantPercepts
@@ -123,7 +115,6 @@ public abstract class ConsummatoryAffordanceType extends AffordanceType{
      */
     @Override
     public abstract boolean isExecutable(Map<String, Percept> relevantPercepts);
-    
     
     /**
      * Define if a percept is relevant for the affordance. For each this relevant percept type of the affordance, it is necessary specify conditions  

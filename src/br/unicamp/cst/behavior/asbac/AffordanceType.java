@@ -25,7 +25,6 @@ public abstract class AffordanceType {
     
     private final String affordanceName;
     private final Map<String,List<String>> relevantPerceptsCategories; // one percept category can be filled with more than one type.
-    private final String affordanceCodeletName;
     private final double minCost;
     private final double maxCost;
     private final boolean isConsummatory;
@@ -33,9 +32,8 @@ public abstract class AffordanceType {
     private List<IntermediateAffordanceType> intermediateAffordances; //affordances that turn this affordance possible.
     private ComposeAffordanceType composeAffordance; //this affordance type is composed of other affordance type.
     
-    public AffordanceType(String affordanceName, String affordanceCodeletName, boolean isConsummatory, double minCost, double maxCost){
+    public AffordanceType(String affordanceName, boolean isConsummatory, double minCost, double maxCost){
         this.affordanceName = affordanceName;
-        this.affordanceCodeletName = affordanceCodeletName;
         this.isConsummatory = isConsummatory;
         this.minCost = minCost;
         this.maxCost = maxCost;
@@ -44,9 +42,6 @@ public abstract class AffordanceType {
         this.intermediateAffordances = new ArrayList<>();
         this.composeAffordance = null;
     }
-    
-    
-    
     
     //////////////////////
     // AUXILIARY METHODS //
@@ -62,7 +57,6 @@ public abstract class AffordanceType {
             this.relevantPerceptsCategories.put(relevantPerceptCategory, perceptCategories);
         }
     }
-    
     
     public void addIntermediateAffordance(IntermediateAffordanceType interAff){
         this.intermediateAffordances.add(interAff);
@@ -96,10 +90,6 @@ public abstract class AffordanceType {
         List<IntermediateAffordanceType> interAffordances = new ArrayList<>();
         interAffordances.addAll(this.intermediateAffordances);
         return interAffordances;
-    }
-    
-    public String getAffordanceCodeletName(){
-        return this.affordanceCodeletName;
     }
     
     public String getAffordanceName(){
@@ -137,7 +127,6 @@ public abstract class AffordanceType {
      */
     public abstract boolean isExecutable(Map<String, Percept> relevantPercepts);
     
-    
     /**
      * Define if a percept is relevant for the affordance. For each types of percepts relevant to affordance, it is necessary specify conditions  
      * based on relevant percepts' properties.
@@ -145,12 +134,6 @@ public abstract class AffordanceType {
      * @return 
      */
     public abstract boolean isRelevantPercept(Percept percept);
-    
-    /**
-     * Eliminates irrelevant percepts, it is necessary to RememberCodelet. 
-     * @param relevantPerceptsPerType 
-     */
-    public abstract void eliminateIrrelevantPercepts(Map<String, List<Percept>> relevantPerceptsPerType);
     
     /**
      * Compute the cost to realize the affordance.
@@ -162,5 +145,4 @@ public abstract class AffordanceType {
     public double calculateNormalizedExecutionCost(Map<String, Percept> relevantPercepts){
         return normalize(calculateExecutionCost(relevantPercepts), this.maxCost, this.minCost);
     }
-    
 }
