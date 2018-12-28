@@ -12,6 +12,7 @@
  */
 package br.unicamp.cst.behavior.asbac;
 
+import br.unicamp.cst.representation.owrl.Property;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
@@ -32,7 +33,6 @@ public class Percept implements Cloneable{
     private List<Relation> keyRelations;
     
     public Percept(String name, String category){
-        //this.id = this.getId();
         this.name = name;
         this.category = category;
         
@@ -41,7 +41,6 @@ public class Percept implements Cloneable{
         this.properties = new ArrayList<>();
         this.relations = new ArrayList<>();
     }
-    
     
     public void addProperty(Property prop){
         this.properties.add(prop);
@@ -132,7 +131,7 @@ public class Percept implements Cloneable{
     public Property getPropertyByType(String propertyType){
         List<Property> properties = this.getProperties();
         for (Property p: properties) {
-            if (p.getType().equals(propertyType)) {
+            if (p.getName().equals(propertyType)) {
                 return p;
             }
         }
@@ -153,11 +152,11 @@ public class Percept implements Cloneable{
         List<String> targetPropertiesTypes = new ArrayList<>();
         
         for (Property prop : this.getProperties()) {
-            localPropertiesTypes.add(prop.getType());
+            localPropertiesTypes.add(prop.getName());
         }
         
         for (Property prop : targetProps) {
-            targetPropertiesTypes.add(prop.getType());
+            targetPropertiesTypes.add(prop.getName());
         }
         
         return localPropertiesTypes.containsAll(targetPropertiesTypes);
@@ -181,12 +180,12 @@ public class Percept implements Cloneable{
         }
         
         for (Property keyProperty: this.keyProperties) {
-            Property keyPropertyA = this.getPropertyByType(keyProperty.getType());
-            Property keyPropertyB = targetPercept.getPropertyByType(keyProperty.getType());
+            Property keyPropertyA = this.getPropertyByType(keyProperty.getName());
+            Property keyPropertyB = targetPercept.getPropertyByType(keyProperty.getName());
             
             if (keyPropertyA == null || keyPropertyB == null) {
                 return false;
-            } else if (!keyPropertyA.equalsValue(keyPropertyB)) {
+            } else if (!keyPropertyA.equals(keyPropertyB)) {
                 return false;
             }
         }
@@ -202,10 +201,8 @@ public class Percept implements Cloneable{
             }
         }
         
-        
         return true;
     }
-
     
     @Override
     public int hashCode() {
@@ -214,16 +211,6 @@ public class Percept implements Cloneable{
         hash = 29 * hash + Objects.hashCode(this.keyProperties);
         hash = 29 * hash + Objects.hashCode(this.keyRelations);
         return hash;
-    }
-    
-    
-    public void setPropertyValue(String propertyType, String newValue){
-        Property p = this.getPropertyByType(propertyType);
-        try{
-        p.setValue(newValue);}
-        catch(Exception e){
-            System.out.print("");
-        }
     }
     
     /**
@@ -246,6 +233,4 @@ public class Percept implements Cloneable{
             this.addRelation(newRelation);
         } 
     }
-    
-    
 }
