@@ -21,7 +21,6 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Queue;
-import java.util.concurrent.CopyOnWriteArrayList;
 import br.unicamp.cst.motivational.Drive;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -39,7 +38,7 @@ public class AffordanceExtractorCodelet extends Codelet {
     private MemoryObject synchronizerMO;
     
     private Map<String, List<Percept>> workingMemory;
-    private Map<Drive, List<ConsummatoryAffordanceType>> drivesAffordancesMap;
+    private Map<Drive, List<AffordanceType>> drivesAffordancesMap;
     private List<ExtractedAffordance> extractedAffordances;
     private ExtractedAffordance activatedAffordance;
     
@@ -52,16 +51,16 @@ public class AffordanceExtractorCodelet extends Codelet {
         
         for(Drive drive : this.drivesAffordancesMap.keySet()){
   
-            for (ConsummatoryAffordanceType consummatoryAffordance : this.drivesAffordancesMap.get(drive)) {
+            for (AffordanceType consummatoryAffordance : this.drivesAffordancesMap.get(drive)) {
             
                 Map< AffordanceType, Map<String, List<Percept>> > allRelevantConcepts = new HashMap<>();
                 Map< AffordanceType, List<Map<String, Percept>> > allPermutations = new HashMap<>();
                 
-                List<ExecutableAffordance> executableAffordances;
+                List<AffordanceType> executableAffordances;
 
                 if (this.isCurrentlyExecutable(consummatoryAffordance, this.workingMemory, allRelevantConcepts, allPermutations)) {
                     executableAffordances = new ArrayList<>();
-                    executableAffordances.add( new ExecutableAffordance(consummatoryAffordance, 1, null) );
+                    executableAffordances.add(consummatoryAffordance);
                 } else{
                     executableAffordances = this.searchExecutables(consummatoryAffordance, this.workingMemory,allRelevantConcepts,allPermutations);
                 }
@@ -73,90 +72,40 @@ public class AffordanceExtractorCodelet extends Codelet {
         
     }
     
-    public void createExtractedAffordances(ConsummatoryAffordanceType consummatoryAffordance, Drive factor, List<ExecutableAffordance> executableAffordances, Map< AffordanceType, List<Map<String, Percept>> > allPermutations){
+    public void createExtractedAffordances(AffordanceType consummatoryAffordance, Drive drive, List<AffordanceType> executableAffordances, Map< AffordanceType, List<Map<String, Percept>> > allPermutations){
         
-        for(ExecutableAffordance executableAffordace : executableAffordances){
-           
-            AffordanceType aff = executableAffordace.getAffordance();
-            Integer hierarchyContribution = executableAffordace.getHierarchyContribution();
-
-            List<Map<String, Percept>> relevantPerceptsPermutations = allPermutations.get(aff);
-                
-            for (Map<String, Percept> permutation : relevantPerceptsPermutations) {
-                ExtractedAffordance extAff;
-
-                if (aff.isExecutable(permutation)) { 
-                    ComposeAffordanceType compAff = aff.getComposeAffordance();
-                    if (compAff == null) {
-                        synchronized(this.extractedAffordancesMO){
-
-                            extAff = this.getExtractedAffordance(aff, permutation);
-
-                            if (extAff == null) { //dont already extracted
-                                extAff = new ExtractedAffordance(aff, permutation, hierarchyContribution);
-                                extAff.addConsummatoryPath(consummatoryAffordance, factor, executableAffordace.getIntermediateAffordance(), hierarchyContribution);
-                                this.extractedAffordances.add(extAff);
-                            }                 
-                            else{ //already extracted
-                                extAff.addConsummatoryPath(consummatoryAffordance, factor, executableAffordace.getIntermediateAffordance(), hierarchyContribution); //add new consummatoryPath if dont exist and/or add the decision factor in existe or new consummatoryPath
-                            }
-                        }
-                    } else{
-   
-                        synchronized(this.extractedAffordancesMO){
-                            compAff = compAff.getClone();
-                            Map<String, Percept> composePermutation = compAff.mountComposePermutation(permutation);
-                            compAff.setComposePermutation(composePermutation);
-                            extAff = this.getExtractedAffordance(compAff.getAffordance(), composePermutation);
-                            
-                            if (extAff == null) { //dont already extracted
-                                extAff = new ExtractedAffordance(compAff.getAffordance(), composePermutation, hierarchyContribution+1);
-                                extAff.addConsummatoryPath(consummatoryAffordance, factor, executableAffordace.getIntermediateAffordance(), hierarchyContribution, permutation, compAff, composePermutation);
-                                this.extractedAffordances.add(extAff);
-                            }                 
-                            else{ //already extracted
-                                extAff.addConsummatoryPath(consummatoryAffordance, factor, executableAffordace.getIntermediateAffordance(), hierarchyContribution, permutation, compAff, composePermutation); //add new consummatoryPath if dont exist and/or add the decision factor in existe or new consummatoryPath
-                            }
-                        }
-                    }
-                            
-                } 
-                
-                else{ //don't executable
-                    ComposeAffordanceType compAff = aff.getComposeAffordance();
-                    if (compAff != null) {
-                        synchronized(this.extractedAffordancesMO){
-                            Map<String, Percept> composePermutation = compAff.mountComposePermutation(permutation);
-                            extAff = this.getExtractedAffordance(compAff.getAffordance(), composePermutation);
-                            if (extAff != null){ 
-                                extAff.refreshIntermediateAffordanceInComposeAffordance(consummatoryAffordance, factor, executableAffordace.getIntermediateAffordance(), permutation, compAff.getAffordance(), composePermutation);
-                                if (!extAff.hasIntermediateInComposeAffordance()) {
-                                    this.extractedAffordances.remove(extAff);
-                                }
-                            } 
-                        }
-                    } else{
-                        synchronized(this.extractedAffordancesMO){
-                            extAff = this.getExtractedAffordance(aff, permutation);
-                            if (extAff != null) { //remove this extractedAffordance because it was inexecutable.
-                                this.extractedAffordances.remove(extAff);
-                            }
-                        }
-                    }
-                }
-                
-            }   
+        for(AffordanceType executableAffordace : executableAffordances){
             
+            List<Map<String, Percept>> relevantPerceptsPermutations = allPermutations.get(executableAffordace);
+            
+            for (Map<String, Percept> permutation : relevantPerceptsPermutations) {
+               
+                if (executableAffordace.isExecutable(permutation)) { 
+                    ExtractedAffordance extAff;
+                        
+                    synchronized(this.extractedAffordancesMO){
+                        this.extractedAffordances = (List<ExtractedAffordance>) this.extractedAffordancesMO.getI();
+                        extAff = this.getExtractedAffordance(executableAffordace, permutation);
+                        if (extAff == null) { //dont already extracted
+                            extAff = new ExtractedAffordance(executableAffordace.getAffordanceName(), permutation);
+                            extAff.addHierarchyNode(drive,executableAffordace);
+                            this.extractedAffordances.add(extAff);
+                        }                 
+                        else{ //already extracted, only add new hierarchyNode
+                            extAff.addHierarchyNode(drive,executableAffordace); 
+                        }
+                    }
+                } 
+            }   
         }
     }
-    
     
     //////////////////////
     // AUXILIARY METHODS //
     //////////////////////
     
     private ExtractedAffordance getExtractedAffordance(AffordanceType aff, Map<String,Percept> permutation){
-        ExtractedAffordance target = new ExtractedAffordance(aff, permutation, 0); //hierarchyContribution isn't relevant.
+        ExtractedAffordance target = new ExtractedAffordance(aff.getAffordanceName(), permutation);
         int position = this.extractedAffordances.indexOf(target);
         if (position != -1) {
             return this.extractedAffordances.get(position);
@@ -170,7 +119,6 @@ public class AffordanceExtractorCodelet extends Codelet {
      * @param relevantPercepts
      * @return 
      */
-     
     private boolean isCombinationTime(Map<String, List<Percept>> relevantPercepts){
         for (List<Percept> percepts : relevantPercepts.values()) {
             if (percepts.isEmpty()) {
@@ -182,7 +130,7 @@ public class AffordanceExtractorCodelet extends Codelet {
     
     
     /**
-     * Verify whether a consummatory affordance type is executable or not in the current situation.
+     * Verify whether a consummatory AffordanceType is executable or not in the current situation.
      * @param aff
      * @param perceptsSource
      * @param allRelevantPercepts
@@ -236,23 +184,21 @@ public class AffordanceExtractorCodelet extends Codelet {
     }
     
     /**
-     * Verify whether an affordance type (appetitive) is executable or not in the current situation.
+     * Verify whether an appetitive AffordanceType is executable or not in the current situation.
      * @param interAff
      * @param perceptsSource
      * @param allRelevantPercepts
      * @param allPermutations
      * @return 
      */
-    private boolean isCurrentlyExecutable(IntermediateAffordanceType interAff, Map<String,List<Percept>> perceptsSource, Map<AffordanceType, Map<String, List<Percept>>> allRelevantPercepts, Map< AffordanceType, List<Map<String, Percept>> > allPermutations){
-        AffordanceType parentAff = interAff.getParentAffordance();
-        AffordanceType aff = interAff.getAffordance();
+    private boolean isCurrentlyExecutable(AffordanceType aff, AffordanceType parentAff, Map<String,List<Percept>> perceptsSource, Map<AffordanceType, Map<String, List<Percept>>> allRelevantPercepts, Map< AffordanceType, List<Map<String, Percept>> > allPermutations){
+        
         boolean affTypeIsExecutable = false;
         Map<String, List<Percept>> relevantPercepts = new HashMap<>(); 
         
         Map<String,List<String>> affRelevantPerceptCategoriesMap = aff.getRelevantPerceptsCategories();
         Map<String,List<String>> parentAffRelevantPerceptCategoriesMap = parentAff.getRelevantPerceptsCategories();
 
-        
         for (Map.Entry<String,List<String>> entry : affRelevantPerceptCategoriesMap.entrySet()) {
             String relevantPerceptCategory = entry.getKey();
             if (parentAffRelevantPerceptCategoriesMap.get(relevantPerceptCategory)!=null) {
@@ -385,60 +331,43 @@ public class AffordanceExtractorCodelet extends Codelet {
                 combination[n] = sets.get(n)[i];
                 makeCombinations(sets, n+1, combination, combinations);
             }
-        }
-        
+        }    
     }
     
-    
-    public List<ExecutableAffordance> searchExecutables(AffordanceType parentAff, Map<String,List<Percept>> perceptsSource, Map<AffordanceType, Map<String, List<Percept>>> allRelevantPercepts, Map< AffordanceType, List<Map<String, Percept>> > allPermutations){
+    public List<AffordanceType> searchExecutables(AffordanceType parentAff, Map<String,List<Percept>> perceptsSource, Map<AffordanceType, Map<String, List<Percept>>> allRelevantPercepts, Map< AffordanceType, List<Map<String, Percept>> > allPermutations){
         
-        List<ExecutableAffordance> executableAffordances = new ArrayList<>();
+        List<AffordanceType> executableAffordances = new ArrayList<>();
+        Queue<AffordanceType> openAffordances; // to explore affordances
         
-        int level; //level in tree;
-        
-        Queue<IntermediateAffordanceType> openAffordances; // explored affordances
-        
-        for (IntermediateAffordanceType intermediateCurrentAffordance : parentAff.getIntermediateAffordances()) {
+        for (AffordanceType currentAffordance : parentAff.getChildren()) {
             
-            AffordanceType currentAffordance = intermediateCurrentAffordance.getAffordance();
-            
-            if ( !(this.isCurrentlyExecutable(intermediateCurrentAffordance, perceptsSource, allRelevantPercepts, allPermutations)) ){ //if current affordance type is NOT executable
+            if ( !(this.isCurrentlyExecutable(currentAffordance, parentAff, perceptsSource, allRelevantPercepts, allPermutations)) ){ //if current affordance type is NOT executable
                 
                 openAffordances = new LinkedList<>();
-                openAffordances.addAll(currentAffordance.getIntermediateAffordances());
-                
-                level = 3;
+                openAffordances.addAll(currentAffordance.getChildren());
                 
                 boolean endSearch = false;
                 
-                while(!endSearch){ //Breadth-first search = busca em largura
+                while(!endSearch){ //Breadth-first search
                     
-                    List<IntermediateAffordanceType> openListClone = new LinkedList<>(openAffordances);
+                    List<AffordanceType> openListClone = new LinkedList<>(openAffordances);
                     
-                    for (IntermediateAffordanceType intermediateAff : openListClone) {
+                    for (AffordanceType aff : openListClone) {
                         
-                        AffordanceType aff = intermediateAff.getAffordance();
-                        if (this.isCurrentlyExecutable(intermediateAff, perceptsSource, allRelevantPercepts, allPermutations)) { //if executable, add it in map and NOT add your children in open list
-                            ExecutableAffordance execAff = new ExecutableAffordance(aff, level, intermediateAff);
-                            executableAffordances.add(execAff);
+                        if (this.isCurrentlyExecutable(aff, aff.getParent(), perceptsSource, allRelevantPercepts, allPermutations)) { //if executable, add it in map and NOT add your children in open list
+                            executableAffordances.add(aff);
                         } else{
-                            openAffordances.addAll(aff.getIntermediateAffordances());
+                            openAffordances.addAll(aff.getChildren());
                         }
-                        openAffordances.remove(intermediateAff);
-                        
+                        openAffordances.remove(aff);
                     }
-                    
-                    level+=1;
                     
                     if (openAffordances.isEmpty()) {
                         endSearch = true;
                     }
-                    
                 }
-                
             } else{
-                ExecutableAffordance execAff = new ExecutableAffordance(currentAffordance, 2, intermediateCurrentAffordance);
-                executableAffordances.add(execAff);
+                executableAffordances.add(currentAffordance);
             }
         }
         
@@ -515,29 +444,42 @@ public class AffordanceExtractorCodelet extends Codelet {
             this.activatedAffordance = (ExtractedAffordance) this.activatedAffordanceMO.getI();
             if (deletedExtractedAffordances.contains(this.activatedAffordance)) {
                 this.activatedAffordanceMO.setI(null);
-                LOGGER.log(Level.INFO, "Removed activated affordance: {0}", activatedAffordance.getAffordanceType().getAffordanceName());
+                LOGGER.log(Level.INFO, "Removed activated affordance: {0}", activatedAffordance.getAffordanceName());
             }
         }   
     }
     
-    private void mountDriveAffordancesMap(){
-        this.drivesAffordancesMap = new HashMap<>();
-        List<ConsummatoryAffordanceType> consummatoryAffordances = new CopyOnWriteArrayList( (List<ConsummatoryAffordanceType>) this.affordancesHierarchiesMO.getI());
-        for(ConsummatoryAffordanceType consummatoryAffordance : consummatoryAffordances){
-            for(Drive drive : consummatoryAffordance.getDrives()){
-                
-                List<ConsummatoryAffordanceType> consummatoryAffordancesForDrive = drivesAffordancesMap.get(drive);
-                
-                if(consummatoryAffordancesForDrive==null){
-                    consummatoryAffordancesForDrive = new ArrayList<>();
-                    consummatoryAffordancesForDrive.add(consummatoryAffordance);
-                    this.drivesAffordancesMap.put(drive, consummatoryAffordancesForDrive);
-                } else{
-                    if(!consummatoryAffordancesForDrive.contains(consummatoryAffordance)){
-                        consummatoryAffordancesForDrive.add(consummatoryAffordance);
+    public <K,V> Map<K,V> deepCopyMap(Map<K,V> m){
+        synchronized(m){
+            Map<K, V> copy = new HashMap<>();
+            for(Map.Entry<K,V> entry : m.entrySet()){
+                copy.put( entry.getKey(),entry.getValue() );
+            }
+            return copy;
+        }
+    }
+    
+    private void getDriveAffordancesMap(){
+        synchronized(this.affordancesHierarchiesMO){
+            this.drivesAffordancesMap = (Map<Drive,List<AffordanceType>>) this.affordancesHierarchiesMO.getI();
+            this.drivesAffordancesMap = this.deepCopyMap(this.drivesAffordancesMap);
+        }
+    }
+    
+    private void removeNotExecutableExtractedAffordances(){
+        synchronized(this.extractedAffordancesMO){
+            this.extractedAffordances = (List<ExtractedAffordance>) this.extractedAffordancesMO.getI();
+            for (ExtractedAffordance extAff : new ArrayList<>(this.extractedAffordances)) {
+                for(Map.Entry<Drive,List<AffordanceType>> entry : this.deepCopyMap(extAff.getHierachiesNodes()).entrySet()){
+                    for( AffordanceType aff : new ArrayList<>(entry.getValue()) ){
+                        if(!aff.isExecutable(extAff.getPerceptsPermutation())){
+                            extAff.removeHierarchyNode(entry.getKey(), aff);
+                        }
                     }
                 }
-              
+                if(extAff.getHierachiesNodes().isEmpty()){
+                    this.extractedAffordances.remove(extAff);
+                }
             }
         }
     }
@@ -546,33 +488,6 @@ public class AffordanceExtractorCodelet extends Codelet {
     // OVERRIDE METHODS //
     //////////////////////
     
-    @Override
-    public void proc(){
-        
-        this.mountPerceptsSources();
-        
-        if (this.workingMemory.size() > 0) {
-            this.extractedAffordances = (List<ExtractedAffordance>) this.extractedAffordancesMO.getI();
-            
-            this.mountDriveAffordancesMap();
-            
-            this.extract();
-                
-            for (ExtractedAffordance extAff : new ArrayList<>(this.extractedAffordances)) {
-                if (!extAff.getAffordanceType().isExecutable(extAff.getPerceptsPermutation())) {
-                    this.extractedAffordances.remove(extAff);
-                }
-            }
-            
-            this.extractedAffordancesMO.setI(this.extractedAffordances);
-            
-        }
-        
-        removeExtractedAffordancesDueToDeletedPercepts();
-        
-        SynchronizationMethods.synchronize(super.getName(), this.synchronizerMO);
-    }
-
     @Override
     public void accessMemoryObjects() {
         this.workingMO = (MemoryObject) this.getInput(MemoryObjectsNames.WORKING_MO);
@@ -586,4 +501,22 @@ public class AffordanceExtractorCodelet extends Codelet {
     public void calculateActivation() {
     }
     
+    @Override
+    public void proc(){
+        
+        this.mountPerceptsSources();
+        
+        if (this.workingMemory.size() > 0) {
+            this.getDriveAffordancesMap();
+            if(!this.drivesAffordancesMap.isEmpty()){
+                this.extract();
+                this.removeNotExecutableExtractedAffordances();
+                this.extractedAffordancesMO.setI(this.extractedAffordances);
+            }
+        } 
+        
+        removeExtractedAffordancesDueToDeletedPercepts();
+        
+        SynchronizationMethods.synchronize(super.getName(), this.synchronizerMO);
+    }
 }

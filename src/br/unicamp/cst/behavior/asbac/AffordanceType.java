@@ -23,74 +23,31 @@ import java.util.Map;
  */
 public abstract class AffordanceType {
     
+    //OWN ATTRIBUTES
     private final String affordanceName;
-    private final Map<String,List<String>> relevantPerceptsCategories; // one percept category can be filled with more than one type.
     private final double minCost;
     private final double maxCost;
-    private final boolean isConsummatory;
     
-    private List<IntermediateAffordanceType> intermediateAffordances; //affordances that turn this affordance possible.
-    private ComposeAffordanceType composeAffordance; //this affordance type is composed of other affordance type.
+    //HIERARCHY ATTRIBUTES
+    private final AffordanceType parent;
+    private final List<AffordanceType> children; //affordances that turn this affordance possible.
+    private final int level;
+    private final Map<String,List<String>> relevantPerceptsCategories; // one percept category can be filled with more than one type.
     
-    public AffordanceType(String affordanceName, boolean isConsummatory, double minCost, double maxCost){
+    public AffordanceType(String affordanceName, double minCost, double maxCost, AffordanceType parent, int level){
         this.affordanceName = affordanceName;
-        this.isConsummatory = isConsummatory;
         this.minCost = minCost;
         this.maxCost = maxCost;
         
+        this.parent = parent;
+        this.children = new ArrayList<>();
+        this.level = level;
         this.relevantPerceptsCategories = new HashMap<>();
-        this.intermediateAffordances = new ArrayList<>();
-        this.composeAffordance = null;
     }
     
     //////////////////////
     // AUXILIARY METHODS //
     //////////////////////
-    
-    public void addRelevantPerceptCategory(String relevantPerceptCategory, String perceptCategory){
-        List<String> perceptCategories = this.relevantPerceptsCategories.get(relevantPerceptCategory);
-        if (perceptCategories!=null) {
-            perceptCategories.add(perceptCategory);
-        } else{
-            perceptCategories = new ArrayList<>();
-            perceptCategories.add(perceptCategory);
-            this.relevantPerceptsCategories.put(relevantPerceptCategory, perceptCategories);
-        }
-    }
-    
-    public void addIntermediateAffordance(IntermediateAffordanceType interAff){
-        this.intermediateAffordances.add(interAff);
-    }
-    
-    public void addComposeAffordance(ComposeAffordanceType compose){
-        this.composeAffordance = compose;
-    }
-    
-    public double normalize(double value, double max, double min){
-        return ((value-min)/(max-min));
-    }
-    
-    public boolean isConsummatory(){
-        return this.isConsummatory;
-    }
-    
-    public List<AffordanceType> getIntermediateAffordancesAsAffordancesList(){
-        List<AffordanceType> affordances = new ArrayList<>();
-        for (IntermediateAffordanceType iAff : this.getIntermediateAffordances()) {
-            affordances.add(iAff.getAffordance());
-        }
-        return affordances;
-    }
-    
-    public Map<String,List<String>> getRelevantPerceptsCategories(){
-        return this.relevantPerceptsCategories;
-    }
-    
-    public List<IntermediateAffordanceType> getIntermediateAffordances(){
-        List<IntermediateAffordanceType> interAffordances = new ArrayList<>();
-        interAffordances.addAll(this.intermediateAffordances);
-        return interAffordances;
-    }
     
     public String getAffordanceName(){
         return this.affordanceName;
@@ -104,16 +61,51 @@ public abstract class AffordanceType {
         return this.maxCost;
     }
     
-    public ComposeAffordanceType getComposeAffordance(){
-        return this.composeAffordance;
+    /**
+     * Get the parent of this AffordanceType in its hierarchy.
+     * @return a shallow AffordanceType.
+     */
+    public AffordanceType getParent(){
+        return this.parent;
     }
     
-    public void setIntermediateAffordances(List<IntermediateAffordanceType> intermediateAffordances){
-        this.intermediateAffordances = intermediateAffordances;
+    /**
+     * Get the list of affordances types that can turn this affordance possible.
+     * @return a shallow list of AffordanceType.
+     */
+    public List<AffordanceType> getChildren(){
+        return children;
     }
     
-    public void setComposeAffordance(ComposeAffordanceType aff){
-        this.composeAffordance = aff;
+    /**
+     * Get the level of this AffordanceType in its hierarchy.
+     * @return a int.
+     */
+    public int getLevel(){
+        return this.level;
+    }
+    
+    public Map<String,List<String>> getRelevantPerceptsCategories(){
+        return this.relevantPerceptsCategories;
+    }
+    
+    public void addChild(AffordanceType childAffordance){
+        this.children.add(childAffordance);
+    }
+    
+    public void addRelevantPerceptCategory(String relevantPerceptCategory, String perceptCategory){
+        List<String> perceptCategories = this.relevantPerceptsCategories.get(relevantPerceptCategory);
+        if (perceptCategories!=null) {
+            perceptCategories.add(perceptCategory);
+        } else{
+            perceptCategories = new ArrayList<>();
+            perceptCategories.add(perceptCategory);
+            this.relevantPerceptsCategories.put(relevantPerceptCategory, perceptCategories);
+        }
+    }
+    
+    public double normalize(double value, double max, double min){
+        return ((value-min)/(max-min));
     }
     
     ////////////////////
@@ -123,7 +115,7 @@ public abstract class AffordanceType {
     /**
      * Define if this affordance is executable for the actual context.
      * @param relevantPercepts
-     * @return 
+     * @return a boolean.
      */
     public abstract boolean isExecutable(Map<String, Percept> relevantPercepts);
     
@@ -131,18 +123,30 @@ public abstract class AffordanceType {
      * Define if a percept is relevant for the affordance. For each types of percepts relevant to affordance, it is necessary specify conditions  
      * based on relevant percepts' properties.
      * @param percept
-     * @return 
+     * @return a boolean.
      */
     public abstract boolean isRelevantPercept(Percept percept);
     
     /**
      * Compute the cost to realize the affordance.
      * @param relevantPercepts
-     * @return 
+     * @return a double representing the cost.
      */
     public abstract double calculateExecutionCost(Map<String, Percept> relevantPercepts);
    
-    public double calculateNormalizedExecutionCost(Map<String, Percept> relevantPercepts){
-        return normalize(calculateExecutionCost(relevantPercepts), this.maxCost, this.minCost);
-    }
+    /**
+     * Compute the benefit of this affordance type to current situation.
+     * @param situation
+     * @param relevantPercepts
+     * @return a double representing the benefit.
+     */
+    public abstract double computeAffordanceTypeBenefit(Map<String,List<Percept>> situation, Map<String,Percept> relevantPercepts);
+    
+    /**
+     * Compute the percepts' benefits for the current situation. 
+     * @param situation
+     * @param relevantPercepts
+     * @return a double representing the benefit.
+     */
+    public abstract double computeParametersBenefit(Map<String,List<Percept>> situation, Map<String,Percept> relevantPercepts);
 }

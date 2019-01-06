@@ -55,78 +55,33 @@ public class CountCodelet extends Codelet{
         this.extractedAffordancesActivations = new HashMap<>();
     }
     
-
     //////////////////////
     // AUXILIARY METHODS //
     //////////////////////
     
-    
-    private double computeLocalBenefit(ExtractedAffordance extAff, ConsummatoryPathInfo consummatoryPath, Drive factor){
+    private double computeIncrement(Drive drive, List<AffordanceType> affordanceTypes, Map<String, Percept> permutation){
         
-        double localBenefit = 0.0;
-        List<ComposeAffordanceType> composeAffordances = consummatoryPath.getComposeAffordancesToDrive(factor);
-        if (!composeAffordances.isEmpty()) { //compose affordance
-            for (ComposeAffordanceType compAff : composeAffordances) {
-                for (IntermediateAffordanceType interAff : compAff.getIntermediateAffordances()) {
-                    
-                    localBenefit += factor.getActivation() * 
+        double increment = 0.0;
+        
+        for (AffordanceType affordanceType : affordanceTypes) {
+            increment += drive.getActivation()*  
+                    (
                         (
-                            ( 
-                                compAff.computeComposeAffordanceTypeBenefitToParent(this.workingMemory, compAff.getComposePermutation(), compAff.getParentPermutation(interAff)) + 
-                                interAff.computeAffordanceTypeBenefit(this.workingMemory, compAff.getParentPermutation(interAff)) +
-                                interAff.computeParametersBenefit(this.workingMemory, compAff.getParentPermutation(interAff))
-                            )/3
-                            -
-                            interAff.getAffordance().calculateExecutionCost(compAff.getParentPermutation(interAff))
-                        )
-                    ;
-                    
-                }
-            }
-            
-        } else{ //NOT compose affordance
-            for (IntermediateAffordanceType interAff : consummatoryPath.getIntermediateAffordancesToDrive(factor)) {
-                
-                localBenefit += factor.getActivation() *  
-                        (
-                            (
-                                interAff.computeAffordanceTypeBenefit(this.workingMemory,extAff.getPerceptsPermutation()) + 
-                                interAff.computeParametersBenefit(this.workingMemory, extAff.getPerceptsPermutation())
-                            )/2 
-                            -
-                            interAff.getAffordance().calculateExecutionCost(extAff.getPerceptsPermutation())
-                        )
-                ;
-            }
+                            affordanceType.computeAffordanceTypeBenefit(this.workingMemory,permutation) + 
+                            (affordanceType.computeAffordanceTypeBenefit(this.workingMemory,permutation)) * (affordanceType.computeParametersBenefit(this.workingMemory,permutation))
+                        )/2 
+                        -
+                        affordanceType.calculateExecutionCost(permutation)
+                    )
+            ;
         }
         
-      
-        return localBenefit;
-    }
-    
-    private double computeGlobalBenefit(ExtractedAffordance extAff, ConsummatoryAffordanceType consummatoryAffordance, Drive factor){
-        
-        double globalBenefit = 0.0;
-        
-        if (extAff.getAffordanceType().equals((AffordanceType) consummatoryAffordance)) {
-            globalBenefit += factor.getActivation() *  
-                (
-                    (
-                        consummatoryAffordance.calculateConsummatoryAffordanceTypeBenefit(factor, this.workingMemory, extAff.getPerceptsPermutation()) + 
-                        consummatoryAffordance.computeParametersBenefit(this.workingMemory, extAff.getPerceptsPermutation())
-                    )/2 
-                    -
-                    consummatoryAffordance.calculateExecutionCost(extAff.getPerceptsPermutation())
-                )
-            ;
-        } 
-        
-        return globalBenefit;
+        return increment;
     }
     
     private ExtractedAffordance getExtractedAffordanceInMap(ExtractedAffordance extAff){
         for (Map.Entry<ExtractedAffordance, Double> entry : this.extractedAffordancesActivations.entrySet()) {
-            if (entry.getKey().getAffordanceType().getAffordanceName().equals(extAff.getAffordanceType().getAffordanceName()) && entry.getKey().getPerceptsPermutation().equals(extAff.getPerceptsPermutation())) {
+            if (entry.getKey().getAffordanceName().equals(extAff.getAffordanceName()) && entry.getKey().getPerceptsPermutation().equals(extAff.getPerceptsPermutation())) {
                 return entry.getKey();
             }
         }
@@ -150,7 +105,7 @@ public class CountCodelet extends Codelet{
             if (this.drivesIncrements.containsKey(extAffInMap)) {
                 activation += this.drivesIncrements.get(extAffInMap);
             }
-               
+              
             this.refreshVotes(extAffInMap, activation);
         }
     }
@@ -168,27 +123,13 @@ public class CountCodelet extends Codelet{
                 extAffInMap = extAff;
             }
             
-            List<ConsummatoryPathInfo> paths = extAffInMap.getConsummatoryPaths();
+            Map<Drive,List<AffordanceType>> hierarchyNodes = this.deepCopyMap(extAffInMap.getHierachiesNodes());
             
-            if (paths.isEmpty()) {
+            if (hierarchyNodes.isEmpty()) {
                 this.extractedAffordancesActivations.remove(extAffInMap);
             }else{
-                if (extAff.getAffordanceType().isConsummatory()) {
-                    List<ConsummatoryPathInfo> consummatoryPathsBkp = new ArrayList<>(extAff.getConsummatoryPaths());
-                    for (ConsummatoryPathInfo consummatoryPath : consummatoryPathsBkp) {
-                        for (Drive factor: consummatoryPath.getDrives()) {
-                            increment += this.computeGlobalBenefit(extAff, consummatoryPath.getConsummatoryAffordance(), factor);
-                        }
-                    }
-                } else{
-                    
-                    List<ConsummatoryPathInfo> consummatoryPathsBkp = new ArrayList<>(extAff.getConsummatoryPaths());
-                    for (ConsummatoryPathInfo consummatoryPath : consummatoryPathsBkp) {
-                        for (Drive factor: consummatoryPath.getDrives()) {
-                            increment += this.computeLocalBenefit(extAff, consummatoryPath, factor);
-                        }
-                    }
-                    
+                for(Map.Entry<Drive,List<AffordanceType>> entry : hierarchyNodes.entrySet()){
+                    increment += computeIncrement(entry.getKey(), new ArrayList<>(entry.getValue()),extAffInMap.getPerceptsPermutation());
                 }
                 this.drivesIncrements.put(extAffInMap, increment); 
             }
@@ -196,49 +137,26 @@ public class CountCodelet extends Codelet{
     }
     
     private void refreshVotes(ExtractedAffordance aff, double newVotes){
-        
         if (newVotes > this.maxAffordanceActivation) {
             newVotes = this.maxAffordanceActivation;
         }
-      
         this.extractedAffordancesActivations.put(aff, newVotes);
     }
     
     private boolean isExtractedAffordanceExecutable(ExtractedAffordance extAff){
         
-        for (ConsummatoryPathInfo consummatoryPath : extAff.getConsummatoryPaths()) {
-            for (Drive factor: consummatoryPath.getDrives()) {
-                List<ComposeAffordanceType> composeAffordances = consummatoryPath.getComposeAffordancesToDrive(factor);
-                if (!composeAffordances.isEmpty()) { //compose affordance
-                    for (ComposeAffordanceType compAff : composeAffordances) {
-                        for (IntermediateAffordanceType interAff : compAff.getIntermediateAffordances()) {
-                            
-                            if (interAff.getAffordance().isExecutable(compAff.getParentPermutation(interAff)) && interAff.computeAffordanceTypeBenefit(workingMemory, compAff.getParentPermutation(interAff)) > 0.0) {
-                                return true;
-                            }
-                        }
-                    }
-                } else{ //NOT compose affordance
-                    
-                    if (extAff.getAffordanceType().isConsummatory()) {
-                        ConsummatoryAffordanceType consummatoryAffordance = consummatoryPath.getConsummatoryAffordance();
-                        if (extAff.getAffordanceType().equals((AffordanceType) consummatoryAffordance)) {
-                            if (consummatoryAffordance.isExecutable(extAff.getPerceptsPermutation()) && consummatoryAffordance.calculateConsummatoryAffordanceTypeBenefit(factor, workingMemory, extAff.getPerceptsPermutation()) > 0.0) {
-                                return true;
-                            }
-                        } 
-                    } else{
-                        for (IntermediateAffordanceType interAff : consummatoryPath.getIntermediateAffordancesToDrive(factor)) {
-                            if (interAff.getAffordance().isExecutable(extAff.getPerceptsPermutation()) && interAff.computeAffordanceTypeBenefit(workingMemory, extAff.getPerceptsPermutation()) > 0.0) {
-                                return true;
-                            }
-                        }
+        if(extAff.getHierachiesNodes().isEmpty()){
+            return false;
+        } else{
+            for(Map.Entry<Drive,List<AffordanceType>> entry : this.deepCopyMap(extAff.getHierachiesNodes()).entrySet()){
+                for( AffordanceType aff : new ArrayList<>(entry.getValue()) ){
+                    if(!aff.isExecutable(extAff.getPerceptsPermutation())){
+                        return false;
                     }
                 }
             }
+            return true;
         }
-        
-        return false;
     }
     
     private ExtractedAffordance getWinner(){
@@ -300,7 +218,7 @@ public class CountCodelet extends Codelet{
         for (Map.Entry<ExtractedAffordance, Double> entry : extractedAffordancesActivationsBkp.entrySet()) {
             double newActivation = entry.getValue() - this.decrementPerCount;
             if (newActivation <= this.deleteThreshold) {
-                this.extractedAffordancesActivations.remove(entry.getKey());
+              this.extractedAffordancesActivations.remove(entry.getKey());
                 if (this.extractedAffordances.contains(entry.getKey())) {
                     synchronized(this.extractedAffordancesMO){
                         List<ExtractedAffordance> currentExtractedAffordances = (List) this.extractedAffordancesMO.getI();
@@ -328,7 +246,6 @@ public class CountCodelet extends Codelet{
     // OVERRIDE METHODS //
     //////////////////////
     
-    
     @Override
     public void accessMemoryObjects() {
         this.extractedAffordancesMO = (MemoryObject) this.getInput(MemoryObjectsNames.EXTRACTED_AFFORDANCES_MO);
@@ -351,7 +268,7 @@ public class CountCodelet extends Codelet{
             
             if (!this.workingMemory.isEmpty()) {
                 this.activatedAffordance = (ExtractedAffordance) this.activatedAffordanceMO.getI();
-
+                
                 decrementActivationMap();
                 computeDrivesIncrements();
                 count();

@@ -15,6 +15,7 @@ package br.unicamp.cst.behavior.asbac;
 import br.unicamp.cst.core.entities.Codelet;
 import br.unicamp.cst.core.entities.MemoryObject;
 import br.unicamp.cst.core.entities.Mind;
+import br.unicamp.cst.motivational.Drive;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -40,15 +41,26 @@ public class ActionSelectionMechanism {
     private double minAffordanceActivation = -1.0;
     private double activationThreshold = -1.0;
     private double decrementPerCount = -1.0;
-    private List<ConsummatoryAffordanceType> consummatoryAffordances;
+    private Map<Drive,List<AffordanceType>> affordancesHierarchies;
     
     public ActionSelectionMechanism(Mind m) {
         this.m = m;
         this.createAsbacMOs();
     }
     
-    public void setConsummatoryAffordances(List<ConsummatoryAffordanceType> consummatoryAffordances){
-        this.consummatoryAffordances = consummatoryAffordances;
+    public void addConsummatoryAffordanceTypeToDrive(Drive drive, AffordanceType consummatoryAffordanceType){
+        List<AffordanceType> consummatoryAffordanceTypesToDrive = this.affordancesHierarchies.get(drive);
+        if(consummatoryAffordanceTypesToDrive == null){
+            consummatoryAffordanceTypesToDrive = new ArrayList<>();
+            consummatoryAffordanceTypesToDrive.add(consummatoryAffordanceType);
+            this.affordancesHierarchies.put(drive, consummatoryAffordanceTypesToDrive);
+        } else{
+            consummatoryAffordanceTypesToDrive.add(consummatoryAffordanceType);
+        }
+    }
+    
+    public List<AffordanceType> getConsummatoryAffordanceTypesToDrive(Drive drive){
+        return this.affordancesHierarchies.get(drive);
     }
     
     public void setCountParameters(double maxAffordanceActivation, double minAffordanceActivation, double activationThreshold, double decrementPerCount){
@@ -63,8 +75,8 @@ public class ActionSelectionMechanism {
         Map<String,Map<String,List<Percept>>> workingMemory = new HashMap<>();
         this.workingMO = m.createMemoryObject(MemoryObjectsNames.WORKING_MO, workingMemory);
         
-        this.consummatoryAffordances = new ArrayList<>();
-        this.affordancesHierarchiesMO = m.createMemoryObject(MemoryObjectsNames.AFFORDANCES_HIERARCHIES_MO, consummatoryAffordances);
+        this.affordancesHierarchies = new HashMap<>();
+        this.affordancesHierarchiesMO = m.createMemoryObject(MemoryObjectsNames.AFFORDANCES_HIERARCHIES_MO, affordancesHierarchies);
         
         List<ExtractedAffordance> extractedAffordances = new ArrayList<>();
         this.extractedAffordanceMO = m.createMemoryObject(MemoryObjectsNames.EXTRACTED_AFFORDANCES_MO, extractedAffordances);
@@ -94,7 +106,7 @@ public class ActionSelectionMechanism {
             throw new IllegalArgumentException();
         }
         
-        if (this.consummatoryAffordances == null) {
+        if (this.affordancesHierarchies == null) {
             throw new IllegalArgumentException();
         }
         
@@ -125,7 +137,7 @@ public class ActionSelectionMechanism {
         countCodelet.setTimeStep(0);
         this.m.insertCodelet(countCodelet);
         
-        this.affordancesHierarchiesMO.setI(this.consummatoryAffordances);
+        this.affordancesHierarchiesMO.setI(this.affordancesHierarchies);
         
         Logger.getLogger(SynchronizationMethods.class.getName()).setLevel(Level.SEVERE);
         
