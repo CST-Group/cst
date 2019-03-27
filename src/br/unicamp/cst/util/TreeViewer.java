@@ -72,8 +72,8 @@ public class TreeViewer extends javax.swing.JFrame {
         } else if (node_1.isLeaf() || node_2.isLeaf()) {
             System.out.println("Error: Unaligned nodes.");
         } else {
-            Enumeration<DefaultMutableTreeNode> c_node_1 = node_1.children();
-            Enumeration<DefaultMutableTreeNode> c_node_2 = node_2.children();
+            Enumeration<DefaultMutableTreeNode> c_node_1 = (Enumeration<DefaultMutableTreeNode>)(Object) node_1.children();
+            Enumeration<DefaultMutableTreeNode> c_node_2 = (Enumeration<DefaultMutableTreeNode>)(Object) node_2.children();
             while (c_node_1.hasMoreElements()) {
                 DefaultMutableTreeNode n_node_1 = c_node_1.nextElement();
                 DefaultMutableTreeNode n_node_2 = c_node_2.nextElement();

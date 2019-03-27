@@ -59,8 +59,8 @@ public class TreeManager {
         } else if (node_1.isLeaf() || node_2.isLeaf()) {
             System.out.println("Error: Unaligned nodes.");
         } else {
-            Enumeration<DefaultMutableTreeNode> c_node_1 = node_1.children();
-            Enumeration<DefaultMutableTreeNode> c_node_2 = node_2.children();
+            Enumeration<DefaultMutableTreeNode> c_node_1 = (Enumeration<DefaultMutableTreeNode>)(Object) node_1.children();
+            Enumeration<DefaultMutableTreeNode> c_node_2 = (Enumeration<DefaultMutableTreeNode>)(Object) node_2.children();
             List<TreeElement> o_node_1 = new ArrayList<>();
             List<TreeElement> o_node_2 = new ArrayList<>();
             List<DefaultMutableTreeNode> d_node_1 = new ArrayList<>();
@@ -303,7 +303,7 @@ public class TreeManager {
 
         }else{
             
-           Enumeration<DefaultMutableTreeNode> c_node = root.children();
+           Enumeration<DefaultMutableTreeNode> c_node = (Enumeration<DefaultMutableTreeNode>)(Object) root.children();
                       
             while (c_node.hasMoreElements()) {
                 DefaultMutableTreeNode dnode = c_node.nextElement();
