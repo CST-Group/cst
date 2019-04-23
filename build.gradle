@@ -48,4 +48,6 @@ dependencies {
    implementation group: 'org.ow2.sat4j', name: 'org.ow2.sat4j.core', version: '2.3.3'
    implementation 'com.google.code.gson:gson:2.7'
    implementation 'org.antlr:antlr4-runtime:4.5.3'
+   implementation 'org.slf4j:slf4j-api:1.7.5'
+   implementation 'net.openhft:compiler:2.3.0'
 }
