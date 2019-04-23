@@ -47,4 +47,5 @@ dependencies {
    implementation group: 'org.opt4j', name: 'opt4j-tutorial', version: '3.1'
    implementation group: 'org.ow2.sat4j', name: 'org.ow2.sat4j.core', version: '2.3.3'
    implementation 'com.google.code.gson:gson:2.7'
+   implementation 'org.antlr:antlr4-runtime:4.5.3'
 }
