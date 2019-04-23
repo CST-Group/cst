@@ -23,6 +23,7 @@ repositories {
 }
 
 dependencies {
+   runtime fileTree('lib') { include '*.jar' }
 
    implementation group: 'aopalliance', name: 'aopalliance', version: '1.0'
    implementation group: 'asm', name: 'asm', version: '3.1'
