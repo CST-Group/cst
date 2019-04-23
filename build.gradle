@@ -46,5 +46,5 @@ dependencies {
    implementation group: 'org.opt4j', name: 'opt4j-viewer', version: '3.1'
    implementation group: 'org.opt4j', name: 'opt4j-tutorial', version: '3.1'
    implementation group: 'org.ow2.sat4j', name: 'org.ow2.sat4j.core', version: '2.3.3'
-   implementation 'com.google.code.gson:gson-parent:2.7'
+   implementation 'com.google.code.gson:gson:2.7'
 }
