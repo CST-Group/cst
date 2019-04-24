@@ -58,4 +58,4 @@ gradlew.bat
 /build/
 
 #Exception
-!/lib/*.jar
+!/libs/*.jar
