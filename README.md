@@ -1,5 +1,19 @@
 ## Welcome to the CST Toolkit pages.
-The [CST Toolkit](http://cst.fee.unicamp.br) is a Java-based toolkit to allow the construction of Cognitive Architectures. It is being developed at the [University of Campinas](http://www.dca.fee.unicamp.br) by a group of researchers in the field of Cognitive Architectures leaded by Prof. [Ricardo Gudwin](http://faculty.dca.fee.unicamp.br/gudwin). 
+The [CST Toolkit](http://cst.fee.unicamp.br) is a Java-based toolkit to allow the construction of Cognitive Architectures. It has been developed at the [University of Campinas](http://www.dca.fee.unicamp.br) by a group of researchers in the field of Cognitive Architectures leaded by Prof. [Ricardo Gudwin](http://faculty.dca.fee.unicamp.br/gudwin). 
+
+Note: This library is still under development, and some concepts or features might not be available yet. [Feedback/bug report](https://github.com/CST-Group/cst/issues) and [Pull Requests](https://github.com/CST-Group/cst/pulls) are most welcome!
+
+## Installation
+
+Download the latest [release](https://github.com/CST-Group/cst/releases) and set it as a dependency in your project. (soon to be available in a repository such as MavenCentral).
+
+## Changelog / Migrations
+
+Follow the [release](https://github.com/CST-Group/cst/releases) page to better understand the breaking changes of new versions.
+
+## Example
+
+To get started, you can take a look at our [Traffic Signal Control Application](https://github.com/CST-Group/traffic-signal-control-app) and our [application that controls intelligent agents in World Server 3D](https://github.com/CST-Group/MotivationalSystemWithWorldServer3D) (soon we will provide more examples in the library repository).
 
 ## Cognitive Architectures
 Cognitive Architectures are general-purpose control systems' architectures inspired by scientific theories developed to explain cognition in animals and men. Cognitive Architectures have been employed in many different kinds of applications, since the control of robots to decision-making processes in intelligent agents. Usually, a cognitive architecture is decomposed based on its cognitive capabilities, like perception, attention, memory, reasoning, learning, behavior generation, etc. 
@@ -22,6 +36,13 @@ The definition and choice of a particular cognitive architecture is constructed 
 ![CST Overall Architecture](http://faculty.dca.fee.unicamp.br/gudwin/sites/faculty.dca.fee.unicamp.br.gudwin/files/cst/CogSys-Codelets.png)
 
 Figure 2 - The CST Overall Architecture: Codelets
+
+## Publications
+
+Refer to  CST's publications to better understand the concepts behind the implemented code structures:
+
+- [The cognitive systems toolkit and the CST reference cognitive architecture](https://doi.org/10.1016/j.bica.2016.07.005);
+- [A machine consciousness approach to urban traffic control](https://doi.org/10.1016/j.bica.2015.10.001).
 
 ## Requirements
 
