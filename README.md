@@ -9,7 +9,7 @@ Download the latest [release](https://github.com/CST-Group/cst/releases) and set
 
 ## Building the source code
 
-This release uses gradle to download the dependencies from MavenCentral. It does not require you to have gradle installed in your system because it uses the Gradle Wrapper. Depending on your operational system, executes the gradlew script or the gradlew.bat script in order to compile your code. You might need the JDK to be properly installed in order to build the code. You might need to call "gradlew <task>" in order to build the code. Available tasks can be discovered using "gradlew tasks". After calling "gradlew build", the CST library will be available at build/libs directory.
+This release uses gradle to download the dependencies from MavenCentral. It does not require you to have gradle installed in your system because it uses the [Gradle Wrapper](https://docs.gradle.org/current/userguide/gradle_wrapper.html). Depending on your operational system, you might execute the gradlew script or the gradlew.bat script in order to compile the code. You might need the JDK to be properly installed in order to build the code. You should call "gradlew <task>" in order to build the code. Available tasks can be discovered using "gradlew tasks". After calling "gradlew build", the CST library will be available at build/libs directory.
 
 ## Changelog / Migrations
 
