@@ -145,7 +145,7 @@ public class TimeStamp {
        long tf = getLongTimeStamp(fim);
        long tm = getLongTimeStamp(time);
        if (tf < ti) {
-           // Verificar até meia noite e depois de 0:00 até fim
+           // Verificar atÃ© meia noite e depois de 0:00 atÃ© fim
            if (tm > ti || tm < tf) return(true);
            else return(false);
        }
