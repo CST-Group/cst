@@ -1,5 +1,23 @@
 ## Welcome to the CST Toolkit pages.
-The [CST Toolkit](http://cst.fee.unicamp.br) is a Java-based toolkit to allow the construction of Cognitive Architectures. It is being developed at the [University of Campinas](http://www.dca.fee.unicamp.br) by a group of researchers in the field of Cognitive Architectures leaded by Prof. [Ricardo Gudwin](http://faculty.dca.fee.unicamp.br/gudwin). 
+The [CST Toolkit](http://cst.fee.unicamp.br) is a Java-based toolkit to allow the construction of Cognitive Architectures. It has been developed at the [University of Campinas](http://www.dca.fee.unicamp.br) by a group of researchers in the field of Cognitive Architectures leaded by Prof. [Ricardo Gudwin](http://faculty.dca.fee.unicamp.br/gudwin). 
+
+Note: This library is still under development, and some concepts or features might not be available yet. [Feedback/bug report](https://github.com/CST-Group/cst/issues) and [Pull Requests](https://github.com/CST-Group/cst/pulls) are most welcome!
+
+## Installation
+
+Download the latest [release](https://github.com/CST-Group/cst/releases) and set it as a dependency in your project. (soon to be available in a repository such as MavenCentral).
+
+## Building the source code
+
+This release uses gradle to download the dependencies from MavenCentral. It does not require you to have gradle installed in your system because it uses the [Gradle Wrapper](https://docs.gradle.org/current/userguide/gradle_wrapper.html). Depending on your operational system, you might execute the gradlew script or the gradlew.bat script in order to compile the code. You might need the JDK to be properly installed in order to build the code. You should call "gradlew <task>" in order to build the code. Available tasks can be discovered using "gradlew tasks". After calling "gradlew build", the CST library will be available at build/libs directory.
+
+## Changelog / Migrations
+
+Follow the [release](https://github.com/CST-Group/cst/releases) page to better understand the breaking changes of new versions.
+
+## Example
+
+To get started, you can take a look at our [Traffic Signal Control Application](https://github.com/CST-Group/traffic-signal-control-app) and our [application that controls intelligent agents in World Server 3D](https://github.com/CST-Group/MotivationalSystemWithWorldServer3D) (soon we will provide more examples in the library repository).
 
 ## Cognitive Architectures
 Cognitive Architectures are general-purpose control systems' architectures inspired by scientific theories developed to explain cognition in animals and men. Cognitive Architectures have been employed in many different kinds of applications, since the control of robots to decision-making processes in intelligent agents. Usually, a cognitive architecture is decomposed based on its cognitive capabilities, like perception, attention, memory, reasoning, learning, behavior generation, etc. 
@@ -23,6 +41,13 @@ The definition and choice of a particular cognitive architecture is constructed 
 
 Figure 2 - The CST Overall Architecture: Codelets
 
+## Publications
+
+Refer to  CST's publications to better understand the concepts behind the implemented code structures:
+
+- [The cognitive systems toolkit and the CST reference cognitive architecture](https://doi.org/10.1016/j.bica.2016.07.005);
+- [A machine consciousness approach to urban traffic control](https://doi.org/10.1016/j.bica.2015.10.001).
+
 ## Requirements
 
 CST requires at minimum Java 8.
@@ -31,7 +56,7 @@ CST requires at minimum Java 8.
 The main contributors of this project are: 
 * [Ricardo Ribeiro Gudwin](https://github.com/rgudwin)
 * [Klaus Raizer](https://github.com/KRaizer)
-* [André Luís Ogando Paraense](https://github.com/andre-paraense)
+* [André Luis Ogando Paraense](https://github.com/andre-paraense)
 * [Suelen Mapa de Paula](https://github.com/suelenmapa)
 * Vera Aparecida de Figueiredo
 * [Elisa Calhau de Castro](https://github.com/ecalhau)
