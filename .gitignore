@@ -1,6 +1,7 @@
 /dist/
 /out/
 /nbproject/private/
+.nb-gradle/
 
 # Compiled class file
 *.class
