@@ -6,4 +6,6 @@ jdk:
 script:
   - ./gradlew clean build
 notifications:
-   email: false
+   email:
+    - dedecun@gmail.com
+    - gudwin@unicamp.br
