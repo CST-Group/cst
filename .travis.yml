@@ -5,7 +5,3 @@ jdk:
   - openjdk9
 script:
   - ./gradlew clean build
-notifications:
-   email:
-    - dedecun@gmail.com
-    - gudwin@unicamp.br
