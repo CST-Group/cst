@@ -1,6 +1,6 @@
 plugins {
 	id 'java-library-distribution'
-  	id 'net.saliman.cobertura' version '2.6.0'
+  	id 'jacoco'
 }
 
 sourceSets {
