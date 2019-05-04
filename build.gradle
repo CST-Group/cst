@@ -1,4 +1,7 @@
-apply plugin: 'java-library-distribution'
+plugins {
+	id 'java-library-distribution'
+  	id 'net.saliman.cobertura' version '2.6.0'
+}
 
 sourceSets {
    main {
