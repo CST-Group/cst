@@ -1,3 +1,7 @@
+[![Build Status](https://travis-ci.org/CST-Group/cst.svg?branch=master)](https://travis-ci.org/CST-Group/cst)
+[![Maintainability](https://api.codeclimate.com/v1/badges/e9d016cbb9689600abb7/maintainability)](https://codeclimate.com/github/CST-Group/cst/maintainability)
+[![Test Coverage](https://api.codeclimate.com/v1/badges/e9d016cbb9689600abb7/test_coverage)](https://codeclimate.com/github/CST-Group/cst/test_coverage)
+
 ## Welcome to the CST Toolkit pages.
 The [CST Toolkit](http://cst.fee.unicamp.br) is a Java-based toolkit to allow the construction of Cognitive Architectures. It has been developed at the [University of Campinas](http://www.dca.fee.unicamp.br) by a group of researchers in the field of Cognitive Architectures leaded by Prof. [Ricardo Gudwin](http://faculty.dca.fee.unicamp.br/gudwin). 
 
