@@ -11,47 +11,43 @@ Note: This library is still under development, and some concepts or features mig
 
 #### Gradle
 
-- Step 1. Add the JitPack repository to your build file.
+- Step 1. Add the JitPack repository to your build file. Add it in your root build.gradle at the end of repositories:
 
-Add it in your root build.gradle at the end of repositories:
 
-`
-repositories {
+	repositories {
 			...
 			maven { url 'https://jitpack.io' }
-}
-`
+	}
+
 
 - Step 2. Add the dependency
 
-`
-dependencies {
+
+	dependencies {
             ...
             implementation 'com.github.CST-Group:cst:0.2.3'
-}
-`
+	}
+
 
 #### Maven
 
 - Step 1. Add the JitPack repository to your build file.
 
-`
-<repositories>
+	<repositories>
 		<repository>
 		    <id>jitpack.io</id>
 		    <url>https://jitpack.io</url>
 		</repository>
-</repositories>
-`
+	</repositories>
 
 - Step 2. Add the dependency
-`
-<dependency>
+
+	<dependency>
 	    <groupId>com.github.CST-Group</groupId>
 	    <artifactId>cst</artifactId>
 	    <version>0.2.3</version>
-</dependency>
-`
+	</dependency>
+
 
 #### Manual
 
