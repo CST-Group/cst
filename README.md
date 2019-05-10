@@ -3,53 +3,57 @@
 [![Test Coverage](https://api.codeclimate.com/v1/badges/e9d016cbb9689600abb7/test_coverage)](https://codeclimate.com/github/CST-Group/cst/test_coverage)
 
 # Welcome to the CST Toolkit pages.
+
 The [CST Toolkit](http://cst.fee.unicamp.br) is a Java-based toolkit to allow the construction of Cognitive Architectures. It has been developed at the [University of Campinas](http://www.dca.fee.unicamp.br) by a group of researchers in the field of Cognitive Architectures leaded by Prof. [Ricardo Gudwin](http://faculty.dca.fee.unicamp.br/gudwin). 
 
 Note: This library is still under development, and some concepts or features might not be available yet. [Feedback/bug report](https://github.com/CST-Group/cst/issues) and [Pull Requests](https://github.com/CST-Group/cst/pulls) are most welcome!
 
 ## Installation
 
-#### Gradle
+### Gradle
 
 - Step 1. Add the JitPack repository to your build file. Add it in your root build.gradle at the end of repositories:
 
-
-	repositories {
+```
+repositories {
 			...
 			maven { url 'https://jitpack.io' }
-	}
-
+}
+```
 
 - Step 2. Add the dependency
 
-
+```
 	dependencies {
             ...
             implementation 'com.github.CST-Group:cst:0.2.3'
 	}
+```
 
-
-#### Maven
+### Maven
 
 - Step 1. Add the JitPack repository to your build file.
 
+```
 	<repositories>
 		<repository>
 		    <id>jitpack.io</id>
 		    <url>https://jitpack.io</url>
 		</repository>
 	</repositories>
+```
 
 - Step 2. Add the dependency
 
+```
 	<dependency>
 	    <groupId>com.github.CST-Group</groupId>
 	    <artifactId>cst</artifactId>
 	    <version>0.2.3</version>
 	</dependency>
+```
 
-
-#### Manual
+### Manual
 
 Download the latest [release](https://github.com/CST-Group/cst/releases) and set it as a dependency in your project.
 
