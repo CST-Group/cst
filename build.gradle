@@ -72,8 +72,6 @@ dependencies {
 }
 
 jar {
-    from javadoc
-    from sourceSets.main.allSource
     from {
     	configurations.extraLibs.collect { it.isDirectory() ? it : zipTree(it) }
     }
@@ -82,10 +80,16 @@ jar {
 task javadocJar(type: Jar) {
     classifier = 'javadoc'
     from javadoc
+    from {
+    	configurations.extraLibs.collect { it.isDirectory() ? it : zipTree(it) }
+    }
 }
 task sourcesJar(type: Jar) {
     classifier = 'sources'
     from sourceSets.main.allSource
+    from {
+    	configurations.extraLibs.collect { it.isDirectory() ? it : zipTree(it) }
+    }
 }
 artifacts
 {
