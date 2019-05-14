@@ -40,6 +40,8 @@ dependencies {
    configurations.implementation.extendsFrom(configurations.extraLibs)
    
    api 'com.google.code.gson:gson:2.7'
+   api 'org.slf4j:slf4j-api:1.7.5'
+   api 'net.openhft:compiler:2.3.0'
    
    implementation group: 'org.jfree', name: 'jfreechart', version: '1.0.19'
    implementation group: 'org.json', name: 'json', version: '20160212'
@@ -51,8 +53,6 @@ dependencies {
    implementation group: 'org.opt4j', name: 'opt4j-optimizers', version: '3.1'
    implementation group: 'org.opt4j', name: 'opt4j-viewer', version: '3.1' 
    implementation 'org.antlr:antlr4-runtime:4.5.3'
-   implementation 'org.slf4j:slf4j-api:1.7.5'
-   implementation 'net.openhft:compiler:2.3.0'
    implementation 'ch.qos.logback:logback-classic:1.0.11' 
    implementation group: 'aopalliance', name: 'aopalliance', version: '1.0'
    implementation group: 'asm', name: 'asm', version: '3.1'
