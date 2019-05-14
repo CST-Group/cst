@@ -48,7 +48,7 @@ dependencies {
    implementation group: 'org.opt4j', name: 'opt4j-core', version: '3.1'
    implementation group: 'org.opt4j', name: 'opt4j-optimizers', version: '3.1'
    implementation group: 'org.opt4j', name: 'opt4j-viewer', version: '3.1'
-   implementation 'com.google.code.gson:gson:2.7'
+   api 'com.google.code.gson:gson:2.7'
    implementation 'org.antlr:antlr4-runtime:4.5.3'
    implementation 'org.slf4j:slf4j-api:1.7.5'
    implementation 'net.openhft:compiler:2.3.0'
