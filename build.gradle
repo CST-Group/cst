@@ -39,6 +39,8 @@ dependencies {
    extraLibs name: 'jsoar-debugger'
    configurations.implementation.extendsFrom(configurations.extraLibs)
    
+   api 'com.google.code.gson:gson:2.7'
+   
    implementation group: 'org.jfree', name: 'jfreechart', version: '1.0.19'
    implementation group: 'org.json', name: 'json', version: '20160212'
    implementation group: 'net.sf.jung', name: 'jung-algorithms', version: '2.0.1'
@@ -47,8 +49,7 @@ dependencies {
    implementation group: 'junit', name: 'junit', version: '4.9'
    implementation group: 'org.opt4j', name: 'opt4j-core', version: '3.1'
    implementation group: 'org.opt4j', name: 'opt4j-optimizers', version: '3.1'
-   implementation group: 'org.opt4j', name: 'opt4j-viewer', version: '3.1'
-   api 'com.google.code.gson:gson:2.7'
+   implementation group: 'org.opt4j', name: 'opt4j-viewer', version: '3.1' 
    implementation 'org.antlr:antlr4-runtime:4.5.3'
    implementation 'org.slf4j:slf4j-api:1.7.5'
    implementation 'net.openhft:compiler:2.3.0'
