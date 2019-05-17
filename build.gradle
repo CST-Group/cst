@@ -17,17 +17,32 @@ sourceSets {
    }
 }
 
+description = "CST is the Cognitive Systems Toolkit, a toolkit for the construction of Cognitive Systems and Cognitive Architectures"
+
 sourceCompatibility = 1.8
 targetCompatibility = 1.8
-version = '0.2.2'
+version = '0.2.3'
 
 repositories {
+	flatDir {
+        dirs 'libs'
+    }
     mavenCentral()
 }
 
-dependencies {
-   implementation fileTree(dir: 'libs', include: ['*.jar'])
+configurations {
+    extraLibs
+}
 
+dependencies {
+   extraLibs name:'jsoar-core'
+   extraLibs name: 'jsoar-debugger'
+   configurations.implementation.extendsFrom(configurations.extraLibs)
+   
+   api 'com.google.code.gson:gson:2.7'
+   api 'org.slf4j:slf4j-api:1.7.5'
+   api 'net.openhft:compiler:2.3.0'
+   
    implementation group: 'org.jfree', name: 'jfreechart', version: '1.0.19'
    implementation group: 'org.json', name: 'json', version: '20160212'
    implementation group: 'net.sf.jung', name: 'jung-algorithms', version: '2.0.1'
@@ -36,31 +51,50 @@ dependencies {
    implementation group: 'junit', name: 'junit', version: '4.9'
    implementation group: 'org.opt4j', name: 'opt4j-core', version: '3.1'
    implementation group: 'org.opt4j', name: 'opt4j-optimizers', version: '3.1'
-   implementation group: 'org.opt4j', name: 'opt4j-viewer', version: '3.1'
-   implementation 'com.google.code.gson:gson:2.7'
+   implementation group: 'org.opt4j', name: 'opt4j-viewer', version: '3.1' 
    implementation 'org.antlr:antlr4-runtime:4.5.3'
-   implementation 'org.slf4j:slf4j-api:1.7.5'
-   implementation 'net.openhft:compiler:2.3.0'
-   implementation 'ch.qos.logback:logback-classic:1.0.11'
-    
-   runtimeOnly group: 'aopalliance', name: 'aopalliance', version: '1.0'
-   runtimeOnly group: 'asm', name: 'asm', version: '3.1'
-   runtimeOnly group: 'org.sonatype.sisu.inject', name: 'cglib', version: '2.2.1-v20090111'
-   runtimeOnly group: 'com.google.inject', name: 'guice', version: '3.0'
-   runtimeOnly group: 'com.google.inject.extensions', name: 'guice-multibindings', version: '3.0'
-   runtimeOnly group: 'javax.inject', name: 'javax.inject', version: '1'
-   runtimeOnly group: 'net.sf.jung', name: 'jung-api', version: '2.0.1'
-   runtimeOnly group: 'org.opt4j', name: 'opt4j-benchmarks', version: '3.1'
-   runtimeOnly group: 'org.opt4j', name: 'opt4j-operators', version: '3.1'
-   runtimeOnly group: 'org.opt4j', name: 'opt4j-satdecoding', version: '3.1'
-   runtimeOnly group: 'org.opt4j', name: 'opt4j-tutorial', version: '3.1'
-   runtimeOnly group: 'org.ow2.sat4j', name: 'org.ow2.sat4j.core', version: '2.3.3'
-   runtimeOnly 'com.google.collections:google-collections:1.0'
-   runtimeOnly 'commons-beanutils:commons-beanutils-core:1.8.0'
-   runtimeOnly 'org.apache.commons:commons-math3:3.0'
+   implementation 'ch.qos.logback:logback-classic:1.0.11' 
+   implementation group: 'aopalliance', name: 'aopalliance', version: '1.0'
+   implementation group: 'asm', name: 'asm', version: '3.1'
+   implementation group: 'org.sonatype.sisu.inject', name: 'cglib', version: '2.2.1-v20090111'
+   implementation group: 'com.google.inject', name: 'guice', version: '3.0'
+   implementation group: 'com.google.inject.extensions', name: 'guice-multibindings', version: '3.0'
+   implementation group: 'javax.inject', name: 'javax.inject', version: '1'
+   implementation group: 'net.sf.jung', name: 'jung-api', version: '2.0.1'
+   implementation group: 'org.opt4j', name: 'opt4j-benchmarks', version: '3.1'
+   implementation group: 'org.opt4j', name: 'opt4j-operators', version: '3.1'
+   implementation group: 'org.opt4j', name: 'opt4j-satdecoding', version: '3.1'
+   implementation group: 'org.opt4j', name: 'opt4j-tutorial', version: '3.1'
+   implementation group: 'org.ow2.sat4j', name: 'org.ow2.sat4j.core', version: '2.3.3'
+   implementation 'com.google.collections:google-collections:1.0'
+   implementation 'commons-beanutils:commons-beanutils-core:1.8.0'
+   implementation 'org.apache.commons:commons-math3:3.0'
 }
 
+jar {
+    from {
+    	configurations.extraLibs.collect { it.isDirectory() ? it : zipTree(it) }
+    }
+}
 
+task javadocJar(type: Jar) {
+    classifier = 'javadoc'
+    from javadoc
+    from {
+    	configurations.extraLibs.collect { it.isDirectory() ? it : zipTree(it) }
+    }
+}
+task sourcesJar(type: Jar) {
+    classifier = 'sources'
+    from sourceSets.main.allSource
+    from {
+    	configurations.extraLibs.collect { it.isDirectory() ? it : zipTree(it) }
+    }
+}
+artifacts
+{
+    archives javadocJar, sourcesJar
+}
 
 jacocoTestReport {
     reports {
