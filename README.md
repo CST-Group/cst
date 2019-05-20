@@ -28,7 +28,7 @@ Note: This library is still under development, and some concepts or features mig
 ```
 	dependencies {
             ...
-            implementation 'com.github.CST-Group:cst:0.2.3'
+            implementation 'com.github.CST-Group:cst:0.2.4'
 	}
 ```
 
@@ -51,7 +51,7 @@ Note: This library is still under development, and some concepts or features mig
 	<dependency>
 	    <groupId>com.github.CST-Group</groupId>
 	    <artifactId>cst</artifactId>
-	    <version>0.2.3</version>
+	    <version>0.2.4</version>
 	</dependency>
 ```
 
