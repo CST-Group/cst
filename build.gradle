@@ -1,7 +1,10 @@
 plugins {
 	id 'java-library-distribution'
   	id 'jacoco'
+  	id 'maven'
 }
+
+group = 'com.github.CST-Group'
 
 sourceSets {
    main {
@@ -21,7 +24,7 @@ description = "CST is the Cognitive Systems Toolkit, a toolkit for the construct
 
 sourceCompatibility = 1.8
 targetCompatibility = 1.8
-version = '0.2.3'
+version = '0.2.4'
 
 repositories {
 	flatDir {

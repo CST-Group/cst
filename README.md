@@ -1,6 +1,8 @@
 [![Build Status](https://travis-ci.org/CST-Group/cst.svg?branch=master)](https://travis-ci.org/CST-Group/cst)
 [![Maintainability](https://api.codeclimate.com/v1/badges/e9d016cbb9689600abb7/maintainability)](https://codeclimate.com/github/CST-Group/cst/maintainability)
 [![Test Coverage](https://api.codeclimate.com/v1/badges/e9d016cbb9689600abb7/test_coverage)](https://codeclimate.com/github/CST-Group/cst/test_coverage)
+[![](https://jitpack.io/v/CST-Group/cst.svg?label=Release)](https://jitpack.io/#CST-Group/cst)
+
 
 # Welcome to the CST Toolkit pages.
 
@@ -26,7 +28,7 @@ Note: This library is still under development, and some concepts or features mig
 ```
 	dependencies {
             ...
-            implementation 'com.github.CST-Group:cst:0.2.3'
+            implementation 'com.github.CST-Group:cst:0.2.4'
 	}
 ```
 
@@ -49,7 +51,7 @@ Note: This library is still under development, and some concepts or features mig
 	<dependency>
 	    <groupId>com.github.CST-Group</groupId>
 	    <artifactId>cst</artifactId>
-	    <version>0.2.3</version>
+	    <version>0.2.4</version>
 	</dependency>
 ```
 
