@@ -218,7 +218,7 @@ public class WorkingMemoryViewer extends javax.swing.JFrame {
 
         jToolBar1.setRollover(true);
 
-        zoom_in.setIcon(new javax.swing.ImageIcon(getClass().getResource("/images/zoom-in-icon.png"))); // NOI18N
+        zoom_in.setIcon(new javax.swing.ImageIcon(getClass().getClassLoader().getResource("zoom-in-icon.png"))); // NOI18N
         zoom_in.setFocusable(false);
         zoom_in.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
         zoom_in.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
@@ -229,7 +229,7 @@ public class WorkingMemoryViewer extends javax.swing.JFrame {
         });
         jToolBar1.add(zoom_in);
 
-        zoom_out.setIcon(new javax.swing.ImageIcon(getClass().getResource("/images/zoom-out-icon.png"))); // NOI18N
+        zoom_out.setIcon(new javax.swing.ImageIcon(getClass().getClassLoader().getResource("zoom-out-icon.png"))); // NOI18N
         zoom_out.setFocusable(false);
         zoom_out.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
         zoom_out.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);

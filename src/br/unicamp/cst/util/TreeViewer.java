@@ -11,17 +11,18 @@
 
 package br.unicamp.cst.util;
 
-import br.unicamp.cst.representation.owrl.AbstractObject;
-import br.unicamp.cst.representation.owrl.Property;
 import java.util.Enumeration;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import javax.swing.ImageIcon;
+
 import javax.swing.JScrollPane;
 import javax.swing.JTree;
 import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.TreeNode;
+
+import br.unicamp.cst.representation.owrl.AbstractObject;
+import br.unicamp.cst.representation.owrl.Property;
 
 /**
  *
@@ -405,16 +406,6 @@ public class TreeViewer extends javax.swing.JFrame {
             jComboBoxFinal.setSelectedIndex(1);
         }
     }//GEN-LAST:event_jButton1ActionPerformed
-
-    public static ImageIcon createImageIcon(String path) {
-        java.net.URL imgURL = TreeViewer.class.getResource(path);
-        if (imgURL != null) {
-            return new ImageIcon(imgURL);
-        } else {
-            System.err.println("Couldn't find file: " + path);
-            return null;
-        }
-    }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton jButton1;

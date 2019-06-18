@@ -21,8 +21,8 @@ public class SOARInspector extends javax.swing.JFrame implements Observer,Abstra
     
     int debugstate = 0;
     JSoarCodelet SoarCodelet;
-    ImageIcon pause_icon = new ImageIcon(getClass().getResource("/images/pause-icon.png")); 
-    ImageIcon play_icon = new ImageIcon(getClass().getResource("/images/play-icon.png"));
+    ImageIcon pause_icon = new ImageIcon(getClass().getClassLoader().getResource("pause-icon.png")); 
+    ImageIcon play_icon = new ImageIcon(getClass().getClassLoader().getResource("play-icon.png"));
     WorkingMemoryPanel wmp;
 
     /**
@@ -82,7 +82,7 @@ public class SOARInspector extends javax.swing.JFrame implements Observer,Abstra
         jToolBar1.setFloatable(false);
         jToolBar1.setRollover(true);
 
-        startstop.setIcon(new javax.swing.ImageIcon(getClass().getResource("/images/pause-icon.png"))); // NOI18N
+        startstop.setIcon(new javax.swing.ImageIcon(getClass().getClassLoader().getResource("pause-icon.png"))); // NOI18N
         startstop.setToolTipText("Play/Pause");
         startstop.setFocusable(false);
         startstop.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
@@ -94,7 +94,7 @@ public class SOARInspector extends javax.swing.JFrame implements Observer,Abstra
         });
         jToolBar1.add(startstop);
 
-        mstep.setIcon(new javax.swing.ImageIcon(getClass().getResource("/images/skip-forward-icon.png"))); // NOI18N
+        mstep.setIcon(new javax.swing.ImageIcon(getClass().getClassLoader().getResource("skip-forward-icon.png"))); // NOI18N
         mstep.setToolTipText("micro-step");
         mstep.setEnabled(false);
         mstep.setFocusable(false);
@@ -107,7 +107,7 @@ public class SOARInspector extends javax.swing.JFrame implements Observer,Abstra
         });
         jToolBar1.add(mstep);
 
-        step.setIcon(new javax.swing.ImageIcon(getClass().getResource("/images/forward-icon.png"))); // NOI18N
+        step.setIcon(new javax.swing.ImageIcon(getClass().getClassLoader().getResource("forward-icon.png"))); // NOI18N
         step.setToolTipText("step");
         step.setEnabled(false);
         step.setFocusable(false);

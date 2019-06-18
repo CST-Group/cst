@@ -10,25 +10,19 @@
  ******************************************************************************/
 package br.unicamp.cst.util;
 
-import br.unicamp.cst.representation.owrl.AbstractObject;
-import br.unicamp.cst.representation.owrl.Affordance;
-import br.unicamp.cst.representation.owrl.Entity;
-import br.unicamp.cst.representation.owrl.Property;
-import br.unicamp.cst.representation.owrl.QualityDimension;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
-import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.File;
-import java.io.FileReader;
 import java.io.FileWriter;
 import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicReference;
+
 import javax.swing.JFileChooser;
 import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
@@ -38,6 +32,12 @@ import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.DefaultTreeModel;
 import javax.swing.tree.TreeModel;
 import javax.swing.tree.TreePath;
+
+import br.unicamp.cst.representation.owrl.AbstractObject;
+import br.unicamp.cst.representation.owrl.Affordance;
+import br.unicamp.cst.representation.owrl.Entity;
+import br.unicamp.cst.representation.owrl.Property;
+import br.unicamp.cst.representation.owrl.QualityDimension;
 
 /**
  *
@@ -281,7 +281,7 @@ public class AbstractObjectEditor extends javax.swing.JFrame {
         jToolBar1.setFloatable(false);
         jToolBar1.setRollover(true);
 
-        zoom_in.setIcon(new javax.swing.ImageIcon(getClass().getResource("/br/unicamp/cst/images/zoom-in-icon.png"))); // NOI18N
+        zoom_in.setIcon(new javax.swing.ImageIcon(getClass().getClassLoader().getResource("zoom-in-icon.png"))); // NOI18N
         zoom_in.setFocusable(false);
         zoom_in.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
         zoom_in.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
@@ -292,7 +292,7 @@ public class AbstractObjectEditor extends javax.swing.JFrame {
         });
         jToolBar1.add(zoom_in);
 
-        zoom_out.setIcon(new javax.swing.ImageIcon(getClass().getResource("/br/unicamp/cst/images/zoom-out-icon.png"))); // NOI18N
+        zoom_out.setIcon(new javax.swing.ImageIcon(getClass().getClassLoader().getResource("zoom-out-icon.png"))); // NOI18N
         zoom_out.setFocusable(false);
         zoom_out.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
         zoom_out.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
@@ -303,7 +303,7 @@ public class AbstractObjectEditor extends javax.swing.JFrame {
         });
         jToolBar1.add(zoom_out);
 
-        search.setIcon(new javax.swing.ImageIcon(getClass().getResource("/br/unicamp/cst/images/binoculars.png"))); // NOI18N
+        search.setIcon(new javax.swing.ImageIcon(getClass().getClassLoader().getResource("binoculars.png"))); // NOI18N
         search.setFocusable(false);
         search.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
         search.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
