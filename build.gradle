@@ -11,6 +11,9 @@ sourceSets {
       java {
          srcDir 'src'
       }
+      resources {
+         srcDir 'src/resources'
+      }
    }
 	
    test {
@@ -24,7 +27,7 @@ description = "CST is the Cognitive Systems Toolkit, a toolkit for the construct
 
 sourceCompatibility = 1.8
 targetCompatibility = 1.8
-version = '0.2.4'
+version = '0.2.5'
 
 repositories {
 	flatDir {

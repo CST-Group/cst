@@ -49,8 +49,8 @@ public class PlansSubsystemViewer extends javax.swing.JPanel {
         setRefreshTime(refreshTime);
         setMind(mind);
 
-        setPauseIcon(new ImageIcon(getClass().getResource("/br/unicamp/cst/images/pause-icon.png")));
-        setPlayIcon(new ImageIcon(getClass().getResource("/br/unicamp/cst/images/play-icon.png")));
+        setPauseIcon(new ImageIcon(getClass().getClassLoader().getResource("pause-icon.png")));
+        setPlayIcon(new ImageIcon(getClass().getClassLoader().getResource("play-icon.png")));
 
         initPlansSubsystemViewer(mind.getPlansSubsystemModule());
 
@@ -293,7 +293,7 @@ public class PlansSubsystemViewer extends javax.swing.JPanel {
 
         jToolBar1.setRollover(true);
 
-        startstop.setIcon(new javax.swing.ImageIcon(getClass().getResource("/br/unicamp/cst/images/pause-icon.png"))); // NOI18N
+        startstop.setIcon(new javax.swing.ImageIcon(getClass().getClassLoader().getResource("pause-icon.png"))); // NOI18N
         startstop.setToolTipText("Play/Pause");
         startstop.setFocusable(false);
         startstop.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
@@ -305,7 +305,7 @@ public class PlansSubsystemViewer extends javax.swing.JPanel {
         });
         jToolBar1.add(startstop);
 
-        mstep.setIcon(new javax.swing.ImageIcon(getClass().getResource("/br/unicamp/cst/images/skip-forward-icon.png"))); // NOI18N
+        mstep.setIcon(new javax.swing.ImageIcon(getClass().getClassLoader().getResource("skip-forward-icon.png"))); // NOI18N
         mstep.setToolTipText("micro-step");
         mstep.setEnabled(false);
         mstep.setFocusable(false);
@@ -318,7 +318,7 @@ public class PlansSubsystemViewer extends javax.swing.JPanel {
         });
         jToolBar1.add(mstep);
 
-        step.setIcon(new javax.swing.ImageIcon(getClass().getResource("/br/unicamp/cst/images/forward-icon.png"))); // NOI18N
+        step.setIcon(new javax.swing.ImageIcon(getClass().getClassLoader().getResource("forward-icon.png"))); // NOI18N
         step.setToolTipText("step");
         step.setEnabled(false);
         step.setFocusable(false);
