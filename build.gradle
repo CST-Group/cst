@@ -11,6 +11,9 @@ sourceSets {
       java {
          srcDir 'src'
       }
+      resources {
+         srcDir 'src/br/unicamp/cst/images'
+      }
    }
 	
    test {
