@@ -28,9 +28,11 @@ Note: This library is still under development, and some concepts or features mig
 ```
 	dependencies {
             ...
-            implementation 'com.github.CST-Group:cst:0.2.4'
+            implementation 'com.github.CST-Group:cst:0.2.6'
 	}
 ```
+
+Sometimes, the version number (tag) in this README gets out of date, as maintainers might forget to change it when releasing. Always check the release badge [![](https://jitpack.io/v/CST-Group/cst.svg?label=Release)](https://jitpack.io/#CST-Group/cst) to see the actual current version number that should be provided in the dependencies in Step 2 above.
 
 ### Maven
 
@@ -51,9 +53,11 @@ Note: This library is still under development, and some concepts or features mig
 	<dependency>
 	    <groupId>com.github.CST-Group</groupId>
 	    <artifactId>cst</artifactId>
-	    <version>0.2.4</version>
+	    <version>0.2.6</version>
 	</dependency>
 ```
+
+Sometimes, the version number (tag) in this README gets out of date, as maintainers might forget to change it when releasing. Always check the release badge [![](https://jitpack.io/v/CST-Group/cst.svg?label=Release)](https://jitpack.io/#CST-Group/cst) to see the actual current version number that should be provided in the dependencies in Step 2 above.
 
 ### Manual
 

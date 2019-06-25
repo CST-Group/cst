@@ -6,28 +6,11 @@ plugins {
 
 group = 'com.github.CST-Group'
 
-sourceSets {
-   main {
-      java {
-         srcDir 'src'
-      }
-      resources {
-         srcDir 'src/resources'
-      }
-   }
-	
-   test {
-      java {
-         srcDir 'test'
-      }
-   }
-}
-
 description = "CST is the Cognitive Systems Toolkit, a toolkit for the construction of Cognitive Systems and Cognitive Architectures"
 
 sourceCompatibility = 1.8
 targetCompatibility = 1.8
-version = '0.2.5'
+version = '0.2.6'
 
 repositories {
 	flatDir {
