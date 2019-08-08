@@ -22,6 +22,7 @@ import br.unicamp.cst.core.exceptions.CodeletActivationBoundsException;
 /**
  * @author andre
  *
+ * @param <T> The ROS Message Type - Ex: std_msgs.String from ROS standard messages
  */
 public abstract class RosTopicSubscriberCodelet<T> extends Codelet implements NodeMain {
 	
@@ -35,6 +36,10 @@ public abstract class RosTopicSubscriberCodelet<T> extends Codelet implements No
 	
 	protected Memory sensoryMemory;
 	
+	protected NodeMainExecutor nodeMainExecutor;
+	
+	protected NodeConfiguration nodeConfiguration;
+	
 	public RosTopicSubscriberCodelet(String nodeName, String topic,String messageType, String host, URI masterURI) {
 
 		super();
@@ -43,9 +48,25 @@ public abstract class RosTopicSubscriberCodelet<T> extends Codelet implements No
 		this.messageType = messageType;
 		setName(nodeName);
 		
-		NodeMainExecutor nodeMainExecutor = DefaultNodeMainExecutor.newDefault();
-		NodeConfiguration nodeConfiguration = NodeConfiguration.newPublic(host,masterURI);
+		nodeMainExecutor = DefaultNodeMainExecutor.newDefault();
+		nodeConfiguration = NodeConfiguration.newPublic(host,masterURI);
+		
+		startRosNode();
+	}
+	
+	@Override
+	public synchronized void stop() {
+		
+		stopRosNode();
+		super.stop();
+	}
+
+	private void startRosNode() {
 		nodeMainExecutor.execute(this, nodeConfiguration);
+	}
+	
+	private void stopRosNode() {
+		nodeMainExecutor.shutdownNodeMain(this);
 	}
 	
 	@Override

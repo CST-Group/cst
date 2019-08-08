@@ -26,8 +26,8 @@ import br.unicamp.cst.core.exceptions.CodeletActivationBoundsException;
  * 
  * @author andre
  *
- * @param <S> Service Message Request - Ex: AddTwoIntsRequest
- * @param <T> Service Message Response - Ex: AddTwonIntsResponse
+ * @param <S> Service Message Request - Ex: AddTwoIntsRequest from ROS Tutorials
+ * @param <T> Service Message Response - Ex: AddTwonIntsResponse from ROS Tutorials
  */
 public abstract class RosServiceClientCodelet<S,T> extends Codelet implements NodeMain {
 	
@@ -43,6 +43,10 @@ public abstract class RosServiceClientCodelet<S,T> extends Codelet implements No
 	
 	protected ServiceClient<S, T> serviceClient;
 	
+	protected NodeMainExecutor nodeMainExecutor;
+	
+	protected NodeConfiguration nodeConfiguration;
+	
 	public RosServiceClientCodelet(String nodeName, String service, String messageServiceType, String host, URI masterURI) {
 
 		super();
@@ -51,9 +55,25 @@ public abstract class RosServiceClientCodelet<S,T> extends Codelet implements No
 		this.messageServiceType = messageServiceType;
 		setName(nodeName);
 		
-		NodeMainExecutor nodeMainExecutor = DefaultNodeMainExecutor.newDefault();
-		NodeConfiguration nodeConfiguration = NodeConfiguration.newPublic(host,masterURI);
+		nodeMainExecutor = DefaultNodeMainExecutor.newDefault();
+		nodeConfiguration = NodeConfiguration.newPublic(host,masterURI);
+		
+		startRosNode();
+	}
+	
+	@Override
+	public synchronized void stop() {
+		
+		stopRosNode();
+		super.stop();
+	}
+	
+	private void startRosNode() {
 		nodeMainExecutor.execute(this, nodeConfiguration);
+	}
+	
+	private void stopRosNode() {
+		nodeMainExecutor.shutdownNodeMain(this);
 	}
 
 	@Override
