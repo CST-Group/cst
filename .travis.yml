@@ -7,15 +7,6 @@ jdk:
 - openjdk8
 - openjdk9
 before_script:
-  - sudo sh -c 'echo "deb http://packages.ros.org/ros/ubuntu $(lsb_release -sc) main" > /etc/apt/sources.list.d/ros-latest.list'
-  - sudo apt-key adv --keyserver 'hkp://keyserver.ubuntu.com:80' --recv-key C1CF6E31E6BADE8868B172B4F42ED6FBAB17C654
-  - sudo apt-get update -y
-  - sudo apt-get install ros-kinetic-desktop --no-install-recommends -y
-  - sudo rosdep init
-  - rosdep update
-  - echo "source /opt/ros/kinetic/setup.bash" >> ~/.bashrc
-  - source ~/.bashrc
-  - sudo apt-get install python-rosinstall python-rosinstall-generator python-wstool build-essential --no-install-recommends -y
   - curl -L https://codeclimate.com/downloads/test-reporter/test-reporter-latest-linux-amd64 > ./cc-test-reporter
   - chmod +x ./cc-test-reporter
   - ./cc-test-reporter before-build

@@ -21,12 +21,6 @@ import br.unicamp.cst.core.entities.Mind;
 
 /**
  * @author andre
- * 
- * This tests can only be run in a machine with ROS installed.
- * This is the reason they will remain commented.
- * Uncomment if you have ROS and wish to run them.
- * Do not forget to import classes correctly. Follow
- * the other classes in this package.
  *
  */
 public class RosJavaTest {
