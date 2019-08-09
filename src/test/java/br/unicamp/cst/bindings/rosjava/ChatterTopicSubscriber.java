@@ -19,7 +19,7 @@ public class ChatterTopicSubscriber extends RosTopicSubscriberCodelet<std_msgs.S
 	}
 
 	@Override
-	public void proc(std_msgs.String message, Memory sensoryMemory) {
+	public void fillMemoryWithReceivedMessage(std_msgs.String message, Memory sensoryMemory) {
 		if(message == null) {
 			sensoryMemory.setI(null);
 			return;

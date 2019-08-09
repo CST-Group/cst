@@ -5,7 +5,6 @@ package br.unicamp.cst.bindings.rosjava;
 
 import java.net.URI;
 
-import br.unicamp.cst.bindings.rosjava.RosTopicPublisherCodelet;
 import br.unicamp.cst.core.entities.Memory;
 
 /**
@@ -19,7 +18,7 @@ public class ChatterTopicPublisher extends RosTopicPublisherCodelet<std_msgs.Str
 	}
 
 	@Override
-	public void proc(std_msgs.String message, Memory motorMemory) {
+	public void fillMessageToBePublished(Memory motorMemory, std_msgs.String message) {
 		
 		if(motorMemory == null) {
 			return;

@@ -23,6 +23,10 @@ import br.unicamp.cst.core.entities.Memory;
 import br.unicamp.cst.core.exceptions.CodeletActivationBoundsException;
 
 /**
+ * Wrapper binding a RosJava Service Client and a Codelet.
+ * The object of this class is a hybrid of Codelet and ROS Service Client,
+ * not only operating in both lifetime cycles of each one but also having these
+ * lifetime cycle coupled and integrated.
  * 
  * @author andre
  *
@@ -47,6 +51,15 @@ public abstract class RosServiceClientCodelet<S,T> extends Codelet implements No
 	
 	protected NodeConfiguration nodeConfiguration;
 	
+	/**
+	 * Constructor for the RosServiceClientCodelet.
+	 * 
+	 * @param nodeName the name of this ROS node.
+	 * @param service the service that this node will be a client of.
+	 * @param messageServiceType the ROS message type. Ex: "rosjava_test_msgs.AddTwoInts".
+	 * @param host the host IP where to run. Ex: "127.0.0.1".
+	 * @param masterURI the URI of the master ROS node. Ex: new URI("http://127.0.0.1:11311").
+	 */
 	public RosServiceClientCodelet(String nodeName, String service, String messageServiceType, String host, URI masterURI) {
 
 		super();
@@ -57,8 +70,12 @@ public abstract class RosServiceClientCodelet<S,T> extends Codelet implements No
 		
 		nodeMainExecutor = DefaultNodeMainExecutor.newDefault();
 		nodeConfiguration = NodeConfiguration.newPublic(host,masterURI);
-		
+	}
+	
+	@Override
+	public synchronized void start() {
 		startRosNode();
+		super.start();
 	}
 	
 	@Override
@@ -103,9 +120,14 @@ public abstract class RosServiceClientCodelet<S,T> extends Codelet implements No
 		}
 	}
 	
+	/**
+	 * Prepare the service request to be sent, formatting it with the contents of the motor memory.
+	 * @param motorMemory the memory with the content to be formatted in the form of a service request.
+	 * @param serviceMessageRequest the service message request to be sent.
+	 */
 	public abstract void formatServiceRequest(Memory motorMemory, S serviceMessageRequest);
 	
-	public void callService() {
+	private void callService() {
 		if(serviceClient != null && serviceMessageRequest != null) {
 		    serviceClient.call(serviceMessageRequest, new ServiceResponseListener<T>() {
 			      @Override
@@ -124,6 +146,10 @@ public abstract class RosServiceClientCodelet<S,T> extends Codelet implements No
 		}
 	}
 	
+	/**
+	 * Processes the service response in a free way.
+	 * @param serviceMessageResponse the response after the service has been executed.
+	 */
 	public abstract void processServiceResponse(T serviceMessageResponse);
 	
 	@Override

@@ -20,6 +20,11 @@ import br.unicamp.cst.core.entities.Memory;
 import br.unicamp.cst.core.exceptions.CodeletActivationBoundsException;
 
 /**
+ * Wrapper binding a RosJava Topic Publisher and a Codelet.
+ * The object of this class is a hybrid of Codelet and ROS Topic Publisher,
+ * not only operating in both lifetime cycles of each one but also having these
+ * lifetime cycle coupled and integrated.
+ * 
  * @author andre
  * 
  * @param <T> The ROS Message Type - Ex: std_msgs.String from ROS standard messages
@@ -40,6 +45,15 @@ public abstract class RosTopicPublisherCodelet<T> extends Codelet implements Nod
 	
 	protected NodeConfiguration nodeConfiguration;
 	
+	/**
+	 * Constructor for the RosTopicPublisherCodelet.
+	 * 
+	 * @param nodeName the name of this ROS node.
+	 * @param topic the name of the ROS topic this node will be publishing to.
+	 * @param messageType the ROS message type. Ex: "std_msgs.String".
+	 * @param host the host IP where to run. Ex: "127.0.0.1".
+	 * @param masterURI the URI of the master ROS node. Ex: new URI("http://127.0.0.1:11311").
+	 */
 	public RosTopicPublisherCodelet(String nodeName, String topic, String messageType, String host, URI masterURI) {
 
 		super();
@@ -50,8 +64,12 @@ public abstract class RosTopicPublisherCodelet<T> extends Codelet implements Nod
 		
 		nodeMainExecutor = DefaultNodeMainExecutor.newDefault();
 		nodeConfiguration = NodeConfiguration.newPublic(host,masterURI);
-		
+	}
+	
+	@Override
+	public synchronized void start() {
 		startRosNode();
+		super.start();
 	}
 	
 	@Override
@@ -88,10 +106,15 @@ public abstract class RosTopicPublisherCodelet<T> extends Codelet implements Nod
 
 	@Override
 	public void proc() {
-		proc(message,motorMemory);
+		fillMessageToBePublished(motorMemory,message);
 	}
 	
-	public abstract void proc(T message, Memory motorMemory);
+	/**
+	 * Fill the message to be published in the ROS topic with the contents of the motor memory.
+	 * @param motorMemory has the content to fill the message to be published with.
+	 * @param message the message to be published, which should be filled with the contents of the motor memory.
+	 */
+	public abstract void fillMessageToBePublished(Memory motorMemory, T message);
 	
 	@Override
 	public GraphName getDefaultNodeName() {

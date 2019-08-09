@@ -20,6 +20,11 @@ import br.unicamp.cst.core.entities.Memory;
 import br.unicamp.cst.core.exceptions.CodeletActivationBoundsException;
 
 /**
+ *  Wrapper binding a RosJava Topic Subscriber and a Codelet.
+ * The object of this class is a hybrid of Codelet and ROS Topic Subscriber,
+ * not only operating in both lifetime cycles of each one but also having these
+ * lifetime cycle coupled and integrated.
+ * 
  * @author andre
  *
  * @param <T> The ROS Message Type - Ex: std_msgs.String from ROS standard messages
@@ -40,6 +45,15 @@ public abstract class RosTopicSubscriberCodelet<T> extends Codelet implements No
 	
 	protected NodeConfiguration nodeConfiguration;
 	
+	/**
+	 * Constructor for the RosTopicSubscriberCodelet.
+	 * 
+	 * @param nodeName the name of this ROS node.
+	 * @param topic the name of the ROS topic this node will be subscribing to.
+	 * @param messageType the ROS message type. Ex: "std_msgs.String"
+	 * @param host the host IP where to run. Ex: "127.0.0.1" 
+	 * @param masterURI the URI of the master ROS node. Ex: new URI("http://127.0.0.1:11311")
+	 */
 	public RosTopicSubscriberCodelet(String nodeName, String topic,String messageType, String host, URI masterURI) {
 
 		super();
@@ -49,11 +63,15 @@ public abstract class RosTopicSubscriberCodelet<T> extends Codelet implements No
 		setName(nodeName);
 		
 		nodeMainExecutor = DefaultNodeMainExecutor.newDefault();
-		nodeConfiguration = NodeConfiguration.newPublic(host,masterURI);
-		
-		startRosNode();
+		nodeConfiguration = NodeConfiguration.newPublic(host,masterURI);				
 	}
 	
+	@Override
+	public synchronized void start() {
+		startRosNode();
+		super.start();
+	}
+
 	@Override
 	public synchronized void stop() {
 		
@@ -88,11 +106,16 @@ public abstract class RosTopicSubscriberCodelet<T> extends Codelet implements No
 
 	@Override
 	public void proc() {
-		proc(message,sensoryMemory);
+		fillMemoryWithReceivedMessage(message,sensoryMemory);
 
 	}
 	
-	public abstract void proc(T message, Memory sensoryMemory);
+	/**
+	 * Fills the sensory memory with the received message through the subscription to the ROS topic.
+	 * @param message the message received through the subscription to the ROS topic.
+	 * @param sensoryMemory the memory to store the message received.
+	 */
+	public abstract void fillMemoryWithReceivedMessage(T message, Memory sensoryMemory);
 	
 	@Override
 	public GraphName getDefaultNodeName() {
