@@ -73,16 +73,4 @@ public class NameGenerator {
         return find;
 
     }
-
-    public static void main(String[] args) {
-        int cont = 0;
-
-        while (cont < 10) {
-            NameGenerator ng = new NameGenerator();
-            System.out.println(" >> " + ng.generateWord());
-            cont++;
-        }
-
-    }
-
 }
