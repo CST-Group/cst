@@ -5,18 +5,20 @@
  */
 package br.unicamp.cst.bindings.soar;
 
-import br.unicamp.cst.util.RendererJTree;
-import br.unicamp.cst.util.TreeElement;
 import java.util.Iterator;
 import java.util.List;
-import javax.swing.JFileChooser;
+
 import javax.swing.JTree;
 import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.DefaultTreeModel;
 import javax.swing.tree.TreeModel;
+
 import org.jsoar.kernel.memory.Wme;
 import org.jsoar.kernel.symbols.Identifier;
 import org.jsoar.kernel.symbols.Symbol;
+
+import br.unicamp.cst.util.RendererJTree;
+import br.unicamp.cst.util.TreeElement;
 
 /**
  *
@@ -48,52 +50,6 @@ public class WorkingMemoryViewer extends javax.swing.JFrame {
         jTree1.setCellRenderer(new RendererJTree());
         setTitle(windowName);
         setDefaultCloseOperation(javax.swing.WindowConstants.HIDE_ON_CLOSE);
-    }
-
-
-    /**
-     * @param args the command line arguments
-     */
-    public static void main(String args[]) {
-        /* Set the Nimbus look and feel */
-        //<editor-fold defaultstate="collapsed" desc=" Look and feel setting code (optional) ">
-        /* If Nimbus (introduced in Java SE 6) is not available, stay with the default look and feel.
-         * For details see http://download.oracle.com/javase/tutorial/uiswing/lookandfeel/plaf.html 
-         */
-        try {
-            for (javax.swing.UIManager.LookAndFeelInfo info : javax.swing.UIManager.getInstalledLookAndFeels()) {
-                if ("Nimbus".equals(info.getName())) {
-                    javax.swing.UIManager.setLookAndFeel(info.getClassName());
-                    break;
-                }
-            }
-        } catch (ClassNotFoundException ex) {
-            java.util.logging.Logger.getLogger(WorkingMemoryViewer.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        } catch (InstantiationException ex) {
-            java.util.logging.Logger.getLogger(WorkingMemoryViewer.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        } catch (IllegalAccessException ex) {
-            java.util.logging.Logger.getLogger(WorkingMemoryViewer.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        } catch (javax.swing.UnsupportedLookAndFeelException ex) {
-            java.util.logging.Logger.getLogger(WorkingMemoryViewer.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        }
-        //</editor-fold>
-//        try {
-//           NativeUtils.loadFileFromJar("/soar-rules.soar");
-//        } catch(Exception e) {
-//            e.printStackTrace();
-//        }   
-        String soarRulesPath = "soar-rules.soar";
-        try {
-		JFileChooser chooser = new JFileChooser();
-		if (chooser.showOpenDialog(null) == JFileChooser.APPROVE_OPTION) {
-		  soarRulesPath = chooser.getSelectedFile().getCanonicalPath();
-		  //System.out.println("You chose to open this file: "+soarRulesPath);
-                }
-            } catch (Exception e) { e.printStackTrace(); }
-        JSoarCodelet soarCodelet = new TestJSoarCodelet(soarRulesPath);
-        WorkingMemoryViewer ov = new WorkingMemoryViewer("Teste",soarCodelet);
-        ov.setVisible(true);
-        ov.updateTree(soarCodelet.getJsoar().getStates());
     }
   
     public void setWO(List<Identifier> newwog) {
