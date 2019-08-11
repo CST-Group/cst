@@ -6,7 +6,7 @@ package br.unicamp.cst.util;
 import org.junit.Test;
 
 /**
- * @author andre
+ * @author suelen
  *
  */
 public class NameGeneratorTest {

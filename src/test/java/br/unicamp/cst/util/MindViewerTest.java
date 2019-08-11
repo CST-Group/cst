@@ -15,7 +15,7 @@ import br.unicamp.cst.core.entities.MemoryObject;
 import br.unicamp.cst.core.entities.Mind;
 
 /**
- * @author andre
+ * @author gudwin
  *
  */
 public class MindViewerTest {

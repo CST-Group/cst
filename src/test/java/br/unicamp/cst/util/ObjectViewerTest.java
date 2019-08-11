@@ -10,7 +10,7 @@ import br.unicamp.cst.representation.owrl.Property;
 import br.unicamp.cst.representation.owrl.QualityDimension;
 
 /**
- * @author andre
+ * @author gudwin
  *
  */
 public class ObjectViewerTest {
