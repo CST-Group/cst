@@ -29,7 +29,7 @@ public class MindViewerTest {
     }
     
     @Test
-    public void testRosTopics() {
+    public void testMindViewer() {
     	
     	/* Set the Nimbus look and feel */
         //<editor-fold defaultstate="collapsed" desc=" Look and feel setting code (optional) ">
