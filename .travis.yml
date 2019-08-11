@@ -2,7 +2,9 @@ env:
   global:
     - CC_TEST_REPORTER_ID=430594ee361ff2e93ebf0a942f639b8092c6f17b7c5098f9c75abc404311dfc7
 language: java
-dist: xenial
+dist: bionic
+services:
+  - xvfb
 jdk:
 - openjdk8
 - openjdk9
