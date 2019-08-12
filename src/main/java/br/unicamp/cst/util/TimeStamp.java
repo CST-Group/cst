@@ -154,13 +154,4 @@ public class TimeStamp {
            else return(false);
        }
    }
-   
-   
-   public static void main(String args[]) {
-       setStartTime();
-       try {
-       Thread.sleep(3358);
-       } catch (Exception e) {}
-       System.out.println(getDelaySinceStart());
-   }
 }

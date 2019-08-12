@@ -9,7 +9,7 @@
  *     K. Raizer, A. L. O. Paraense, R. R. Gudwin - initial API and implementation
  ******************************************************************************/
 
-package br.unicamp.cst.behavior.glas.tests;
+package br.unicamp.cst.behavior.glas;
 
 
 import static org.junit.Assert.*;

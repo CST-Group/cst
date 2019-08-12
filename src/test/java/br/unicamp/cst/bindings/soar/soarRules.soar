@@ -1,0 +1,127 @@
+################################  CONFIGURATION ################################
+watch 5
+learn --off
+epmem --set learning off 
+#smem --off
+#log --level error
+
+################## REDLIGHT cool name #######################
+# if tempo chegada do smartcar for menor ou igual a tempo máximo e maior ou igual a tempo minimo ===>>MUDAR (tmin<= tsmartcar <=tmax)
+# if tempo chegada do smartcar for menor que tempo minimo ==>>> MANTER (tsmartcar < tmin)
+
+sp {propose*change
+   (state <s> ^io.input-link <il>)
+   (<il> ^CURRENT_PERCEPTION <cp>)
+   (<cp> ^CONFIGURATION <conf>)
+   (<conf> ^SMARTCAR_INFO <smartcar>)
+   (<conf> ^TRAFFIC_LIGHT <tl>)
+   (<tl> ^CURRENT_PHASE <current>)
+   (<current> ^PHASE RED)
+-->
+   (<s> ^operator <o> +)
+   (<o> ^name change)
+}
+
+sp {apply*change
+   (state <s> ^operator <o>
+ 	     ^io <io>)
+   (<io> ^input-link <il>
+	^output-link <ol>)
+   (<o> ^name change)
+-->
+   (<ol> ^SoarCommandChange <command>)
+   (<command> ^productionName change)
+   (interrupt)
+}
+
+#sp {apply*change*remove
+#   (state <s> ^operator.name change
+#	     ^io.output-link <out>)
+#   (<out> ^SoarCommandChange <command>)
+#   (<command> ^status complete)
+#-->
+#   (<out> ^SoarCommandChange <command> -)
+#}
+
+
+################## GREENLIGHT cool name #######################
+
+
+#if tempo chegada do smartcar for menor ou igual a tempo máximo e maior ou igual a tempo minimo===> MANTER (tmin<= tchegada <=tmax)
+#if tempo chegada do smartcar for menor que tempo minimo ==>>> MANTER (tchegada < tmin)
+
+sp {propose*keep
+   (state <s> ^io.input-link <il>)
+   (<il> ^CURRENT_PERCEPTION <cp>)
+   (<cp> ^CONFIGURATION <conf>)
+   (<conf> ^SMARTCAR_INFO <smartcar>)
+   (<conf> ^TRAFFIC_LIGHT <tl>)
+   (<tl> ^CURRENT_PHASE <current>)
+   (<current> ^PHASE GREEN)
+-->
+   (<s> ^operator <o> +)
+   (<o> ^name keep)
+}
+
+sp {apply*keep
+   (state <s> ^operator <o>
+	     ^io <io>)
+   (<io> ^input-link <il>
+	^output-link <ol>)
+   (<o> ^name keep)
+-->
+   (<ol> ^SoarCommandKeep <command>)
+   (<command> ^productionName keep)
+   (interrupt)
+}
+
+#sp {apply*keep*remove
+#   (state <s> ^operator.name keep
+#	     ^io.output-link <out>)
+#   (<out> ^SoarCommandKeep <command>)
+#   (<command> ^status complete)
+#-->
+#   (<out> ^SoarCommandKeep <command> -)
+#}
+
+# HALT
+
+#sp {halt*condition
+#   (state <s> ^impasse no-change ^type state -^operator ^attribute operator)
+#-->
+  #(write I2)
+  #(halt)
+#   (interrupt)
+#}
+
+######### se n tiver smartcar, n faça nada
+sp {propose*do_nothing
+   (state <s> ^io.input-link <il>)
+   (<il> ^CURRENT_PERCEPTION <cp>)
+   (<cp> ^CONFIGURATION <conf>)
+   (<conf> ^NO_SMARTCAR.NO_SMARTCAR TRUE)
+-->
+   (<s> ^operator <o> + <)
+   (<o> ^name do_nothing)
+}
+
+sp {apply*do_nothing
+   (state <s> ^operator <o>
+	     ^io <io>)
+   (<io> ^input-link <il>
+	^output-link <ol>)
+   (<o> ^name do_nothing)
+-->
+   (<ol> ^SoarCommandDoNothing <command>)
+   (<command> ^productionName do_nothing)
+   (interrupt)
+}
+
+#sp {apply*do_nothing*remove
+#   (state <s> ^operator.name do_nothing
+#	     ^io.output-link <out>)
+#   (<out> ^SoarCommandDoNothing <command>)
+#   (<command> ^status complete)
+#-->
+#   (<out> ^SoarCommandDoNothing <command> -)
+#}

@@ -10,13 +10,22 @@ description = "CST is the Cognitive Systems Toolkit, a toolkit for the construct
 
 sourceCompatibility = 1.8
 targetCompatibility = 1.8
-version = '0.2.6'
+version = '0.3.0'
 
 repositories {
 	flatDir {
         dirs 'libs'
     }
     mavenCentral()
+    maven { 
+    	url "https://github.com/rosjava/rosjava_mvn_repo/raw/master"
+    }
+    maven {
+      url "http://repository.springsource.com/maven/bundles/release"
+    }
+    maven {
+      url "http://repository.springsource.com/maven/bundles/external"
+    }
 }
 
 configurations {
@@ -37,7 +46,6 @@ dependencies {
    implementation group: 'net.sf.jung', name: 'jung-algorithms', version: '2.0.1'
    implementation group: 'net.sf.jung', name: 'jung-graph-impl', version: '2.0.1'
    implementation group: 'net.sf.jung', name: 'jung-visualization', version: '2.0.1'
-   implementation group: 'junit', name: 'junit', version: '4.9'
    implementation group: 'org.opt4j', name: 'opt4j-core', version: '3.1'
    implementation group: 'org.opt4j', name: 'opt4j-optimizers', version: '3.1'
    implementation group: 'org.opt4j', name: 'opt4j-viewer', version: '3.1' 
@@ -55,9 +63,17 @@ dependencies {
    implementation group: 'org.opt4j', name: 'opt4j-satdecoding', version: '3.1'
    implementation group: 'org.opt4j', name: 'opt4j-tutorial', version: '3.1'
    implementation group: 'org.ow2.sat4j', name: 'org.ow2.sat4j.core', version: '2.3.3'
-   implementation 'com.google.collections:google-collections:1.0'
    implementation 'commons-beanutils:commons-beanutils-core:1.8.0'
    implementation 'org.apache.commons:commons-math3:3.0'
+   extraLibs 'org.ros.rosjava_core:rosjava:0.3.6'
+   extraLibs 'org.ros.rosjava_bootstrap:message_generation:0.3.3'
+   implementation 'dnsjava:dnsjava:2.1.9'
+   extraLibs 'org.apache.commons:com.springsource.org.apache.commons.logging:1.1.1'
+   extraLibs 'org.apache.commons:com.springsource.org.apache.commons.net:2.0.0'
+   implementation 'com.google.guava:guava:28.0-jre'
+   testImplementation group: 'junit', name: 'junit', version: '4.12'
+   testImplementation 'org.ros.rosjava_messages:std_msgs:0.5.11'
+   testImplementation 'org.ros.rosjava_messages:rosjava_test_msgs:0.3.0'
 }
 
 jar {
