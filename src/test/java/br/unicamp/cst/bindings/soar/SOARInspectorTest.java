@@ -22,7 +22,7 @@ public class SOARInspectorTest {
     }
     
     @Test
-    public void testSOARInspector() {
+    public void testSOARInspector() throws InterruptedException {
     	
     	/* Set the Nimbus look and feel */
         //<editor-fold defaultstate="collapsed" desc=" Look and feel setting code (optional) ">
@@ -57,5 +57,9 @@ public class SOARInspectorTest {
         JSoarCodelet soarCodelet = new TestJSoarCodelet(soarRulesPath);
         SOARInspector si = new SOARInspector(soarCodelet);
         si.setVisible(true);	
+        
+        Thread.sleep(1000);
+        
+        si.setVisible(false);	
     }
 }

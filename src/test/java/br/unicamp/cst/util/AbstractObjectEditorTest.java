@@ -20,7 +20,7 @@ import br.unicamp.cst.representation.owrl.QualityDimension;
 public class AbstractObjectEditorTest {
 	
 	@Test
-	public void testAbstractObjectEditor() {
+	public void testAbstractObjectEditor() throws InterruptedException {
 		
 		AbstractObject robot = new AbstractObject("Robot");
 
@@ -210,6 +210,10 @@ public class AbstractObjectEditorTest {
         //System.out.println(robot);
        
         ov.setVisible(true);
+        
+        Thread.sleep(1000);
+        
+        ov.setVisible(false);
 	}
 
 }

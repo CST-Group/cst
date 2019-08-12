@@ -3,8 +3,6 @@
  */
 package br.unicamp.cst.bindings.soar;
 
-import javax.swing.JFileChooser;
-
 import org.junit.Test;
 
 /**
@@ -14,7 +12,7 @@ import org.junit.Test;
 public class WorkingMemoryViewerTest {
 	
 	@Test
-	public void testWorkingMemoryViewer() {
+	public void testWorkingMemoryViewer() throws InterruptedException {
 		/* Set the Nimbus look and feel */
         //<editor-fold defaultstate="collapsed" desc=" Look and feel setting code (optional) ">
         /* If Nimbus (introduced in Java SE 6) is not available, stay with the default look and feel.
@@ -54,5 +52,9 @@ public class WorkingMemoryViewerTest {
         WorkingMemoryViewer ov = new WorkingMemoryViewer("Teste",soarCodelet);
         ov.setVisible(true);
         ov.updateTree(soarCodelet.getJsoar().getStates());
+        
+        Thread.sleep(1000);
+        
+        ov.setVisible(false);
 	}
 }

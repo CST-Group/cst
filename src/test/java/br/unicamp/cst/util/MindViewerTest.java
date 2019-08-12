@@ -29,7 +29,7 @@ public class MindViewerTest {
     }
     
     @Test
-    public void testMindViewer() {
+    public void testMindViewer() throws InterruptedException {
     	
     	/* Set the Nimbus look and feel */
         //<editor-fold defaultstate="collapsed" desc=" Look and feel setting code (optional) ">
@@ -82,6 +82,10 @@ public class MindViewerTest {
         MindViewer ov = new MindViewer(m, "Mind", new ArrayList<>());
         ov.setVisible(true);
         System.out.println("Teste:");
-        // ov.updateTree(m);    	
+        // ov.updateTree(m);  
+        
+        Thread.sleep(1000);
+        
+        ov.setVisible(false);
     }
 }
