@@ -75,6 +75,8 @@ public abstract class RosServiceClientCodelet<S,T> extends Codelet implements No
 				if(response != null) {
 					processServiceResponse(response);
 					motorMemory.setI(null);
+					stopRosNode();
+					startRosNode();
 				}						
 			}
 
