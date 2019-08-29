@@ -6,7 +6,6 @@ package br.unicamp.cst.bindings.rosjava;
 import java.net.URI;
 
 import org.ros.exception.RemoteException;
-import org.ros.exception.RosRuntimeException;
 import org.ros.exception.ServiceNotFoundException;
 import org.ros.namespace.GraphName;
 import org.ros.node.ConnectedNode;
@@ -34,23 +33,25 @@ import br.unicamp.cst.core.exceptions.CodeletActivationBoundsException;
  * @param <T> Service Message Response - Ex: AddTwonIntsResponse from ROS Tutorials
  */
 public abstract class RosServiceClientCodelet<S,T> extends Codelet implements NodeMain {
-	
+
 	protected String nodeName;
-	
+
 	protected String service;
-	
+
 	protected String messageServiceType;
-	
+
 	protected Memory motorMemory;
-	
+
 	protected S serviceMessageRequest;
-	
+
 	protected ServiceClient<S, T> serviceClient;
-	
+
 	protected NodeMainExecutor nodeMainExecutor;
-	
+
 	protected NodeConfiguration nodeConfiguration;
 	
+	protected ServiceResponseListener<T> serviceResponseListener;
+
 	/**
 	 * Constructor for the RosServiceClientCodelet.
 	 * 
@@ -68,27 +69,44 @@ public abstract class RosServiceClientCodelet<S,T> extends Codelet implements No
 		this.messageServiceType = messageServiceType;
 		setName(nodeName);
 		
+		serviceResponseListener = new ServiceResponseListener<T>() {
+			@Override
+			public void onSuccess(T response) {			    	  
+				if(response != null) {
+					processServiceResponse(response);
+					motorMemory.setI(null);
+					stopRosNode();
+					startRosNode();
+				}						
+			}
+
+			@Override
+			public void onFailure(RemoteException e) {
+				e.printStackTrace();
+			}
+		};
+
 		nodeMainExecutor = DefaultNodeMainExecutor.newDefault();
 		nodeConfiguration = NodeConfiguration.newPublic(host,masterURI);
 	}
-	
+
 	@Override
 	public synchronized void start() {
 		startRosNode();
 		super.start();
 	}
-	
+
 	@Override
 	public synchronized void stop() {
-		
+
 		stopRosNode();
 		super.stop();
 	}
-	
+
 	private void startRosNode() {
 		nodeMainExecutor.execute(this, nodeConfiguration);
 	}
-	
+
 	private void stopRosNode() {
 		nodeMainExecutor.shutdownNodeMain(this);
 	}
@@ -119,39 +137,26 @@ public abstract class RosServiceClientCodelet<S,T> extends Codelet implements No
 			}
 		}
 	}
-	
+
 	/**
 	 * Prepare the service request to be sent, formatting it with the contents of the motor memory.
 	 * @param motorMemory the memory with the content to be formatted in the form of a service request.
 	 * @param serviceMessageRequest the service message request to be sent.
 	 */
 	public abstract void formatServiceRequest(Memory motorMemory, S serviceMessageRequest);
-	
+
 	private void callService() {
 		if(serviceClient != null && serviceMessageRequest != null) {
-		    serviceClient.call(serviceMessageRequest, new ServiceResponseListener<T>() {
-			      @Override
-			      public void onSuccess(T response) {			    	  
-			    	  if(response != null) {
-			    		  processServiceResponse(response);
-			    		  motorMemory.setI(null);
-			    	  }						
-			      }
-
-			      @Override
-			      public void onFailure(RemoteException e) {
-			        throw new RosRuntimeException(e);
-			      }
-			    });		   
+			serviceClient.call(serviceMessageRequest, serviceResponseListener);		   
 		}
 	}
-	
+
 	/**
 	 * Processes the service response in a free way.
 	 * @param serviceMessageResponse the response after the service has been executed.
 	 */
 	public abstract void processServiceResponse(T serviceMessageResponse);
-	
+
 	@Override
 	public GraphName getDefaultNodeName() {
 		return GraphName.of(nodeName);
@@ -159,12 +164,12 @@ public abstract class RosServiceClientCodelet<S,T> extends Codelet implements No
 
 	@Override
 	public void onStart(ConnectedNode connectedNode) {	    
-	    try {
-	      serviceClient = connectedNode.newServiceClient(service, messageServiceType);
-	    } catch (ServiceNotFoundException e) {
-	      throw new RosRuntimeException(e);
-	    }
-	    serviceMessageRequest = serviceClient.newMessage();
+		try {
+			serviceClient = connectedNode.newServiceClient(service, messageServiceType);
+		} catch (ServiceNotFoundException e) {
+			e.printStackTrace();
+		}
+		serviceMessageRequest = serviceClient.newMessage();
 	}
 
 	@Override
@@ -176,7 +181,7 @@ public abstract class RosServiceClientCodelet<S,T> extends Codelet implements No
 	public void onShutdownComplete(Node node) {
 		// empty
 	}
-	
+
 	@Override
 	public void onError(Node node, Throwable throwable) {
 		// empty
