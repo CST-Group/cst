@@ -112,4 +112,61 @@ public class RosJavaTest {
 		
 		mind.shutDown();
     }
+    
+    @Test
+    public void testRosServiceCalledTwice() throws URISyntaxException {
+    	
+    	AddTwoIntService addTwoIntService = new AddTwoIntService();
+		NodeMainExecutor nodeMainExecutor = DefaultNodeMainExecutor.newDefault();
+		NodeConfiguration nodeConfiguration = NodeConfiguration.newPublic("127.0.0.1",new URI("http://127.0.0.1:11311"));
+		nodeMainExecutor.execute(addTwoIntService, nodeConfiguration);
+				
+		try {
+			Thread.sleep(2000);
+		} catch (InterruptedException e) {
+			e.printStackTrace();
+		}
+		
+		Mind mind = new Mind();
+		
+		AddTwoIntServiceClient addTwoIntServiceClient = new AddTwoIntServiceClient("127.0.0.1",new URI("http://127.0.0.1:11311"));
+		
+		MemoryObject motorMemory = mind.createMemoryObject(addTwoIntServiceClient.getName());
+		addTwoIntServiceClient.addInput(motorMemory);
+		
+		Integer expectedSum = 5;
+		
+		Integer[] numsToSum = new Integer[] {2,3};
+		motorMemory.setI(numsToSum);	
+		
+		mind.insertCodelet(addTwoIntServiceClient);
+		
+		mind.start();
+		
+		try {
+			Thread.sleep(2000);
+		} catch (InterruptedException e) {
+			e.printStackTrace();
+		}
+		
+		assertEquals(expectedSum, addTwoIntServiceClient.getSum());
+		
+		expectedSum = 6;
+		
+		numsToSum = new Integer[] {3,3};
+		motorMemory.setI(numsToSum);
+		
+		try {
+			Thread.sleep(2000);
+		} catch (InterruptedException e) {
+			e.printStackTrace();
+		}
+		
+		assertEquals(expectedSum, addTwoIntServiceClient.getSum());
+		
+		nodeMainExecutor.shutdownNodeMain(addTwoIntService);
+		
+		mind.shutDown();
+    	
+    }
 }
