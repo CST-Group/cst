@@ -43,6 +43,8 @@ public abstract class RosServiceClientSync<S,T> implements NodeMain {
 	
 	protected BlockingQueue<T> blockingQueueServiceMessageResponse;
 	
+	protected BlockingQueue<Boolean> blockingQueueConnection;
+	
 	protected ServiceClient<S, T> serviceClient;
 
 	protected NodeMainExecutor nodeMainExecutor;
@@ -67,12 +69,14 @@ public abstract class RosServiceClientSync<S,T> implements NodeMain {
 		this.service = service;
 		this.messageServiceType = messageServiceType;
 		blockingQueueServiceMessageResponse = new ArrayBlockingQueue<T>(1);
+		blockingQueueConnection = new ArrayBlockingQueue<Boolean>(1);
 		
 		serviceResponseListener = new ServiceResponseListener<T>() {
 			@Override
 			public void onSuccess(T response) {			    	  
 				if(response != null) {
 					blockingQueueServiceMessageResponse.add(response);
+					stopRosNode();
 				}						
 			}
 
@@ -104,14 +108,10 @@ public abstract class RosServiceClientSync<S,T> implements NodeMain {
 	public abstract void formatServiceRequest(String[] args, S serviceMessageRequest);
 	
 	public T callService(String[] args) throws InterruptedException {
-		if(serviceClient == null ||  serviceMessageRequest == null) {
-			return null;
-		}
-		
+		blockingQueueConnection.take();		
 		formatServiceRequest(args, serviceMessageRequest);
 		serviceClient.call(serviceMessageRequest, serviceResponseListener);
-		T result = blockingQueueServiceMessageResponse.take();
-		stopRosNode();
+		T result = blockingQueueServiceMessageResponse.take();		
 		return result;
 	}
 	
@@ -128,6 +128,8 @@ public abstract class RosServiceClientSync<S,T> implements NodeMain {
 			e.printStackTrace();
 		}
 		serviceMessageRequest = serviceClient.newMessage();
+		
+		blockingQueueConnection.add(true);
 	}
 	
 	@Override

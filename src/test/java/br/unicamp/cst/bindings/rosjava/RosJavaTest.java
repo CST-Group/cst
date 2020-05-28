@@ -18,6 +18,7 @@ import org.ros.node.NodeMainExecutor;
 
 import br.unicamp.cst.core.entities.MemoryObject;
 import br.unicamp.cst.core.entities.Mind;
+import rosjava_test_msgs.AddTwoIntsResponse;
 
 /**
  * @author andre
@@ -68,6 +69,35 @@ public class RosJavaTest {
 	    assertEquals(messageExpected, messageActual);
 	    
 	    mind.shutDown();
+    }
+    
+    @Test
+    public void testRosServiceSync() throws URISyntaxException, InterruptedException {
+    	
+		AddTwoIntService addTwoIntService = new AddTwoIntService();
+		NodeMainExecutor nodeMainExecutor = DefaultNodeMainExecutor.newDefault();
+		NodeConfiguration nodeConfiguration = NodeConfiguration.newPublic("127.0.0.1",new URI("http://127.0.0.1:11311"));
+		nodeMainExecutor.execute(addTwoIntService, nodeConfiguration);
+				
+		try {
+			Thread.sleep(2000);
+		} catch (InterruptedException e) {
+			e.printStackTrace();
+		}
+				
+		AddTwoIntServiceClientSync addTwoIntServiceClient = new AddTwoIntServiceClientSync("127.0.0.1",new URI("http://127.0.0.1:11311"));
+		
+		long expectedSum = 5L;
+		
+		String[] numsToSum = new String[] {"2","3"};
+		
+		AddTwoIntsResponse addTwoIntsResponse = addTwoIntServiceClient.callService(numsToSum);
+		
+		long actualSum = addTwoIntsResponse.getSum();
+		
+		assertEquals(expectedSum, actualSum);
+		
+		nodeMainExecutor.shutdownNodeMain(addTwoIntService);
     }
     
     @Test
