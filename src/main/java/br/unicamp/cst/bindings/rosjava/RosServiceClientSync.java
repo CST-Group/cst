@@ -105,9 +105,9 @@ public abstract class RosServiceClientSync<S,T> implements NodeMain {
 	 * @param args the arguments with the content to be formatted in the form of a service request.
 	 * @param serviceMessageRequest the service message request to be sent.
 	 */
-	public abstract void formatServiceRequest(String[] args, S serviceMessageRequest);
+	public abstract void formatServiceRequest(Object[] args, S serviceMessageRequest);
 	
-	public T callService(String[] args) throws InterruptedException {
+	public T callService(Object[] args) throws InterruptedException {
 		blockingQueueConnection.take();		
 		formatServiceRequest(args, serviceMessageRequest);
 		serviceClient.call(serviceMessageRequest, serviceResponseListener);

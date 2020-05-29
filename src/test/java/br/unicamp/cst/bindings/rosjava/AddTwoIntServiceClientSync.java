@@ -19,11 +19,12 @@ public class AddTwoIntServiceClientSync extends RosServiceClientSync<AddTwoIntsR
 	}
 
 	@Override
-	public void formatServiceRequest(String[] args, AddTwoIntsRequest serviceMessageRequest) {
-		if(args != null && args.length == 2) {			
-			serviceMessageRequest.setA(Integer.valueOf(args[0]));
-			serviceMessageRequest.setB(Integer.valueOf(args[1]));
-		}	
+	public void formatServiceRequest(Object[] args, AddTwoIntsRequest serviceMessageRequest) {
+		try {				
+			serviceMessageRequest.setA((int) (args[0]));
+			serviceMessageRequest.setB((int) (args[1]));			
+		}catch (Exception e) {
+			e.printStackTrace();
+		}		
 	}
-
 }

@@ -89,7 +89,7 @@ public class RosJavaTest {
 		
 		long expectedSum = 5L;
 		
-		String[] numsToSum = new String[] {"2","3"};
+		Integer[] numsToSum = new Integer[] {2,3};
 		
 		AddTwoIntsResponse addTwoIntsResponse = addTwoIntServiceClient.callService(numsToSum);
 		
