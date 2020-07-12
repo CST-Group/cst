@@ -131,18 +131,21 @@ public abstract class RosServiceClientCodelet<S,T> extends Codelet implements No
 	public void proc() {
 		if(motorMemory != null && motorMemory.getI() != null) {
 			if(serviceMessageRequest != null) {
-				formatServiceRequest(motorMemory, serviceMessageRequest);
-				callService();				
+				if(formatServiceRequest(motorMemory, serviceMessageRequest)){
+					callService();
+				}							
 			}
 		}
 	}
 
 	/**
+	 * 
 	 * Prepare the service request to be sent, formatting it with the contents of the motor memory.
 	 * @param motorMemory the memory with the content to be formatted in the form of a service request.
 	 * @param serviceMessageRequest the service message request to be sent.
+	 * @return true if the ROS service should be called, otherwise false.
 	 */
-	public abstract void formatServiceRequest(Memory motorMemory, S serviceMessageRequest);
+	public abstract boolean formatServiceRequest(Memory motorMemory, S serviceMessageRequest);
 
 	private void callService() {
 		if(serviceClient != null && serviceMessageRequest != null) {
