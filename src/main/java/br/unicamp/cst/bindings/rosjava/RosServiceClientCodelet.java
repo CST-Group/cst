@@ -51,6 +51,8 @@ public abstract class RosServiceClientCodelet<S,T> extends Codelet implements No
 	protected NodeConfiguration nodeConfiguration;
 	
 	protected ServiceResponseListener<T> serviceResponseListener;
+	
+	private boolean shouldStopRunning = false;
 
 	/**
 	 * Constructor for the RosServiceClientCodelet.
@@ -74,8 +76,7 @@ public abstract class RosServiceClientCodelet<S,T> extends Codelet implements No
 			public void onSuccess(T response) {			    	  
 				if(response != null) {
 					processServiceResponse(response);
-					stopRosNode();
-					startRosNode();
+					stopRosNode();					
 				}						
 			}
 
@@ -97,7 +98,7 @@ public abstract class RosServiceClientCodelet<S,T> extends Codelet implements No
 
 	@Override
 	public synchronized void stop() {
-
+		shouldStopRunning = true;
 		stopRosNode();
 		super.stop();
 	}
@@ -107,6 +108,8 @@ public abstract class RosServiceClientCodelet<S,T> extends Codelet implements No
 	}
 
 	private void stopRosNode() {
+		serviceClient = null;
+		serviceMessageRequest = null;
 		nodeMainExecutor.shutdownNodeMain(this);
 	}
 
@@ -181,7 +184,9 @@ public abstract class RosServiceClientCodelet<S,T> extends Codelet implements No
 
 	@Override
 	public void onShutdownComplete(Node node) {
-		// empty
+		if(!shouldStopRunning) {
+			startRosNode();
+		}
 	}
 
 	@Override
