@@ -13,6 +13,8 @@ package br.unicamp.cst.core.entities;
 
 import br.unicamp.cst.bindings.soar.PlansSubsystemModule;
 import br.unicamp.cst.motivational.MotivationalSubsystemModule;
+import java.util.ArrayList;
+import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * This class represents the Mind of the agent, wrapping all the CST's core
@@ -24,10 +26,10 @@ import br.unicamp.cst.motivational.MotivationalSubsystemModule;
 public class Mind {
 
 	protected CodeRack codeRack;
-
 	protected RawMemory rawMemory;
+        protected ConcurrentHashMap<String,ArrayList> codelets;
 
-	private MotivationalSubsystemModule motivationalSubsystemModule;
+	//private MotivationalSubsystemModule motivationalSubsystemModule;
 
 	private PlansSubsystemModule plansSubsystemModule;
 
@@ -38,8 +40,9 @@ public class Mind {
 		codeRack = new CodeRack();
 
 		rawMemory = new RawMemory();
+                codelets = new ConcurrentHashMap();
 
-		motivationalSubsystemModule = new MotivationalSubsystemModule();
+		//motivationalSubsystemModule = new MotivationalSubsystemModule();
 
 		plansSubsystemModule = new PlansSubsystemModule();
 	}
@@ -62,6 +65,25 @@ public class Mind {
 		return rawMemory;
 	}
 
+	/**
+	 * Creates a Codelet Group
+	 * 
+	 * @param groupName The Group name
+	 * 
+	 */
+        public synchronized void createCodeletGroup(String groupName) {
+            ArrayList<Codelet> group = new ArrayList<Codelet>();
+            codelets.put(groupName,group);
+        }
+        
+        public ConcurrentHashMap<String,ArrayList> getGroups() {
+            return(codelets);
+        }
+        
+        public int getGroupsNumber() {
+            return(codelets.size());
+        }
+        
 	/**
 	 * Creates a Memory Container inside the Mind of a given type.
 	 * 
@@ -122,10 +144,34 @@ public class Mind {
 	public Codelet insertCodelet(Codelet co) {
 		if (codeRack != null)
 			codeRack.addCodelet(co);
-
 		return co;
 	}
 
+	/**
+	 * Inserts the Codelet passed in the Mind's CodeRack.
+	 * 
+	 * @param co the Codelet to be inserted in the Mind
+         * @param groupName the Codelet group name
+	 * @return the Codelet.
+	 */
+	public Codelet insertCodelet(Codelet co, String groupName) {
+                insertCodelet(co);
+                registerCodelet(co,groupName);
+                return co;
+	}
+
+        public void registerCodelet(Codelet co, String groupName) {
+            ArrayList<Codelet> groupList = codelets.get(groupName);
+                if (groupList != null) groupList.add(co);
+        }
+        
+
+        
+        public ArrayList<Codelet> getGroupList(String groupName) {
+                return(codelets.get(groupName));
+        }
+        
+        
 	/**
 	 * Starts all codelets in coderack.
 	 */
@@ -147,9 +193,9 @@ public class Mind {
 	 * 
 	 * @return the motivationalSubsystemModule.
 	 */
-	public MotivationalSubsystemModule getMotivationalSubsystemModule() {
-		return motivationalSubsystemModule;
-	}
+//	public MotivationalSubsystemModule getMotivationalSubsystemModule() {
+//		return motivationalSubsystemModule;
+//	}
 
 	/**
 	 * Sets the Motivational Subsystem Module.
@@ -157,9 +203,9 @@ public class Mind {
 	 * @param motivationalSubsystemModule
 	 *            the motivationalSubsystemModule to set.
 	 */
-	public void setMotivationalSubsystemModule(MotivationalSubsystemModule motivationalSubsystemModule) {
-		this.motivationalSubsystemModule = motivationalSubsystemModule;
-	}
+//	public void setMotivationalSubsystemModule(MotivationalSubsystemModule motivationalSubsystemModule) {
+//		this.motivationalSubsystemModule = motivationalSubsystemModule;
+//	}
 
 	/**
 	 * Gets the Plans Subsystem Module.

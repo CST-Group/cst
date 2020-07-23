@@ -10,9 +10,8 @@
  * K. Raizer, A. L. O. Paraense, E. M. Froes, R. R. Gudwin - initial API and implementation
  * *********************************************************************************************
  */
-package br.unicamp.cst.util;
+package br.unicamp.cst.util.viewer;
 
-import br.unicamp.cst.util.viewer.*;
 import java.awt.BorderLayout;
 import java.util.Calendar;
 import java.util.List;
@@ -46,7 +45,7 @@ import br.unicamp.cst.util.TreeViewerUtil;
  *
  * @author gudwin
  */
-public class MindViewer extends javax.swing.JFrame {
+public class MindViewer2 extends javax.swing.JFrame {
 
     private String windowName;
     private JTree jtree;
@@ -96,7 +95,7 @@ public class MindViewer extends javax.swing.JFrame {
      * @param windowName Name to be used by MindViewer
      * @param behavioralCodelets A list of behavioral codelets
      */
-    public MindViewer(Mind mind, String windowName, List<Codelet> behavioralCodelets) {
+    public MindViewer2(Mind mind, String windowName, List<Codelet> behavioralCodelets) {
         initComponents();
         setMind(mind);
         setWindowName(windowName);
@@ -136,9 +135,8 @@ public class MindViewer extends javax.swing.JFrame {
     
     
     private void buildMindModulePanels(Mind mind){
-        
         //if(mind.getMotivationalSubsystemModule().verifyExistCodelets()){
-        if(mind.getGroupList("Motivational").size() > 0) {   
+        if(mind.getGroupList("Motivational").size() > 0) {     
             motivationalModuleViewer = new MotivationalSubsystemViewer(Long.parseLong(txtRefreshTime.getText()), mind);
             tbModules.add("Motivational Subsystem", motivationalModuleViewer);
         }
@@ -452,7 +450,7 @@ public class MindViewer extends javax.swing.JFrame {
                                 getThreadMindEntities().wait();
                             }
                         } catch (InterruptedException ex) {
-                            Logger.getLogger(MindViewer.class.getName()).log(Level.SEVERE, null, ex);
+                            Logger.getLogger(MindViewer2.class.getName()).log(Level.SEVERE, null, ex);
                         }
                     }
 
@@ -482,27 +480,27 @@ public class MindViewer extends javax.swing.JFrame {
     public void setMind(Mind newwog) {
         setWog(newwog);
     }
-//    public void updateTree(Mind m) {
-//        setWog(m);
-//        TreeModel tm = TreeViewerUtil.createTreeModel(m);
-//        getJtree().setModel(tm);
-//        //TreeViewerUtil.expandAllNodes(getJtree());
-//    }
-//
-//    public void StartTimer() {
-//        Timer t = new Timer();
-//        MVTimerTask tt = new MVTimerTask(this);
-//        t.scheduleAtFixedRate(tt, 0, 3000);
-//    }
-//
-//    public void tick() {
-//        if (getWog() != null) {
-//            updateTree(getWog());
-//        } else {
-//            System.out.println("Mind � null");
-//        }
-//        System.out.println("update");
-//    }
+    public void updateTree(Mind m) {
+        setWog(m);
+        TreeModel tm = TreeViewerUtil.createTreeModel(m);
+        getJtree().setModel(tm);
+        //TreeViewerUtil.expandAllNodes(getJtree());
+    }
+
+    public void StartTimer() {
+        Timer t = new Timer();
+        MVTimerTask tt = new MVTimerTask(this);
+        t.scheduleAtFixedRate(tt, 0, 3000);
+    }
+
+    public void tick() {
+        if (getWog() != null) {
+            updateTree(getWog());
+        } else {
+            System.out.println("Mind � null");
+        }
+        System.out.println("update");
+    }
 
     public String getWindowName() {
         return windowName;
@@ -602,25 +600,25 @@ public class MindViewer extends javax.swing.JFrame {
 
 
 
-//    class MVTimerTask extends TimerTask {
-//
-//        MindViewer mv;
-//        boolean enabled = true;
-//
-//        public MVTimerTask(MindViewer mvi) {
-//            mv = mvi;
-//        }
-//
-//        public void run() {
-//            if (enabled) {
-//                mv.tick();
-//            }
-//        }
-//
-//        public void setEnabled(boolean value) {
-//            enabled = value;
-//        }
-//    }
+    class MVTimerTask extends TimerTask {
+
+        MindViewer2 mv;
+        boolean enabled = true;
+
+        public MVTimerTask(MindViewer2 mvi) {
+            mv = mvi;
+        }
+
+        public void run() {
+            if (enabled) {
+                mv.tick();
+            }
+        }
+
+        public void setEnabled(boolean value) {
+            enabled = value;
+        }
+    }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton btnMinus;

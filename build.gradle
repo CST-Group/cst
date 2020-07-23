@@ -80,6 +80,11 @@ jar {
     from {
     	configurations.extraLibs.collect { it.isDirectory() ? it : zipTree(it) }
     }
+    manifest {
+      attributes(
+        'Class-Path': configurations.runtimeClasspath.files.collect { it.getName() }.join(' ')    
+      )
+    }
 }
 
 task javadocJar(type: Jar) {
@@ -96,9 +101,17 @@ task sourcesJar(type: Jar) {
     	configurations.extraLibs.collect { it.isDirectory() ? it : zipTree(it) }
     }
 }
+task uberJar(type: Jar) {
+    archiveClassifier = 'full'
+    from sourceSets.main.output
+    dependsOn configurations.runtimeClasspath
+    from {
+        configurations.runtimeClasspath.findAll { it.name.endsWith('jar') }.collect { zipTree(it) }
+    }
+}
 artifacts
 {
-    archives javadocJar, sourcesJar
+    archives javadocJar, sourcesJar, uberJar
 }
 
 jacocoTestReport {

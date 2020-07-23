@@ -73,7 +73,8 @@ public abstract class RosServiceClientCodelet<S,T> extends Codelet implements No
 		
 		serviceResponseListener = new ServiceResponseListener<T>() {
 			@Override
-			public void onSuccess(T response) {			    	  
+			public void onSuccess(T response) {	
+                                System.out.println("onSuccess");
 				if(response != null) {
 					processServiceResponse(response);
 					stopRosNode();					
@@ -82,6 +83,7 @@ public abstract class RosServiceClientCodelet<S,T> extends Codelet implements No
 
 			@Override
 			public void onFailure(RemoteException e) {
+                                System.out.println("onFailure");
 				e.printStackTrace();
 			}
 		};
@@ -92,22 +94,26 @@ public abstract class RosServiceClientCodelet<S,T> extends Codelet implements No
 
 	@Override
 	public synchronized void start() {
+                System.out.println("start");
 		startRosNode();
 		super.start();
 	}
 
 	@Override
 	public synchronized void stop() {
+                System.out.println("stop");
 		shouldStopRunning = true;
 		stopRosNode();
 		super.stop();
 	}
 
 	private void startRosNode() {
+                System.out.println("Starting ROS Node");
 		nodeMainExecutor.execute(this, nodeConfiguration);
 	}
 
 	private void stopRosNode() {
+                System.out.println("Stopping ROS Node");
 		serviceClient = null;
 		serviceMessageRequest = null;
 		nodeMainExecutor.shutdownNodeMain(this);
@@ -179,7 +185,7 @@ public abstract class RosServiceClientCodelet<S,T> extends Codelet implements No
 
 	@Override
 	public void onShutdown(Node node) {
-		// empty
+		System.out.println("Shutting down ...");
 	}
 
 	@Override
@@ -191,6 +197,7 @@ public abstract class RosServiceClientCodelet<S,T> extends Codelet implements No
 
 	@Override
 	public void onError(Node node, Throwable throwable) {
+                System.out.println("ROS Servie Error ...");
 		// empty
 	}
 }

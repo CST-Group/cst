@@ -8,12 +8,11 @@ package br.unicamp.cst.motivational;
 import br.unicamp.cst.core.entities.Codelet;
 import br.unicamp.cst.core.entities.Mind;
 import br.unicamp.cst.util.ChartViewerUtil;
-import br.unicamp.cst.util.MindViewer;
 import br.unicamp.cst.util.TreeViewerUtil;
+import br.unicamp.cst.util.viewer.CodeletPanel;
 import java.awt.BorderLayout;
+import java.awt.GridBagConstraints;
 import java.util.List;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import javax.swing.tree.DefaultTreeModel;
 import org.jfree.chart.ChartPanel;
 import org.jfree.chart.plot.PlotOrientation;
@@ -25,11 +24,11 @@ import org.jfree.data.category.DefaultCategoryDataset;
  */
 public class MotivationalSubsystemViewer extends javax.swing.JPanel {
 
-    private List<MotivationalCodelet> motivationalCodelets;
-    private List<EmotionalCodelet> emotionalCodelets;
-    private List<GoalCodelet> goalCodelets;
-    private List<AppraisalCodelet> appraisalCodelets;
-    private List<MoodCodelet> moodCodelets;
+    private List<Codelet> motivationalCodelets;
+    private List<Codelet> emotionalCodelets;
+    private List<Codelet> goalCodelets;
+    private List<Codelet> appraisalCodelets;
+    private List<Codelet> moodCodelets;
     
     private Thread threadDrives;
     private Thread threadEmotionalDrives;
@@ -49,24 +48,32 @@ public class MotivationalSubsystemViewer extends javax.swing.JPanel {
     private DefaultTreeModel dtAppraisalCodelets;
     private DefaultTreeModel dtMoodCodelets;
     private DefaultTreeModel dtGoalCodelets;
+    private Mind m;
     /**
      * Creates new form MotivationalSubsystemViewer
      */
     public MotivationalSubsystemViewer(long refreshTime, Mind mind) {
         initComponents();
         setRefreshTime(refreshTime);
-        initMotivationalSubsystemViewer(mind.getMotivationalSubsystemModule().getMotivationalCodelets(), 
-                                        mind.getMotivationalSubsystemModule().getEmotionalCodelets(), 
-                                        mind.getMotivationalSubsystemModule().getGoalCodelets(), 
-                                        mind.getMotivationalSubsystemModule().getAppraisalCodelets(), 
-                                        mind.getMotivationalSubsystemModule().getMoodCodelets());
+//        initMotivationalSubsystemViewer(mind.getMotivationalSubsystemModule().getMotivationalCodelets(), 
+//                                        mind.getMotivationalSubsystemModule().getEmotionalCodelets(), 
+//                                        mind.getMotivationalSubsystemModule().getGoalCodelets(), 
+//                                        mind.getMotivationalSubsystemModule().getAppraisalCodelets(), 
+//                                        mind.getMotivationalSubsystemModule().getMoodCodelets());
+        initMotivationalSubsystemViewer(mind.getGroupList("Motivational"), 
+                                        mind.getGroupList("Emotional"),
+                                        mind.getGroupList("Goal"),
+                                        mind.getGroupList("Appraisal"),
+                                        mind.getGroupList("Moode")
+                                        );
+        m = mind;
     }
     
-    private void initMotivationalSubsystemViewer(List<MotivationalCodelet> motivationalCodelets,
-                                                List<EmotionalCodelet> emotionalCodelets,
-                                                List<GoalCodelet> goalCodelets,
-                                                List<AppraisalCodelet> appraisalCodelets,
-                                                List<MoodCodelet> moodCodelets) {
+    private void initMotivationalSubsystemViewer(List<Codelet> motivationalCodelets,
+                                                List<Codelet> emotionalCodelets,
+                                                List<Codelet> goalCodelets,
+                                                List<Codelet> appraisalCodelets,
+                                                List<Codelet> moodCodelets) {
         setMotivationalCodelets(motivationalCodelets);
         setEmotionalCodelets(emotionalCodelets);
         setGoalCodelets(goalCodelets);
@@ -88,22 +95,37 @@ public class MotivationalSubsystemViewer extends javax.swing.JPanel {
                     pnDrives.add(getMotivationalChart(), BorderLayout.CENTER);
                     pnDrives.validate();
                 }
+                
+                GridBagConstraints gridBagConstraints = new java.awt.GridBagConstraints();
+                gridBagConstraints.gridx = 0;
+                gridBagConstraints.gridy = 1;
+                gridBagConstraints.gridwidth = java.awt.GridBagConstraints.REMAINDER;
+                gridBagConstraints.gridheight = java.awt.GridBagConstraints.REMAINDER;
+                gridBagConstraints.fill = java.awt.GridBagConstraints.BOTH;
+                gridBagConstraints.ipadx = 161;
+                gridBagConstraints.ipady = 197;
+                gridBagConstraints.anchor = java.awt.GridBagConstraints.NORTHWEST;
+                gridBagConstraints.weightx = 0.1;
+                gridBagConstraints.weighty = 0.1;
+                gridBagConstraints.insets = new java.awt.Insets(5, 0, 0, 2);
+                pnTreeDrives.add(new CodeletPanel(m,"Motivational","Motivational Codelets"),gridBagConstraints);
+                pnTreeDrives.validate();
 
                 while (!isStopRefresh()) {
 
-                    while ((!cbRefreshDrives.isSelected() && !cbDrivesChart.isSelected()) || getSelectedIndex() != 0) {
-                        try {
-                            synchronized (getThreadDrives()) {
-                                getThreadDrives().wait();
-                            }
-                        } catch (InterruptedException ex) {
-                            Logger.getLogger(MindViewer.class.getName()).log(Level.SEVERE, null, ex);
-                        }
-                    }
-
-                    if (cbRefreshDrives.isSelected()) {
-                        TreeViewerUtil.createTreeModelGUI(spMotivationalCodelets, getMotivationalCodelets(), "Motivational Codelets");
-                    }
+//                    while ((!cbRefreshDrives.isSelected() && !cbDrivesChart.isSelected()) || getSelectedIndex() != 0) {
+//                        try {
+//                            synchronized (getThreadDrives()) {
+//                                getThreadDrives().wait();
+//                            }
+//                        } catch (InterruptedException ex) {
+//                            Logger.getLogger(MindViewer.class.getName()).log(Level.SEVERE, null, ex);
+//                        }
+//                    }
+//
+//                    if (cbRefreshDrives.isSelected()) {
+//                        //TreeViewerUtil.createTreeModelGUI(spMotivationalCodelets, getMotivationalCodelets(), "Motivational Codelets");
+//                    }
                    
                     if (cbDrivesChart.isSelected()) {
                         ChartViewerUtil.updateValuesInChart(dataset, getMotivationalCodelets());
@@ -261,8 +283,6 @@ public class MotivationalSubsystemViewer extends javax.swing.JPanel {
         tbMotivationalSubsystem = new javax.swing.JTabbedPane();
         splDrives = new javax.swing.JSplitPane();
         pnTreeDrives = new javax.swing.JPanel();
-        cbRefreshDrives = new javax.swing.JCheckBox();
-        spMotivationalCodelets = new javax.swing.JScrollPane();
         pnDrivesChart = new javax.swing.JPanel();
         pnDrives = new javax.swing.JPanel();
         cbDrivesChart = new javax.swing.JCheckBox();
@@ -297,26 +317,6 @@ public class MotivationalSubsystemViewer extends javax.swing.JPanel {
 
         pnTreeDrives.setMinimumSize(new java.awt.Dimension(0, 0));
         pnTreeDrives.setLayout(new java.awt.GridBagLayout());
-
-        cbRefreshDrives.setSelected(true);
-        cbRefreshDrives.setText("Auto Refresh");
-        cbRefreshDrives.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                cbRefreshDrivesActionPerformed(evt);
-            }
-        });
-        pnTreeDrives.add(cbRefreshDrives, new java.awt.GridBagConstraints());
-        gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.gridx = 0;
-        gridBagConstraints.gridy = 1;
-        gridBagConstraints.gridwidth = 12;
-        gridBagConstraints.gridheight = 16;
-        gridBagConstraints.fill = java.awt.GridBagConstraints.BOTH;
-        gridBagConstraints.anchor = java.awt.GridBagConstraints.FIRST_LINE_START;
-        gridBagConstraints.weightx = 0.1;
-        gridBagConstraints.weighty = 0.1;
-        pnTreeDrives.add(spMotivationalCodelets, gridBagConstraints);
-
         splDrives.setLeftComponent(pnTreeDrives);
 
         pnDrivesChart.setLayout(new java.awt.GridBagLayout());
@@ -515,16 +515,6 @@ public class MotivationalSubsystemViewer extends javax.swing.JPanel {
         add(tbMotivationalSubsystem, gridBagConstraints);
     }// </editor-fold>//GEN-END:initComponents
 
-    private void cbRefreshDrivesActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_cbRefreshDrivesActionPerformed
-        if (cbRefreshDrives.isSelected()) {
-            synchronized (getThreadDrives()) {
-                if (getThreadDrives() != null) {
-                    getThreadDrives().notify();
-                }
-            }
-        }
-    }//GEN-LAST:event_cbRefreshDrivesActionPerformed
-
     private void cbRefreshEmotionalDrivesActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_cbRefreshEmotionalDrivesActionPerformed
         if (cbRefreshEmotionalDrives.isSelected()) {
             synchronized (getThreadEmotionalDrives()) {
@@ -598,7 +588,6 @@ public class MotivationalSubsystemViewer extends javax.swing.JPanel {
     private javax.swing.JCheckBox cbEmotionalChart;
     private javax.swing.JPanel cbGoalsCodelets;
     private javax.swing.JCheckBox cbRefreshAppraisals;
-    private javax.swing.JCheckBox cbRefreshDrives;
     private javax.swing.JCheckBox cbRefreshEmotionalDrives;
     private javax.swing.JCheckBox cbRefreshGoals;
     private javax.swing.JCheckBox cbRefreshMood;
@@ -614,7 +603,6 @@ public class MotivationalSubsystemViewer extends javax.swing.JPanel {
     private javax.swing.JScrollPane spEmotionalCodelets;
     private javax.swing.JScrollPane spGoalCodelets;
     private javax.swing.JScrollPane spMoodCodelets;
-    private javax.swing.JScrollPane spMotivationalCodelets;
     private javax.swing.JSplitPane splDrives;
     private javax.swing.JSplitPane splEmotional;
     private javax.swing.JTabbedPane tbMotivationalSubsystem;
@@ -832,43 +820,43 @@ public class MotivationalSubsystemViewer extends javax.swing.JPanel {
         this.refreshTime = refreshTime;
     }
 
-    public List<MotivationalCodelet> getMotivationalCodelets() {
+    public List<Codelet> getMotivationalCodelets() {
         return motivationalCodelets;
     }
 
-    public void setMotivationalCodelets(List<MotivationalCodelet> motivationalCodelets) {
+    public void setMotivationalCodelets(List<Codelet> motivationalCodelets) {
         this.motivationalCodelets = motivationalCodelets;
     }
 
-    public List<EmotionalCodelet> getEmotionalCodelets() {
+    public List<Codelet> getEmotionalCodelets() {
         return emotionalCodelets;
     }
 
-    public void setEmotionalCodelets(List<EmotionalCodelet> emotionalCodelets) {
+    public void setEmotionalCodelets(List<Codelet> emotionalCodelets) {
         this.emotionalCodelets = emotionalCodelets;
     }
 
-    public List<GoalCodelet> getGoalCodelets() {
+    public List<Codelet> getGoalCodelets() {
         return goalCodelets;
     }
 
-    public void setGoalCodelets(List<GoalCodelet> goalCodelets) {
+    public void setGoalCodelets(List<Codelet> goalCodelets) {
         this.goalCodelets = goalCodelets;
     }
 
-    public List<AppraisalCodelet> getAppraisalCodelets() {
+    public List<Codelet> getAppraisalCodelets() {
         return appraisalCodelets;
     }
 
-    public void setAppraisalCodelets(List<AppraisalCodelet> appraisalCodelets) {
+    public void setAppraisalCodelets(List<Codelet> appraisalCodelets) {
         this.appraisalCodelets = appraisalCodelets;
     }
 
-    public List<MoodCodelet> getMoodCodelets() {
+    public List<Codelet> getMoodCodelets() {
         return moodCodelets;
     }
 
-    public void setMoodCodelets(List<MoodCodelet> moodCodelets) {
+    public void setMoodCodelets(List<Codelet> moodCodelets) {
         this.moodCodelets = moodCodelets;
     }
 }
