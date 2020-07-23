@@ -4,6 +4,7 @@
 package br.unicamp.cst.bindings.rosjava;
 
 import java.net.URI;
+import java.util.concurrent.Semaphore;
 
 import org.ros.exception.RemoteException;
 import org.ros.exception.ServiceNotFoundException;
@@ -52,7 +53,7 @@ public abstract class RosServiceClientCodelet<S,T> extends Codelet implements No
 	
 	protected ServiceResponseListener<T> serviceResponseListener;
 	
-	private boolean shouldStopRunning = false;
+	private Semaphore callInProgressSemaphore = new Semaphore(1);
 
 	/**
 	 * Constructor for the RosServiceClientCodelet.
@@ -77,7 +78,7 @@ public abstract class RosServiceClientCodelet<S,T> extends Codelet implements No
                                 System.out.println("onSuccess");
 				if(response != null) {
 					processServiceResponse(response);
-					stopRosNode();					
+					callInProgressSemaphore.release();
 				}						
 			}
 
@@ -102,7 +103,6 @@ public abstract class RosServiceClientCodelet<S,T> extends Codelet implements No
 	@Override
 	public synchronized void stop() {
                 System.out.println("stop");
-		shouldStopRunning = true;
 		stopRosNode();
 		super.stop();
 	}
@@ -138,12 +138,12 @@ public abstract class RosServiceClientCodelet<S,T> extends Codelet implements No
 
 	@Override
 	public void proc() {
-		if(motorMemory != null && motorMemory.getI() != null) {
-			if(serviceMessageRequest != null) {
-				if(formatServiceRequest(motorMemory, serviceMessageRequest)){
-					callService();
-				}							
-			}
+		if(motorMemory != null 
+				&& motorMemory.getI() != null 
+				&& serviceMessageRequest != null 
+				&& formatServiceRequest(motorMemory, serviceMessageRequest)) 
+		{
+			callService();
 		}
 	}
 
@@ -158,7 +158,12 @@ public abstract class RosServiceClientCodelet<S,T> extends Codelet implements No
 
 	private void callService() {
 		if(serviceClient != null && serviceMessageRequest != null) {
-			serviceClient.call(serviceMessageRequest, serviceResponseListener);		   
+			try {
+				callInProgressSemaphore.acquire();
+			} catch (InterruptedException e) {
+				e.printStackTrace();
+			}
+			serviceClient.call(serviceMessageRequest, serviceResponseListener);
 		}
 	}
 
@@ -190,9 +195,7 @@ public abstract class RosServiceClientCodelet<S,T> extends Codelet implements No
 
 	@Override
 	public void onShutdownComplete(Node node) {
-		if(!shouldStopRunning) {
-			startRosNode();
-		}
+		// empty
 	}
 
 	@Override
