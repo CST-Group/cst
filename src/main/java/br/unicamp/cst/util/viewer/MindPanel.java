@@ -148,17 +148,6 @@ public class MindPanel extends javax.swing.JPanel {
                 String isize;
                 if (m instanceof MemoryContainer && m.getName().equalsIgnoreCase(nodeName)) {
                     isize = " {"+((MemoryContainer)m).getAllMemories().size()+"}";
-//                    if (((MemoryContainer)m).getAllMemories().size() > 5) {
-//                      System.out.println(".............Inspecting MemoryContainer "+m.getName());  
-//                      CopyOnWriteArrayList<Memory> mm2 = new CopyOnWriteArrayList(((MemoryContainer)m).getAllMemories());  
-//                      for (Memory mc2 : mm2) {
-//                        String name = mc2.getName();
-//                        if (name.equalsIgnoreCase("")) {
-//                            name="EMPTYSTRING"+mc2.toString();
-//                        }
-//                        System.out.println("Inspectioning MemoryContainer: "+name);
-//                      }
-//                    }  
                 }    
                 else isize = " ("+String.format("%4.2f", m.getEvaluation())+")";
                 if (o instanceof Double) {
@@ -169,7 +158,29 @@ public class MindPanel extends javax.swing.JPanel {
                     float value = (float)o;
                     memValue = toString(value)+isize;
                 }
-                else memValue = o.toString()+isize;
+                else if (o instanceof float[]) {
+                    float[] value = (float[])o;
+                    String aprox;
+                    if (value.length == 1)
+                        aprox = String.format("%4.2f",value[0]);
+                    else if (value.length == 2)
+                        aprox = String.format("%4.2f,%4.2f",value[0],value[1]);
+                    else if (value.length == 3)
+                        aprox = String.format("%4.2f,%4.2f,%4.2f",value[0],value[1],value[2]);
+                    else if (value.length == 4)
+                        aprox = String.format("%4.2f,%4.2f,%4.2f,%4.2f",value[0],value[1],value[2],value[3]);
+                    else if (value.length == 5)
+                        aprox = String.format("%4.2f,%4.2f,%4.2f,%4.2f,%4.2f",value[0],value[1],value[2],value[3],value[4]);
+                    else if (value.length == 6)
+                        aprox = String.format("%4.2f,%4.2f,%4.2f,%4.2f,%4.2f,%4.2f",value[0],value[1],value[2],value[3],value[4],value[5]);
+                    else
+                        aprox = String.format("%4.2f,%4.2f,%4.2f,%4.2f,%4.2f,,%4.2f...",value[0],value[1],value[2],value[3],value[4],value[5]);
+                    memValue = aprox+isize;
+                }
+                else { 
+                    //System.out.println(m.getName()+": "+o.getClass().getCanonicalName());
+                    memValue = o.toString()+isize;
+                }    
                 return(memValue);
             }   
         }

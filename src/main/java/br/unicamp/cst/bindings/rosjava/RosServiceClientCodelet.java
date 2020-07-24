@@ -95,7 +95,7 @@ public abstract class RosServiceClientCodelet<S,T> extends Codelet implements No
 
 	@Override
 	public synchronized void start() {
-                System.out.println("start");
+                System.out.println("start: "+this.name+" "+this.nodeName);
 		startRosNode();
 		super.start();
 	}

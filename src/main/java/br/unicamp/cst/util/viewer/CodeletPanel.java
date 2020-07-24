@@ -159,6 +159,25 @@ public class CodeletPanel extends javax.swing.JPanel {
                     float value = (float)o;
                     memValue = toString(value)+isize;
                 }
+                else if (o instanceof float[]) {
+                    float[] value = (float[])o;
+                    String aprox;
+                    if (value.length == 1)
+                        aprox = String.format("%4.2f",value[0]);
+                    else if (value.length == 2)
+                        aprox = String.format("%4.2f,%4.2f",value[0],value[1]);
+                    else if (value.length == 3)
+                        aprox = String.format("%4.2f,%4.2f,%4.2f",value[0],value[1],value[2]);
+                    else if (value.length == 4)
+                        aprox = String.format("%4.2f,%4.2f,%4.2f,%4.2f",value[0],value[1],value[2],value[3]);
+                    else if (value.length == 5)
+                        aprox = String.format("%4.2f,%4.2f,%4.2f,%4.2f,%4.2f",value[0],value[1],value[2],value[3],value[4]);
+                    else if (value.length == 6)
+                        aprox = String.format("%4.2f,%4.2f,%4.2f,%4.2f,%4.2f,%4.2f",value[0],value[1],value[2],value[3],value[4],value[5]);
+                    else
+                        aprox = String.format("%4.2f,%4.2f,%4.2f,%4.2f,%4.2f,,%4.2f...",value[0],value[1],value[2],value[3],value[4],value[5]);
+                    memValue = aprox+isize;
+                }
                 else memValue = o.toString()+isize;
                 return(memValue);
             }   
