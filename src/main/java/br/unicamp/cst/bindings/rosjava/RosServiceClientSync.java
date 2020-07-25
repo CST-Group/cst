@@ -76,7 +76,7 @@ public abstract class RosServiceClientSync<S,T> implements NodeMain {
 			public void onSuccess(T response) {			    	  
 				if(response != null) {
 					blockingQueueServiceMessageResponse.add(response);
-					stopRosNode();
+					blockingQueueConnection.add(true);
 				}						
 			}
 
@@ -95,7 +95,7 @@ public abstract class RosServiceClientSync<S,T> implements NodeMain {
 		nodeMainExecutor.execute(this, nodeConfiguration);
 	}
  
-	private void stopRosNode() {
+	public void stopRosNode() {
 		nodeMainExecutor.shutdownNodeMain(this);
 	}
 	
