@@ -69,6 +69,12 @@ public class RosJavaTest {
 	    assertEquals(messageExpected, messageActual);
 	    
 	    mind.shutDown();
+	    
+	    try {
+			Thread.sleep(2000);
+		} catch (InterruptedException e) {
+			e.printStackTrace();
+		}
     }
     
     @Test
@@ -97,7 +103,31 @@ public class RosJavaTest {
 		
 		assertEquals(expectedSum, actualSum);
 		
+		long expectedSum2 = 6L;
+		
+		Integer[] numsToSum2 = new Integer[] {2,4};
+		
+		AddTwoIntsResponse addTwoIntsResponse2 = addTwoIntServiceClient.callService(numsToSum2);
+		
+		long actualSum2 = addTwoIntsResponse2.getSum();
+		
+		assertEquals(expectedSum2, actualSum2);
+		
+		addTwoIntServiceClient.stopRosNode();
+		
+		try {
+			Thread.sleep(2000);
+		} catch (InterruptedException e) {
+			e.printStackTrace();
+		}
+		
 		nodeMainExecutor.shutdownNodeMain(addTwoIntService);
+		
+		try {
+			Thread.sleep(2000);
+		} catch (InterruptedException e) {
+			e.printStackTrace();
+		}
     }
     
     @Test
@@ -138,9 +168,23 @@ public class RosJavaTest {
 		
 		assertEquals(expectedSum, addTwoIntServiceClient.getSum());
 		
+		mind.shutDown();
+		
+		try {
+			Thread.sleep(2000);
+		} catch (InterruptedException e) {
+			e.printStackTrace();
+		}
+		
 		nodeMainExecutor.shutdownNodeMain(addTwoIntService);
 		
-		mind.shutDown();
+		try {
+			Thread.sleep(2000);
+		} catch (InterruptedException e) {
+			e.printStackTrace();
+		}
+		
+		
     }
     
     @Test
@@ -194,9 +238,21 @@ public class RosJavaTest {
 		
 		assertEquals(expectedSum, addTwoIntServiceClient.getSum());
 		
+		mind.shutDown();
+		
+		try {
+			Thread.sleep(2000);
+		} catch (InterruptedException e) {
+			e.printStackTrace();
+		}
+		
 		nodeMainExecutor.shutdownNodeMain(addTwoIntService);
 		
-		mind.shutDown();
+		try {
+			Thread.sleep(2000);
+		} catch (InterruptedException e) {
+			e.printStackTrace();
+		}
     	
     }
 }
