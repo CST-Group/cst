@@ -156,6 +156,7 @@ public abstract class RosServiceClientCodelet<S,T> extends Codelet implements No
 				callInProgressSemaphore.acquire();
 			} catch (InterruptedException e) {
 				e.printStackTrace();
+				Thread.currentThread().interrupt();
 			}
 			serviceClient.call(serviceMessageRequest, serviceResponseListener);
 		}
