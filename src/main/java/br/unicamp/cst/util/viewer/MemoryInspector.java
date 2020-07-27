@@ -27,6 +27,7 @@ import java.util.Enumeration;
 import java.util.List;
 import java.util.Timer;
 import java.util.TimerTask;
+import java.util.logging.Logger;
 import javax.swing.ImageIcon;
 import javax.swing.JMenuItem;
 import javax.swing.JPopupMenu;
@@ -55,6 +56,7 @@ public class MemoryInspector extends javax.swing.JFrame {
     MemoryInspector.MITimerTask tt;
     boolean capture=false;
     ArrayList<String> listtoavoidloops = new ArrayList<>();
+    Logger log = Logger.getLogger(MemoryInspector.class.getCanonicalName());
 
     /**
      * Creates new form MemoryInspector
@@ -106,10 +108,10 @@ public class MemoryInspector extends javax.swing.JFrame {
                treeNode = obj.updateMap.get(parent);
                if (treeNode == null) {
                    // if I am here it means I failed in finding the parent of the unknown node   
-                   System.out.println("Unable to find the parent of "+name+": "+parent);
-                   System.out.println("Current List to Avoid Loops");
+                   log.warning("Unable to find the parent of "+name+": "+parent);
+                   log.warning("Current List to Avoid Loops");
                     for (String ss : listtoavoidloops) {
-                        System.out.println(s+"->"+ss);
+                        log.warning(s+"->"+ss);
                     }
                     return;
                }
@@ -121,16 +123,16 @@ public class MemoryInspector extends javax.swing.JFrame {
             }
             else {
                // If I am here this means I failed in finding the variable parent
-               System.out.println("Trying to update something which does not exist: "+name+": "+s);
+               log.warning("Trying to update something which does not exist: "+name+": "+s);
                for (String ss : listtoavoidloops) {
-                  System.out.println(s+"->"+ss);
+                  log.warning(s+"->"+ss);
                }
             }   
             return;
         }
         TreeElement element = (TreeElement) treeNode.getUserObject();
         String nodeName = element.getName();
-        if (!name.equalsIgnoreCase(nodeName)) System.out.println("Why the node name is different ? "+name+","+nodeName);
+        if (!name.equalsIgnoreCase(nodeName)) log.warning("Why the node name is different ? "+name+","+nodeName);
         element.setValue(s);
     }
     
@@ -346,7 +348,7 @@ public class MemoryInspector extends javax.swing.JFrame {
         if (m != null) {
             updateTree(m);
         } else {
-            System.out.println("Mind is null");
+            log.warning("Mind is null");
         }
     }
     
