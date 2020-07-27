@@ -12,7 +12,6 @@
  */
 package br.unicamp.cst.util.viewer;
 
-import br.unicamp.cst.core.entities.Memory;
 import br.unicamp.cst.core.entities.MemoryContainer;
 import br.unicamp.cst.core.entities.MemoryObject;
 import br.unicamp.cst.util.TimeStamp;
@@ -75,8 +74,6 @@ public class MemoryInspector extends javax.swing.JFrame {
         String ts = TimeStamp.getStringTimeStamp(timestamp,"dd/MM/yyyy HH:mm:ss.SSS");
         ts_tn = obj.addString(ts,"timeStamp");
         obj.add(ts_tn);
-        //info_tn = obj.addObject(null,"Info");
-        //info_null = obj.addObject(null,"Info");
         DefaultTreeModel objTreeModel = new DefaultTreeModel(obj);
         objTree.setModel(objTreeModel);
         objTree.setCellRenderer(new MindRenderer());
@@ -104,9 +101,6 @@ public class MemoryInspector extends javax.swing.JFrame {
         DefaultMutableTreeNode treeNode = obj.updateMap.get(name);
         if (treeNode == null) {
             String[] mc = name.split("\\[");
-            //for (String s2 :mc)
-            //   System.out.println(s2);
-            //System.out.println(mc.length);
             if (mc.length > 0) {
                String parent = mc[0];
                treeNode = obj.updateMap.get(parent);
@@ -143,13 +137,16 @@ public class MemoryInspector extends javax.swing.JFrame {
     public void updateNumber(Number n,String name) {
         String s="";
         if (n instanceof Long || n instanceof Integer) {
-            s = String.format("%d",n);
+            long i = (long) n;
+            s = String.format("%d",i);
         }
         else if (n instanceof Float || n instanceof Double) {
-            s = String.format("%4.2f", n);
+            double d = (double) n;
+            s = String.format("%4.2f", d);
         }
         else if (n instanceof Byte) {
-            s = String.format("%x", n);
+            byte b = (byte) n;
+            s = String.format("%x", b);
         }
         updateString(s,name);
     }
@@ -231,7 +228,6 @@ public class MemoryInspector extends javax.swing.JFrame {
         else if (o instanceof Number) {
             Number n = (Number) o;
             updateNumber(n,name);
-            //System.out.println(o.getClass().getCanonicalName());
         }
         else {
             // if the object is not primitive, first update the object element
@@ -240,7 +236,6 @@ public class MemoryInspector extends javax.swing.JFrame {
             if (!listtoavoidloops.contains(name)) {
                 listtoavoidloops.add(name);
                 Field[] fields = o.getClass().getDeclaredFields();
-                //System.out.println("Updating Object "+name+" Number of fields: "+fields.length+"->"+o);
                 for (Field field : fields) {
                     String fname = field.getName();
                     if (!field.isAccessible()) field.setAccessible(true);
@@ -248,7 +243,6 @@ public class MemoryInspector extends javax.swing.JFrame {
                     try {
                         fo = field.get(o);
                     } catch (Exception e) {e.printStackTrace();}
-                    //System.out.println("Updating field "+fname+" with "+fo);
                     updateObject(fo,fname);
                 }
             }
@@ -291,11 +285,6 @@ public class MemoryInspector extends javax.swing.JFrame {
                     return;
                 }
                 else {// this is not null and last was not null
-//                    Set<String> keys = obj.updateMap.keySet();
-//                    for (String key : keys) {
-//                        System.out.println("Updating key "+key);
-//                    }
-//                    System.out.println("------------------------");
                     updateObject(ii,"Info");
                     DefaultTreeModel tm = (DefaultTreeModel) objTree.getModel();
                     tm.nodeChanged((TreeNode)tm.getRoot());
@@ -327,37 +316,6 @@ public class MemoryInspector extends javax.swing.JFrame {
                 return;
             }
         }
-        //obj.remove(info_tn);
-        //info_tn = obj.addObject(ii,"Info");
-        //DefaultTreeModel tm = (DefaultTreeModel) objTree.getModel();
-        //tm.nodeChanged((TreeNode)tm.getRoot());
-        //tm.reload(info_tn);
-        //objTree.treeDidChange();
-        
-        
-//        if (m.getI().getClass().getCanonicalName().equalsIgnoreCase(lastobjectclass)) {
-//            DefaultTreeModel tm = (DefaultTreeModel) objTree.getModel();
-//            DefaultMutableTreeNode root = (DefaultMutableTreeNode)tm.getRoot();
-//            Enumeration<DefaultMutableTreeNode> allchildren = root.breadthFirstEnumeration();
-//            while( allchildren.hasMoreElements() ) {
-//                DefaultMutableTreeNode node = (DefaultMutableTreeNode) allchildren.nextElement();
-//                TreeElement element = (TreeElement) node.getUserObject();
-//                String nodeName = element.getName();
-//                //String value = getMemoryValue(nodeName);
-//                //element.setValue(value);
-//            }
-//            tm.nodeChanged((TreeNode)tm.getRoot());
-//            objTree.treeDidChange();
-//        }
-//        else {
-//            DefaultTreeModel tm = (DefaultTreeModel) objTree.getModel();
-//            DefaultMutableTreeNode root = (DefaultMutableTreeNode)tm.getRoot();
-//            
-//            tm.nodeChanged((TreeNode)tm.getRoot());
-//            objTree.treeDidChange();
-//            
-//        }
-
     }
     
     public void updateTree2(MemoryObject m) {
@@ -368,8 +326,6 @@ public class MemoryInspector extends javax.swing.JFrame {
              DefaultMutableTreeNode node = (DefaultMutableTreeNode) allchildren.nextElement();
              TreeElement element = (TreeElement) node.getUserObject();
              String nodeName = element.getName();
-             //String value = getMemoryValue(nodeName);
-             //element.setValue(value);
         }
         tm.nodeChanged((TreeNode)tm.getRoot());
         objTree.treeDidChange();
@@ -381,8 +337,6 @@ public class MemoryInspector extends javax.swing.JFrame {
              DefaultMutableTreeNode node = (DefaultMutableTreeNode) allchildren.nextElement();
              TreeElement element = (TreeElement) node.getUserObject();
              String nodeName = element.getName();
-             //String value = getMemoryValue(nodeName);
-             //element.setValue(value);
         }
         tm.nodeChanged((TreeNode)tm.getRoot());
     }
@@ -394,7 +348,6 @@ public class MemoryInspector extends javax.swing.JFrame {
         } else {
             System.out.println("Mind is null");
         }
-        //System.out.println("update");
     }
     
     class MITimerTask extends TimerTask {
@@ -505,6 +458,7 @@ class ObjectMouseAdapter extends MouseAdapter {
     
     private JTree tree;
     
+    @Override
     public void mousePressed(MouseEvent e) {
                 int selRow = tree.getRowForLocation(e.getX(), e.getY());
                 TreePath selPath = tree.getPathForLocation(e.getX(), e.getY());
@@ -514,15 +468,12 @@ class ObjectMouseAdapter extends MouseAdapter {
                         TreeElement te = (TreeElement)tn.getUserObject();
                         DefaultMutableTreeNode parentnode = (DefaultMutableTreeNode)tn.getParent();
                         final Object element=te.getElement();
-                        //String classname = te.getElement().getClass().getCanonicalName();
-                        //System.out.println(te.getElement().getClass().getCanonicalName());
                         if(element instanceof Inspectable ) {
                             JPopupMenu popup = new JPopupMenu();
                             JMenuItem jm1 = new JMenuItem("Inspect");
                             ActionListener al = new ActionListener() {
                                 public void actionPerformed(ActionEvent e) {
                                     ((Inspectable) element).inspect();
-                                    //System.out.println(element);
                                 }
                             };
                             jm1.addActionListener(al);
@@ -538,7 +489,6 @@ class ObjectMouseAdapter extends MouseAdapter {
                                     String className = "Empty";
                                     Object o = mo.getI();
                                     if (o != null) className = o.getClass().getCanonicalName();
-                                    //System.out.println(className);
                                     MemoryViewer mv = new MemoryViewer(mo);
                                     mv.setVisible(true);
                                 }
@@ -548,9 +498,6 @@ class ObjectMouseAdapter extends MouseAdapter {
                             popup.show(tree, e.getX(), e.getY());
                         }
                     }
-//               else if(e.getClickCount() == 2) {
-//                    System.out.println(selRow + " "+ selPath);
-//               }
                 }
             }
 }    

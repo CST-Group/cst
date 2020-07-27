@@ -46,6 +46,7 @@ public class MindPanel extends javax.swing.JPanel {
     DefaultMutableTreeNode first;
     DefaultTreeModel memtm;
     MindTreeNode mtn;
+    
     /**
      * Creates new form MindPanel
      * @param m Mind to be viewed in the MindViewer Panel
@@ -75,16 +76,6 @@ public class MindPanel extends javax.swing.JPanel {
         codeletsTree.addMouseListener(ml2);
     }
     
-//    public void updateValue(String key, String value) {
-//        DefaultMutableTreeNode nn = mtn.maps.get(key);
-//        if (nn != null) {
-//            TreeElement te = (TreeElement) nn.getUserObject();
-//            te.setValue(value);
-//            //memtm.nodeChanged(nn);
-//        }
-//        else System.out.println("Memory element "+key+" not found");
-//    }
-    
     public String toString(double value) {
         String s = String.format("%4.2f",value);
         return(s);
@@ -106,27 +97,16 @@ public class MindPanel extends javax.swing.JPanel {
             else return(o);
         }
         CopyOnWriteArrayList<Memory> allMemories = new CopyOnWriteArrayList(mc.getAllMemories());
-        //System.out.println("Scanning Memory Container "+mc.getName()+": "+allMemories.size()+" sub-objects");
         for (Memory m : allMemories) {
-            //System.out.println("Sub-memory "+m.getName()+" of "+mc.getName());
             if (m instanceof MemoryObject) {
                 Object o = scanMO((MemoryObject)m,name);
                 if (o != null) {
-                      //System.out.println("Scanning MC "+mc.getName()+" for "+name+" I found "+m.getName());
-//                    if (name.equalsIgnoreCase("avoidColision"))
-//                        System.out.println("avoidColision: "+o.toString());
-//                       //System.out.println("Scanning MC "+mc.getName()+" for "+name+" I found "+m.getName()+" with "+o.toString());
-//                    if (name.equalsIgnoreCase("MoveRandomly"))
-//                       System.out.println("MoveRandomly: "+o.toString()); 
-//                       //System.out.println("Scanning MC "+mc.getName()+" for "+name+" I found "+m.getName()+" with "+o.toString());
-//                    
                     return(o);
                 }
             }
             else {
                 Object o = scanMC((MemoryContainer)m,name);
                 if (o != null) {
-                    //System.out.println("Scanning MC "+mc.getName()+" for "+name+" I found "+m.getName());
                     return(o);
                 }
             }
@@ -174,11 +154,10 @@ public class MindPanel extends javax.swing.JPanel {
                     else if (value.length == 6)
                         aprox = String.format("%4.2f,%4.2f,%4.2f,%4.2f,%4.2f,%4.2f",value[0],value[1],value[2],value[3],value[4],value[5]);
                     else
-                        aprox = String.format("%4.2f,%4.2f,%4.2f,%4.2f,%4.2f,,%4.2f...",value[0],value[1],value[2],value[3],value[4],value[5]);
+                        aprox = String.format("%4.2f,%4.2f,%4.2f,%4.2f,%4.2f,%4.2f...",value[0],value[1],value[2],value[3],value[4],value[5]);
                     memValue = aprox+isize;
                 }
                 else { 
-                    //System.out.println(m.getName()+": "+o.getClass().getCanonicalName());
                     memValue = o.toString()+isize;
                 }    
                 return(memValue);
@@ -203,14 +182,16 @@ public class MindPanel extends javax.swing.JPanel {
             else memValue = "null";
         }
         else {
-            //System.out.println(nodeName);
             // Test if the nodeName is an MO within an MC
             String[] mc = nodeName.split("\\(");
             if (mc.length > 1) {
                 String[] mc2 = mc[1].split("\\)");
                 int subNode = -1;
-                try {subNode = Integer.parseInt(mc2[0]);} catch(Exception e) {}
-                //System.out.println(nodeName+"->"+mc[0]+"->"+subNode);
+                try {
+                    subNode = Integer.parseInt(mc2[0]);
+                } catch(NumberFormatException e) {
+                    e.printStackTrace();
+                }
                 mm = mind.getRawMemory().getAllOfType(mc[0]);
                 if (mm.size() > 0) {
                     Memory m = mm.get(0);
@@ -266,7 +247,6 @@ public class MindPanel extends javax.swing.JPanel {
         } else {
             System.out.println("Mind is null");
         }
-        //System.out.println("update");
     }
     
     class WOVTimerTask extends TimerTask {
@@ -342,6 +322,7 @@ class MindMouseAdapter extends MouseAdapter {
     
     private JTree tree;
     
+    @Override
     public void mousePressed(MouseEvent e) {
                 int selRow = tree.getRowForLocation(e.getX(), e.getY());
                 TreePath selPath = tree.getPathForLocation(e.getX(), e.getY());
@@ -351,15 +332,12 @@ class MindMouseAdapter extends MouseAdapter {
                         TreeElement te = (TreeElement)tn.getUserObject();
                         DefaultMutableTreeNode parentnode = (DefaultMutableTreeNode)tn.getParent();
                         final Object element=te.getElement();
-                        //String classname = te.getElement().getClass().getCanonicalName();
-                        //System.out.println(te.getElement().getClass().getCanonicalName());
                         if(element instanceof Inspectable ) {
                             JPopupMenu popup = new JPopupMenu();
                             JMenuItem jm1 = new JMenuItem("Inspect");
                             ActionListener al = new ActionListener() {
                                 public void actionPerformed(ActionEvent e) {
                                     ((Inspectable) element).inspect();
-                                    //System.out.println(element);
                                 }
                             };
                             jm1.addActionListener(al);
@@ -392,9 +370,6 @@ class MindMouseAdapter extends MouseAdapter {
                             popup.show(tree, e.getX(), e.getY());
                         }
                     }
-//               else if(e.getClickCount() == 2) {
-//                    System.out.println(selRow + " "+ selPath);
-//               }
                 }
             }
 }

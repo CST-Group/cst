@@ -43,13 +43,16 @@ public class ObjectTreeNode extends DefaultMutableTreeNode {
     public DefaultMutableTreeNode addNumber(Number n,String name) {
         String s="";
         if (n instanceof Long || n instanceof Integer) {
-            s = String.format("%d",n);
+            long i = (long) n; 
+            s = String.format("%d",i);
         }
         else if (n instanceof Float || n instanceof Double) {
-            s = String.format("%4.2f", n);
+            double d = (double) n;
+            s = String.format("%4.2f", d);
         }
         else if (n instanceof Byte) {
-            s = String.format("%x", n);
+            byte b = (byte) n;
+            s = String.format("%x", b);
         }
         return(addString(s,name));
     }
