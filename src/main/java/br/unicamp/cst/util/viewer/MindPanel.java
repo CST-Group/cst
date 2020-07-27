@@ -27,6 +27,7 @@ import java.util.List;
 import java.util.Timer;
 import java.util.TimerTask;
 import java.util.concurrent.CopyOnWriteArrayList;
+import java.util.logging.Logger;
 import javax.swing.JMenuItem;
 import javax.swing.JPopupMenu;
 import javax.swing.JTree;
@@ -46,6 +47,7 @@ public class MindPanel extends javax.swing.JPanel {
     DefaultMutableTreeNode first;
     DefaultTreeModel memtm;
     MindTreeNode mtn;
+    Logger log = Logger.getLogger(MindPanel.class.getCanonicalName());
     
     /**
      * Creates new form MindPanel
@@ -245,7 +247,7 @@ public class MindPanel extends javax.swing.JPanel {
         if (mind != null) {
             updateTree(mind);
         } else {
-            System.out.println("Mind is null");
+            log.warning("Mind is null");
         }
     }
     

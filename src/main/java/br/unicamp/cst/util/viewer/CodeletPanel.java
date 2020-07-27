@@ -25,6 +25,7 @@ import java.util.List;
 import java.util.Timer;
 import java.util.TimerTask;
 import java.util.concurrent.CopyOnWriteArrayList;
+import java.util.logging.Logger;
 import javax.swing.JMenuItem;
 import javax.swing.JPopupMenu;
 import javax.swing.JTree;
@@ -44,6 +45,7 @@ public class CodeletPanel extends javax.swing.JPanel {
     DefaultMutableTreeNode first;
     DefaultTreeModel memtm;
     MindTreeNode mtn;
+    Logger log = Logger.getLogger(CodeletPanel.class.getCanonicalName());
     /**
      * Creates new form MindPanel
      * @param m Mind to be viewed in the MindViewer Panel
@@ -230,7 +232,7 @@ public class CodeletPanel extends javax.swing.JPanel {
         if (mind != null) {
             updateTree(mind);
         } else {
-            System.out.println("Mind is null");
+            log.warning("Mind is null");
         }
     }
     
