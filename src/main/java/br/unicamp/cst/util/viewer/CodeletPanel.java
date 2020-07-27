@@ -228,7 +228,7 @@ public class CodeletPanel extends javax.swing.JPanel {
     public void updateTree(Mind m) {
         DefaultTreeModel tm; 
         DefaultMutableTreeNode root;
-        Enumeration<DefaultMutableTreeNode> allchildren;
+        Enumeration<TreeNode> allchildren;
         // Now the same for the Codelets Tab
         tm = (DefaultTreeModel) codeletsTree.getModel();
         root = (DefaultMutableTreeNode)tm.getRoot();

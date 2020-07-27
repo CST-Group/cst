@@ -230,7 +230,7 @@ public class MindPanel extends javax.swing.JPanel {
     public void updateTree(Mind m) {
         DefaultTreeModel tm = (DefaultTreeModel) memoryTree.getModel();
         DefaultMutableTreeNode root = (DefaultMutableTreeNode)tm.getRoot();
-        Enumeration<DefaultMutableTreeNode> allchildren = root.breadthFirstEnumeration();
+        Enumeration<TreeNode> allchildren = root.breadthFirstEnumeration();
         while( allchildren.hasMoreElements() ) {
              DefaultMutableTreeNode node = (DefaultMutableTreeNode) allchildren.nextElement();
              TreeElement element = (TreeElement) node.getUserObject();

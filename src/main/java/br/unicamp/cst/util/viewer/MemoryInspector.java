@@ -363,7 +363,7 @@ public class MemoryInspector extends javax.swing.JFrame {
     public void updateTree2(MemoryObject m) {
         DefaultTreeModel tm = (DefaultTreeModel) objTree.getModel();
         DefaultMutableTreeNode root = (DefaultMutableTreeNode)tm.getRoot();
-        Enumeration<DefaultMutableTreeNode> allchildren = root.breadthFirstEnumeration();
+        Enumeration<TreeNode> allchildren = root.breadthFirstEnumeration();
         while( allchildren.hasMoreElements() ) {
              DefaultMutableTreeNode node = (DefaultMutableTreeNode) allchildren.nextElement();
              TreeElement element = (TreeElement) node.getUserObject();
