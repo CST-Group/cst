@@ -1,5 +1,4 @@
-/**
- * ********************************************************************************************
+/***********************************************************************************************
  * Copyright (c) 2012  DCA-FEEC-UNICAMP
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the GNU Lesser Public License v3
@@ -8,8 +7,7 @@
  * <p>
  * Contributors:
  * K. Raizer, A. L. O. Paraense, E. M. Froes, R. R. Gudwin - initial API and implementation
- * *********************************************************************************************
- */
+ * **********************************************************************************************/
 package br.unicamp.cst.util.viewer;
 
 import br.unicamp.cst.core.entities.Memory;
@@ -65,16 +63,6 @@ public class CodeletPanel extends javax.swing.JPanel {
         this.expandAllNodes();
     }
     
-//    public void updateValue(String key, String value) {
-//        DefaultMutableTreeNode nn = mtn.maps.get(key);
-//        if (nn != null) {
-//            TreeElement te = (TreeElement) nn.getUserObject();
-//            te.setValue(value);
-//            //memtm.nodeChanged(nn);
-//        }
-//        else System.out.println("Memory element "+key+" not found");
-//    }
-    
     public String toString(double value) {
         String s = String.format("%4.2f",value);
         return(s);
@@ -96,27 +84,16 @@ public class CodeletPanel extends javax.swing.JPanel {
             else return(o);
         }
         CopyOnWriteArrayList<Memory> allMemories = new CopyOnWriteArrayList(mc.getAllMemories());
-        //System.out.println("Scanning Memory Container "+mc.getName()+": "+allMemories.size()+" sub-objects");
         for (Memory m : allMemories) {
-            //System.out.println("Sub-memory "+m.getName()+" of "+mc.getName());
             if (m instanceof MemoryObject) {
                 Object o = scanMO((MemoryObject)m,name);
                 if (o != null) {
-                      //System.out.println("Scanning MC "+mc.getName()+" for "+name+" I found "+m.getName());
-//                    if (name.equalsIgnoreCase("avoidColision"))
-//                        System.out.println("avoidColision: "+o.toString());
-//                       //System.out.println("Scanning MC "+mc.getName()+" for "+name+" I found "+m.getName()+" with "+o.toString());
-//                    if (name.equalsIgnoreCase("MoveRandomly"))
-//                       System.out.println("MoveRandomly: "+o.toString()); 
-//                       //System.out.println("Scanning MC "+mc.getName()+" for "+name+" I found "+m.getName()+" with "+o.toString());
-//                    
                     return(o);
                 }
             }
             else {
                 Object o = scanMC((MemoryContainer)m,name);
                 if (o != null) {
-                    //System.out.println("Scanning MC "+mc.getName()+" for "+name+" I found "+m.getName());
                     return(o);
                 }
             }
@@ -138,17 +115,6 @@ public class CodeletPanel extends javax.swing.JPanel {
                 String isize;
                 if (m instanceof MemoryContainer && m.getName().equalsIgnoreCase(nodeName)) {
                     isize = " {"+((MemoryContainer)m).getAllMemories().size()+"}";
-//                    if (((MemoryContainer)m).getAllMemories().size() > 5) {
-//                      System.out.println(".............Inspecting MemoryContainer "+m.getName());  
-//                      CopyOnWriteArrayList<Memory> mm2 = new CopyOnWriteArrayList(((MemoryContainer)m).getAllMemories());  
-//                      for (Memory mc2 : mm2) {
-//                        String name = mc2.getName();
-//                        if (name.equalsIgnoreCase("")) {
-//                            name="EMPTYSTRING"+mc2.toString();
-//                        }
-//                        System.out.println("Inspectioning MemoryContainer: "+name);
-//                      }
-//                    }  
                 }    
                 else isize = " ("+String.format("%4.2f", m.getEvaluation())+")";
                 if (o instanceof Double) {
@@ -201,14 +167,12 @@ public class CodeletPanel extends javax.swing.JPanel {
             else memValue = "null";
         }
         else {
-            //System.out.println(nodeName);
             // Test if the nodeName is an MO within an MC
             String[] mc = nodeName.split("\\(");
             if (mc.length > 1) {
                 String[] mc2 = mc[1].split("\\)");
                 int subNode = -1;
                 try {subNode = Integer.parseInt(mc2[0]);} catch(Exception e) {}
-                //System.out.println(nodeName+"->"+mc[0]+"->"+subNode);
                 mm = mind.getRawMemory().getAllOfType(mc[0]);
                 if (mm.size() > 0) {
                     Memory m = mm.get(0);
@@ -268,7 +232,6 @@ public class CodeletPanel extends javax.swing.JPanel {
         } else {
             System.out.println("Mind is null");
         }
-        //System.out.println("update");
     }
     
     class WOVTimerTask extends TimerTask {
@@ -335,6 +298,7 @@ class CodeletMouseAdapter extends MouseAdapter {
     
     private JTree tree;
     
+    @Override
     public void mousePressed(MouseEvent e) {
                 int selRow = tree.getRowForLocation(e.getX(), e.getY());
                 TreePath selPath = tree.getPathForLocation(e.getX(), e.getY());
@@ -342,17 +306,13 @@ class CodeletMouseAdapter extends MouseAdapter {
                     if(e.getClickCount() == 1 && e.getButton() == 3) {
                         DefaultMutableTreeNode tn = (DefaultMutableTreeNode)selPath.getLastPathComponent();
                         TreeElement te = (TreeElement)tn.getUserObject();
-                        DefaultMutableTreeNode parentnode = (DefaultMutableTreeNode)tn.getParent();
                         final Object element=te.getElement();
-                        //String classname = te.getElement().getClass().getCanonicalName();
-                        //System.out.println(te.getElement().getClass().getCanonicalName());
                         if(element instanceof Inspectable ) {
                             JPopupMenu popup = new JPopupMenu();
                             JMenuItem jm1 = new JMenuItem("Inspect");
                             ActionListener al = new ActionListener() {
                                 public void actionPerformed(ActionEvent e) {
                                     ((Inspectable) element).inspect();
-                                    //System.out.println(element);
                                 }
                             };
                             jm1.addActionListener(al);
@@ -385,9 +345,6 @@ class CodeletMouseAdapter extends MouseAdapter {
                             popup.show(tree, e.getX(), e.getY());
                         }
                     }
-//               else if(e.getClickCount() == 2) {
-//                    System.out.println(selRow + " "+ selPath);
-//               }
                 }
             }
 }

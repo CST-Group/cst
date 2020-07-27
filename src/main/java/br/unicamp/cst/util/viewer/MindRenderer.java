@@ -39,9 +39,7 @@ public class MindRenderer extends DefaultTreeCellRenderer {
 
         DefaultMutableTreeNode dmtn = (DefaultMutableTreeNode) value;
         DefaultMutableTreeNode objectNode;
-//
         TreeElement node = (TreeElement) dmtn.getUserObject();
-        //System.out.println("TreeElement (Renderer): "+node+","+node.getName()+","+node.getValue()+","+node.getId_node());
         switch (node.getIcon()) {
             case TreeElement.ICON_COMPOSITE:
                 img = new ImageIcon(this.getClass().getClassLoader().getResource("object.png"));
@@ -58,6 +56,7 @@ public class MindRenderer extends DefaultTreeCellRenderer {
             case TreeElement.ICON_VALUE:
                 img = new ImageIcon(this.getClass().getClassLoader().getResource("value.png"));
                 break;
+            default:
             case TreeElement.ICON_MIND:
                 img = new ImageIcon(this.getClass().getClassLoader().getResource("mind.png"));
                 break;
@@ -91,7 +90,6 @@ public class MindRenderer extends DefaultTreeCellRenderer {
             case TreeElement.ICON_AFFORDANCE:    
                 img = new ImageIcon(this.getClass().getClassLoader().getResource("codelet2.png"));
                 break;
-            // TODO: Criar um icone de erro
         }
         setOpenIcon(img);
         setClosedIcon(img);
@@ -99,7 +97,6 @@ public class MindRenderer extends DefaultTreeCellRenderer {
 
         String hex = "#" + Integer.toHexString(node.getColor().getRGB()).substring(2);
         String htmltext = "<html><font color=\"" + hex + "\">" + node.getName()+" : "+node.getValue()+" ["+node.getId_node()+"]" + "</font></html>";
-        //objectNode = new DefaultMutableTreeNode(htmltext);
         objectNode = texttobewritten;
         objectNode.setUserObject(htmltext);
         value = objectNode;
