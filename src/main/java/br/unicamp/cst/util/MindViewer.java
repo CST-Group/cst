@@ -16,15 +16,11 @@ import br.unicamp.cst.util.viewer.*;
 import java.awt.BorderLayout;
 import java.util.Calendar;
 import java.util.List;
-import java.util.Timer;
-import java.util.TimerTask;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import javax.swing.JScrollPane;
 import javax.swing.JTree;
 import javax.swing.tree.DefaultTreeModel;
-import javax.swing.tree.TreeModel;
 
 import org.jfree.chart.ChartPanel;
 import org.jfree.chart.plot.XYPlot;
@@ -36,11 +32,6 @@ import br.unicamp.cst.bindings.soar.PlansSubsystemViewer;
 import br.unicamp.cst.core.entities.Codelet;
 import br.unicamp.cst.core.entities.Mind;
 import br.unicamp.cst.motivational.MotivationalSubsystemViewer;
-import br.unicamp.cst.util.ChartViewerUtil;
-import br.unicamp.cst.util.Refresher;
-import br.unicamp.cst.util.RendererJTree;
-import br.unicamp.cst.util.TreeElement;
-import br.unicamp.cst.util.TreeViewerUtil;
 
 /**
  *
@@ -138,10 +129,14 @@ public class MindViewer extends javax.swing.JFrame {
     private void buildMindModulePanels(Mind mind){
         
         //if(mind.getMotivationalSubsystemModule().verifyExistCodelets()){
-        if(mind.getGroupList("Motivational").size() > 0) {   
-            motivationalModuleViewer = new MotivationalSubsystemViewer(Long.parseLong(txtRefreshTime.getText()), mind);
-            tbModules.add("Motivational Subsystem", motivationalModuleViewer);
-        }
+        if(mind.getGroupsNumber() > 0) {
+            if (mind.getGroupList("Motivational") != null) {
+                if (mind.getGroupList("Motivational").size() > 0) {
+                    motivationalModuleViewer = new MotivationalSubsystemViewer(Long.parseLong(txtRefreshTime.getText()), mind);
+                    tbModules.add("Motivational Subsystem", motivationalModuleViewer);
+                }
+            }    
+        }    
 
         if(mind.getPlansSubsystemModule().verifyExistCodelets()){
             plansSubsystemViewer = new PlansSubsystemViewer(Long.parseLong(txtRefreshTime.getText()), mind);

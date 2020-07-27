@@ -194,7 +194,7 @@ private String behaviorPropositionString;
         
 	/**
          * This, set performed attribute and composes the behavior proposition string from attributes of class.
-	 * @param performed
+	 * @param performed 
 	 */
 	public void setPerformed(boolean performed) {   
                 //System.out.println("##### Trying to set performed to "+performed+"  ########");

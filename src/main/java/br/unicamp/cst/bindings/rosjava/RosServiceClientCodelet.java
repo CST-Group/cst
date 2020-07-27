@@ -75,7 +75,6 @@ public abstract class RosServiceClientCodelet<S,T> extends Codelet implements No
 		serviceResponseListener = new ServiceResponseListener<T>() {
 			@Override
 			public void onSuccess(T response) {	
-                                System.out.println("onSuccess");
 				if(response != null) {
 					processServiceResponse(response);
 					callInProgressSemaphore.release();
@@ -84,8 +83,7 @@ public abstract class RosServiceClientCodelet<S,T> extends Codelet implements No
 
 			@Override
 			public void onFailure(RemoteException e) {
-                                System.out.println("onFailure");
-				e.printStackTrace();
+                                e.printStackTrace();
 			}
 		};
 
@@ -95,26 +93,22 @@ public abstract class RosServiceClientCodelet<S,T> extends Codelet implements No
 
 	@Override
 	public synchronized void start() {
-                System.out.println("start: "+this.name+" "+this.nodeName);
-		startRosNode();
+                startRosNode();
 		super.start();
 	}
 
 	@Override
 	public synchronized void stop() {
-                System.out.println("stop");
-		stopRosNode();
+                stopRosNode();
 		super.stop();
 	}
 
 	private void startRosNode() {
-                System.out.println("Starting ROS Node");
-		nodeMainExecutor.execute(this, nodeConfiguration);
+                nodeMainExecutor.execute(this, nodeConfiguration);
 	}
 
 	private void stopRosNode() {
-                System.out.println("Stopping ROS Node");
-		serviceClient = null;
+                serviceClient = null;
 		serviceMessageRequest = null;
 		nodeMainExecutor.shutdownNodeMain(this);
 	}
@@ -190,7 +184,6 @@ public abstract class RosServiceClientCodelet<S,T> extends Codelet implements No
 
 	@Override
 	public void onShutdown(Node node) {
-		System.out.println("Shutting down ...");
 	}
 
 	@Override
@@ -200,7 +193,6 @@ public abstract class RosServiceClientCodelet<S,T> extends Codelet implements No
 
 	@Override
 	public void onError(Node node, Throwable throwable) {
-                System.out.println("ROS Servie Error ...");
 		// empty
 	}
 }
