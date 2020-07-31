@@ -168,49 +168,7 @@ public class MindPanel extends javax.swing.JPanel {
         return(memValue);
     }
     
-    public String getMemoryValue2(String nodeName) {
-        String memValue = "";
-        List<Memory> mm = mind.getRawMemory().getAllOfType(nodeName);
-        if (mm.size() > 0){
-            Object obj = mm.get(0).getI();
-            double value=0;
-            if (obj != null) {
-                if (obj instanceof Double) {
-                    value = (double)obj;
-                    memValue = toString(value);
-                }
-                else memValue = obj.toString();
-            }
-            else memValue = "null";
-        }
-        else {
-            // Test if the nodeName is an MO within an MC
-            String[] mc = nodeName.split("\\(");
-            if (mc.length > 1) {
-                String[] mc2 = mc[1].split("\\)");
-                int subNode = -1;
-                try {
-                    subNode = Integer.parseInt(mc2[0]);
-                } catch(NumberFormatException e) {
-                    e.printStackTrace();
-                }
-                mm = mind.getRawMemory().getAllOfType(mc[0]);
-                if (mm.size() > 0) {
-                    Memory m = mm.get(0);
-                    MemoryContainer mmc;
-                    if (m.getClass().getCanonicalName().equalsIgnoreCase("br.unicamp.cst.core.entities.MemoryContainer")) {
-                        mmc = (MemoryContainer) m;
-                        double value = (double) mmc.getI(subNode);
-                        memValue = toString(value);
-                    }    
-                }
-            } 
-            
-        }
-        return(memValue);
-    }
-    
-    public void updateTree(Mind m) {
+    public void updateTree() {
         DefaultTreeModel tm = (DefaultTreeModel) memoryTree.getModel();
         DefaultMutableTreeNode root = (DefaultMutableTreeNode)tm.getRoot();
         Enumeration<TreeNode> allchildren = root.breadthFirstEnumeration();
@@ -244,11 +202,7 @@ public class MindPanel extends javax.swing.JPanel {
     }
 
     public void tick() {
-        if (mind != null) {
-            updateTree(mind);
-        } else {
-            log.warning("Mind is null");
-        }
+        updateTree();
     }
     
     class WOVTimerTask extends TimerTask {

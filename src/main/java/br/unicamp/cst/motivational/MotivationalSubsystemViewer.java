@@ -1,8 +1,13 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
+/*******************************************************************************
+ * Copyright (c) 2016  DCA-FEEC-UNICAMP
+ * All rights reserved. This program and the accompanying materials
+ * are made available under the terms of the GNU Lesser Public License v3
+ * which accompanies this distribution, and is available at
+ * http://www.gnu.org/licenses/lgpl.html
+ *
+ * Contributors:
+ *     E. M. Froes, R. R. Gudwin - initial API and implementation
+ ******************************************************************************/
 package br.unicamp.cst.motivational;
 
 import br.unicamp.cst.core.entities.Codelet;
@@ -55,11 +60,6 @@ public class MotivationalSubsystemViewer extends javax.swing.JPanel {
     public MotivationalSubsystemViewer(long refreshTime, Mind mind) {
         initComponents();
         setRefreshTime(refreshTime);
-//        initMotivationalSubsystemViewer(mind.getMotivationalSubsystemModule().getMotivationalCodelets(), 
-//                                        mind.getMotivationalSubsystemModule().getEmotionalCodelets(), 
-//                                        mind.getMotivationalSubsystemModule().getGoalCodelets(), 
-//                                        mind.getMotivationalSubsystemModule().getAppraisalCodelets(), 
-//                                        mind.getMotivationalSubsystemModule().getMoodCodelets());
         initMotivationalSubsystemViewer(mind.getGroupList("Motivational"), 
                                         mind.getGroupList("Emotional"),
                                         mind.getGroupList("Goal"),
@@ -110,48 +110,27 @@ public class MotivationalSubsystemViewer extends javax.swing.JPanel {
                 gridBagConstraints.insets = new java.awt.Insets(5, 0, 0, 2);
                 pnTreeDrives.add(new CodeletPanel(m,"Motivational","Motivational Codelets"),gridBagConstraints);
                 pnTreeDrives.validate();
-
                 while (!isStopRefresh()) {
-
-//                    while ((!cbRefreshDrives.isSelected() && !cbDrivesChart.isSelected()) || getSelectedIndex() != 0) {
-//                        try {
-//                            synchronized (getThreadDrives()) {
-//                                getThreadDrives().wait();
-//                            }
-//                        } catch (InterruptedException ex) {
-//                            Logger.getLogger(MindViewer.class.getName()).log(Level.SEVERE, null, ex);
-//                        }
-//                    }
-//
-//                    if (cbRefreshDrives.isSelected()) {
-//                        //TreeViewerUtil.createTreeModelGUI(spMotivationalCodelets, getMotivationalCodelets(), "Motivational Codelets");
-//                    }
-                   
                     if (cbDrivesChart.isSelected()) {
                         ChartViewerUtil.updateValuesInChart(dataset, getMotivationalCodelets());
                     }
-
                     try {
                         Thread.sleep(getRefreshTime());
                     } catch (InterruptedException e) {
                         e.printStackTrace();
                     }
-
                 }
             }
         });
-
         setThreadEmotionalDrives(new Thread() {
             @Override
             public void run() {
                 DefaultCategoryDataset dataset = new DefaultCategoryDataset();
-
                 synchronized (pnEmotional) {
                     pnEmotional.setLayout(new BorderLayout());
                     pnEmotional.add(ChartViewerUtil.createChart(dataset, "Emotional Codelets", "Emotional Drives", "Activation", PlotOrientation.VERTICAL), BorderLayout.CENTER);
                     pnEmotional.validate();
                 }
-
                 while (!isStopRefresh()) {
                     while ((!cbRefreshEmotionalDrives.isSelected() && !cbEmotionalChart.isSelected()) || getSelectedIndex() != 1) {
                         try {
@@ -163,22 +142,18 @@ public class MotivationalSubsystemViewer extends javax.swing.JPanel {
                         }
                     }
                     TreeViewerUtil.createTreeModelGUI(spEmotionalCodelets, getEmotionalCodelets(), "Emotional Codelets");
-
                     ChartViewerUtil.updateValueInChartByMemory(dataset, getEmotionalCodelets(), EmotionalCodelet.OUTPUT_AFFECTED_DRIVE_MEMORY.toString());
                     try {
                         Thread.sleep(getRefreshTime());
                     } catch (InterruptedException e) {
                         e.printStackTrace();
                     }
-
                 }
             }
         });
-
         setThreadMoods(new Thread() {
             @Override
             public void run() {
-              
                 while (!isStopRefresh()) {
                     while (!cbRefreshMood.isSelected() && getSelectedIndex() != 2) {
                         try {
@@ -189,23 +164,18 @@ public class MotivationalSubsystemViewer extends javax.swing.JPanel {
                             e.printStackTrace();
                         }
                     }
-
                     TreeViewerUtil.createTreeModelGUI(spMoodCodelets, getMoodCodelets(), "Mood Codelets");
-
                     try {
                         Thread.sleep(getRefreshTime());
                     } catch (InterruptedException e) {
                         e.printStackTrace();
                     }
-
                 }
             }
         });
-
         setThreadAppraisals(new Thread() {
             @Override
             public void run() {
-               
                 while (!isStopRefresh()) {
                     while (!cbRefreshAppraisals.isSelected() && getSelectedIndex() != 3) {
                         try {
@@ -217,21 +187,17 @@ public class MotivationalSubsystemViewer extends javax.swing.JPanel {
                         }
                     }
                     TreeViewerUtil.createTreeModelGUI(spAppraisalCodelets, getAppraisalCodelets(), "Appraisal Codelets");
-
                     try {
                         Thread.sleep(getRefreshTime());
                     } catch (InterruptedException e) {
                         e.printStackTrace();
                     }
-
                 }
             }
         });
-        
         setThreadGoals(new Thread() {
             @Override
             public void run() {
-                
                 while (!isStopRefresh()) {
                     while (!cbRefreshGoals.isSelected() && getSelectedIndex() != 4) {
                         try {
@@ -243,29 +209,22 @@ public class MotivationalSubsystemViewer extends javax.swing.JPanel {
                         }
                     }
                     TreeViewerUtil.createTreeModelGUI(spGoalCodelets, getGoalCodelets(), "Goal Codelets");
-                  
                     try {
                         Thread.sleep(getRefreshTime());
                     } catch (InterruptedException e) {
                         e.printStackTrace();
                     }
-
                 }
             }
         });
-
         if(getMotivationalCodelets() != null && getMotivationalCodelets().size() > 0)
             getThreadDrives().start();
-        
         if(getAppraisalCodelets()!= null && getAppraisalCodelets().size() > 0)
             getThreadAppraisals().start();
-        
         if(getMoodCodelets()!= null && getMoodCodelets().size() > 0)
             getThreadMoods().start();
-        
         if(getEmotionalCodelets()!= null && getEmotionalCodelets().size() > 0)
             getThreadEmotionalDrives().start();
-        
         if(getGoalCodelets()!= null && getGoalCodelets().size() > 0)
             getThreadGoals().start();
     }
@@ -562,18 +521,15 @@ public class MotivationalSubsystemViewer extends javax.swing.JPanel {
                 getThreadDrives().notify();
             }
         }
-
         if (getThreadEmotionalDrives() != null) {
             synchronized (getThreadEmotionalDrives()) {
                 getThreadEmotionalDrives().notify();
             }
         }
-
         if (getThreadMoods() != null) {
             synchronized (getThreadMoods()) {
                 getThreadMoods().notify();
             }
-
         }
         if (getThreadAppraisals() != null) {
             synchronized (getThreadAppraisals()) {
@@ -789,8 +745,6 @@ public class MotivationalSubsystemViewer extends javax.swing.JPanel {
     public void setDtGoalCodelets(DefaultTreeModel dtGoalCodelets) {
         this.dtGoalCodelets = dtGoalCodelets;
     }
-
-
 
     /**
      * @return the stopRefresh

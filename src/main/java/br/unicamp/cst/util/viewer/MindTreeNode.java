@@ -46,7 +46,6 @@ public class MindTreeNode extends DefaultMutableTreeNode {
         DefaultMutableTreeNode mm = addMind(m);
         maps.put((String)mm.getUserObject(),mm);
         this.add(mm);
-        //this.addMemory(m.getRawMemory().getAllMemoryObjects());
     }
     
     public DefaultMutableTreeNode addRootNode(String rootNodeName) {
@@ -55,8 +54,6 @@ public class MindTreeNode extends DefaultMutableTreeNode {
     }
     
     public DefaultMutableTreeNode addMind(Mind m) {
-
-        //System.out.println("addMind");
         DefaultMutableTreeNode mindNode = addItem("Mind"," "," ",TreeElement.ICON_MIND);
         DefaultMutableTreeNode codeletsNode = addItem("Codelets"," "," ", TreeElement.ICON_CONFIGURATION);
         mindNode.add(codeletsNode);
@@ -72,7 +69,6 @@ public class MindTreeNode extends DefaultMutableTreeNode {
             DefaultMutableTreeNode memoryNode = addMemory(mo);
             memoriesNode.add(memoryNode);
         }
-        //this.add(mindNode);
         return (mindNode);
     }
     
@@ -92,7 +88,6 @@ public class MindTreeNode extends DefaultMutableTreeNode {
                }
                this.add(groupNode);
            }
-           
         }
         else {    
            codelets = new CopyOnWriteArrayList(m.getCodeRack().getAllCodelets());
@@ -109,13 +104,11 @@ public class MindTreeNode extends DefaultMutableTreeNode {
         if (m.getGroupsNumber() > 0) {
            ConcurrentHashMap<String,ArrayList> groups = m.getGroups();
            codelets = new CopyOnWriteArrayList(groups.get(groupName));
-           //DefaultMutableTreeNode groupNode = addItem(groupName,"","", TreeElement.ICON_CODELETS);
            for (Codelet oo : codelets) {
                     DefaultMutableTreeNode newcodeletNode = addCodelet(oo);
                     maps.put(((TreeElement)newcodeletNode.getUserObject()).getName(), newcodeletNode);
                     this.add(newcodeletNode);
            }
-           //this.add(groupNode);
         }
     }
     
@@ -129,7 +122,6 @@ public class MindTreeNode extends DefaultMutableTreeNode {
     }
     
     public DefaultMutableTreeNode addIO(Memory m, int icon) {
-        //String value = m.getName() + " : ";
         String value = "";
         Object mval = m.getI();
         if (mval != null) {
@@ -168,7 +160,6 @@ public class MindTreeNode extends DefaultMutableTreeNode {
     
     public DefaultMutableTreeNode addItem(String name, String value, Object ob, int icon_type) {
         Object o = new TreeElement(name, value, TreeElement.NODE_NORMAL, ob, icon_type);
-        //Object o = new TreeElement(name, "                                                                           ", TreeElement.NODE_NORMAL, value, icon_type);
         DefaultMutableTreeNode memoryNode = new DefaultMutableTreeNode(o);
         maps.put(((TreeElement)memoryNode.getUserObject()).getName(), memoryNode);
         return (memoryNode);
@@ -176,13 +167,11 @@ public class MindTreeNode extends DefaultMutableTreeNode {
 
     public DefaultMutableTreeNode addMemory(Memory p) {
         String name = p.getName();
-        //System.out.println(name);
         Object obj = p.getI();
         String value;
         if (obj != null) value = p.getI().toString();
         else value = "";
-        DefaultMutableTreeNode memoryNode=null; // = addItem(name,value,p,TreeElement.ICON_MEMORIES);
-        //maps.put(((TreeElement)memoryNode.getUserObject()).getName(), memoryNode);
+        DefaultMutableTreeNode memoryNode=null; 
         if (p.getClass().getCanonicalName().equals("br.unicamp.cst.core.entities.MemoryObject")) {
             value = "";
             Object pval = p.getI();
@@ -208,7 +197,6 @@ public class MindTreeNode extends DefaultMutableTreeNode {
             MemoryObject mmo;
             int k=0;
             CopyOnWriteArrayList<Memory> allMemories = new CopyOnWriteArrayList(mc.getAllMemories());
-            //System.out.println("List of Memories from "+name+" it has "+allMemories.size());
             for (Memory mo : allMemories) {
                 if (mo instanceof MemoryObject) {
                     mmo = (MemoryObject)mo;
@@ -219,7 +207,6 @@ public class MindTreeNode extends DefaultMutableTreeNode {
                     if (mmc.getName().equalsIgnoreCase("")) mmc.setType(name+"("+k+")");
                 }
                 DefaultMutableTreeNode newmemo = addMemory(mo);
-                //System.out.println("SubMemory["+k+"]: "+((TreeElement)newmemo.getUserObject()).getName());
                 maps.put(((TreeElement)newmemo.getUserObject()).getName(), newmemo);
                 memoryNode.add(newmemo);
                 k++;
@@ -227,7 +214,5 @@ public class MindTreeNode extends DefaultMutableTreeNode {
         }
         return (memoryNode);
     }
-    
-    
     
 }

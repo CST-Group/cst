@@ -64,13 +64,11 @@ public class ObjectTreeNode extends DefaultMutableTreeNode {
     
     public DefaultMutableTreeNode addFloat(float f, String name) {
         DefaultMutableTreeNode fNode = addItem(name,String.format("%4.2f",f),null,TreeElement.ICON_PROPERTY);
-        //this.add(fNode);
         return fNode;
     }
     
     public DefaultMutableTreeNode addString(String s, String name) {
         DefaultMutableTreeNode sNode = addItem(name,s,null,TreeElement.ICON_PROPERTY);
-        //this.add(sNode);
         return sNode;
     }
     

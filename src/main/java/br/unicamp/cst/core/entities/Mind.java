@@ -12,7 +12,6 @@
 package br.unicamp.cst.core.entities;
 
 import br.unicamp.cst.bindings.soar.PlansSubsystemModule;
-import br.unicamp.cst.motivational.MotivationalSubsystemModule;
 import java.util.ArrayList;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -29,8 +28,6 @@ public class Mind {
 	protected RawMemory rawMemory;
         protected ConcurrentHashMap<String,ArrayList> codelets;
 
-	//private MotivationalSubsystemModule motivationalSubsystemModule;
-
 	private PlansSubsystemModule plansSubsystemModule;
 
 	/**
@@ -38,12 +35,8 @@ public class Mind {
 	 */
 	public Mind() {
 		codeRack = new CodeRack();
-
 		rawMemory = new RawMemory();
                 codelets = new ConcurrentHashMap();
-
-		//motivationalSubsystemModule = new MotivationalSubsystemModule();
-
 		plansSubsystemModule = new PlansSubsystemModule();
 	}
 
@@ -76,10 +69,20 @@ public class Mind {
             codelets.put(groupName,group);
         }
         
+        /**
+         * Returns the full HashMap which for every group Name it is associated a list of codelets
+         * 
+         * @return the HashMap with all pairs (groupname,list of codelets belonging to groupname)
+         */
         public ConcurrentHashMap<String,ArrayList> getGroups() {
             return(codelets);
         }
         
+        /**
+         * Returns the number of registered groups
+         * 
+         * @return the number of registered groups
+         */
         public int getGroupsNumber() {
             return(codelets.size());
         }
@@ -160,13 +163,24 @@ public class Mind {
                 return co;
 	}
 
+        /**
+         * Register a Codelet within a group
+         * 
+         * @param co the Codelet
+         * @param groupName the group name
+         */
         public void registerCodelet(Codelet co, String groupName) {
             ArrayList<Codelet> groupList = codelets.get(groupName);
                 if (groupList != null) groupList.add(co);
         }
         
 
-        
+        /**
+         * Get a list of all Codelets belonging to a group
+         * 
+         * @param groupName the group name to which the Codelets belong
+         * @return A list of all codelets belonging to the group indicated by groupName
+         */
         public ArrayList<Codelet> getGroupList(String groupName) {
                 return(codelets.get(groupName));
         }
@@ -187,25 +201,6 @@ public class Mind {
 		if (codeRack != null)
 			codeRack.shutDown();
 	}
-
-	/**
-	 * Gets the Motivational Subsystem Module.
-	 * 
-	 * @return the motivationalSubsystemModule.
-	 */
-//	public MotivationalSubsystemModule getMotivationalSubsystemModule() {
-//		return motivationalSubsystemModule;
-//	}
-
-	/**
-	 * Sets the Motivational Subsystem Module.
-	 * 
-	 * @param motivationalSubsystemModule
-	 *            the motivationalSubsystemModule to set.
-	 */
-//	public void setMotivationalSubsystemModule(MotivationalSubsystemModule motivationalSubsystemModule) {
-//		this.motivationalSubsystemModule = motivationalSubsystemModule;
-//	}
 
 	/**
 	 * Gets the Plans Subsystem Module.

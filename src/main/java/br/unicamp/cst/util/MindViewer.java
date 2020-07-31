@@ -1,5 +1,4 @@
-/**
- * ********************************************************************************************
+/**********************************************************************************************
  * Copyright (c) 2012  DCA-FEEC-UNICAMP
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the GNU Lesser Public License v3
@@ -8,8 +7,7 @@
  * <p>
  * Contributors:
  * K. Raizer, A. L. O. Paraense, E. M. Froes, R. R. Gudwin - initial API and implementation
- * *********************************************************************************************
- */
+ ***********************************************************************************************/
 package br.unicamp.cst.util;
 
 import br.unicamp.cst.util.viewer.*;
@@ -41,7 +39,7 @@ public class MindViewer extends javax.swing.JFrame {
 
     private String windowName;
     private JTree jtree;
-    private Mind wog;
+    private Mind m;
 
     private List<Codelet> motivationalCodelets;
     private List<Codelet> emotionalCodelets;
@@ -92,16 +90,11 @@ public class MindViewer extends javax.swing.JFrame {
         setMind(mind);
         setWindowName(windowName);
         setBehavioralCodelets(behavioralCodelets);
-        //createTreeModelGUI(jspMindsEntities, getWog().getCodeRack().getAllCodelets(), windowName);
         MindPanel newContentPane = new MindPanel(mind);
         java.awt.GridBagConstraints gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.gridx = 0;
-        gridBagConstraints.gridy = 0;
-        gridBagConstraints.anchor = java.awt.GridBagConstraints.NORTHWEST;
-        pnMindEntities.add(cbRefreshMindsEntities, gridBagConstraints);
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
-        gridBagConstraints.gridy = 1;
+        gridBagConstraints.gridy = 0;
         gridBagConstraints.gridwidth = java.awt.GridBagConstraints.REMAINDER;
         gridBagConstraints.gridheight = java.awt.GridBagConstraints.REMAINDER;
         gridBagConstraints.fill = java.awt.GridBagConstraints.BOTH;
@@ -110,25 +103,20 @@ public class MindViewer extends javax.swing.JFrame {
         gridBagConstraints.anchor = java.awt.GridBagConstraints.NORTHWEST;
         gridBagConstraints.weightx = 0.1;
         gridBagConstraints.weighty = 0.1;
-        gridBagConstraints.insets = new java.awt.Insets(5, 0, 0, 2);
+        gridBagConstraints.insets = new java.awt.Insets(0, 0, 0, 0);
         pnMindEntities.add(newContentPane, gridBagConstraints);
         setTitle(windowName);
         startMindEntitiesThread();
         buildMindModulePanels(mind);
-
         Logger.getLogger("ac.biu.nlp.nlp.engineml").setLevel(Level.OFF);
         Logger.getLogger("org.BIU.utils.logging.ExperimentLogger").setLevel(Level.OFF);
         Logger.getLogger("java.awt").setLevel(Level.OFF);
         Logger.getLogger("sun.awt").setLevel(Level.OFF);
         Logger.getLogger("javax.swing").setLevel(Level.OFF);
-
-
     }
     
     
     private void buildMindModulePanels(Mind mind){
-        
-        //if(mind.getMotivationalSubsystemModule().verifyExistCodelets()){
         if(mind.getGroupsNumber() > 0) {
             if (mind.getGroupList("Motivational") != null) {
                 if (mind.getGroupList("Motivational").size() > 0) {
@@ -163,7 +151,6 @@ public class MindViewer extends javax.swing.JFrame {
         jspMainSplit = new javax.swing.JSplitPane();
         splMainChart = new javax.swing.JSplitPane();
         pnMindEntities = new javax.swing.JPanel();
-        cbRefreshMindsEntities = new javax.swing.JCheckBox();
         pnChart = new javax.swing.JPanel();
         cbRefreshChart = new javax.swing.JCheckBox();
         pnCodelets = new javax.swing.JPanel();
@@ -248,21 +235,6 @@ public class MindViewer extends javax.swing.JFrame {
 
         pnMindEntities.setMinimumSize(new java.awt.Dimension(0, 0));
         pnMindEntities.setLayout(new java.awt.GridBagLayout());
-
-        cbRefreshMindsEntities.setSelected(true);
-        cbRefreshMindsEntities.setText("Auto Refresh");
-        cbRefreshMindsEntities.setToolTipText("");
-        cbRefreshMindsEntities.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                cbRefreshMindsEntitiesActionPerformed(evt);
-            }
-        });
-        gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.gridx = 0;
-        gridBagConstraints.gridy = 0;
-        gridBagConstraints.anchor = java.awt.GridBagConstraints.NORTHWEST;
-        pnMindEntities.add(cbRefreshMindsEntities, gridBagConstraints);
-
         splMainChart.setLeftComponent(pnMindEntities);
         pnMindEntities.getAccessibleContext().setAccessibleName("");
 
@@ -346,39 +318,24 @@ public class MindViewer extends javax.swing.JFrame {
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
-    private void cbRefreshMindsEntitiesActionPerformed(java.awt.event.ActionEvent evt) {                                                       
-        if (cbRefreshMindsEntities.isSelected()) {
-            synchronized (getThreadMindEntities()) {
-                if (getThreadMindEntities() != null) {
-                    getThreadMindEntities().notify();
-                }
-            }
-        }
-    }
-
     private void btnPlusActionPerformed(java.awt.event.ActionEvent evt) {                                        
         int value = Integer.parseInt(txtRefreshTime.getText());
         value += 10;
         txtRefreshTime.setText(String.valueOf(value));
         setRefreshTimeToModules(value);
-
-
     }
 
     private void btnMinusActionPerformed(java.awt.event.ActionEvent evt) {
         int value = Integer.parseInt(txtRefreshTime.getText());
         value -= 10;
         txtRefreshTime.setText(String.valueOf(value < 100 ? 100 : value));
-
         setRefreshTimeToModules(value < 100 ? 100 : value);
-
     }
 
     private void setRefreshTimeToModules(long value){
         if(motivationalModuleViewer != null){
             motivationalModuleViewer.setRefreshTime(value);
         }
-
         if(plansSubsystemViewer != null){
             plansSubsystemViewer.setRefreshTime(value);
         }
@@ -407,17 +364,6 @@ public class MindViewer extends javax.swing.JFrame {
 
     }
     
-//    private DefaultTreeModel createTreeModelGUI(JScrollPane scrollPane, List<Codelet> codelets, String title) {
-//        DefaultTreeModel treeCodelets = TreeViewerUtil.createTreeModel(codelets, title, TreeElement.ICON_CODELETS);
-//
-//        JTree jtTree = new JTree(treeCodelets);
-//        jtTree.setCellRenderer(new RendererJTree());
-//        //TreeViewerUtil.expandAllNodes(jtTree);
-//        scrollPane.setViewportView(jtTree);
-//        
-//        return treeCodelets;
-//    }
-    
     private void startMindEntitiesThread() {
 
         long initialTime = Calendar.getInstance().getTimeInMillis();
@@ -440,27 +386,11 @@ public class MindViewer extends javax.swing.JFrame {
                 }
 
                 while (!isbStopRefresh()) {
-
-                    while (!cbRefreshMindsEntities.isSelected() && !cbRefreshChart.isSelected()) {
-                        try {
-                            synchronized (getThreadMindEntities()) {
-                                getThreadMindEntities().wait();
-                            }
-                        } catch (InterruptedException ex) {
-                            Logger.getLogger(MindViewer.class.getName()).log(Level.SEVERE, null, ex);
-                        }
-                    }
-
-                    if (cbRefreshMindsEntities.isSelected()) {
-                        //TreeViewerUtil.createTreeModelGUI(jspMindsEntities, getWog().getCodeRack().getAllCodelets(), getWindowName());
-                    }
-
                     if (cbRefreshChart.isSelected()) {
                         if (refresher != null) setInstant(refresher.refresh());
                         else setInstant(Calendar.getInstance().getTimeInMillis() - initialTime);
                         ChartViewerUtil.updateValuesInXYLineChart(dataset, getBehavioralCodelets(), getInstant());
                     }
-
                     try {
                         int refreshTime = txtRefreshTime.getText().trim().equals("") ? 100 : Integer.parseInt(txtRefreshTime.getText());
                         Thread.currentThread().sleep(refreshTime);
@@ -470,34 +400,12 @@ public class MindViewer extends javax.swing.JFrame {
                 }
             }
         });
-
         getThreadMindEntities().start();
     }
 
-    public void setMind(Mind newwog) {
-        setWog(newwog);
+    public void setMind(Mind m) {
+        this.m = m;
     }
-//    public void updateTree(Mind m) {
-//        setWog(m);
-//        TreeModel tm = TreeViewerUtil.createTreeModel(m);
-//        getJtree().setModel(tm);
-//        //TreeViewerUtil.expandAllNodes(getJtree());
-//    }
-//
-//    public void StartTimer() {
-//        Timer t = new Timer();
-//        MVTimerTask tt = new MVTimerTask(this);
-//        t.scheduleAtFixedRate(tt, 0, 3000);
-//    }
-//
-//    public void tick() {
-//        if (getWog() != null) {
-//            updateTree(getWog());
-//        } else {
-//            System.out.println("Mind � null");
-//        }
-//        System.out.println("update");
-//    }
 
     public String getWindowName() {
         return windowName;
@@ -529,14 +437,6 @@ public class MindViewer extends javax.swing.JFrame {
 
     public void setJtree(JTree jtree) {
         this.jtree = jtree;
-    }
-
-    public Mind getWog() {
-        return wog;
-    }
-
-    public void setWog(Mind wog) {
-        this.wog = wog;
     }
 
     public Thread getThreadAppraisals() {
@@ -595,33 +495,10 @@ public class MindViewer extends javax.swing.JFrame {
         this.instant = instant;
     }
 
-
-
-//    class MVTimerTask extends TimerTask {
-//
-//        MindViewer mv;
-//        boolean enabled = true;
-//
-//        public MVTimerTask(MindViewer mvi) {
-//            mv = mvi;
-//        }
-//
-//        public void run() {
-//            if (enabled) {
-//                mv.tick();
-//            }
-//        }
-//
-//        public void setEnabled(boolean value) {
-//            enabled = value;
-//        }
-//    }
-
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton btnMinus;
     private javax.swing.JButton btnPlus;
     private javax.swing.JCheckBox cbRefreshChart;
-    private javax.swing.JCheckBox cbRefreshMindsEntities;
     private javax.swing.JSplitPane jspMainSplit;
     private javax.swing.JLabel lblRefreshTime;
     private javax.swing.JPanel pnChart;
