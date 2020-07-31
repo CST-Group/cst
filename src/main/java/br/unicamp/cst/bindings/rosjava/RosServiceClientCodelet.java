@@ -74,7 +74,7 @@ public abstract class RosServiceClientCodelet<S,T> extends Codelet implements No
 		
 		serviceResponseListener = new ServiceResponseListener<T>() {
 			@Override
-			public void onSuccess(T response) {			    	  
+			public void onSuccess(T response) {	
 				if(response != null) {
 					processServiceResponse(response);
 					callInProgressSemaphore.release();
@@ -83,7 +83,7 @@ public abstract class RosServiceClientCodelet<S,T> extends Codelet implements No
 
 			@Override
 			public void onFailure(RemoteException e) {
-				e.printStackTrace();
+                                e.printStackTrace();
 			}
 		};
 
@@ -93,22 +93,22 @@ public abstract class RosServiceClientCodelet<S,T> extends Codelet implements No
 
 	@Override
 	public synchronized void start() {
-		startRosNode();
+                startRosNode();
 		super.start();
 	}
 
 	@Override
 	public synchronized void stop() {
-		stopRosNode();
+                stopRosNode();
 		super.stop();
 	}
 
 	private void startRosNode() {
-		nodeMainExecutor.execute(this, nodeConfiguration);
+                nodeMainExecutor.execute(this, nodeConfiguration);
 	}
 
 	private void stopRosNode() {
-		serviceClient = null;
+                serviceClient = null;
 		serviceMessageRequest = null;
 		nodeMainExecutor.shutdownNodeMain(this);
 	}
@@ -185,7 +185,6 @@ public abstract class RosServiceClientCodelet<S,T> extends Codelet implements No
 
 	@Override
 	public void onShutdown(Node node) {
-		// empty
 	}
 
 	@Override

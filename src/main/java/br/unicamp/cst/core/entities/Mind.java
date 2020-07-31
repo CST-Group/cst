@@ -12,7 +12,8 @@
 package br.unicamp.cst.core.entities;
 
 import br.unicamp.cst.bindings.soar.PlansSubsystemModule;
-import br.unicamp.cst.motivational.MotivationalSubsystemModule;
+import java.util.ArrayList;
+import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * This class represents the Mind of the agent, wrapping all the CST's core
@@ -24,10 +25,8 @@ import br.unicamp.cst.motivational.MotivationalSubsystemModule;
 public class Mind {
 
 	protected CodeRack codeRack;
-
 	protected RawMemory rawMemory;
-
-	private MotivationalSubsystemModule motivationalSubsystemModule;
+        protected ConcurrentHashMap<String,ArrayList> codelets;
 
 	private PlansSubsystemModule plansSubsystemModule;
 
@@ -36,11 +35,8 @@ public class Mind {
 	 */
 	public Mind() {
 		codeRack = new CodeRack();
-
 		rawMemory = new RawMemory();
-
-		motivationalSubsystemModule = new MotivationalSubsystemModule();
-
+                codelets = new ConcurrentHashMap();
 		plansSubsystemModule = new PlansSubsystemModule();
 	}
 
@@ -62,6 +58,35 @@ public class Mind {
 		return rawMemory;
 	}
 
+	/**
+	 * Creates a Codelet Group
+	 * 
+	 * @param groupName The Group name
+	 * 
+	 */
+        public synchronized void createCodeletGroup(String groupName) {
+            ArrayList<Codelet> group = new ArrayList<Codelet>();
+            codelets.put(groupName,group);
+        }
+        
+        /**
+         * Returns the full HashMap which for every group Name it is associated a list of codelets
+         * 
+         * @return the HashMap with all pairs (groupname,list of codelets belonging to groupname)
+         */
+        public ConcurrentHashMap<String,ArrayList> getGroups() {
+            return(codelets);
+        }
+        
+        /**
+         * Returns the number of registered groups
+         * 
+         * @return the number of registered groups
+         */
+        public int getGroupsNumber() {
+            return(codelets.size());
+        }
+        
 	/**
 	 * Creates a Memory Container inside the Mind of a given type.
 	 * 
@@ -122,10 +147,45 @@ public class Mind {
 	public Codelet insertCodelet(Codelet co) {
 		if (codeRack != null)
 			codeRack.addCodelet(co);
-
 		return co;
 	}
 
+	/**
+	 * Inserts the Codelet passed in the Mind's CodeRack.
+	 * 
+	 * @param co the Codelet to be inserted in the Mind
+         * @param groupName the Codelet group name
+	 * @return the Codelet.
+	 */
+	public Codelet insertCodelet(Codelet co, String groupName) {
+                insertCodelet(co);
+                registerCodelet(co,groupName);
+                return co;
+	}
+
+        /**
+         * Register a Codelet within a group
+         * 
+         * @param co the Codelet
+         * @param groupName the group name
+         */
+        public void registerCodelet(Codelet co, String groupName) {
+            ArrayList<Codelet> groupList = codelets.get(groupName);
+                if (groupList != null) groupList.add(co);
+        }
+        
+
+        /**
+         * Get a list of all Codelets belonging to a group
+         * 
+         * @param groupName the group name to which the Codelets belong
+         * @return A list of all codelets belonging to the group indicated by groupName
+         */
+        public ArrayList<Codelet> getGroupList(String groupName) {
+                return(codelets.get(groupName));
+        }
+        
+        
 	/**
 	 * Starts all codelets in coderack.
 	 */
@@ -140,25 +200,6 @@ public class Mind {
 	public void shutDown() {
 		if (codeRack != null)
 			codeRack.shutDown();
-	}
-
-	/**
-	 * Gets the Motivational Subsystem Module.
-	 * 
-	 * @return the motivationalSubsystemModule.
-	 */
-	public MotivationalSubsystemModule getMotivationalSubsystemModule() {
-		return motivationalSubsystemModule;
-	}
-
-	/**
-	 * Sets the Motivational Subsystem Module.
-	 * 
-	 * @param motivationalSubsystemModule
-	 *            the motivationalSubsystemModule to set.
-	 */
-	public void setMotivationalSubsystemModule(MotivationalSubsystemModule motivationalSubsystemModule) {
-		this.motivationalSubsystemModule = motivationalSubsystemModule;
 	}
 
 	/**
