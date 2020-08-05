@@ -21,7 +21,6 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.util.Enumeration;
-import java.util.List;
 import java.util.Timer;
 import java.util.TimerTask;
 import java.util.concurrent.CopyOnWriteArrayList;
@@ -41,7 +40,6 @@ import javax.swing.tree.TreePath;
 public class CodeletPanel extends javax.swing.JPanel {
 
     Mind mind;
-    MindRenderer wow;
     DefaultMutableTreeNode first;
     DefaultTreeModel memtm;
     MindTreeNode mtn;
@@ -57,7 +55,7 @@ public class CodeletPanel extends javax.swing.JPanel {
         codelets.addCodelets(m,group);
         DefaultTreeModel codeletsTreeModel = new DefaultTreeModel(codelets);
         codeletsTree.setModel(codeletsTreeModel);
-        codeletsTree.setCellRenderer(new MindRenderer());
+        codeletsTree.setCellRenderer(new MindRenderer(false));
         StartTimer();
         MouseListener ml;
         ml = new MindMouseAdapter(codeletsTree);
@@ -109,7 +107,7 @@ public class CodeletPanel extends javax.swing.JPanel {
     }
     
     public String getMemoryValue(String nodeName) {
-        String memValue = "null";
+        String memValue = "";
         CopyOnWriteArrayList<Memory> mm = new CopyOnWriteArrayList(mind.getRawMemory().getAllMemoryObjects());
         for (Memory m : mm) {
             Object o = scanM(m, nodeName);

@@ -23,7 +23,6 @@ import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.lang.reflect.Field;
 import java.util.ArrayList;
-import java.util.Enumeration;
 import java.util.List;
 import java.util.Timer;
 import java.util.TimerTask;
@@ -70,7 +69,7 @@ public class MemoryInspector extends javax.swing.JFrame {
         if (m.getI() != null) lastobjectclass = ob.getClass().getCanonicalName();
         obj = new ObjectTreeNode(mo.getName(),TreeElement.ICON_OBJECT);
         float eval = mo.getEvaluation().floatValue();
-        ev_tn = obj.addFloat(eval,"Eval");
+        ev_tn = obj.addNumber(eval,"Eval");
         obj.add(ev_tn);
         long timestamp = mo.getTimestamp();
         String ts = TimeStamp.getStringTimeStamp(timestamp,"dd/MM/yyyy HH:mm:ss.SSS");
@@ -78,7 +77,7 @@ public class MemoryInspector extends javax.swing.JFrame {
         obj.add(ts_tn);
         DefaultTreeModel objTreeModel = new DefaultTreeModel(obj);
         objTree.setModel(objTreeModel);
-        objTree.setCellRenderer(new MindRenderer());
+        objTree.setCellRenderer(new MindRenderer(false));
         StartTimer();
         MouseListener ml;
         ml = new ObjectMouseAdapter(objTree);
@@ -138,11 +137,19 @@ public class MemoryInspector extends javax.swing.JFrame {
     
     public void updateNumber(Number n,String name) {
         String s="";
-        if (n instanceof Long || n instanceof Integer) {
+        if (n instanceof Long) {
             long i = (long) n;
             s = String.format("%d",i);
         }
-        else if (n instanceof Float || n instanceof Double) {
+        else if (n instanceof Integer) {
+            int i = (int) n;
+            s = String.format("%d",i);
+        }
+        else if (n instanceof Float) {
+            float d = (float) n;
+            s = String.format("%4.2f", d);
+        }
+        else if (n instanceof Double) {
             double d = (double) n;
             s = String.format("%4.2f", d);
         }
@@ -318,29 +325,6 @@ public class MemoryInspector extends javax.swing.JFrame {
                 return;
             }
         }
-    }
-    
-    public void updateTree2(MemoryObject m) {
-        DefaultTreeModel tm = (DefaultTreeModel) objTree.getModel();
-        DefaultMutableTreeNode root = (DefaultMutableTreeNode)tm.getRoot();
-        Enumeration<TreeNode> allchildren = root.breadthFirstEnumeration();
-        while( allchildren.hasMoreElements() ) {
-             DefaultMutableTreeNode node = (DefaultMutableTreeNode) allchildren.nextElement();
-             TreeElement element = (TreeElement) node.getUserObject();
-             String nodeName = element.getName();
-        }
-        tm.nodeChanged((TreeNode)tm.getRoot());
-        objTree.treeDidChange();
-        // Now the same for the Codelets Tab
-        tm = (DefaultTreeModel) objTree.getModel();
-        root = (DefaultMutableTreeNode)tm.getRoot();
-        allchildren = root.breadthFirstEnumeration();
-        while( allchildren.hasMoreElements() ) {
-             DefaultMutableTreeNode node = (DefaultMutableTreeNode) allchildren.nextElement();
-             TreeElement element = (TreeElement) node.getUserObject();
-             String nodeName = element.getName();
-        }
-        tm.nodeChanged((TreeNode)tm.getRoot());
     }
     
     public void tick() {

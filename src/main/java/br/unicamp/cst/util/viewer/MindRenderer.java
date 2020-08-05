@@ -31,6 +31,12 @@ import javax.swing.tree.DefaultTreeCellRenderer;
 public class MindRenderer extends DefaultTreeCellRenderer {
     
     DefaultMutableTreeNode texttobewritten = new DefaultMutableTreeNode();
+    boolean debug = false;
+    
+    public MindRenderer(boolean debugvalue) {
+        super();
+        debug = debugvalue;
+    }
 
     @Override
     public Component getTreeCellRendererComponent(JTree tree, Object value, boolean sel, boolean exp, boolean leaf, int row, boolean hasFocus) {
@@ -96,7 +102,9 @@ public class MindRenderer extends DefaultTreeCellRenderer {
         setLeafIcon(img);
 
         String hex = "#" + Integer.toHexString(node.getColor().getRGB()).substring(2);
-        String htmltext = "<html><font color=\"" + hex + "\">" + node.getName()+" : "+node.getValue()+" ["+node.getId_node()+"]" + "</font></html>";
+        String htmltext;
+        if (debug) htmltext = "<html><font color=\"" + hex + "\">" + node.getName()+" : "+node.getValue()+" ["+node.getId_node()+"]" + "</font></html>";
+        else htmltext = "<html><font color=\"" + hex + "\">" + node.getName()+" : "+node.getValue()+"</font></html>";
         objectNode = texttobewritten;
         objectNode.setUserObject(htmltext);
         value = objectNode;

@@ -1,5 +1,4 @@
-/**
- * ********************************************************************************************
+/***********************************************************************************************
  * Copyright (c) 2012  DCA-FEEC-UNICAMP
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the GNU Lesser Public License v3
@@ -8,8 +7,7 @@
  * <p>
  * Contributors:
  * K. Raizer, A. L. O. Paraense, E. M. Froes, R. R. Gudwin - initial API and implementation
- * *********************************************************************************************
- */
+ ***********************************************************************************************/
 package br.unicamp.cst.util.viewer;
 
 import br.unicamp.cst.core.entities.Memory;
@@ -63,12 +61,12 @@ public class MindPanel extends javax.swing.JPanel {
         mtn = memories;
         DefaultTreeModel codeletsTreeModel = new DefaultTreeModel(codelets);
         codeletsTree.setModel(codeletsTreeModel);
-        codeletsTree.setCellRenderer(new MindRenderer());
+        codeletsTree.setCellRenderer(new MindRenderer(false));
         DefaultTreeModel memoriesTreeModel = new DefaultTreeModel(memories);
         memtm = memoriesTreeModel;
         memoryTree.setModel(memoriesTreeModel);
         memoryTree.setLargeModel(true);
-        memoryTree.setCellRenderer(new MindRenderer());
+        memoryTree.setCellRenderer(new MindRenderer(false));
         StartTimer();
         MouseListener ml;
         ml = new MindMouseAdapter(memoryTree);
@@ -122,7 +120,7 @@ public class MindPanel extends javax.swing.JPanel {
     }
     
     public String getMemoryValue(String nodeName) {
-        String memValue = "null";
+        String memValue = "";
         CopyOnWriteArrayList<Memory> mm = new CopyOnWriteArrayList(mind.getRawMemory().getAllMemoryObjects());
         for (Memory m : mm) {
             Object o = scanM(m, nodeName);
