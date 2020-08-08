@@ -36,7 +36,7 @@ public class MemoryInspectorTest {
         mo.setI(m);
         MemoryInspector mi = new MemoryInspector(mo);
         mi.setVisible(true);
-        DiscoverEventsToRobot der = new DiscoverEventsToRobot("rob");
+        //DiscoverEventsToRobot der = new DiscoverEventsToRobot("rob");
         Robot rob=null;
         try
         {
