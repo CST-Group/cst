@@ -1,5 +1,4 @@
-/**
- * ********************************************************************************************
+/**********************************************************************************************
  * Copyright (c) 2012  DCA-FEEC-UNICAMP
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the GNU Lesser Public License v3
@@ -8,8 +7,7 @@
  * <p>
  * Contributors:
  * K. Raizer, A. L. O. Paraense, E. M. Froes, R. R. Gudwin - initial API and implementation
- * *********************************************************************************************
- */
+ ***********************************************************************************************/
 package br.unicamp.cst.util.viewer;
 
 import br.unicamp.cst.core.entities.MemoryContainer;
@@ -21,9 +19,9 @@ import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
+import java.lang.reflect.Array;
 import java.lang.reflect.Field;
 import java.util.ArrayList;
-import java.util.Enumeration;
 import java.util.List;
 import java.util.Timer;
 import java.util.TimerTask;
@@ -70,7 +68,7 @@ public class MemoryInspector extends javax.swing.JFrame {
         if (m.getI() != null) lastobjectclass = ob.getClass().getCanonicalName();
         obj = new ObjectTreeNode(mo.getName(),TreeElement.ICON_OBJECT);
         float eval = mo.getEvaluation().floatValue();
-        ev_tn = obj.addFloat(eval,"Eval");
+        ev_tn = obj.addObject(eval,"Eval");
         obj.add(ev_tn);
         long timestamp = mo.getTimestamp();
         String ts = TimeStamp.getStringTimeStamp(timestamp,"dd/MM/yyyy HH:mm:ss.SSS");
@@ -78,7 +76,7 @@ public class MemoryInspector extends javax.swing.JFrame {
         obj.add(ts_tn);
         DefaultTreeModel objTreeModel = new DefaultTreeModel(obj);
         objTree.setModel(objTreeModel);
-        objTree.setCellRenderer(new MindRenderer());
+        objTree.setCellRenderer(new MindRenderer(false));
         StartTimer();
         MouseListener ml;
         ml = new ObjectMouseAdapter(objTree);
@@ -136,89 +134,26 @@ public class MemoryInspector extends javax.swing.JFrame {
         element.setValue(s);
     }
     
-    public void updateNumber(Number n,String name) {
-        String s="";
-        if (n instanceof Long || n instanceof Integer) {
-            long i = (long) n;
-            s = String.format("%d",i);
-        }
-        else if (n instanceof Float || n instanceof Double) {
-            double d = (double) n;
-            s = String.format("%4.2f", d);
-        }
-        else if (n instanceof Byte) {
-            byte b = (byte) n;
-            s = String.format("%x", b);
-        }
-        updateString(s,name);
-    }
-    
     public void updateList(Object o, String name) {
         List ll = (List) o;
         int i=0;
         for (Object ob : ll) {
-            updateString(ob.toString(),name+"["+i+"]");
+            updateObject(ob,ToString.el(name, i));
             i++;
         }
-                
     }
     
     public void updateArray(Object o, String name) {
-        if (o instanceof int[]) {
-            int[] num = (int[]) o;
-            int size = num.length;
-            for (int i=0;i<size;i++) {
-               updateObject(num[i],name+"["+i+"]");
-            }
-        }    
-        else if (o instanceof long[]) {
-            long[] num = (long[]) o;
-            int size = num.length;
-            for (int i=0;i<size;i++) {
-               updateObject(num[i],name+"["+i+"]");
-            }   
-        }
-        else if (o instanceof float[]) {
-            float[] num = (float[]) o;
-            int size = num.length;
-            for (int i=0;i<size;i++) {
-               updateObject(num[i],name+"["+i+"]");
-            }   
-        }
-        else if (o instanceof double[]) {
-            double[] num = (double[]) o;
-            int size = num.length;
-            for (int i=0;i<size;i++) {
-               updateObject(num[i],name+"["+i+"]");
-            }   
-        }
-        else if (o instanceof boolean[]) {
-            boolean[] num = (boolean[]) o;
-            int size = num.length;
-            for (int i=0;i<size;i++) {
-               updateObject(num[i],name+"["+i+"]");
-            }   
-        }
-        else if (o instanceof Object[]) {
-            Object[] num = (Object[]) o;
-            int size = num.length;
-            for (int i=0;i<size;i++) {
-               updateObject(num[i],name+"["+i+"]");
-            }   
+        int l = Array.getLength(o);
+        for (int i=0;i<l;i++) {
+            Object oo = Array.get(o,i);
+            updateObject(oo,ToString.el(name, i));
         }
     }
     
     public void updateObject(Object o, String name) {
-        if (o == null) {
-            updateString("NULL",name);
-        }
-        else if (o instanceof Boolean) {
-            boolean ob = (boolean)o;
-            if (ob == true) updateString("true",name);
-            else updateString("false",name);
-        }
-        else if (o instanceof String) {
-            String s = (String) o;
+        String s = ToString.from(o);
+        if (s != null) {
             updateString(s,name);
         }
         else if (o instanceof List) {
@@ -226,10 +161,6 @@ public class MemoryInspector extends javax.swing.JFrame {
         }
         else if (o.getClass().isArray()) {
             updateArray(o,name);
-        }
-        else if (o instanceof Number) {
-            Number n = (Number) o;
-            updateNumber(n,name);
         }
         else {
             // if the object is not primitive, first update the object element
@@ -318,29 +249,6 @@ public class MemoryInspector extends javax.swing.JFrame {
                 return;
             }
         }
-    }
-    
-    public void updateTree2(MemoryObject m) {
-        DefaultTreeModel tm = (DefaultTreeModel) objTree.getModel();
-        DefaultMutableTreeNode root = (DefaultMutableTreeNode)tm.getRoot();
-        Enumeration<TreeNode> allchildren = root.breadthFirstEnumeration();
-        while( allchildren.hasMoreElements() ) {
-             DefaultMutableTreeNode node = (DefaultMutableTreeNode) allchildren.nextElement();
-             TreeElement element = (TreeElement) node.getUserObject();
-             String nodeName = element.getName();
-        }
-        tm.nodeChanged((TreeNode)tm.getRoot());
-        objTree.treeDidChange();
-        // Now the same for the Codelets Tab
-        tm = (DefaultTreeModel) objTree.getModel();
-        root = (DefaultMutableTreeNode)tm.getRoot();
-        allchildren = root.breadthFirstEnumeration();
-        while( allchildren.hasMoreElements() ) {
-             DefaultMutableTreeNode node = (DefaultMutableTreeNode) allchildren.nextElement();
-             TreeElement element = (TreeElement) node.getUserObject();
-             String nodeName = element.getName();
-        }
-        tm.nodeChanged((TreeNode)tm.getRoot());
     }
     
     public void tick() {

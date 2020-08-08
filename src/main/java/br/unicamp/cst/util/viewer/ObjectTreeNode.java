@@ -13,6 +13,7 @@
 package br.unicamp.cst.util.viewer;
 
 import br.unicamp.cst.util.TreeElement;
+import java.lang.reflect.Array;
 import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -40,33 +41,6 @@ public class ObjectTreeNode extends DefaultMutableTreeNode {
         return (memoryNode);
     }
     
-    public DefaultMutableTreeNode addNumber(Number n,String name) {
-        String s="";
-        if (n instanceof Long || n instanceof Integer) {
-            long i = (long) n; 
-            s = String.format("%d",i);
-        }
-        else if (n instanceof Float || n instanceof Double) {
-            double d = (double) n;
-            s = String.format("%4.2f", d);
-        }
-        else if (n instanceof Byte) {
-            byte b = (byte) n;
-            s = String.format("%x", b);
-        }
-        return(addString(s,name));
-    }
-    
-    public DefaultMutableTreeNode addInteger(int i, String name) {
-        DefaultMutableTreeNode iNode = addItem(name,String.format("%d",i),null,TreeElement.ICON_PROPERTY);
-        return iNode;
-    }
-    
-    public DefaultMutableTreeNode addFloat(float f, String name) {
-        DefaultMutableTreeNode fNode = addItem(name,String.format("%4.2f",f),null,TreeElement.ICON_PROPERTY);
-        return fNode;
-    }
-    
     public DefaultMutableTreeNode addString(String s, String name) {
         DefaultMutableTreeNode sNode = addItem(name,s,null,TreeElement.ICON_PROPERTY);
         return sNode;
@@ -77,55 +51,43 @@ public class ObjectTreeNode extends DefaultMutableTreeNode {
             DefaultMutableTreeNode node = addString(obj.toString(),name);
             return(node);            
         }
-        else if (obj == null) {
-            DefaultMutableTreeNode node = addString("NULL",name);
+        String s = ToString.from(obj);
+        if (s != null) {
+            DefaultMutableTreeNode node = addString(s,name);
             return(node);
         }
-        else if (obj instanceof Boolean) {
-            DefaultMutableTreeNode node;
-            if ((boolean)obj == true) node = addString("true",name);
-            else node = addString("false",name);
-            return(node);
-        }
-        else if (obj instanceof Number) {
-            DefaultMutableTreeNode node = addNumber((Number)obj,name);
-            return(node);
-        }
-        else if (obj instanceof String) {
-            DefaultMutableTreeNode node = addString((String)obj,name);
-            return(node);            
-        }
-        else if (obj instanceof float[]) {
-            DefaultMutableTreeNode objNode = addItem(name,"",obj,TreeElement.ICON_OBJECT);
-            float fo[] = (float[]) obj;
-            for (int i=0;i< fo.length;i++) {
-                DefaultMutableTreeNode arr = addFloat(fo[i],name+"["+i+"]");
-                objNode.add(arr);
+        else if (obj.getClass().isArray()) {
+            int l = Array.getLength(obj);
+            String type = obj.getClass().getSimpleName();
+            if (l>0) {
+                Object otype = Array.get(obj,0);
+                if (otype != null)
+                    type = otype.getClass().getSimpleName();
             }
-            return(objNode);
-        }
-        else if (obj instanceof double[]) {
-            DefaultMutableTreeNode objNode = addItem(name,"",obj,TreeElement.ICON_OBJECT);
-            double fo[] = (double[]) obj;
-            for (int i=0;i< fo.length;i++) {
-                DefaultMutableTreeNode arr = addFloat(((Double)fo[i]).floatValue(),name+"["+i+"]");
+            DefaultMutableTreeNode objNode = addItem(name,"Array["+l+"] of "+type,obj,TreeElement.ICON_OBJECT);
+            for (int i=0;i<l;i++) {
+                Object oo = Array.get(obj,i);
+                DefaultMutableTreeNode arr = addObject(oo,ToString.el(name, i));
                 objNode.add(arr);
             }
             return(objNode);
         }
         else if (obj instanceof List) {
-            DefaultMutableTreeNode objNode = addItem(name,"",obj,TreeElement.ICON_OBJECT);
             List ll = (List) obj;
+            String label = "";
+            if (ll.size() > 0) label = "List["+ll.size()+"] of "+ll.get(0).getClass().getSimpleName();
+            else label = "List[0]";
+            DefaultMutableTreeNode objNode = addItem(name,label,obj,TreeElement.ICON_OBJECT);
             int i=0;
             for (Object o : ll) {
-                DefaultMutableTreeNode node = addString(o.toString(),name+"["+i+"]");
+                DefaultMutableTreeNode node = addObject(o,ToString.el(name,i));
                 objNode.add(node);
                 i++;
             }
             return(objNode);
         }
         else {
-            DefaultMutableTreeNode objNode = addItem(name,"",obj,TreeElement.ICON_OBJECT);
+            DefaultMutableTreeNode objNode = addItem(name,obj.toString(),obj,TreeElement.ICON_OBJECT);
             listtoavoidloops.add(obj);
             Field[] fields = obj.getClass().getDeclaredFields();
             for (Field field : fields) {

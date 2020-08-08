@@ -41,37 +41,6 @@ public class MindTreeNode extends DefaultMutableTreeNode {
         super(new TreeElement(name, TreeElement.NODE_NORMAL, name, icon_type));
     }
     
-    public MindTreeNode(Mind m) {
-        super();
-        DefaultMutableTreeNode mm = addMind(m);
-        maps.put((String)mm.getUserObject(),mm);
-        this.add(mm);
-    }
-    
-    public DefaultMutableTreeNode addRootNode(String rootNodeName) {
-        DefaultMutableTreeNode root = new DefaultMutableTreeNode(new TreeElement(rootNodeName, TreeElement.NODE_NORMAL, null, TreeElement.ICON_CONFIGURATION));
-        return (root);
-    }
-    
-    public DefaultMutableTreeNode addMind(Mind m) {
-        DefaultMutableTreeNode mindNode = addItem("Mind"," "," ",TreeElement.ICON_MIND);
-        DefaultMutableTreeNode codeletsNode = addItem("Codelets"," "," ", TreeElement.ICON_CONFIGURATION);
-        mindNode.add(codeletsNode);
-        CopyOnWriteArrayList<Codelet> codelets = new CopyOnWriteArrayList(m.getCodeRack().getAllCodelets());
-        for (Codelet oo : codelets) {
-            DefaultMutableTreeNode newcodeletNode = addCodelet(oo);
-            codeletsNode.add(newcodeletNode);
-        }
-        DefaultMutableTreeNode memoriesNode = addItem("Memories"," "," ", TreeElement.ICON_MEMORIES);
-        mindNode.add(memoriesNode);
-        CopyOnWriteArrayList<Memory> memories = new CopyOnWriteArrayList(m.getRawMemory().getAllMemoryObjects());
-        for (Memory mo : memories) {
-            DefaultMutableTreeNode memoryNode = addMemory(mo);
-            memoriesNode.add(memoryNode);
-        }
-        return (mindNode);
-    }
-    
     public void addCodelets(Mind m) {
         CopyOnWriteArrayList<Codelet> codelets;
         if (m.getGroupsNumber() > 0) {
