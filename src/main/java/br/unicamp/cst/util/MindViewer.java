@@ -117,9 +117,9 @@ public class MindViewer extends javax.swing.JFrame {
     
     
     private void buildMindModulePanels(Mind mind){
-        if(mind.getGroupsNumber() > 0) {
-            if (mind.getGroupList("Motivational") != null) {
-                if (mind.getGroupList("Motivational").size() > 0) {
+        if(mind.getCodeletGroupsNumber() > 0) {
+            if (mind.getCodeletGroupList("Motivational") != null) {
+                if (mind.getCodeletGroupList("Motivational").size() > 0) {
                     motivationalModuleViewer = new MotivationalSubsystemViewer(Long.parseLong(txtRefreshTime.getText()), mind);
                     tbModules.add("Motivational Subsystem", motivationalModuleViewer);
                 }

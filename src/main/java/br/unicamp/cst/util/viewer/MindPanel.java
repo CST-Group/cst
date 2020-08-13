@@ -298,8 +298,8 @@ class MindMouseAdapter extends MouseAdapter {
                             popup.add(jm1);
                             popup.show(tree, e.getX(), e.getY());
                         }
-                        else if (element instanceof MemoryObject) {
-                            MemoryObject mo = (MemoryObject) element;
+                        else if (element instanceof Memory) {
+                            Memory mo = (Memory) element;
                             JPopupMenu popup = new JPopupMenu();
                             JMenuItem jm1 = new JMenuItem("Inspect Table");
                             ActionListener al = new ActionListener() {
@@ -310,7 +310,7 @@ class MindMouseAdapter extends MouseAdapter {
                             };
                             jm1.addActionListener(al);
                             popup.add(jm1);
-                            if (element instanceof MemoryObject) {
+                            if (element instanceof Memory) {
                                JMenuItem jm2 = new JMenuItem("Inspect Tree");
                                ActionListener al2 = new ActionListener() {
                                    public void actionPerformed(ActionEvent e) {

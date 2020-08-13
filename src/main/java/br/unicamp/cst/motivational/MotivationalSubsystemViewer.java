@@ -60,11 +60,11 @@ public class MotivationalSubsystemViewer extends javax.swing.JPanel {
     public MotivationalSubsystemViewer(long refreshTime, Mind mind) {
         initComponents();
         setRefreshTime(refreshTime);
-        initMotivationalSubsystemViewer(mind.getGroupList("Motivational"), 
-                                        mind.getGroupList("Emotional"),
-                                        mind.getGroupList("Goal"),
-                                        mind.getGroupList("Appraisal"),
-                                        mind.getGroupList("Moode")
+        initMotivationalSubsystemViewer(mind.getCodeletGroupList("Motivational"), 
+                                        mind.getCodeletGroupList("Emotional"),
+                                        mind.getCodeletGroupList("Goal"),
+                                        mind.getCodeletGroupList("Appraisal"),
+                                        mind.getCodeletGroupList("Mood")
                                         );
         m = mind;
     }

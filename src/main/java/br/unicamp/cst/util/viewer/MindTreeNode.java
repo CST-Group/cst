@@ -43,8 +43,8 @@ public class MindTreeNode extends DefaultMutableTreeNode {
     
     public void addCodelets(Mind m) {
         CopyOnWriteArrayList<Codelet> codelets;
-        if (m.getGroupsNumber() > 0) {
-           ConcurrentHashMap<String,ArrayList> groups = m.getGroups();
+        if (m.getCodeletGroupsNumber() > 0) {
+           ConcurrentHashMap<String,ArrayList> groups = m.getCodeletGroups();
            Enumeration<String> keys = groups.keys();
            while (keys.hasMoreElements()) {
                String s = keys.nextElement();
@@ -70,8 +70,8 @@ public class MindTreeNode extends DefaultMutableTreeNode {
     
     public void addCodelets(Mind m, String groupName) {
         CopyOnWriteArrayList<Codelet> codelets;
-        if (m.getGroupsNumber() > 0) {
-           ConcurrentHashMap<String,ArrayList> groups = m.getGroups();
+        if (m.getCodeletGroupsNumber() > 0) {
+           ConcurrentHashMap<String,ArrayList> groups = m.getCodeletGroups();
            codelets = new CopyOnWriteArrayList(groups.get(groupName));
            for (Codelet oo : codelets) {
                     DefaultMutableTreeNode newcodeletNode = addCodelet(oo);
@@ -82,13 +82,31 @@ public class MindTreeNode extends DefaultMutableTreeNode {
     }
     
     public void addMemories(Mind m) {
-        CopyOnWriteArrayList<Memory> memories = new CopyOnWriteArrayList(m.getRawMemory().getAllMemoryObjects());
-        for (Memory mo : memories) {
-            DefaultMutableTreeNode memoryNode = addMemory(mo);
-            maps.put(((TreeElement)memoryNode.getUserObject()).getName(), memoryNode);
-            this.add(memoryNode);
+        CopyOnWriteArrayList<Memory> memories;
+        if (m.getMemoryGroupsNumber() > 0) {
+           ConcurrentHashMap<String,ArrayList> groups = m.getMemoryGroups();
+           Enumeration<String> keys = groups.keys();
+           while (keys.hasMoreElements()) {
+               String s = keys.nextElement();
+               memories = new CopyOnWriteArrayList(groups.get(s));
+               DefaultMutableTreeNode groupNode = addItem(s," "," ", TreeElement.ICON_MEMORIES);
+               for (Memory oo : memories) {
+                    DefaultMutableTreeNode newmemoryNode = addMemory(oo);
+                    maps.put(((TreeElement)newmemoryNode.getUserObject()).getName(), newmemoryNode);
+                    groupNode.add(newmemoryNode);
+               }
+               this.add(groupNode);
+           }
+        }   
+        else {
+            memories = new CopyOnWriteArrayList(m.getRawMemory().getAllMemoryObjects());
+            for (Memory mo : memories) {
+                DefaultMutableTreeNode memoryNode = addMemory(mo);
+                maps.put(((TreeElement)memoryNode.getUserObject()).getName(), memoryNode);
+                this.add(memoryNode);
+            }
         }
-    }
+    }    
     
     public DefaultMutableTreeNode addIO(Memory m, int icon) {
         String value = "";

@@ -10,8 +10,7 @@
  ***********************************************************************************************/
 package br.unicamp.cst.util.viewer;
 
-import br.unicamp.cst.core.entities.MemoryContainer;
-import br.unicamp.cst.core.entities.MemoryObject;
+import br.unicamp.cst.core.entities.Memory;
 import br.unicamp.cst.util.TimeStamp;
 import br.unicamp.cst.util.TreeElement;
 import java.awt.event.ActionEvent;
@@ -41,7 +40,7 @@ import javax.swing.tree.TreePath;
  */
 public class MemoryInspector extends javax.swing.JFrame {
     
-    MemoryObject m;
+    Memory m;
     String lastobjectclass;
     DefaultMutableTreeNode ev_tn;
     DefaultMutableTreeNode ts_tn;
@@ -53,14 +52,15 @@ public class MemoryInspector extends javax.swing.JFrame {
     ImageIcon play_icon = new ImageIcon(getClass().getResource("/play-icon.png"));
     MemoryInspector.MITimerTask tt;
     boolean capture=false;
+    boolean needsreload=false;
     ArrayList<String> listtoavoidloops = new ArrayList<>();
     Logger log = Logger.getLogger(MemoryInspector.class.getCanonicalName());
 
     /**
      * Creates new form MemoryInspector
-     *  @param mo MemoryObject to be inspected
+     *  @param mo Memory to be inspected
      */ 
-    public MemoryInspector(MemoryObject mo) {
+    public MemoryInspector(Memory mo) {
         initComponents();
         setTitle(mo.getName());
         m = mo;
@@ -70,7 +70,8 @@ public class MemoryInspector extends javax.swing.JFrame {
         float eval = mo.getEvaluation().floatValue();
         ev_tn = obj.addObject(eval,"Eval");
         obj.add(ev_tn);
-        long timestamp = mo.getTimestamp();
+        Long timestamp = mo.getTimestamp();
+        if (timestamp == null) timestamp = 0L;
         String ts = TimeStamp.getStringTimeStamp(timestamp,"dd/MM/yyyy HH:mm:ss.SSS");
         ts_tn = obj.addString(ts,"timeStamp");
         obj.add(ts_tn);
@@ -97,35 +98,57 @@ public class MemoryInspector extends javax.swing.JFrame {
         t.scheduleAtFixedRate(tt, 0, 100);
     }
     
+    public String getParent(String name) {
+        String parent = null;
+        String simpleparent="";
+        String simplename = "";
+        String[] mc = name.split("\\.");
+        // Finding simpleparent -> "x[i]" : "x", "x" : ""
+        if (mc.length > 1) 
+             simplename = mc[mc.length-1];
+        else simplename = mc[0];
+        String[] mc2 = simplename.split("\\[");
+        if (mc2.length > 1) 
+            simpleparent = mc2[0];
+        else simpleparent = "";
+        // Finding parent
+        if (mc.length > 1) {
+            parent = mc[0];
+            for (int i=1;i<mc.length-1;i++) 
+                parent += "."+mc[i];
+        }    
+        else parent = "";
+        // Compose parent + simpleparent
+        if (mc.length > 1 && mc2.length > 1)
+           parent += "."+simpleparent;
+        else parent += simpleparent;
+        return(parent);
+    }
+    
+    public boolean nodeAlreadyExists(String name) {
+        DefaultMutableTreeNode treeNode = obj.updateMap.get(name);
+        if (treeNode == null) return(false);
+        else return(true);
+    }
+
+    public void includeNode(Object o, String name) {
+        String parent = getParent(name);
+        DefaultMutableTreeNode parentNode = obj.updateMap.get(parent);
+        if (parentNode != null) {
+            // System.out.println("I'm planning to insert a new object "+name+" with parent "+parent+" "+TimeStamp.now());
+            DefaultMutableTreeNode newobj = obj.addObject(o, name);
+            parentNode.add(newobj);
+            DefaultTreeModel tm = (DefaultTreeModel) objTree.getModel();
+            tm.reload(parentNode);
+        }
+        else log.warning("I was not able to find the parent "+parent);
+    }
+    
+    
     public void updateString(String s, String name) {
         DefaultMutableTreeNode treeNode = obj.updateMap.get(name);
         if (treeNode == null) {
-            String[] mc = name.split("\\[");
-            if (mc.length > 0) {
-               String parent = mc[0];
-               treeNode = obj.updateMap.get(parent);
-               if (treeNode == null) {
-                   // if I am here it means I failed in finding the parent of the unknown node   
-                   log.warning("Unable to find the parent of "+name+": "+parent);
-                   log.warning("Current List to Avoid Loops");
-                    for (String ss : listtoavoidloops) {
-                        log.warning(s+"->"+ss);
-                    }
-                    return;
-               }
-               // if I am here it means I found the parent of the unknown node   
-               DefaultMutableTreeNode parentnode = obj.updateMap.get(parent);
-               DefaultMutableTreeNode newnode = obj.addObject(null,name);
-               parentnode.add(newnode);
-               updateString(s,name);
-            }
-            else {
-               // If I am here this means I failed in finding the variable parent
-               log.warning("Trying to update something which does not exist: "+name+": "+s);
-               for (String ss : listtoavoidloops) {
-                  log.warning(s+"->"+ss);
-               }
-            }   
+            log.warning("I was unable to find "+name);
             return;
         }
         TreeElement element = (TreeElement) treeNode.getUserObject();
@@ -134,8 +157,54 @@ public class MemoryInspector extends javax.swing.JFrame {
         element.setValue(s);
     }
     
+//    public void updateString(String s, String name) {
+//        DefaultMutableTreeNode treeNode = obj.updateMap.get(name);
+//        if (treeNode == null) {
+//            String[] mc = name.split("\\[");
+//            if (mc.length > 0) {
+//               String parent = mc[0];
+//               if (mc.length > 1) {
+//                    for(int i=1;i<mc.length-1;i++)
+//                       parent += "["+mc[i];
+//               }
+//               treeNode = obj.updateMap.get(parent);
+//               if (treeNode == null) {
+//                   // if I am here it means I failed in finding the parent of the unknown node   
+//                   log.warning("Unable to find the parent of "+name+": "+parent+" ... I unable to update it");
+//                   log.warning("Current List to Avoid Loops");
+//                    for (String ss : listtoavoidloops) {
+//                        log.warning("trying to update "+name+" with "+s+" I found "+ss+" but not "+parent);
+//                    }
+//                    return;
+//               }
+//               // if I am here it means I found the parent of the unknown node   
+//               DefaultMutableTreeNode parentnode = obj.updateMap.get(parent);
+//               DefaultMutableTreeNode newnode = obj.addObject(null,name);
+//               parentnode.add(newnode);
+//               updateString(s,name);
+//            }
+//            else {
+//               // If I am here this means I failed in finding the variable parent
+//               log.warning("Trying to update something which does not exist: "+name+": "+s);
+//               for (String ss : listtoavoidloops) {
+//                  log.warning(s+"->"+ss);
+//               }
+//            }   
+//            return;
+//        }
+//        TreeElement element = (TreeElement) treeNode.getUserObject();
+//        String nodeName = element.getName();
+//        if (!name.equalsIgnoreCase(nodeName)) log.warning("Why the node name is different ? "+name+","+nodeName);
+//        element.setValue(s);
+//    }
+    
     public void updateList(Object o, String name) {
         List ll = (List) o;
+        String label;
+        if (ll.size() > 0) label = "List["+ll.size()+"] of "+ll.get(0).getClass().getSimpleName();
+        else label = "List[0]";
+        updateString(label,name);
+        updateArrayFields(name,ll.size());
         int i=0;
         for (Object ob : ll) {
             updateObject(ob,ToString.el(name, i));
@@ -143,8 +212,29 @@ public class MemoryInspector extends javax.swing.JFrame {
         }
     }
     
+    public String relativeArrayName(String name, int l) {
+        String relname = name+"["+l+"]";
+        return(relname);
+    }
+    
+    public void updateArrayFields(String name, int l) {
+        //System.out.println("The array "+name+" now have only "+l+" elements");
+        for(int i=l;obj.updateMap.get(relativeArrayName(name,l+1))!=null;i++) {
+            obj.delNode(relativeArrayName(name,i));
+            System.out.println("Deleting node "+relativeArrayName(name,i));
+        }
+    }
+    
     public void updateArray(Object o, String name) {
         int l = Array.getLength(o);
+        String type = o.getClass().getSimpleName();
+        if (l>0) {
+            Object otype = Array.get(o,0);
+            if (otype != null)
+                type = otype.getClass().getSimpleName();
+        }
+        updateString("Array["+l+"] of "+type,name);
+        updateArrayFields(name,l);
         for (int i=0;i<l;i++) {
             Object oo = Array.get(o,i);
             updateObject(oo,ToString.el(name, i));
@@ -152,6 +242,14 @@ public class MemoryInspector extends javax.swing.JFrame {
     }
     
     public void updateObject(Object o, String name) {
+        if (!nodeAlreadyExists(name)) {
+            includeNode(o,name);
+            return;
+        }
+        if (o == null) {
+            updateString("<NULL>",name);
+            return;
+        }
         String s = ToString.from(o);
         if (s != null) {
             updateString(s,name);
@@ -176,13 +274,13 @@ public class MemoryInspector extends javax.swing.JFrame {
                     try {
                         fo = field.get(o);
                     } catch (Exception e) {e.printStackTrace();}
-                    updateObject(fo,fname);
+                    updateObject(fo,name+"."+fname);
                 }
             }
         }
     }
     
-    public void updateTree(MemoryObject m) {
+    public void updateTree(Memory m) {
         String value;
         // update eval
         TreeElement teval = (TreeElement) ev_tn.getUserObject();
@@ -221,6 +319,11 @@ public class MemoryInspector extends javax.swing.JFrame {
                     updateObject(ii,"Info");
                     DefaultTreeModel tm = (DefaultTreeModel) objTree.getModel();
                     tm.nodeChanged((TreeNode)tm.getRoot());
+//                    if (needsreload == true) {
+//                        //tm.reload(obj);
+//                        needsreload = false;
+//                        System.out.println("Reloading ..."+TimeStamp.now());
+//                    }
                     lastwasnull = false;
                     return;
                 }
@@ -390,8 +493,8 @@ class ObjectMouseAdapter extends MouseAdapter {
                             popup.add(jm1);
                             popup.show(tree, e.getX(), e.getY());
                         }
-                        else if (element instanceof MemoryObject || element instanceof MemoryContainer) {
-                            MemoryObject mo = (MemoryObject) element;
+                        else if (element instanceof Memory) {
+                            Memory mo = (Memory) element;
                             JPopupMenu popup = new JPopupMenu();
                             JMenuItem jm1 = new JMenuItem("Inspect");
                             ActionListener al = new ActionListener() {

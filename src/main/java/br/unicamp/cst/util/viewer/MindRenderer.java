@@ -37,6 +37,12 @@ public class MindRenderer extends DefaultTreeCellRenderer {
         super();
         debug = debugvalue;
     }
+    
+    public String getSimpleName(String fullname) {
+        String[] mc = fullname.split("\\.");
+        String simplename = mc[mc.length-1];
+        return (simplename);
+    }
 
     @Override
     public Component getTreeCellRendererComponent(JTree tree, Object value, boolean sel, boolean exp, boolean leaf, int row, boolean hasFocus) {
@@ -104,7 +110,7 @@ public class MindRenderer extends DefaultTreeCellRenderer {
         String hex = "#" + Integer.toHexString(node.getColor().getRGB()).substring(2);
         String htmltext;
         if (debug) htmltext = "<html><font color=\"" + hex + "\">" + node.getName()+" : "+node.getValue()+" ["+node.getId_node()+"]" + "</font></html>";
-        else htmltext = "<html><font color=\"" + hex + "\">" + node.getName()+" : "+node.getValue()+"</font></html>";
+        else htmltext = "<html><font color=\"" + hex + "\">" + getSimpleName(node.getName())+" : "+node.getValue()+"</font></html>";
         objectNode = texttobewritten;
         objectNode.setUserObject(htmltext);
         value = objectNode;

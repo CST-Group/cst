@@ -13,6 +13,7 @@ package br.unicamp.cst.core.entities;
 
 import br.unicamp.cst.bindings.soar.PlansSubsystemModule;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
 
 /**
@@ -26,7 +27,8 @@ public class Mind {
 
 	protected CodeRack codeRack;
 	protected RawMemory rawMemory;
-        protected ConcurrentHashMap<String,ArrayList> codelets;
+        protected ConcurrentHashMap<String,ArrayList> codeletGroups;
+        protected ConcurrentHashMap<String,ArrayList> memoryGroups;
 
 	private PlansSubsystemModule plansSubsystemModule;
 
@@ -36,7 +38,8 @@ public class Mind {
 	public Mind() {
 		codeRack = new CodeRack();
 		rawMemory = new RawMemory();
-                codelets = new ConcurrentHashMap();
+                codeletGroups = new ConcurrentHashMap();
+                memoryGroups = new ConcurrentHashMap();
 		plansSubsystemModule = new PlansSubsystemModule();
 	}
 
@@ -66,25 +69,54 @@ public class Mind {
 	 */
         public synchronized void createCodeletGroup(String groupName) {
             ArrayList<Codelet> group = new ArrayList<Codelet>();
-            codelets.put(groupName,group);
+            codeletGroups.put(groupName,group);
         }
         
         /**
-         * Returns the full HashMap which for every group Name it is associated a list of codelets
+	 * Creates a Memory Group
+	 * 
+	 * @param groupName The Group name
+	 * 
+	 */
+        public synchronized void createMemoryGroup(String groupName) {
+            ArrayList<Codelet> group = new ArrayList<Codelet>();
+            memoryGroups.put(groupName,group);
+        }
+        
+        /**
+         * Returns the full HashMap which for every codelet group Name it is associated a list of codeletGroups
          * 
-         * @return the HashMap with all pairs (groupname,list of codelets belonging to groupname)
+         * @return the HashMap with all pairs (groupname,list of codeletGroups belonging to groupname)
          */
-        public ConcurrentHashMap<String,ArrayList> getGroups() {
-            return(codelets);
+        public ConcurrentHashMap<String,ArrayList> getCodeletGroups() {
+            return(codeletGroups);
         }
         
         /**
-         * Returns the number of registered groups
+         * Returns the full HashMap which for every memory group Name it is associated a list of codeletGroups
+         * 
+         * @return the HashMap with all pairs (groupname,list of codeletGroups belonging to groupname)
+         */
+        public ConcurrentHashMap<String,ArrayList> getMemoryGroups() {
+            return(memoryGroups);
+        }
+        
+        /**
+         * Returns the number of registered codelet groups
          * 
          * @return the number of registered groups
          */
-        public int getGroupsNumber() {
-            return(codelets.size());
+        public int getCodeletGroupsNumber() {
+            return(codeletGroups.size());
+        }
+        
+        /**
+         * Returns the number of registered memory groups
+         * 
+         * @return the number of registered groups
+         */
+        public int getMemoryGroupsNumber() {
+            return(memoryGroups.size());
         }
         
 	/**
@@ -170,24 +202,62 @@ public class Mind {
          * @param groupName the group name
          */
         public void registerCodelet(Codelet co, String groupName) {
-            ArrayList<Codelet> groupList = codelets.get(groupName);
+            ArrayList<Codelet> groupList = codeletGroups.get(groupName);
                 if (groupList != null) groupList.add(co);
         }
         
+        /**
+         * Register a Memory within a group
+         * 
+         * @param m the Memory
+         * @param groupName the group name
+         */
+        public void registerMemory(Memory m, String groupName) {
+            ArrayList<Memory> groupList = memoryGroups.get(groupName);
+                if (groupList != null) groupList.add(m);
+        }
+        
+        
+        /**
+         * Register a Memory within a group by name.
+         * 
+         * @param m the Memory
+         * @param groupName the group name
+         */
+        public void registerMemory(String m, String groupName) {
+            ArrayList<Memory> groupList = memoryGroups.get(groupName);
+            RawMemory rm = getRawMemory();
+            if (groupList != null && rm != null) {
+                List<Memory> all = rm.getAllOfType(m);
+                for (Memory mem : all) {
+                    groupList.add(mem);
+                }
+            }
+        }
 
         /**
          * Get a list of all Codelets belonging to a group
          * 
          * @param groupName the group name to which the Codelets belong
-         * @return A list of all codelets belonging to the group indicated by groupName
+         * @return A list of all codeletGroups belonging to the group indicated by groupName
          */
-        public ArrayList<Codelet> getGroupList(String groupName) {
-                return(codelets.get(groupName));
+        public ArrayList<Codelet> getCodeletGroupList(String groupName) {
+                return(codeletGroups.get(groupName));
+        }
+        
+        /**
+         * Get a list of all Memories belonging to a group
+         * 
+         * @param groupName the group name to which the Memory belong
+         * @return A list of all memoryGroups belonging to the group indicated by groupName
+         */
+        public ArrayList<Memory> getMemoryGroupList(String groupName) {
+                return(memoryGroups.get(groupName));
         }
         
         
 	/**
-	 * Starts all codelets in coderack.
+	 * Starts all codeletGroups in coderack.
 	 */
 	public void start() {
 		if (codeRack != null)
@@ -195,7 +265,7 @@ public class Mind {
 	}
 
 	/**
-	 * Stops codelets thread.
+	 * Stops codeletGroups thread.
 	 */
 	public void shutDown() {
 		if (codeRack != null)
