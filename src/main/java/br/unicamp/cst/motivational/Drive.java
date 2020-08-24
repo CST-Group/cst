@@ -12,6 +12,7 @@
 package br.unicamp.cst.motivational;
 
 import br.unicamp.cst.core.entities.Memory;
+import br.unicamp.cst.util.viewer.ToString;
 
 import java.io.Serializable;
 
@@ -98,7 +99,10 @@ public class Drive implements Serializable {
 
     @Override
     public String toString(){
+        return(ToString.from(getActivation()));
+    }
 
+    public String toStringComplete() {
         return"Drive [name="+getName()+", activation="+getActivation()+", urgency state="+isUrgencyState()+", priority="+getPriority()+", level="+getLevel()
                 +", urgency threshold="+getUrgencyThreshold()+", emotional distortion="+getEmotionalDistortion()+"]";
     }

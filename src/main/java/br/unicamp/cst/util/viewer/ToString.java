@@ -13,7 +13,7 @@ import java.util.Date;
  * @author rgudwin
  */
 public class ToString {
-    static String from(Object n) {
+    public static String from(Object n) {
         String s=null;
         if (n == null)
             s = "<NULL>";
@@ -52,7 +52,7 @@ public class ToString {
         return(s);
     }
     
-    static String el(String name, int i) {
+    public static String el(String name, int i) {
         String s = name +"["+i+"]";
         return(s);
     } 

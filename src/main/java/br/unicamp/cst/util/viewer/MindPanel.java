@@ -56,7 +56,7 @@ public class MindPanel extends javax.swing.JPanel {
         initComponents();
         MindTreeNode codelets = new MindTreeNode("Codelets",TreeElement.ICON_CONFIGURATION);
         codelets.addCodelets(m);
-        MindTreeNode memories = new MindTreeNode("Memories",TreeElement.ICON_MEMORIES);
+        MindTreeNode memories = new MindTreeNode("Memories",TreeElement.ICON_CONFIGURATION);
         memories.addMemories(m);
         mtn = memories;
         DefaultTreeModel codeletsTreeModel = new DefaultTreeModel(codelets);
@@ -140,6 +140,25 @@ public class MindPanel extends javax.swing.JPanel {
                 }
                 else if (o instanceof float[]) {
                     float[] value = (float[])o;
+                    String aprox;
+                    if (value.length == 1)
+                        aprox = String.format("%4.2f",value[0]);
+                    else if (value.length == 2)
+                        aprox = String.format("%4.2f,%4.2f",value[0],value[1]);
+                    else if (value.length == 3)
+                        aprox = String.format("%4.2f,%4.2f,%4.2f",value[0],value[1],value[2]);
+                    else if (value.length == 4)
+                        aprox = String.format("%4.2f,%4.2f,%4.2f,%4.2f",value[0],value[1],value[2],value[3]);
+                    else if (value.length == 5)
+                        aprox = String.format("%4.2f,%4.2f,%4.2f,%4.2f,%4.2f",value[0],value[1],value[2],value[3],value[4]);
+                    else if (value.length == 6)
+                        aprox = String.format("%4.2f,%4.2f,%4.2f,%4.2f,%4.2f,%4.2f",value[0],value[1],value[2],value[3],value[4],value[5]);
+                    else
+                        aprox = String.format("%4.2f,%4.2f,%4.2f,%4.2f,%4.2f,%4.2f...",value[0],value[1],value[2],value[3],value[4],value[5]);
+                    memValue = aprox+isize;
+                }
+                else if (o instanceof double[]) {
+                    double[] value = (double[])o;
                     String aprox;
                     if (value.length == 1)
                         aprox = String.format("%4.2f",value[0]);

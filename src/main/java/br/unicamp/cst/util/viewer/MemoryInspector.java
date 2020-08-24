@@ -144,7 +144,6 @@ public class MemoryInspector extends javax.swing.JFrame {
         else log.warning("I was not able to find the parent "+parent);
     }
     
-    
     public void updateString(String s, String name) {
         DefaultMutableTreeNode treeNode = obj.updateMap.get(name);
         if (treeNode == null) {
@@ -156,47 +155,6 @@ public class MemoryInspector extends javax.swing.JFrame {
         if (!name.equalsIgnoreCase(nodeName)) log.warning("Why the node name is different ? "+name+","+nodeName);
         element.setValue(s);
     }
-    
-//    public void updateString(String s, String name) {
-//        DefaultMutableTreeNode treeNode = obj.updateMap.get(name);
-//        if (treeNode == null) {
-//            String[] mc = name.split("\\[");
-//            if (mc.length > 0) {
-//               String parent = mc[0];
-//               if (mc.length > 1) {
-//                    for(int i=1;i<mc.length-1;i++)
-//                       parent += "["+mc[i];
-//               }
-//               treeNode = obj.updateMap.get(parent);
-//               if (treeNode == null) {
-//                   // if I am here it means I failed in finding the parent of the unknown node   
-//                   log.warning("Unable to find the parent of "+name+": "+parent+" ... I unable to update it");
-//                   log.warning("Current List to Avoid Loops");
-//                    for (String ss : listtoavoidloops) {
-//                        log.warning("trying to update "+name+" with "+s+" I found "+ss+" but not "+parent);
-//                    }
-//                    return;
-//               }
-//               // if I am here it means I found the parent of the unknown node   
-//               DefaultMutableTreeNode parentnode = obj.updateMap.get(parent);
-//               DefaultMutableTreeNode newnode = obj.addObject(null,name);
-//               parentnode.add(newnode);
-//               updateString(s,name);
-//            }
-//            else {
-//               // If I am here this means I failed in finding the variable parent
-//               log.warning("Trying to update something which does not exist: "+name+": "+s);
-//               for (String ss : listtoavoidloops) {
-//                  log.warning(s+"->"+ss);
-//               }
-//            }   
-//            return;
-//        }
-//        TreeElement element = (TreeElement) treeNode.getUserObject();
-//        String nodeName = element.getName();
-//        if (!name.equalsIgnoreCase(nodeName)) log.warning("Why the node name is different ? "+name+","+nodeName);
-//        element.setValue(s);
-//    }
     
     public void updateList(Object o, String name) {
         List ll = (List) o;
