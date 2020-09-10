@@ -6,21 +6,26 @@ import br.unicamp.cst.core.exceptions.CodeletActivationBoundsException;
 
 public abstract class PlanningCodelet extends Codelet {
 
-    private Memory inputCurrentState;
-    private Memory inputGoal;
+    private Memory inputInitialState;
+    
+    private Memory inputGoals;
     private Memory inputActions;
+    private Memory inputTransitionFunctions;
+
     private Memory outputPlan;
 
     @Override
     public void accessMemoryObjects() {
-        if(inputCurrentState == null
-            && inputGoal == null
+        if(inputInitialState == null
+            && inputGoals == null
             && inputActions == null
+            && inputTransitionFunctions == null
             && outputPlan == null
         ){
-            inputCurrentState = getInput(PlanningMemoryNames.INPUT_CURRENT_STATE_MEMORY.toString());
-            inputGoal = getInput(PlanningMemoryNames.INPUT_GOAL_MEMORY.toString());
+            inputInitialState = getInput(PlanningMemoryNames.INPUT_INITIAL_STATE_MAMORY.toString());
+            inputGoals = getInput(PlanningMemoryNames.INPUT_GOALS_MEMORY.toString());
             inputActions = getInput(PlanningMemoryNames.INPUT_ACTIONS_MEMORY.toString());
+            inputTransitionFunctions = getInput(PlanningMemoryNames.INPUT_TRANSITION_FUNCTIONS_MEMORY.toString());
             outputPlan = getOutput(PlanningMemoryNames.OUTPUT_PLAN_MEMORY.toString());
         }
     }
@@ -36,7 +41,7 @@ public abstract class PlanningCodelet extends Codelet {
 
     @Override
     public void proc() {
-        outputPlan.setI(planning(inputCurrentState, inputGoal, inputActions).getI());
+        outputPlan.setI(planning(inputInitialState, inputGoals, inputActions).getI());
     }
 
     public abstract Memory planning(Memory currentState, Memory goal, Memory actions);
