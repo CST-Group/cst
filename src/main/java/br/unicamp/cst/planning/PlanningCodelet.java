@@ -6,6 +6,8 @@ import br.unicamp.cst.core.exceptions.CodeletActivationBoundsException;
 
 public abstract class PlanningCodelet extends Codelet {
 
+    private String id;
+
     private Memory inputInitialState;
     
     private Memory inputGoals;
@@ -13,6 +15,10 @@ public abstract class PlanningCodelet extends Codelet {
     private Memory inputTransitionFunctions;
 
     private Memory outputPlan;
+
+    public PlanningCodelet(String id) {
+        setId(id);
+    }
 
     @Override
     public void accessMemoryObjects() {
@@ -45,4 +51,12 @@ public abstract class PlanningCodelet extends Codelet {
     }
 
     public abstract Memory planning(Memory currentState, Memory goal, Memory actions);
+
+    public String getId() {
+        return id;
+    }
+
+    public void setId(String id) {
+        this.id = id;
+    }
 }
