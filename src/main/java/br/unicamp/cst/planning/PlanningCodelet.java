@@ -8,13 +8,13 @@ public abstract class PlanningCodelet extends Codelet {
 
     private String id;
 
-    private Memory inputInitialState;
+    private Memory inputInitialStateMO;
     
-    private Memory inputGoals;
-    private Memory inputActions;
-    private Memory inputTransitionFunctions;
+    private Memory inputGoalsMO;
+    private Memory inputActionsMO;
+    private Memory inputTransitionFunctionsMO;
 
-    private Memory outputPlan;
+    private Memory outputPlanMO;
 
     public PlanningCodelet(String id) {
         setId(id);
@@ -22,17 +22,17 @@ public abstract class PlanningCodelet extends Codelet {
 
     @Override
     public void accessMemoryObjects() {
-        if(inputInitialState == null
-            && inputGoals == null
-            && inputActions == null
-            && inputTransitionFunctions == null
-            && outputPlan == null
+        if(inputInitialStateMO == null
+            && inputGoalsMO == null
+            && inputActionsMO == null
+            && inputTransitionFunctionsMO == null
+            && outputPlanMO == null
         ){
-            inputInitialState = getInput(PlanningMemoryNames.INPUT_INITIAL_STATE_MAMORY.toString());
-            inputGoals = getInput(PlanningMemoryNames.INPUT_GOALS_MEMORY.toString());
-            inputActions = getInput(PlanningMemoryNames.INPUT_ACTIONS_MEMORY.toString());
-            inputTransitionFunctions = getInput(PlanningMemoryNames.INPUT_TRANSITION_FUNCTIONS_MEMORY.toString());
-            outputPlan = getOutput(PlanningMemoryNames.OUTPUT_PLAN_MEMORY.toString());
+            inputInitialStateMO = getInput(PlanningMemoryNames.INPUT_INITIAL_STATE_MEMORY.toString());
+            inputGoalsMO = getInput(PlanningMemoryNames.INPUT_GOALS_MEMORY.toString());
+            inputActionsMO = getInput(PlanningMemoryNames.INPUT_ACTIONS_MEMORY.toString());
+            inputTransitionFunctionsMO = getInput(PlanningMemoryNames.INPUT_TRANSITION_FUNCTIONS_MEMORY.toString());
+            outputPlanMO = getOutput(PlanningMemoryNames.OUTPUT_PLAN_MEMORY.toString());
         }
     }
 
@@ -47,7 +47,7 @@ public abstract class PlanningCodelet extends Codelet {
 
     @Override
     public void proc() {
-        outputPlan.setI(planning(inputInitialState, inputGoals, inputActions).getI());
+        outputPlanMO.setI(planning(inputInitialStateMO, inputGoalsMO, inputActionsMO).getI());
     }
 
     public abstract Memory planning(Memory currentState, Memory goal, Memory actions);
