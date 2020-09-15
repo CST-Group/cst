@@ -4,6 +4,8 @@ import br.unicamp.cst.core.entities.Codelet;
 import br.unicamp.cst.core.entities.Memory;
 import br.unicamp.cst.core.exceptions.CodeletActivationBoundsException;
 
+import java.util.Optional;
+
 public abstract class PlanningCodelet extends Codelet {
 
     private String id;
@@ -22,18 +24,20 @@ public abstract class PlanningCodelet extends Codelet {
 
     @Override
     public void accessMemoryObjects() {
-        if(inputInitialStateMO == null
-            && inputGoalsMO == null
-            && inputActionsMO == null
-            && inputTransitionFunctionsMO == null
-            && outputPlanMO == null
-        ){
-            inputInitialStateMO = getInput(PlanningMemoryNames.INPUT_INITIAL_STATE_MEMORY.toString());
-            inputGoalsMO = getInput(PlanningMemoryNames.INPUT_GOALS_MEMORY.toString());
-            inputActionsMO = getInput(PlanningMemoryNames.INPUT_ACTIONS_MEMORY.toString());
-            inputTransitionFunctionsMO = getInput(PlanningMemoryNames.INPUT_TRANSITION_FUNCTIONS_MEMORY.toString());
-            outputPlanMO = getOutput(PlanningMemoryNames.OUTPUT_PLAN_MEMORY.toString());
-        }
+        inputInitialStateMO = Optional.ofNullable(inputGoalsMO)
+                .orElse(getInput(PlanningMemoryNames.INPUT_INITIAL_STATE_MEMORY.toString()));
+
+        inputGoalsMO = Optional.ofNullable(inputGoalsMO)
+                .orElse(getInput(PlanningMemoryNames.INPUT_GOALS_MEMORY.toString()));
+
+        inputActionsMO = Optional.ofNullable(inputActionsMO)
+                .orElse(getInput(PlanningMemoryNames.INPUT_ACTIONS_MEMORY.toString()));
+
+        inputTransitionFunctionsMO = Optional.ofNullable(inputTransitionFunctionsMO)
+                .orElse(getInput(PlanningMemoryNames.INPUT_TRANSITION_FUNCTIONS_MEMORY.toString()));
+
+        outputPlanMO = Optional.ofNullable(outputPlanMO)
+                .orElse(getInput(PlanningMemoryNames.INPUT_INITIAL_STATE_MEMORY.toString()));
     }
 
     @Override
