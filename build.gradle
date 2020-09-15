@@ -8,8 +8,8 @@ group = 'com.github.CST-Group'
 
 description = "CST is the Cognitive Systems Toolkit, a toolkit for the construction of Cognitive Systems and Cognitive Architectures"
 
-sourceCompatibility = 1.11
-targetCompatibility = 1.11
+sourceCompatibility = 1.8
+targetCompatibility = 1.8
 version = '0.5.2-beta'
 
 repositories {
