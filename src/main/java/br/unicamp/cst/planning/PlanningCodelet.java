@@ -10,13 +10,14 @@ public abstract class PlanningCodelet extends Codelet {
 
     private String id;
 
-    private Memory inputInitialStateMO;
+    private Memory inputInitialState;
     
-    private Memory inputGoalsMO;
-    private Memory inputActionsMO;
-    private Memory inputTransitionFunctionsMO;
+    private Memory inputGoals;
+    private Memory inputActions;
+    private Memory inputTransitionFunctions;
+    private Memory inputPlanningRequest;
 
-    private Memory outputPlanMO;
+    private Memory outputPlan;
 
     public PlanningCodelet(String id) {
         setId(id);
@@ -24,20 +25,23 @@ public abstract class PlanningCodelet extends Codelet {
 
     @Override
     public void accessMemoryObjects() {
-        inputInitialStateMO = Optional.ofNullable(inputGoalsMO)
-                .orElse(getInput(PlanningMemoryNames.INPUT_INITIAL_STATE_MEMORY.toString()));
+        inputInitialState = Optional.ofNullable(inputGoals)
+                .orElse(getInput(PlanningMemoryNames.INPUT_INITIAL_STATE.toString()));
 
-        inputGoalsMO = Optional.ofNullable(inputGoalsMO)
-                .orElse(getInput(PlanningMemoryNames.INPUT_GOALS_MEMORY.toString()));
+        inputGoals = Optional.ofNullable(inputGoals)
+                .orElse(getInput(PlanningMemoryNames.INPUT_GOALS.toString()));
 
-        inputActionsMO = Optional.ofNullable(inputActionsMO)
-                .orElse(getInput(PlanningMemoryNames.INPUT_ACTIONS_MEMORY.toString()));
+        inputActions = Optional.ofNullable(inputActions)
+                .orElse(getInput(PlanningMemoryNames.INPUT_ACTIONS.toString()));
 
-        inputTransitionFunctionsMO = Optional.ofNullable(inputTransitionFunctionsMO)
-                .orElse(getInput(PlanningMemoryNames.INPUT_TRANSITION_FUNCTIONS_MEMORY.toString()));
+        inputTransitionFunctions = Optional.ofNullable(inputTransitionFunctions)
+                .orElse(getInput(PlanningMemoryNames.INPUT_TRANSITION_FUNCTIONS.toString()));
 
-        outputPlanMO = Optional.ofNullable(outputPlanMO)
-                .orElse(getInput(PlanningMemoryNames.OUTPUT_PLAN_MEMORY.toString()));
+        inputPlanningRequest = Optional.ofNullable(inputPlanningRequest)
+                .orElse(getInput(PlanningMemoryNames.INPUT_PLANNING_REQUEST.toString()));
+
+        outputPlan = Optional.ofNullable(outputPlan)
+                .orElse(getInput(PlanningMemoryNames.OUTPUT_PLAN.toString()));
     }
 
     @Override
@@ -51,10 +55,12 @@ public abstract class PlanningCodelet extends Codelet {
 
     @Override
     public void proc() {
-        outputPlanMO.setI(planning(inputInitialStateMO, inputGoalsMO, inputActionsMO, inputTransitionFunctionsMO).getI());
+        Optional.ofNullable(outputPlan).ifPresent(memory -> {
+            memory.setI(planning(inputInitialState, inputGoals, inputActions, inputTransitionFunctions, inputPlanningRequest).getI());
+        });
     }
 
-    public abstract Memory planning(Memory currentState, Memory goal, Memory actions, Memory transitionFunctions);
+    public abstract Memory planning(Memory currentState, Memory goals, Memory actions, Memory transitionFunctions, Memory planningRequest);
 
     public String getId() {
         return id;
