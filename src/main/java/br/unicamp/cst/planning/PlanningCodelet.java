@@ -37,7 +37,7 @@ public abstract class PlanningCodelet extends Codelet {
                 .orElse(getInput(PlanningMemoryNames.INPUT_TRANSITION_FUNCTIONS_MEMORY.toString()));
 
         outputPlanMO = Optional.ofNullable(outputPlanMO)
-                .orElse(getInput(PlanningMemoryNames.INPUT_INITIAL_STATE_MEMORY.toString()));
+                .orElse(getInput(PlanningMemoryNames.OUTPUT_PLAN_MEMORY.toString()));
     }
 
     @Override
@@ -51,10 +51,10 @@ public abstract class PlanningCodelet extends Codelet {
 
     @Override
     public void proc() {
-        outputPlanMO.setI(planning(inputInitialStateMO, inputGoalsMO, inputActionsMO).getI());
+        outputPlanMO.setI(planning(inputInitialStateMO, inputGoalsMO, inputActionsMO, inputTransitionFunctionsMO).getI());
     }
 
-    public abstract Memory planning(Memory currentState, Memory goal, Memory actions);
+    public abstract Memory planning(Memory currentState, Memory goal, Memory actions, Memory transitionFunctions);
 
     public String getId() {
         return id;
