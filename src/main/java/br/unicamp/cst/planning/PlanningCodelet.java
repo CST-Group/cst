@@ -12,6 +12,8 @@ public abstract class PlanningCodelet extends Codelet {
 
     private Memory inputInitialState;
 
+    private Memory inputCurrentState;
+
     private Memory inputGoals;
 
     private Memory inputProceduralMemory;
@@ -28,8 +30,11 @@ public abstract class PlanningCodelet extends Codelet {
 
     @Override
     public void accessMemoryObjects() {
-        inputInitialState = Optional.ofNullable(inputGoals)
+        inputInitialState = Optional.ofNullable(inputInitialState)
                 .orElse(getInput(PlanningMemoryNames.INPUT_INITIAL_STATE.toString()));
+
+        inputCurrentState = Optional.ofNullable(inputCurrentState)
+                .orElse(getInput(PlanningMemoryNames.INPUT_CURRENT_STATE.toString()));
 
         inputGoals = Optional.ofNullable(inputGoals)
                 .orElse(getInput(PlanningMemoryNames.INPUT_GOALS.toString()));
@@ -59,11 +64,11 @@ public abstract class PlanningCodelet extends Codelet {
     @Override
     public void proc() {
         Optional.ofNullable(outputPlan).ifPresent(memory -> {
-            memory.setI(planning(inputInitialState, inputGoals, inputProceduralMemory, inputTransitionFunctions, inputPlanningRequest).getI());
+            memory.setI(planning(inputInitialState, inputCurrentState, inputGoals, inputProceduralMemory, inputTransitionFunctions, inputPlanningRequest).getI());
         });
     }
 
-    public abstract Memory planning(Memory currentState, Memory goals, Memory actions, Memory transitionFunctions, Memory planningRequest);
+    public abstract Memory planning(Memory initialState, Memory currentState, Memory goals, Memory proceduralMemory, Memory transitionFunctions, Memory planningRequest);
 
     public String getId() {
         return id;
