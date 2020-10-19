@@ -153,6 +153,34 @@ public class CodeletPanel extends javax.swing.JPanel {
                     }
                     memValue = aprox+isize;
                 }
+                else if (o instanceof double[]) {
+                    double[] value = (double[])o;
+                    String aprox;
+                    switch (value.length) {
+                        case 1:
+                            aprox = String.format("%4.2f",value[0]);
+                            break;
+                        case 2:
+                            aprox = String.format("%4.2f,%4.2f",value[0],value[1]);
+                            break;
+                        case 3:
+                            aprox = String.format("%4.2f,%4.2f,%4.2f",value[0],value[1],value[2]);
+                            break;
+                        case 4:
+                            aprox = String.format("%4.2f,%4.2f,%4.2f,%4.2f",value[0],value[1],value[2],value[3]);
+                            break;
+                        case 5:
+                            aprox = String.format("%4.2f,%4.2f,%4.2f,%4.2f,%4.2f",value[0],value[1],value[2],value[3],value[4]);
+                            break;
+                        case 6:
+                            aprox = String.format("%4.2f,%4.2f,%4.2f,%4.2f,%4.2f,%4.2f",value[0],value[1],value[2],value[3],value[4],value[5]);
+                            break;
+                        default:
+                            aprox = String.format("%4.2f,%4.2f,%4.2f,%4.2f,%4.2f,%4.2f...",value[0],value[1],value[2],value[3],value[4],value[5]);
+                            break;
+                    }
+                    memValue = aprox+isize;
+                }
                 else memValue = o.toString()+isize;
                 return(memValue);
             }   

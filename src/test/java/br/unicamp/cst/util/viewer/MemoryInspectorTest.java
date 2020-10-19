@@ -11,11 +11,11 @@
 package br.unicamp.cst.util.viewer;
 
 import br.unicamp.cst.core.entities.MemoryObject;
-import br.unicamp.cst.util.DiscoverEventsToRobot;
 import br.unicamp.cst.util.TestComplexMemoryObjectInfo;
 import java.awt.AWTException;
 import java.awt.Robot;
 import java.awt.event.InputEvent;
+import static org.junit.Assert.assertEquals;
 import org.junit.Test;
 
 /**
@@ -25,12 +25,47 @@ import org.junit.Test;
 public class MemoryInspectorTest {
 
     @Test
+    public void getParentTest() {
+        TestComplexMemoryObjectInfo m = new TestComplexMemoryObjectInfo();
+        m.complextest = new TestComplexMemoryObjectInfo();
+        for (int i=0;i<3;i++) {
+            m.complextestarray[i] = new TestComplexMemoryObjectInfo();
+            for (int j=0;j<3;j++)
+              m.complextestarray[i].complextestarray[j] = new TestComplexMemoryObjectInfo();
+        }    
+        MemoryObject mo = new MemoryObject();
+        mo.setType("TestObject");
+        mo.setI(m);
+        MemoryInspector mi = new MemoryInspector(mo);
+        mi.setVisible(true);
+        String s = mi.getParent("a.ab.ac.d");
+        assertEquals(s,"a.ab.ac");
+        s = mi.getParent("a.ab.ac.d[3]");
+        assertEquals(s,"a.ab.ac.d");
+        s = mi.getParent("a");
+        assertEquals(s,"");
+        s = mi.getParent("a[3]");
+        assertEquals(s,"a");
+        s = mi.getParent("a.ab");
+        assertEquals(s,"a");
+        s = mi.getParent("a.ab[3]");
+        assertEquals(s,"a.ab");
+        s = mi.getParent("a.ab[3].ac[3].a");
+        assertEquals(s,"a.ab[3].ac[3]");
+        s = mi.getParent("a.ab[3][4][5]");
+        assertEquals(s,"a.ab");
+    }
+    
+    @Test
     public void testMemoryInspector() {
 
         TestComplexMemoryObjectInfo m = new TestComplexMemoryObjectInfo();
         m.complextest = new TestComplexMemoryObjectInfo();
-        for (int i=0;i<3;i++)
+        for (int i=0;i<3;i++) {
             m.complextestarray[i] = new TestComplexMemoryObjectInfo();
+            for (int j=0;j<3;j++)
+              m.complextestarray[i].complextestarray[j] = new TestComplexMemoryObjectInfo();
+        }    
         MemoryObject mo = new MemoryObject();
         mo.setType("TestObject");
         mo.setI(m);

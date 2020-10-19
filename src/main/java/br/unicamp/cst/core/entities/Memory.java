@@ -63,5 +63,13 @@ public interface Memory {
 	 *            the value to be set as evaluation.
 	 */
 	void setEvaluation(Double eval);
+        
+        /**
+	 * Gets the timestamp of this Memory.
+	 * 
+	 * @return the timestamp of this Memory.
+	 */
+	public Long getTimestamp();
+	
 
 }

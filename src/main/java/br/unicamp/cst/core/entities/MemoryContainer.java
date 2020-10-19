@@ -482,5 +482,22 @@ public class MemoryContainer implements Memory {
 	public synchronized ArrayList<Memory> getAllMemories() {
 		return memories;
 	}
+        
+        /**
+         * Get the TimeStamp of the internal Memory which has the greatest evaluation.
+         * @return 
+         */
+        public synchronized Long getTimestamp() {
+            double maxEval = 0.0d;
+            Long timestamp = null;
+            for (Memory memory : memories) {
+		double memoryEval = memory.getEvaluation();
+		if (memoryEval >= maxEval) {
+                    maxEval = memoryEval;
+                    timestamp = memory.getTimestamp();
+		}
+            }
+            return timestamp;
+	}
 
 }

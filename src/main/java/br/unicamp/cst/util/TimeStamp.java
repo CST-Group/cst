@@ -136,7 +136,6 @@ public class TimeStamp {
        return(tm);
    }
    
-   
    public static boolean isInPeriod(long t, String ini, String fim) {
        String time = getTime(t);
        //long zero = getLongTimeStamp("00:00");
@@ -153,5 +152,10 @@ public class TimeStamp {
            if (tm > ti && tm < tf) return(true);
            else return(false);
        }
+   }
+   
+   public static String now() {
+       long timestamp = System.currentTimeMillis();
+       return(getStringTimeStamp(timestamp,"dd/MM/yyyy HH:mm:ss.SSS"));
    }
 }
