@@ -10,7 +10,7 @@ description = "CST is the Cognitive Systems Toolkit, a toolkit for the construct
 
 sourceCompatibility = 1.8
 targetCompatibility = 1.8
-version = '0.5.2'
+version = '0.6.0'
 
 repositories {
 	flatDir {
