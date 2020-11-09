@@ -20,6 +20,7 @@ import java.util.concurrent.locks.ReentrantLock;
 
 import br.unicamp.cst.core.exceptions.CodeletActivationBoundsException;
 import br.unicamp.cst.core.exceptions.CodeletThresholdBoundsException;
+import br.unicamp.cst.core.exceptions.MemoryObjectNotFoundException;
 import br.unicamp.cst.util.ExecutionTimeWriter;
 import br.unicamp.cst.util.ProfileInfo;
 
@@ -760,7 +761,7 @@ public abstract class Codelet implements Runnable {
 					if (activation >= threshold)
 						proc();
 				} else {
-					throw new Exception("This Codelet could not find a memory object it needs: "
+					throw new MemoryObjectNotFoundException("This Codelet could not find a memory object it needs: "
 							+ Codelet.this.name);
 				}
 
