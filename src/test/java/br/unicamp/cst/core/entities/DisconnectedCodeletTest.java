@@ -35,8 +35,11 @@ public class DisconnectedCodeletTest {
 		disconnectedCodelet.setName("Disconnected Codelet");
 		disconnectedCodelet.start();
 		
-	
-		assertEquals(null, disconnectedCodelet.getInput("TYPE", 0));
+		try {
+			disconnectedCodelet.getInput("TYPE", 0);
+		}catch(Exception e) {
+			assertEquals(e.getMessage(), "This Codelet could not find a memory object it needs: Disconnected Codelet");
+		}		
 	}
 
 }
