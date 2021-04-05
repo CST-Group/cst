@@ -1,25 +1,28 @@
-/**
- * 
+/*
+ * To change this license header, choose License Headers in Project Properties.
+ * To change this template file, choose Tools | Templates
+ * and open the template in the editor.
  */
 package br.unicamp.cst.util;
 
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileWriter;
 import java.util.List;
 
 /**
- * @author andre
  *
+ * @author rgudwin
  */
-public class ExecutionTimeWriter implements Runnable {
+public class CodeletTrackWriter implements Runnable {
 
 	private String codeletName;
-	
-	private List<ProfileInfo> profileInfo;
-        
-        
+	private List<CodeletTrackInfo> trackInfo;
         public static String path = "tests/";
+        private Gson gson = new GsonBuilder().setPrettyPrinting().create();
+
 	
 	/* (non-Javadoc)
 	 * @see java.lang.Runnable#run()
@@ -27,7 +30,7 @@ public class ExecutionTimeWriter implements Runnable {
 	@Override
 	public void run() {
 		
-		if(codeletName!=null && profileInfo!=null && profileInfo.size()>0){								
+		if(codeletName!=null && trackInfo!=null && trackInfo.size()>0){								
 			
 			BufferedWriter writer = null;
 	        try {
@@ -39,20 +42,21 @@ public class ExecutionTimeWriter implements Runnable {
                         // use directory.mkdirs(); here instead.
                     }
                     
-	            File logFile = new File(path+codeletName+"_profile.csv");
+	            File logFile = new File(path+codeletName+"_track.json");
 
 	            // This will output the full path where the file will be written to...
 	            //System.out.println("Creating log with profile at ... "+logFile.getCanonicalPath());
 	            
 	            writer = new BufferedWriter(new FileWriter(logFile, true));
 	            
-	            for(ProfileInfo profile : profileInfo){
+	            for(CodeletTrackInfo profile : trackInfo){
 					
 	            	//writer.write(profile.executionTime+" "+profile.callingTime+" "+profile.lastCallingTime+" "+(profile.callingTime-profile.lastCallingTime)+"\n");
                         // We will be profiling just the proc() execution time and the codelet calling interval 
-                        writer.write(TimeStamp.getStringTimeStamp(profile.callingTime, "dd/MM/yyyy HH:mm:ss.SSS")+" "+profile.executionTime+" "+(profile.callingTime-profile.lastCallingTime)+"\n");
+                        String textBlock = gson.toJson(profile);
+                        writer.write(textBlock+"\n");
 					
-				}	            
+                    }	            
 	            
 	        } catch (Exception e) {
 	            e.printStackTrace();
@@ -75,10 +79,11 @@ public class ExecutionTimeWriter implements Runnable {
 	}
 
 	/**
-	 * @param profileInfo the list of profile info collected 
+	 * @param trackInfo the list of profile info collected 
 	 */
-	public void setProfileInfo(List<ProfileInfo> profileInfo) {
-		this.profileInfo = profileInfo;
+	public void setTrackInfo(List<CodeletTrackInfo> trackInfo) {
+		this.trackInfo = trackInfo;
 	}
 
 }
+

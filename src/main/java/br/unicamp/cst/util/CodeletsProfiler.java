@@ -11,46 +11,40 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import br.unicamp.cst.core.entities.Codelet;
 import br.unicamp.cst.core.entities.Memory;
 import br.unicamp.cst.core.entities.Mind;
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import java.util.List;
 
 public class CodeletsProfiler implements Runnable {
 	
-	private static Collection<String> csvColumns = Arrays.asList("MindIdentifier;Time;codeletName;ThreadName;Activation;Threshold;isLoop;TimeStep;isProfiling;"+
-										";MemoryName;Evaluation;Info;Timestamp"+System.getProperty("line.separator"));
-
-	private Mind m;
-
-	private String filePath;
-
-	private String fileName;
-	
-	private double batchSize;
-	
-	private String mindIdentifier;
-	
+    private static Collection<String> csvColumns = Arrays.asList("MindIdentifier;Time;codeletName;ThreadName;Activation;Threshold;isLoop;TimeStep;isProfiling;"+
+    										";MemoryName;Evaluation;Info;Timestamp"+System.getProperty("line.separator"));
+    private Mind m;
+    private String filePath;
+    private String fileName;
+    private double batchSize;
+    private String mindIdentifier;
     private Long  intervalTimeMillis;
-    
-	private Integer queueSize;
-	
-	private long lastTimeMillis;
-	
-	private static ConcurrentLinkedQueue<String> queue = new ConcurrentLinkedQueue<String>(csvColumns);  
-	
-	private Thread worker;
+    private Integer queueSize;
+    private long lastTimeMillis;
+    private static ConcurrentLinkedQueue<String> queue = new ConcurrentLinkedQueue<String>(csvColumns);  
+    private Thread worker;
     private AtomicBoolean running = new AtomicBoolean(false);
+    //private Gson gson = new Gson();
+    private Gson gson = new GsonBuilder().setPrettyPrinting().create();
 
 
 
-	public CodeletsProfiler(Mind m, String filePath, String fileName, String mindIdentifier, Integer queueSize) {
+    public CodeletsProfiler(Mind m, String filePath, String fileName, String mindIdentifier, Integer queueSize) {
 		super();
 		this.m = m;
 		this.filePath = filePath;
 		this.fileName = fileName;
 		this.queueSize = queueSize;
 		this.mindIdentifier = mindIdentifier;
-
 	}
 	
-	public CodeletsProfiler(Mind m, String filePath, String fileName, String mindIdentifier, Long intervalTimeMillis) {
+    public CodeletsProfiler(Mind m, String filePath, String fileName, String mindIdentifier, Long intervalTimeMillis) {
 		super();
 		this.m = m;
 		this.filePath = filePath;
@@ -58,10 +52,9 @@ public class CodeletsProfiler implements Runnable {
 		this.mindIdentifier = mindIdentifier;
 		this.intervalTimeMillis = intervalTimeMillis;
 		this.lastTimeMillis = System.currentTimeMillis();
-
 	}
 	
-	public CodeletsProfiler(Mind m, String filePath, String fileName, String mindIdentifier,Integer queueSize, Long intervalTimeMillis) {
+    public CodeletsProfiler(Mind m, String filePath, String fileName, String mindIdentifier,Integer queueSize, Long intervalTimeMillis) {
 		super();
 		this.m = m;
 		this.filePath = filePath;
@@ -70,7 +63,6 @@ public class CodeletsProfiler implements Runnable {
 		this.intervalTimeMillis = intervalTimeMillis;
 		this.lastTimeMillis = System.currentTimeMillis();
 		this.queueSize = queueSize;
-
 	}
 	
 	private void createFile() {
@@ -112,30 +104,65 @@ public class CodeletsProfiler implements Runnable {
 		}
 		
 	}
+        
+        public class CodeletTrack {
+            String mindId;
+            String time;
+            String codeletName;
+            String threadName;
+            double activation;
+            double threshold;
+            boolean isLoop;
+            String timeStep;
+            boolean isProfiling;
+            String separator;
+            List<Memory> mInputs;
+            List<Memory> mOutputs;
+            List<Memory> mBroadcasts;
+            
+            public CodeletTrack(Codelet c) {
+                mindId = mindIdentifier;
+                time = TimeStamp.getStringTimeStamp(System.currentTimeMillis(),"dd/MM/yyyy HH:mm:ss.SSS");
+                codeletName = c.getName();
+                threadName = c.getThreadName();
+                activation = c.getActivation();
+                threshold = c.getThreshold();
+                isLoop = c.isLoop();
+                timeStep = TimeStamp.getStringTimeStamp(c.getTimeStep(),"dd/MM/yyyy HH:mm:ss.SSS");
+                isProfiling = c.isProfiling();
+                separator = System.getProperty("line.separator");
+                mInputs = c.getInputs();
+                mOutputs = c.getOutputs();
+                mBroadcasts = c.getBroadcast();
+            }
+        }
 	
 	private void fillQueue() {
         String textBlock = new String(); 
         for (Codelet c : m.getCodeRack().getAllCodelets()) {
         	
-        	textBlock = mindIdentifier +";"+System.currentTimeMillis()+";"+c.getName()+";"+c.getThreadName()+";"+c.getActivation()+";"+
-        				c.getThreshold()+";"+c.isLoop()+";"+c.getTimeStep()+";"+c.isProfiling()+";;;;"+System.getProperty("line.separator");
+        	//textBlock = mindIdentifier +";"+System.currentTimeMillis()+";"+c.getName()+";"+c.getThreadName()+";"+c.getActivation()+";"+
+        	//			c.getThreshold()+";"+c.isLoop()+";"+c.getTimeStep()+";"+c.isProfiling()+";;;;"+System.getProperty("line.separator");
+        	textBlock = gson.toJson(new CodeletTrack(c));
+                queue.add(textBlock);
         	
-        	queue.add(textBlock);
-        	
-        	for (Memory mInput : c.getInputs()) {
-        		textBlock = mindIdentifier +";;;;;;;;;"+mInput.getName()+";"+mInput.getEvaluation()+";"+mInput.getI()+";"+mInput.getTimestamp()+System.getProperty("line.separator");
-        		queue.add(textBlock);
-        	}
-        	
-        	for (Memory mOutput : c.getOutputs()) {
-        		textBlock = mindIdentifier +";;;;;;;;;"+mOutput.getName()+";"+mOutput.getEvaluation()+";"+mOutput.getI()+";"+mOutput.getTimestamp()+System.getProperty("line.separator");
-        		queue.add(textBlock);
-        	}
-        	
-        	for (Memory mBroadcast : c.getBroadcast()) {
-        		textBlock = mindIdentifier +";;;;;;;;;"+mBroadcast.getName()+";"+mBroadcast.getEvaluation()+";"+mBroadcast.getI()+";"+mBroadcast.getTimestamp()+System.getProperty("line.separator");
-        		queue.add(textBlock);
-        	}
+//        	for (Memory mInput : c.getInputs()) {
+//        		//textBlock = mindIdentifier +";;;;;;;;;"+mInput.getName()+";"+mInput.getEvaluation()+";"+mInput.getI()+";"+mInput.getTimestamp()+System.getProperty("line.separator");
+//        		textBlock = gson.toJson(mInput);
+//                        queue.add(textBlock);
+//        	}
+//        	
+//        	for (Memory mOutput : c.getOutputs()) {
+//        		//textBlock = mindIdentifier +";;;;;;;;;"+mOutput.getName()+";"+mOutput.getEvaluation()+";"+mOutput.getI()+";"+mOutput.getTimestamp()+System.getProperty("line.separator");
+//        		textBlock = gson.toJson(mOutput);
+//                        queue.add(textBlock);
+//        	}
+//        	
+//        	for (Memory mBroadcast : c.getBroadcast()) {
+//        		//textBlock = mindIdentifier +";;;;;;;;;"+mBroadcast.getName()+";"+mBroadcast.getEvaluation()+";"+mBroadcast.getI()+";"+mBroadcast.getTimestamp()+System.getProperty("line.separator");
+//        		textBlock = gson.toJson(mBroadcast);
+//                        queue.add(textBlock);
+//        	}
         	
         	
         	//If the one of the 
@@ -175,19 +202,17 @@ public class CodeletsProfiler implements Runnable {
     }
 
 
-	@Override
-	public void run() {
-		running.set(true);
+    @Override
+    public void run() {
+        running.set(true);
         while (running.get()) {
             try {
-            	this.fillQueue();
+                this.fillQueue();
             } catch (Exception e){
                 Thread.currentThread().interrupt();
-                System.out.println(
-                  "Thread was interrupted, Failed to complete operation");
+                System.out.println("Thread was interrupted, Failed to complete operation");
             }
-        }
-	
-	}
+        }	
+    }
 
 }

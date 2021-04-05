@@ -55,7 +55,7 @@ public class CodeletsProfilerTest {
          c2.addOutput(m3);
          c2.addBroadcast(m5);
          m.insertCodelet(c2);
-         CodeletsProfiler codeletProfiler = new CodeletsProfiler(m, "D:\\Projeto Ericsson-Unicamp\\codelet_profiler_test\\", "codeletProfilerTest.txt","Mind 1", 100);
+         CodeletsProfiler codeletProfiler = new CodeletsProfiler(m, "profile/", "codeletProfilerTest.txt","Mind 1", 100);
          codeletProfiler.start();
          Thread.sleep(1000);
          System.out.println("******** isRunning() "+ codeletProfiler.isRunning());
@@ -98,7 +98,7 @@ public class CodeletsProfilerTest {
          c2.addOutput(m3);
          c2.addBroadcast(m5);
          m.insertCodelet(c2);
-         CodeletsProfiler codeletProfiler = new CodeletsProfiler(m, "D:\\Projeto Ericsson-Unicamp\\codelet_profiler_test\\", "codeletProfilerTest.txt","Mind 1", (long) 1000);
+         CodeletsProfiler codeletProfiler = new CodeletsProfiler(m, "profile/", "codeletProfilerTest.txt","Mind 1", (long) 1000);
          codeletProfiler.start();
          Thread.sleep(5000);
          System.out.println("******** isRunning() "+ codeletProfiler.isRunning());
@@ -141,7 +141,7 @@ public class CodeletsProfilerTest {
          c2.addOutput(m3);
          c2.addBroadcast(m5);
          m.insertCodelet(c2);
-         CodeletsProfiler codeletProfiler = new CodeletsProfiler(m, "D:\\Projeto Ericsson-Unicamp\\codelet_profiler_test\\", "codeletProfilerTest.txt","Mind 1",500, (long) 500);
+         CodeletsProfiler codeletProfiler = new CodeletsProfiler(m, "profile/", "codeletProfilerTest.txt","Mind 1",500, (long) 500);
          codeletProfiler.start();
          Thread.sleep(1000);
          System.out.println("******** isRunning() "+ codeletProfiler.isRunning());
@@ -184,7 +184,7 @@ public class CodeletsProfilerTest {
          c2.addOutput(m3);
          c2.addBroadcast(m5);
          m.insertCodelet(c2);
-         CodeletsProfiler codeletProfiler = new CodeletsProfiler(m, "D:\\Projeto Ericsson-Unicamp\\codelet_profiler_test\\", "codeletProfilerTest.txt","Mind 1",50000, (long) 500);
+         CodeletsProfiler codeletProfiler = new CodeletsProfiler(m, "profile/", "codeletProfilerTest.txt","Mind 1",50000, (long) 500);
          codeletProfiler.start();
          Thread.sleep(1000);
          System.out.println("******** isRunning() "+ codeletProfiler.isRunning());
@@ -227,8 +227,8 @@ public class CodeletsProfilerTest {
          c2.addOutput(m3);
          c2.addBroadcast(m5);
          m.insertCodelet(c2);
-         CodeletsProfiler codeletProfiler = new CodeletsProfiler(m, "D:\\Projeto Ericsson-Unicamp\\codelet_profiler_test\\", "codeletProfilerTestWithInterrupt.txt","Mind 1", 100);
-         CodeletsProfiler codeletProfiler2 = new CodeletsProfiler(m, "D:\\Projeto Ericsson-Unicamp\\codelet_profiler_test\\", "codeletProfilerTestWithInterrupt.txt","Mind 2", 50);
+         CodeletsProfiler codeletProfiler = new CodeletsProfiler(m, "profile/", "codeletProfilerTestWithInterrupt.txt","Mind 1", 100);
+         CodeletsProfiler codeletProfiler2 = new CodeletsProfiler(m, "profile/", "codeletProfilerTestWithInterrupt.txt","Mind 2", 50);
          codeletProfiler.start();
          codeletProfiler2.start();
          Thread.sleep(10);

@@ -21,6 +21,8 @@ import java.util.concurrent.locks.ReentrantLock;
 import br.unicamp.cst.core.exceptions.CodeletActivationBoundsException;
 import br.unicamp.cst.core.exceptions.CodeletThresholdBoundsException;
 import br.unicamp.cst.core.exceptions.MemoryObjectNotFoundException;
+import br.unicamp.cst.util.CodeletTrackInfo;
+import br.unicamp.cst.util.CodeletTrackWriter;
 import br.unicamp.cst.util.ExecutionTimeWriter;
 import br.unicamp.cst.util.ProfileInfo;
 
@@ -130,11 +132,21 @@ public abstract class Codelet implements Runnable {
 	 * Option for profiling execution times
 	 */
 	private boolean isProfiling = false;
+        
+        /**
+	 * Option for tracking codelet execution
+	 */
+	private boolean isTracking = false;
 
 	/**
 	 * Information for profiling
 	 */
 	private List<ProfileInfo> profileInfo = new ArrayList<>();
+
+        /**
+	 * Information for tracking
+	 */
+	private List<CodeletTrackInfo> trackInfo = new ArrayList<>();
 
 	/**
 	 * When first activated, the thread containing this codelet runs the proc()
@@ -739,6 +751,25 @@ public abstract class Codelet implements Runnable {
 	public synchronized void setProfiling(boolean isProfiling) {
 		this.isProfiling = isProfiling;
 	}
+        
+        /**
+	 * Gets if this Codelet is being tracked.
+	 * 
+	 * @return the isTracking.
+	 */
+	public synchronized boolean isTracking() {
+		return isTracking;
+	}
+
+	/**
+	 * Sets if this Codelet is being tracked.
+	 * 
+	 * @param isTracking
+	 *            the isTracking to set
+	 */
+	public synchronized void setTracking(boolean isTracking) {
+		this.isTracking = isTracking;
+	}
 
 	private class CodeletTimerTask extends TimerTask {
 
@@ -775,10 +806,20 @@ public abstract class Codelet implements Runnable {
 
 				if (shouldLoop())
 					timer.schedule(new CodeletTimerTask(), timeStep);
-
+                                if (isTracking) {
+                                    CodeletTrackInfo ti = new CodeletTrackInfo(Codelet.this);
+                                    trackInfo.add(ti);
+                                    if (trackInfo.size() > 50) {
+                                        CodeletTrackWriter trackWriter = new CodeletTrackWriter();
+                                        trackWriter.setCodeletName(name);
+					trackWriter.setTrackInfo(trackInfo);
+					Thread thread = new Thread(trackWriter);
+					thread.start();
+                                        trackInfo = new ArrayList<>();
+                                    }
+                                }
 				if (isProfiling) {
-
-					endTime = System.currentTimeMillis();
+                                        endTime = System.currentTimeMillis();
 					duration = (endTime - startTime);
 					ProfileInfo pi = new ProfileInfo(duration, startTime, laststarttime);
 					profileInfo.add(pi);
@@ -798,6 +839,7 @@ public abstract class Codelet implements Runnable {
 					}
 
 				}
+                                
 
 			}
 
