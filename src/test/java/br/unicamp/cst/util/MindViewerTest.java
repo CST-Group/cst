@@ -81,10 +81,10 @@ public class MindViewerTest {
         m.insertCodelet(c2);
         MindViewer ov = new MindViewer(m, "Mind", new ArrayList<>());
         ov.setVisible(true);
-        System.out.println("Teste:");
+        System.out.println("MindViewerTest: running for 60s ");
         // ov.updateTree(m);  
         
-        Thread.sleep(1000);
+        Thread.sleep(60000);
         
         ov.setVisible(false);
     }

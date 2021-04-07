@@ -15,18 +15,19 @@ import java.util.List;
  */
 public class CodeletTrackInfo {
     //String mindId;
-    String time;
-    String codeletName;
-    String threadName;
-    double activation;
-    double threshold;
-    boolean isLoop;
-    String codeletTimeStep;
-    boolean isProfiling;
-    String separator;
-    List<Memory> mInputs;
-    List<Memory> mOutputs;
-    List<Memory> mBroadcasts;
+    public String time;
+    public String codeletName;
+    public String threadName;
+    public double activation;
+    public double threshold;
+    public boolean isLoop;
+    public String codeletTimeStep;
+    public boolean isProfiling;
+    public String separator;
+    public List<Memory> mInputs;
+    public List<Memory> mOutputs;
+    public List<Memory> mBroadcasts;
+    public String codeletClass;
             
     public CodeletTrackInfo(Codelet c) {
         //mindId = mindIdentifier;
@@ -42,5 +43,6 @@ public class CodeletTrackInfo {
         mInputs = c.getInputs();
         mOutputs = c.getOutputs();
         mBroadcasts = c.getBroadcast();
+        codeletClass = c.getClass().getCanonicalName();
     }    
 }

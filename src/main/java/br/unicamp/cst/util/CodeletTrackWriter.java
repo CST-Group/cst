@@ -5,6 +5,9 @@
  */
 package br.unicamp.cst.util;
 
+import br.unicamp.cst.core.entities.Memory;
+import br.unicamp.cst.core.entities.MemoryContainer;
+import br.unicamp.cst.core.entities.MemoryObject;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import java.io.BufferedWriter;
@@ -21,10 +24,13 @@ public class CodeletTrackWriter implements Runnable {
 	private String codeletName;
 	private List<CodeletTrackInfo> trackInfo;
         public static String path = "tests/";
-        private Gson gson = new GsonBuilder().setPrettyPrinting().create();
-
-	
-	/* (non-Javadoc)
+        private Gson gson = //new GsonBuilder().setPrettyPrinting().create();
+        new GsonBuilder().registerTypeAdapter(Memory.class, new InterfaceAdapter<MemoryObject>())
+                                 .registerTypeAdapter(Memory.class, new InterfaceAdapter<MemoryContainer>())
+                             .setPrettyPrinting().create();
+        private boolean firstrun = false;
+        
+        /* (non-Javadoc)
 	 * @see java.lang.Runnable#run()
 	 */
 	@Override
@@ -46,15 +52,19 @@ public class CodeletTrackWriter implements Runnable {
 
 	            // This will output the full path where the file will be written to...
 	            //System.out.println("Creating log with profile at ... "+logFile.getCanonicalPath());
-	            
+                   
 	            writer = new BufferedWriter(new FileWriter(logFile, true));
 	            
-	            for(CodeletTrackInfo profile : trackInfo){
+                    if (firstrun) {
+                        writer.write("["+"\n");
+                    }
+                    else
+	              for(CodeletTrackInfo profile : trackInfo){
 					
 	            	//writer.write(profile.executionTime+" "+profile.callingTime+" "+profile.lastCallingTime+" "+(profile.callingTime-profile.lastCallingTime)+"\n");
                         // We will be profiling just the proc() execution time and the codelet calling interval 
                         String textBlock = gson.toJson(profile);
-                        writer.write(textBlock+"\n");
+                        writer.write(textBlock+",\n");
 					
                     }	            
 	            
