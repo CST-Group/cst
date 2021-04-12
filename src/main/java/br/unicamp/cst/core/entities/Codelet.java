@@ -181,6 +181,9 @@ public abstract class Codelet implements Runnable {
 	 */
 	public synchronized void stop() {
 		this.setLoop(false);
+		if (Codelet.this.codeletProfiler != null) {
+			Codelet.this.codeletProfiler.finishProfile(Codelet.this);
+		}
 	}
 
 	/**
@@ -253,11 +256,6 @@ public abstract class Codelet implements Runnable {
 	 */
 	public synchronized void setLoop(boolean loop) {
 		this.loop = loop;
-		if (!this.loop) {
-			if (Codelet.this.codeletProfiler != null) {
-				Codelet.this.codeletProfiler.finishProfile(Codelet.this);
-			}
-		}
 	}
 
 	/**
@@ -781,13 +779,13 @@ public abstract class Codelet implements Runnable {
 	 * 
 	 * @param 
 	 */
-	public void setCodeletProfiler(String codeltetIdentifier, String filePath, String fileName, String mindIdentifier,Integer queueSize, Long intervalTimeMillis, FileFormat fileFormat) {
+	public void setCodeletProfiler(String filePath, String fileName, String mindIdentifier,Integer queueSize, Long intervalTimeMillis, FileFormat fileFormat) {
 		if (intervalTimeMillis == null) {
-		  this.codeletProfiler = new CodeletsProfiler(codeltetIdentifier, filePath, fileName, mindIdentifier, queueSize, fileFormat);
+		  this.codeletProfiler = new CodeletsProfiler(filePath, fileName, mindIdentifier, queueSize, fileFormat);
 		} else if (queueSize == null) {
-			this.codeletProfiler = new CodeletsProfiler(codeltetIdentifier,filePath, fileName, mindIdentifier, intervalTimeMillis, fileFormat);
+			this.codeletProfiler = new CodeletsProfiler(filePath, fileName, mindIdentifier, intervalTimeMillis, fileFormat);
 		} else {
-			this.codeletProfiler = new CodeletsProfiler(codeltetIdentifier, filePath, fileName, mindIdentifier, queueSize, intervalTimeMillis, fileFormat);
+			this.codeletProfiler = new CodeletsProfiler(filePath, fileName, mindIdentifier, queueSize, intervalTimeMillis, fileFormat);
 		}		
 	}
 

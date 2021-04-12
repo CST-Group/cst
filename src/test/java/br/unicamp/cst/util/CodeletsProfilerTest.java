@@ -48,7 +48,7 @@ public class CodeletsProfilerTest {
          c.addOutput(m4);
          c.addBroadcast(m5);
          c.addBroadcast(mo);
-         c.setCodeletProfiler("codeletProfilerTestC", "profile/", "codeletProfilerTestC.txt", "Mind 1", 10, null, FileFormat.CSV);
+         c.setCodeletProfiler("profile/", "codeletProfilerTestC.txt", "Mind 1", 10, null, FileFormat.CSV);
          m.insertCodelet(c);
          Codelet c2 = new TestCodelet("Codelet 2");
          c2.addInput(m4);
@@ -56,7 +56,7 @@ public class CodeletsProfilerTest {
          c2.addOutput(m6);
          c2.addOutput(m3);
          c2.addBroadcast(m5);
-         c2.setCodeletProfiler("codeletProfilerTestC2", "profile/", "codeletProfilerTestC2.txt", "Mind 1", 10, null, FileFormat.JSON);
+         c2.setCodeletProfiler("profile/", "codeletProfilerTestC2.txt", "Mind 1", 10, null, FileFormat.JSON);
          m.insertCodelet(c2);
          m.start();
          Thread.sleep(2000);
@@ -92,7 +92,7 @@ public class CodeletsProfilerTest {
          c.addOutput(m4);
          c.addBroadcast(m5);
          c.addBroadcast(mo);
-         c.setCodeletProfiler("CjSON", "profile/", "CjSON.txt", "Mind 1", null,  (long) 1000, FileFormat.JSON);
+         c.setCodeletProfiler("profile/", "CjSON.txt", "Mind 1", null,  (long) 1000, FileFormat.JSON);
          m.insertCodelet(c);
          Codelet c2 = new TestCodelet("Codelet 2");
          c2.addInput(m4);
@@ -100,7 +100,7 @@ public class CodeletsProfilerTest {
          c2.addOutput(m6);
          c2.addOutput(m3);
          c2.addBroadcast(m5);
-         c2.setCodeletProfiler("C2JSON","profile/", "C2JSON.txt", "Mind 1", null,  (long) 1000, FileFormat.JSON);
+         c2.setCodeletProfiler("profile/", "C2JSON.txt", "Mind 1", null,  (long) 1000, FileFormat.JSON);
          m.insertCodelet(c2);
          m.start();
          Thread.sleep(2000);
@@ -143,7 +143,7 @@ public class CodeletsProfilerTest {
          c2.addOutput(m6);
          c2.addOutput(m3);
          c2.addBroadcast(m5);
-         c2.setCodeletProfiler("JustC2Logging", "profile/", "JustC2Logging.txt", "Mind 1", null,  (long) 1000, FileFormat.CSV);
+         c2.setCodeletProfiler("profile/", "JustC2Logging.txt", "Mind 1", null,  (long) 1000, FileFormat.CSV);
          m.insertCodelet(c2);
          m.start();
          Thread.sleep(2000);
@@ -179,7 +179,7 @@ public class CodeletsProfilerTest {
          c.addOutput(m4);
          c.addBroadcast(m5);
          c.addBroadcast(mo);
-         c.setCodeletProfiler("C", "profile/", "C.txt", "Mind 1", 10,  (long) 1000, FileFormat.JSON);
+         c.setCodeletProfiler("profile/", "C.txt", "Mind 1", 5,  null, FileFormat.JSON);
          m.insertCodelet(c);
          Codelet c2 = new TestCodelet("Codelet 2");
          c2.addInput(m4);
@@ -187,7 +187,7 @@ public class CodeletsProfilerTest {
          c2.addOutput(m6);
          c2.addOutput(m3);
          c2.addBroadcast(m5);
-         c2.setCodeletProfiler("C2", "profile/", "C2.txt", "Mind 1", 10,  (long) 1000, FileFormat.CSV);
+         c2.setCodeletProfiler( "profile/", "C2.txt", "Mind 1", 5,  (long) 1000, FileFormat.CSV);
          m.insertCodelet(c2);
          m.start();
          Thread.sleep(2000);

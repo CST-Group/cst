@@ -30,51 +30,28 @@ public class CodeletsProfiler {
     
     private String filePath;
     private String fileName;
-    private String codeletIdentifier;
-    private double batchSize;
     private String mindIdentifier;
     private Long  intervalTimeMillis;
     private Integer queueSize;
     private long lastTimeMillis;
-    private static ConcurrentLinkedQueue<QueuePair> queue;  
+    private ConcurrentLinkedQueue<String> queue;  
     //private Gson gson = new Gson();
     private Gson gson = new GsonBuilder().setPrettyPrinting().create();
     private FileFormat fileFormat;
     public enum FileFormat {CSV, JSON};
-    
-    private class QueuePair {
-    	private String codeletIdentifier;
-    	private String text;
-    	
-		public QueuePair(String codeletIdentifier, String text) {
-			super();
-			this.codeletIdentifier = codeletIdentifier;
-			this.text = text;
-		}
-		
-		public String getCodeletIdentifier() {
-			return codeletIdentifier;
-		}
-
-		public String getText() {
-			return text;
-		}
-	
-    }
 
 
-    public CodeletsProfiler(String codeletIdentifier, String filePath, String fileName, String mindIdentifier, Integer queueSize, FileFormat fileFormat) {
+    public CodeletsProfiler(String filePath, String fileName, String mindIdentifier, Integer queueSize, FileFormat fileFormat) {
 		super();
 		this.filePath = filePath;
 		this.fileName = fileName;
 		this.queueSize = queueSize;
 		this.mindIdentifier = mindIdentifier;
 		this.fileFormat = fileFormat;
-		this.codeletIdentifier = codeletIdentifier;
 		this.initializeQueue();
 	}
 	
-    public CodeletsProfiler(String codeletIdentifier, String filePath, String fileName, String mindIdentifier, Long intervalTimeMillis, FileFormat fileFormat) {
+    public CodeletsProfiler(String filePath, String fileName, String mindIdentifier, Long intervalTimeMillis, FileFormat fileFormat) {
 		super();
 		this.filePath = filePath;
 		this.fileName = fileName;
@@ -82,11 +59,10 @@ public class CodeletsProfiler {
 		this.intervalTimeMillis = intervalTimeMillis;
 		this.lastTimeMillis = System.currentTimeMillis();
 		this.fileFormat = fileFormat;
-		this.codeletIdentifier = codeletIdentifier;
 		this.initializeQueue();
 	}
 	
-    public CodeletsProfiler(String codeletIdentifier, String filePath, String fileName, String mindIdentifier,Integer queueSize, Long intervalTimeMillis, FileFormat fileFormat) {
+    public CodeletsProfiler(String filePath, String fileName, String mindIdentifier,Integer queueSize, Long intervalTimeMillis, FileFormat fileFormat) {
 		super();
 		this.filePath = filePath;
 		this.fileName = fileName;
@@ -95,24 +71,23 @@ public class CodeletsProfiler {
 		this.lastTimeMillis = System.currentTimeMillis();
 		this.queueSize = queueSize;
 		this.fileFormat = fileFormat;
-		this.codeletIdentifier = codeletIdentifier;
 		this.initializeQueue();
 
 	}
     
     private void initializeQueue() {
-    	 if (queue == null) {
-			queue = new ConcurrentLinkedQueue<QueuePair>(); 
+    	 if (this.queue == null) {
+    		 this.queue = new ConcurrentLinkedQueue<String>(); 
 		 }
     	 switch(fileFormat) {
 	        case CSV:
-	          queue.add(new QueuePair(this.codeletIdentifier, csvColumns));
+	          queue.add(csvColumns);
 	          break;
 	        case JSON:
-	          queue.add(new QueuePair(this.codeletIdentifier, openJSONList));
+	          queue.add(openJSONList);
 	          break;
 	        default:
-	          queue.add(new QueuePair(this.codeletIdentifier, openJSONList));
+	          queue.add(openJSONList);
 		 }
     }
 	
@@ -136,15 +111,12 @@ public class CodeletsProfiler {
 	            
 	            writer = new BufferedWriter(new FileWriter(profilerFile, true));
 	            
-	            for (QueuePair line : queue) {
-	            	if (line.getCodeletIdentifier().equals(this.codeletIdentifier)) {
-	        			writer.write(line.getText());
-	        			queue.remove(line);
-	            	}
+	            for (String line : queue) {
+	            	writer.write(line);
+        			queue.remove(line);
         		}
 	            
 	        } catch (Exception e) {
-	            
 	            e.printStackTrace();
 	            
 	        } finally {
@@ -193,13 +165,13 @@ public class CodeletsProfiler {
         
     private void addJsonText(Codelet c) {
     	String textBlock = gson.toJson(new CodeletTrack(c));
-        queue.add(new QueuePair(this.codeletIdentifier, lineSeparator + textBlock  + comma));
+        queue.add(lineSeparator + textBlock  + comma);
     }
     
     private void addCSVText(Codelet c) {
     	String textBlock = mindIdentifier +csvSeparator+System.currentTimeMillis()+csvSeparator+c.getName()+csvSeparator+c.getThreadName()+csvSeparator+c.getActivation()+";"+
             			c.getThreshold()+csvSeparator+c.isLoop()+csvSeparator+c.getTimeStep()+csvSeparator+c.isProfiling()+csvSeparator+csvSeparator+csvSeparator+csvSeparator+lineSeparator;
-    	queue.add(new QueuePair(this.codeletIdentifier, textBlock));
+    	queue.add(textBlock);
     }
     
     private void addTextToQueue(Codelet c) {
@@ -261,15 +233,28 @@ public class CodeletsProfiler {
 	}
 
     public void profile(Codelet c) {
-    	this.fillQueue(c);
+    	 Thread thread = new Thread(new Runnable() {
+             @Override
+             public void run() {
+            	 fillQueue(c);
+             }
+         });
+    	 thread.start();
     }
     
     public void finishProfile(Codelet c) {
-    	this.addTextToQueue(c);
-    	this.createFile();
-    	if (fileFormat == FileFormat.JSON) {
-    		this.finalizeJSONFile();
-    	}
+    	Thread thread = new Thread(new Runnable() {
+            @Override
+            public void run() {
+                addTextToQueue(c);
+            	createFile();
+            	if (fileFormat == FileFormat.JSON) {
+            		finalizeJSONFile();
+            	}
+            }
+        });
+   	    thread.start();
+    	
     }
 
 }
