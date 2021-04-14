@@ -132,11 +132,6 @@ public abstract class Codelet implements Runnable {
 	 * Option for profiling execution times
 	 */
 	private boolean isProfiling = false;
-        
-        /**
-	 * Option for tracking codelet execution
-	 */
-	private boolean isTracking = false;
 
 	/**
 	 * Information for profiling
@@ -753,25 +748,6 @@ public abstract class Codelet implements Runnable {
 	 */
 	public synchronized void setProfiling(boolean isProfiling) {
 		this.isProfiling = isProfiling;
-	}
-        
-        /**
-	 * Gets if this Codelet is being tracked.
-	 * 
-	 * @return the isTracking.
-	 */
-	public synchronized boolean isTracking() {
-		return isTracking;
-	}
-
-	/**
-	 * Sets if this Codelet is being tracked.
-	 * 
-	 * @param isTracking
-	 *            the isTracking to set
-	 */
-	public synchronized void setTracking(boolean isTracking) {
-		this.isTracking = isTracking;
 	}
 	
 	/**
