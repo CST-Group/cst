@@ -46,6 +46,9 @@ public class CodeletsProfiler {
 		this.filePath = filePath;
 		this.fileName = fileName;
 		this.queueSize = queueSize;
+		if (this.queueSize == null) {
+			this.intervalTimeMillis = 1000L;
+		}
 		this.mindIdentifier = mindIdentifier;
 		this.fileFormat = fileFormat;
 		this.initializeQueue();
@@ -57,6 +60,9 @@ public class CodeletsProfiler {
 		this.fileName = fileName;
 		this.mindIdentifier = mindIdentifier;
 		this.intervalTimeMillis = intervalTimeMillis;
+		if (this.intervalTimeMillis == null) {
+			this.intervalTimeMillis = 1000L;
+		}
 		this.lastTimeMillis = System.currentTimeMillis();
 		this.fileFormat = fileFormat;
 		this.initializeQueue();
@@ -70,6 +76,9 @@ public class CodeletsProfiler {
 		this.intervalTimeMillis = intervalTimeMillis;
 		this.lastTimeMillis = System.currentTimeMillis();
 		this.queueSize = queueSize;
+		if (this.intervalTimeMillis == null && this.queueSize == null) {
+			this.intervalTimeMillis = 1000L;
+		}
 		this.fileFormat = fileFormat;
 		this.initializeQueue();
 
@@ -233,27 +242,15 @@ public class CodeletsProfiler {
 	}
 
     public void profile(Codelet c) {
-    	 Thread thread = new Thread(new Runnable() {
-             @Override
-             public void run() {
-            	 fillQueue(c);
-             }
-         });
-    	 thread.start();
+    	fillQueue(c);
     }
     
     public void finishProfile(Codelet c) {
-    	Thread thread = new Thread(new Runnable() {
-            @Override
-            public void run() {
-                addTextToQueue(c);
-            	createFile();
-            	if (fileFormat == FileFormat.JSON) {
-            		finalizeJSONFile();
-            	}
-            }
-        });
-   	    thread.start();
+    	addTextToQueue(c);
+    	createFile();
+    	if (fileFormat == FileFormat.JSON) {
+    		finalizeJSONFile();
+    	}
     	
     }
 
