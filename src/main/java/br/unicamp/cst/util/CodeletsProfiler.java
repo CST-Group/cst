@@ -35,7 +35,6 @@ public class CodeletsProfiler {
     private Integer queueSize;
     private long lastTimeMillis;
     private ConcurrentLinkedQueue<String> queue;  
-    //private Gson gson = new Gson();
     private Gson gson = new GsonBuilder().setPrettyPrinting().create();
     private FileFormat fileFormat;
     public enum FileFormat {CSV, JSON};
@@ -109,14 +108,9 @@ public class CodeletsProfiler {
                      File directory = new File(filePath);
                      if (!directory.exists()){
                             directory.mkdir();
-                        // If you require it to make the entire directory path including parents,
-                        // use directory.mkdirs(); here instead.
                     }
                     
 	            File profilerFile = new File(filePath+fileName);
-
-	            // This will output the full path where the file will be written to...
-	            //System.out.println("Creating log with profile at ... "+logFile.getCanonicalPath());
 	            
 	            writer = new BufferedWriter(new FileWriter(profilerFile, true));
 	            
@@ -130,7 +124,6 @@ public class CodeletsProfiler {
 	            
 	        } finally {
 	            try {
-	                // Close the writer regardless of what happens...
 	                writer.close();
 	            } catch (Exception e) {
 	 	            e.printStackTrace();
@@ -199,11 +192,7 @@ public class CodeletsProfiler {
     private void finalizeJSONFile() {
   		BufferedWriter writer = null;
 		try {
-			 File profilerFile = new File(filePath+fileName);
-
-	            // This will output the full path where the file will be written to...
-	            //System.out.println("Creating log with profile at ... "+logFile.getCanonicalPath());
-	            
+			File profilerFile = new File(filePath+fileName);
 			writer = new BufferedWriter(new FileWriter(profilerFile, true));
 	        writer.write(closeJSONList);
 		} catch (Exception e) {
