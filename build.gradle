@@ -120,4 +120,3 @@ jacocoTestReport {
         xml.enabled true
     }
 }
-}
