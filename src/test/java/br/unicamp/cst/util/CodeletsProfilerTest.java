@@ -25,7 +25,7 @@ import br.unicamp.cst.util.CodeletsProfiler.FileFormat;
 
 public class CodeletsProfilerTest {
       
-     private String filePath = "D:\\\\Projeto Ericsson-Unicamp\\\\codelet_profiler_test\\\\";
+     private String filePath = "profile/";
      private String fileNameCSV_1 = "file_in_csv_1.txt";
      private String fileNameJSON_1 = "file_in_json_1.txt";
      private String fileNameJSON_2 = "file_in_json_2.txt";

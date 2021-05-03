@@ -753,7 +753,19 @@ public abstract class Codelet implements Runnable {
 	/**
 	 * Sets Codelet Profiler
 	 * 
-	 * @param 
+	 * @param filePath 
+	 * 			path to create file
+	 * @param fileName
+	 * 			name file
+	 * @param mindIdentifier
+	 * 			mind identifier in file
+	 * @param queueSize
+	 * 			max queue size which a write in file must be done
+	 * @param intervalTimeMillis
+	 * 			max interval in millis which a write in file must be done
+	 * @param fileFormat
+	 * 			desired file format CSV or JSON
+	 * 		  
 	 */
 	public void setCodeletProfiler(String filePath, String fileName, String mindIdentifier,Integer queueSize, Long intervalTimeMillis, FileFormat fileFormat) {
 		if (intervalTimeMillis == null) {
