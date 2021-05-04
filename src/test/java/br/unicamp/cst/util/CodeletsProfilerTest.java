@@ -25,7 +25,7 @@ import br.unicamp.cst.util.CodeletsProfiler.FileFormat;
 
 public class CodeletsProfilerTest {
       
-     private String filePath = "profile/";
+     private static String filePath = "profile/";
      private String fileNameCSV_1 = "file_in_csv_1.txt";
      private String fileNameJSON_1 = "file_in_json_1.txt";
      private String fileNameJSON_2 = "file_in_json_2.txt";
@@ -39,6 +39,14 @@ public class CodeletsProfilerTest {
 
 	@AfterClass
 	public static void afterAllTestMethods() {
+		try  
+		{         
+			File f= new File(filePath);      
+			f.delete(); 
+		}  
+		catch(Exception e)  {  
+			e.printStackTrace();  
+		}  
 
 	}
 
