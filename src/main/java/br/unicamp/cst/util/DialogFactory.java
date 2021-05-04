@@ -17,6 +17,8 @@ import org.jfree.ui.RefineryUtilities;
 import br.unicamp.cst.representation.owrl.AbstractObject;
 import br.unicamp.cst.representation.owrl.Property;
 import br.unicamp.cst.representation.owrl.QualityDimension;
+import br.unicamp.cst.representation.wme.Idea;
+import br.unicamp.cst.representation.wme.IdeaTreeNode;
 
 /**
  *
@@ -247,6 +249,95 @@ public class DialogFactory extends javax.swing.JDialog {
            qd.setName(dialog.jName.getText());
            qd.setValue(dialog.jValue.getText());
         }
+    }
+    
+    public static IdeaTreeNode getIdentifier(IdeaTreeNode baseNode) {
+
+    DialogFactory dialog = new DialogFactory(null,true);
+    dialog.setModalityType(Dialog.ModalityType.APPLICATION_MODAL);
+    //dialog.setBounds(350, 350, 200, 200);
+    dialog.setTitle("Enter WME data ...");
+    dialog.jValue.setEditable(false);
+    dialog.jValue.setEnabled(false);
+    //RefineryUtilities.centerFrameOnScreen(dialog);
+    dialog.setVisible(true);
+    dialog.dispose();
+    if (dialog.ok == true) {
+        String newname = dialog.jName.getText();
+        Idea newwmnode = new Idea(newname);
+        IdeaTreeNode newnode = baseNode.addIdentifier(newwmnode);
+        return(newnode);
+    }
+    else return(null);
+    }
+    
+    public static IdeaTreeNode getValue(IdeaTreeNode baseNode) {
+
+    DialogFactory dialog = new DialogFactory(null,true);
+    dialog.setModalityType(Dialog.ModalityType.APPLICATION_MODAL);
+    //dialog.setBounds(350, 350, 200, 200);
+    dialog.setTitle("Enter child WME value ...");
+    dialog.jValue.setEditable(true);
+    dialog.jValue.setEnabled(true);
+    //RefineryUtilities.centerFrameOnScreen(dialog);
+    dialog.setVisible(true);
+    dialog.dispose();
+    if (dialog.ok == true) {
+        String newname = dialog.jName.getText();
+        String newvalue = dialog.jValue.getText();
+        Idea newwmnode = new Idea(newname,newvalue);
+        IdeaTreeNode newnode = baseNode.addWMNode(newwmnode);
+        return(newnode);
+    }
+    else return(null);
+    } 
+    
+    public static String editIdentifier(IdeaTreeNode node) {
+        DialogFactory dialog = new DialogFactory(null,true);
+        dialog.setModalityType(Dialog.ModalityType.APPLICATION_MODAL);
+        //dialog.setBounds(350, 350, 200, 200);
+        dialog.setTitle("Edit WM data ...");
+        dialog.jValue.setEditable(false);
+        dialog.jValue.setEnabled(false);
+        TreeElement te = (TreeElement) node.getUserObject();
+        String text = te.getName();
+        String tudo[] = text.split(" ");
+        dialog.jName.setText(tudo[0]);
+        //RefineryUtilities.centerFrameOnScreen(dialog);
+        dialog.setVisible(true);
+        dialog.dispose();
+        if (dialog.ok == true) {
+           Idea id = (Idea) te.getElement();
+           id.setName(dialog.jName.getText());
+           te.setName(dialog.jName.getText()+" [*]");
+           return(dialog.jName.getText());
+        }
+        else return null;
+    }
+    
+    public static String editValue(IdeaTreeNode node) {
+        DialogFactory dialog = new DialogFactory(null,true);
+        dialog.setModalityType(Dialog.ModalityType.APPLICATION_MODAL);
+        //dialog.setBounds(350, 350, 200, 200);
+        dialog.setTitle("Edit WM data ...");
+        dialog.jValue.setEditable(true);
+        dialog.jValue.setEnabled(true);
+        TreeElement te = (TreeElement) node.getUserObject();
+        String text = te.getName();
+        String tudo[] = text.split(": ");
+        dialog.jName.setText(tudo[0]);
+        dialog.jValue.setText(tudo[1]);
+        //RefineryUtilities.centerFrameOnScreen(dialog);
+        dialog.setVisible(true);
+        dialog.dispose();
+        if (dialog.ok == true) {
+           Idea id = (Idea) te.getElement();
+           id.setName(dialog.jName.getText());
+           id.setValue(dialog.jValue.getText());
+           te.setName(dialog.jName.getText()+": "+dialog.jValue.getText());
+           return(dialog.jName.getText());
+        }
+        else return null;
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables

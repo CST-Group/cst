@@ -12,13 +12,15 @@
  */
 package br.unicamp.cst.representation.owrl;
 
-import br.unicamp.cst.util.AbstractObjectEditor;
 import br.unicamp.cst.util.CodeBuilder;
 import br.unicamp.cst.util.NameGenerator;
 import br.unicamp.cst.util.Pair;
+import br.unicamp.cst.util.viewer.ToString;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
+import java.lang.reflect.Array;
+import java.lang.reflect.Field;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -698,6 +700,11 @@ public class AbstractObject implements Cloneable, Entity {
     public void addProperty(Property prop) {
         getProperties().add(prop);
     }
+    
+    public void addProperty(String prop, Object value) {
+        Property p = new Property(prop,value);
+        addProperty(p);
+    }
 
     public void removeProperty(Property prop) {
         getProperties().remove(prop);
@@ -765,24 +772,28 @@ public class AbstractObject implements Cloneable, Entity {
     }
     
     public String toString() {
-        String out = this.toString(1);
+        return(name);
+    }
+    
+    public String toStringFull() {
+        String out = this.toStringFull(1);
         return(out);
     }
     
-    public String toString(int level) {
+    public String toStringFull(int level) {
         String out="";
         out += name+"\n";
         for (AbstractObject ao : compositeList) {
             for (int i=0;i<level;i++) out += "   ";
-            out += "* "+ ao.toString(level+1);
+            out += "* "+ ao.toStringFull(level+1);
         }
         for (AbstractObject ao : aggregateList) {
             for (int i=0;i<level;i++) out += "   ";
-            out += "+ "+ ao.toString(level+1);
+            out += "+ "+ ao.toStringFull(level+1);
         }
         for (Property p : properties) {
             for (int i=0;i<level;i++) out += "   ";
-            out += "> "+ p.toString(level+1);
+            out += "> "+ p.toStringFull(level+1);
         }
        return(out); 
     }
@@ -790,5 +801,119 @@ public class AbstractObject implements Cloneable, Entity {
     public boolean isEmpty() {
         if (properties.isEmpty() && compositeList.isEmpty() && aggregateList.isEmpty() && affordances.isEmpty()) return true;
         else return false;
+    }
+    
+    transient ArrayList<Object> listtoavoidloops = new ArrayList<>();
+    
+    public boolean already_exists(Object o) {
+        for (Object oo : listtoavoidloops)
+           if (oo.hashCode() == o.hashCode()) return true;
+        return false;
+    }
+    
+    public void addObject(Object obj, String fullname) {
+        if (obj == null) {
+            return;
+        }
+        if (listtoavoidloops.contains(obj) || already_exists(obj)) {
+             System.out.println("Object found in listtoavoidloops");
+             //DefaultMutableTreeNode node = addString(obj.toString(),fullname);
+            return;            
+        }
+        String s = ToString.from(obj);
+        if (s != null) {
+            //System.out.println(ToString.getSimpleName(fullname)+" "+s);
+            this.addProperty(ToString.getSimpleName(fullname),s);
+            //DefaultMutableTreeNode node = addString(s,fullname);
+            return;
+        }
+        else if (obj.getClass().isArray()) {
+            
+            int l = Array.getLength(obj);
+            String type = obj.getClass().getSimpleName();
+            if (l>0) {
+                Object otype = Array.get(obj,0);
+                if (otype != null)
+                    type = otype.getClass().getSimpleName();
+            }
+            
+            //System.out.println("Array["+l+"] of "+type);
+            if (type.equalsIgnoreCase("Double") || type.equalsIgnoreCase("Integer") || 
+                type.equalsIgnoreCase("String") || type.equalsIgnoreCase("Float") || 
+                type.equalsIgnoreCase("Long") || type.equalsIgnoreCase("Boolean")) {
+                Property p = new Property(ToString.getSimpleName(fullname));
+                for (int i=0;i<l;i++) {
+                    Object oo = Array.get(obj,i);
+                    p.addQualityDimension(ToString.el(fullname, i),oo);
+                }
+                this.addProperty(p);
+            } 
+            else {
+                AbstractObject ao = new AbstractObject(ToString.getSimpleName(fullname));
+                //addAbstractObject(Item(fullname,"Array["+l+"] of "+type,obj,TreeElement.ICON_OBJECT);
+                for (int i=0;i<l;i++) {
+                    Object oo = Array.get(obj,i);
+                    ao.addObject(oo,ToString.el(fullname, i));
+                }
+                this.addCompositePart(ao);
+            }    
+            
+            return;
+        }
+        else if (obj instanceof List) {
+            //System.out.println("Object is a list");
+            List ll = (List) obj;
+            String label = "";
+            if (ll.size() > 0) label = "List["+ll.size()+"] of "+ll.get(0).getClass().getSimpleName();
+            else label = "List[0]";
+            AbstractObject ao = new AbstractObject(ToString.getSimpleName(fullname));
+            //DefaultMutableTreeNode objNode = addItem(fullname,label,obj,TreeElement.ICON_OBJECT);
+            int i=0;
+            for (Object o : ll) {
+                ao.addObject(o,ToString.el(fullname,i));
+                i++;
+            }
+            this.addCompositePart(ao);
+            return;
+        }
+        else if (obj instanceof AbstractObject) {
+            System.out.println("Haha ... object is already an AbstractObject");
+            AbstractObject ao = (AbstractObject) obj;
+            this.addCompositePart(ao);
+            //DefaultMutableTreeNode objNode = addAbstractObject(fullname,ao,false); //addItem(fullname,ao.getName(),obj,TreeElement.ICON_OBJECT);
+            listtoavoidloops.add(obj);            
+            //DefaultMutableTreeNode fieldNode = addAbstractObject(fullname,ao,false);
+            //objNode.add(fieldNode);
+            return;
+        }
+        else {
+            //System.out.println("Object "+fullname+" : "+obj.toString()+" "+obj+" is from class "+obj.getClass().getCanonicalName());
+            AbstractObject ao = new AbstractObject(ToString.getSimpleName(fullname));
+            //DefaultMutableTreeNode objNode = addItem(fullname,obj.toString(),obj,TreeElement.ICON_OBJECT);
+            listtoavoidloops.add(obj);
+            Field[] fields = obj.getClass().getDeclaredFields();
+            for (Field field : fields) {
+                String fname = field.getName();
+                if (!field.isAccessible()) field.setAccessible(true);
+                Object fo=null;
+                try {
+                    fo = field.get(obj);
+                } catch (Exception e) {
+                    e.printStackTrace();} 
+//                if (already_exists(fo)) System.out.println("Object already exists");
+//                if (java.lang.reflect.Modifier.isStatic(field.getModifiers())) {
+//                    System.out.println("Field "+field+" is static ... "+listtoavoidloops.size()+" hash:"+fo.hashCode());
+//                    for (Object o : listtoavoidloops) {
+//                        System.out.println(o.hashCode());
+//                    }
+//                }    
+                //if (!java.lang.reflect.Modifier.isStatic(field.getModifiers())) 
+                if (fo != null && !already_exists(fo))
+                   ao.addObject(fo,fullname+"."+fname);  
+                //objNode.add(fieldNode);
+            }
+            this.addCompositePart(ao);
+            return;
+        }
     }
 }

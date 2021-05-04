@@ -92,7 +92,8 @@ public class MindTreeNode extends DefaultMutableTreeNode {
                DefaultMutableTreeNode groupNode = addItem(s," "," ", TreeElement.ICON_MEMORIES);
                for (Memory oo : memories) {
                     DefaultMutableTreeNode newmemoryNode = addMemory(oo);
-                    maps.put(((TreeElement)newmemoryNode.getUserObject()).getName(), newmemoryNode);
+                    String key = ((TreeElement)newmemoryNode.getUserObject()).getName();
+                    maps.put(key, newmemoryNode);
                     groupNode.add(newmemoryNode);
                }
                this.add(groupNode);
@@ -154,10 +155,7 @@ public class MindTreeNode extends DefaultMutableTreeNode {
 
     public DefaultMutableTreeNode addMemory(Memory p) {
         String name = p.getName();
-        Object obj = p.getI();
         String value;
-        if (obj != null) value = p.getI().toString();
-        else value = "";
         DefaultMutableTreeNode memoryNode=null; 
         if (p.getClass().getCanonicalName().equals("br.unicamp.cst.core.entities.MemoryObject")) {
             value = "";

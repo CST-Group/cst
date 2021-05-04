@@ -49,6 +49,7 @@ public class TreeElement {
     public static final int ICON_OUTPUT = 15;
     public static final int ICON_BROADCAST = 16;
     public static final int ICON_AFFORDANCE = 17;
+    public static final int ICON_OBJECT2 = 18;
 
    
     public TreeElement(String name, int node_type, Object element, int typeIcon) {
@@ -132,6 +133,10 @@ public class TreeElement {
     public Object getElement() {
         return element;
     }
+    
+    public void setElement(Object el) {
+        this.element = el;
+    } 
 
     public int getId_node() {
         return id_node;

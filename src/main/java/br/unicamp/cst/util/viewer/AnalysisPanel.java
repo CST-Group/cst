@@ -11,7 +11,6 @@ import br.unicamp.cst.util.Refresher;
 import java.awt.BorderLayout;
 import java.util.Calendar;
 import java.util.List;
-import javax.swing.JPanel;
 import org.jfree.chart.ChartPanel;
 import org.jfree.chart.plot.XYPlot;
 import org.jfree.data.xy.XYSeries;

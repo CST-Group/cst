@@ -64,7 +64,9 @@ public class AnalysisPanelTest {
         //for (Codelet c : codelets )
         //    m.insertCodelet(c);
         AnalysisPanel ap = new AnalysisPanel(m.getCodeRack().getAllCodelets());
+        //AnalysisPanel ap = new AnalysisPanel(codelets);
         JFrame testFrame = new JFrame();
+        testFrame.setSize(400,300);
         testFrame.add(ap);
         testFrame.setVisible(true);
         //DiscoverEventsToRobot der = new DiscoverEventsToRobot("rob");
