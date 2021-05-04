@@ -1,7 +1,7 @@
 plugins {
 	id 'java-library-distribution'
   	id 'jacoco'
-  	id 'maven'
+  	id 'maven-publish'
 }
 
 group = 'com.github.CST-Group'
@@ -21,10 +21,10 @@ repositories {
     	url "https://github.com/rosjava/rosjava_mvn_repo/raw/master"
     }
     maven {
-      url "http://repository.springsource.com/maven/bundles/release"
+      url "https://repository.springsource.com/maven/bundles/release"
     }
     maven {
-      url "http://repository.springsource.com/maven/bundles/external"
+      url "https://repository.springsource.com/maven/bundles/external"
     }
     maven { url 'https://jitpack.io' }
 }
