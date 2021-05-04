@@ -60,7 +60,7 @@ dependencies {
    implementation 'ch.qos.logback:logback-classic:1.0.11' // Used in JSoarCodelet
    implementation 'com.soartech:jsoar-core:4.1.0'
    implementation 'com.soartech:jsoar-debugger:4.1.0'
-   implementation 'org.ros.rosjava_core:rosjava:0.3.6'
+   api 'org.ros.rosjava_core:rosjava:0.3.6'
    //implementation 'com.github.rosjava:rosjava_core:0.3.7'
    implementation 'org.ros.rosjava_bootstrap:message_generation:0.3.3'
    //implementation group: 'aopalliance', name: 'aopalliance', version: '1.0'
