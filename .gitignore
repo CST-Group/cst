@@ -59,6 +59,3 @@ hs_err_pid*
 !/libs/*.jar
 !/gradle/wrapper/*.jar
 
-# Tests
-/tests/
-

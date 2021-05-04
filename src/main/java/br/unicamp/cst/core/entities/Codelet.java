@@ -21,10 +21,10 @@ import java.util.concurrent.locks.ReentrantLock;
 import br.unicamp.cst.core.exceptions.CodeletActivationBoundsException;
 import br.unicamp.cst.core.exceptions.CodeletThresholdBoundsException;
 import br.unicamp.cst.core.exceptions.MemoryObjectNotFoundException;
-import br.unicamp.cst.util.CodeletTrackInfo;
-import br.unicamp.cst.util.CodeletTrackWriter;
+import br.unicamp.cst.util.CodeletsProfiler;
 import br.unicamp.cst.util.ExecutionTimeWriter;
 import br.unicamp.cst.util.ProfileInfo;
+import br.unicamp.cst.util.CodeletsProfiler.FileFormat;
 
 /**
  * The <b><i>Codelet</i></b> class, together with the <b><i>MemoryObject</i></b>
@@ -132,11 +132,6 @@ public abstract class Codelet implements Runnable {
 	 * Option for profiling execution times
 	 */
 	private boolean isProfiling = false;
-        
-        /**
-	 * Option for tracking codelet execution
-	 */
-	private boolean isTracking = false;
 
 	/**
 	 * Information for profiling
@@ -144,9 +139,9 @@ public abstract class Codelet implements Runnable {
 	private List<ProfileInfo> profileInfo = new ArrayList<>();
 
         /**
-	 * Information for tracking
+	 * Codelet profiler
 	 */
-	private List<CodeletTrackInfo> trackInfo = new ArrayList<>();
+	private CodeletsProfiler codeletProfiler;
 
 	/**
 	 * When first activated, the thread containing this codelet runs the proc()
@@ -181,6 +176,9 @@ public abstract class Codelet implements Runnable {
 	 */
 	public synchronized void stop() {
 		this.setLoop(false);
+		if (Codelet.this.codeletProfiler != null) {
+			Codelet.this.codeletProfiler.finishProfile(Codelet.this);
+		}
 	}
 
 	/**
@@ -751,24 +749,32 @@ public abstract class Codelet implements Runnable {
 	public synchronized void setProfiling(boolean isProfiling) {
 		this.isProfiling = isProfiling;
 	}
-        
-        /**
-	 * Gets if this Codelet is being tracked.
-	 * 
-	 * @return the isTracking.
-	 */
-	public synchronized boolean isTracking() {
-		return isTracking;
-	}
-
+	
 	/**
-	 * Sets if this Codelet is being tracked.
+	 * Sets Codelet Profiler
 	 * 
-	 * @param isTracking
-	 *            the isTracking to set
+	 * @param filePath 
+	 * 			path to create file
+	 * @param fileName
+	 * 			name file
+	 * @param mindIdentifier
+	 * 			mind identifier in file
+	 * @param queueSize
+	 * 			max queue size which a write in file must be done
+	 * @param intervalTimeMillis
+	 * 			max interval in millis which a write in file must be done
+	 * @param fileFormat
+	 * 			desired file format CSV or JSON
+	 * 		  
 	 */
-	public synchronized void setTracking(boolean isTracking) {
-		this.isTracking = isTracking;
+	public void setCodeletProfiler(String filePath, String fileName, String mindIdentifier,Integer queueSize, Long intervalTimeMillis, FileFormat fileFormat) {
+		if (intervalTimeMillis == null) {
+		  this.codeletProfiler = new CodeletsProfiler(filePath, fileName, mindIdentifier, queueSize, fileFormat);
+		} else if (queueSize == null) {
+			this.codeletProfiler = new CodeletsProfiler(filePath, fileName, mindIdentifier, intervalTimeMillis, fileFormat);
+		} else {
+			this.codeletProfiler = new CodeletsProfiler(filePath, fileName, mindIdentifier, queueSize, intervalTimeMillis, fileFormat);
+		}		
 	}
 
 	private class CodeletTimerTask extends TimerTask {
@@ -804,22 +810,13 @@ public abstract class Codelet implements Runnable {
 
 			} finally {
 
-				if (shouldLoop())
+				if (shouldLoop()) 
 					timer.schedule(new CodeletTimerTask(), timeStep);
-                                if (isTracking) {
-                                    CodeletTrackInfo ti = new CodeletTrackInfo(Codelet.this);
-                                    trackInfo.add(ti);
-                                    if (trackInfo.size() > 50) {
-                                        CodeletTrackWriter trackWriter = new CodeletTrackWriter();
-                                        trackWriter.setCodeletName(name);
-					trackWriter.setTrackInfo(trackInfo);
-					Thread thread = new Thread(trackWriter);
-					thread.start();
-                                        trackInfo = new ArrayList<>();
-                                    }
-                                }
+				if (Codelet.this.codeletProfiler != null) {
+					Codelet.this.codeletProfiler.profile(Codelet.this);
+				}
 				if (isProfiling) {
-                                        endTime = System.currentTimeMillis();
+                    endTime = System.currentTimeMillis();
 					duration = (endTime - startTime);
 					ProfileInfo pi = new ProfileInfo(duration, startTime, laststarttime);
 					profileInfo.add(pi);

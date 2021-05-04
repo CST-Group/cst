@@ -19,7 +19,7 @@ public class ExecutionTimeWriter implements Runnable {
 	private List<ProfileInfo> profileInfo;
         
         
-        public static String path = "tests/";
+        public static String path = "";
 	
 	/* (non-Javadoc)
 	 * @see java.lang.Runnable#run()

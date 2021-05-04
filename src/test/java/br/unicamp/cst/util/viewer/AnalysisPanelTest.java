@@ -10,7 +10,7 @@ import br.unicamp.cst.core.entities.Memory;
 import br.unicamp.cst.core.entities.MemoryContainer;
 import br.unicamp.cst.core.entities.MemoryObject;
 import br.unicamp.cst.core.entities.Mind;
-import br.unicamp.cst.util.CodeletTrackInfo;
+import br.unicamp.cst.util.CodeletsProfiler.CodeletTrack;
 import br.unicamp.cst.util.InterfaceAdapter;
 import br.unicamp.cst.util.TestCodelet;
 import com.google.gson.Gson;
@@ -21,7 +21,6 @@ import java.awt.Robot;
 import java.io.FileReader;
 import java.lang.reflect.Constructor;
 import java.util.ArrayList;
-import java.util.List;
 import javax.swing.JFrame;
 import org.junit.Test;
 
@@ -45,9 +44,9 @@ public class AnalysisPanelTest {
         } catch(Exception ex) {
             ex.printStackTrace();
         }
-        CodeletTrackInfo[] data = gson.fromJson(reader, CodeletTrackInfo[].class); // contains the whole reviews list
+        CodeletTrack[] data = gson.fromJson(reader, CodeletTrack[].class); // contains the whole reviews list
         ArrayList<Codelet> codelets = new ArrayList<Codelet>(); 
-        for (CodeletTrackInfo c : data) {
+        for (CodeletTrack c : data) {
             System.out.println(c.codeletClass);
             try {
                Class<?> cc = Class.forName(c.codeletClass);

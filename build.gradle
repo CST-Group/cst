@@ -133,10 +133,3 @@ jacocoTestReport {
         xml.enabled true
     }
 }
-test {
-  testLogging {
-    exceptionFormat = 'full'
-    events = ["passed", "failed", "skipped"]
-    showStandardStreams = true
-  }
-}
