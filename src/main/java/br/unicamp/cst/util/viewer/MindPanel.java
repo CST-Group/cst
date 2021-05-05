@@ -14,7 +14,6 @@ import br.unicamp.cst.core.entities.Memory;
 import br.unicamp.cst.core.entities.MemoryContainer;
 import br.unicamp.cst.core.entities.MemoryObject;
 import br.unicamp.cst.core.entities.Mind;
-import br.unicamp.cst.representation.owrl.AbstractObject;
 import br.unicamp.cst.util.TreeElement;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;

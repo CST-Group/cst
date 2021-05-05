@@ -58,8 +58,8 @@ dependencies {
    implementation group: 'org.opt4j', name: 'opt4j-tutorial', version: '3.1'
    implementation 'org.antlr:antlr4-runtime:4.5.3' // Used in OwrlBaseListener
    implementation 'ch.qos.logback:logback-classic:1.0.11' // Used in JSoarCodelet
-   implementation 'com.soartech:jsoar-core:4.1.0'
-   implementation 'com.soartech:jsoar-debugger:4.1.0'
+   api 'com.soartech:jsoar-core:4.1.0'
+   api 'com.soartech:jsoar-debugger:4.1.0'
    //api 'org.ros.rosjava_core:rosjava:0.3.6'
    //implementation 'com.github.rosjava:rosjava_core:0.3.7'
    api 'com.github.rosjava:rosjava_core:0.3.7'

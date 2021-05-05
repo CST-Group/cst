@@ -13,7 +13,7 @@ package br.unicamp.cst.motivational;
 import br.unicamp.cst.core.entities.Codelet;
 import br.unicamp.cst.core.entities.Memory;
 import br.unicamp.cst.core.exceptions.CodeletActivationBoundsException;
-import br.unicamp.cst.representation.owrl.AbstractObject;
+import br.unicamp.cst.representation.wme.Idea;
 
 public abstract class GoalCodelet extends Codelet {
 
@@ -24,7 +24,7 @@ public abstract class GoalCodelet extends Codelet {
     private Memory inputHypotheticalSituationsMO;
     private Memory goalMO;
 
-    private AbstractObject hypotheticalSituation;
+    private Idea hypotheticalSituation;
     private Goal goal;
 
     private boolean init = false;
@@ -57,7 +57,7 @@ public abstract class GoalCodelet extends Codelet {
     @Override
     public void proc() {
         if (isInit()) {
-            setHypotheticalSituation((AbstractObject) ((Memory) getInputHypotheticalSituationsMO().getI()).getI());
+            setHypotheticalSituation((Idea) ((Memory) getInputHypotheticalSituationsMO().getI()).getI());
             setGoal(goalGeneration(getHypotheticalSituation()));
             getGoalMO().setI(getGoal());
         }
@@ -65,7 +65,7 @@ public abstract class GoalCodelet extends Codelet {
         setInit(true);
     }
 
-    public abstract Goal goalGeneration(AbstractObject hypoteticalSituation);
+    public abstract Goal goalGeneration(Idea hypoteticalSituation);
 
     public Memory getInputHypotheticalSituationsMO() {
         return inputHypotheticalSituationsMO;
@@ -83,11 +83,11 @@ public abstract class GoalCodelet extends Codelet {
         this.goalMO = goalMO;
     }
 
-    public AbstractObject getHypotheticalSituation() {
+    public Idea getHypotheticalSituation() {
         return hypotheticalSituation;
     }
 
-    public void setHypotheticalSituation(AbstractObject hypotheticalSituation) {
+    public void setHypotheticalSituation(Idea hypotheticalSituation) {
         this.hypotheticalSituation = hypotheticalSituation;
     }
 
