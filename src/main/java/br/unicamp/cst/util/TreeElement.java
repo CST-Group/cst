@@ -50,6 +50,7 @@ public class TreeElement {
     public static final int ICON_BROADCAST = 16;
     public static final int ICON_AFFORDANCE = 17;
     public static final int ICON_OBJECT2 = 18;
+    public static final int ICON_OBJECT3 = 19;
 
    
     public TreeElement(String name, int node_type, Object element, int typeIcon) {

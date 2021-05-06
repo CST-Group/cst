@@ -15,6 +15,7 @@ import br.unicamp.cst.representation.owrl.AbstractObject;
 import br.unicamp.cst.representation.owrl.Affordance;
 import br.unicamp.cst.representation.owrl.Property;
 import br.unicamp.cst.representation.owrl.QualityDimension;
+import br.unicamp.cst.representation.wme.Idea;
 import br.unicamp.cst.util.TimeStamp;
 import br.unicamp.cst.util.TreeElement;
 import java.awt.event.ActionEvent;
@@ -240,6 +241,18 @@ public class MemoryInspector extends javax.swing.JFrame {
         }
     }
     
+    public void updateIdea(Idea ao, String name) {
+        if (ao.getType() == 1) updateString(ao.getValue().toString(),name);
+        else {
+            if (!ao.getName().equals(ToString.getSimpleName(name))) updateString(ao.getName(),name);
+            else updateString("",name);
+        }
+        List<Idea> parts = ao.getL();
+        for (Idea oo : parts) {
+            updateIdea(oo,name+"."+oo.getName());
+        }
+    }
+    
     public void updateObject(Object o, String name) {
         if (!nodeAlreadyExists(name)) {
             includeNode(o,name);
@@ -261,6 +274,9 @@ public class MemoryInspector extends javax.swing.JFrame {
         }
         else if (o instanceof AbstractObject) {
             updateAbstractObject((AbstractObject)o,name,true);
+        }
+        else if (o instanceof Idea) {
+            updateIdea((Idea)o,name);
         }
         else {
             // if the object is not primitive, first update the object element

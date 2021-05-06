@@ -15,6 +15,7 @@ import java.lang.reflect.Array;
 import java.lang.reflect.Field;
 //import java.lang.reflect.InaccessibleObjectException;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
 
@@ -28,6 +29,7 @@ public class Idea {
     private Object value="";
     private List<Idea> l= new CopyOnWriteArrayList<>();
     private int type=0;
+    private IdeaComparator ideaComparator = new IdeaComparator();
 
     public Idea() {
         
@@ -81,6 +83,7 @@ public class Idea {
 
     public Idea add(Idea node) {
         l.add(node);
+        sort();
         return(node);
     }
     
@@ -259,9 +262,14 @@ public class Idea {
     transient static ArrayList<Object> listtoavoidloops = new ArrayList<>();
     
     public boolean already_exists(Object o) {
+        if (o == null) return false;
         for (Object oo : listtoavoidloops)
            if (oo.hashCode() == o.hashCode()) return true;
         return false;
+    }
+    
+    public void sort() {
+        Collections.sort(l, ideaComparator);
     }
     
     public void addObject(Object obj, String fullname) {
@@ -345,7 +353,7 @@ public class Idea {
                         fo = field.get(obj);
                     } catch (Exception e) {
                         e.printStackTrace();} 
-                    if (fo != null && !already_exists(fo))
+                    if (!already_exists(fo))
                         ao.addObject(fo,fullname+"."+fname);  
                 } catch (Exception e) {
                 }   

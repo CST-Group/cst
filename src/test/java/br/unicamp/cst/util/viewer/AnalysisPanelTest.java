@@ -10,6 +10,7 @@ import br.unicamp.cst.core.entities.Memory;
 import br.unicamp.cst.core.entities.MemoryContainer;
 import br.unicamp.cst.core.entities.MemoryObject;
 import br.unicamp.cst.core.entities.Mind;
+import br.unicamp.cst.util.CodeletsProfiler;
 import br.unicamp.cst.util.CodeletsProfiler.CodeletTrack;
 import br.unicamp.cst.util.InterfaceAdapter;
 import br.unicamp.cst.util.TestCodelet;
@@ -33,17 +34,29 @@ public class AnalysisPanelTest {
     Gson gson = new GsonBuilder().registerTypeAdapter(Memory.class, new InterfaceAdapter<MemoryObject>())
                                  .registerTypeAdapter(Memory.class, new InterfaceAdapter<MemoryContainer>())
                              .create();
+    String path = "profile/";
+    String filename = "test.json";
     
     @Test
     public void testAnalysisPanel() {
 
+        System.out.println("AnalysisPanelTest: first creating a mind and collecting some data from it");
+        Mind m = createMind();
+        m.start();
+        try {Thread.sleep(60000);}catch(Exception e) {
+            e.printStackTrace();
+        }
+        m.shutDown();
+        System.out.println("AnalysisPanelTest: Now trying to analyze the data");
         //Type CODELET_TYPE = new TypeToken<List<Codelet>>() { }.getType();
         JsonReader reader = null; 
         try {
-            reader = new JsonReader(new FileReader("tests/Codelet2_track.json"));
+            reader = new JsonReader(new FileReader(path+filename));
         } catch(Exception ex) {
-            ex.printStackTrace();
+            return;
+            //ex.printStackTrace();
         }
+        if (reader == null) return;
         CodeletTrack[] data = gson.fromJson(reader, CodeletTrack[].class); // contains the whole reviews list
         ArrayList<Codelet> codelets = new ArrayList<Codelet>(); 
         for (CodeletTrack c : data) {
@@ -59,7 +72,7 @@ public class AnalysisPanelTest {
         }
         JFrame mvp = new JFrame();
             
-        Mind m = createMind();
+        
         //for (Codelet c : codelets )
         //    m.insertCodelet(c);
         AnalysisPanel ap = new AnalysisPanel(m.getCodeRack().getAllCodelets());
@@ -103,6 +116,7 @@ public class AnalysisPanelTest {
         c.addOutput(m3);
         c.addOutput(m4);
         c.addBroadcast(m5);
+        c.setCodeletProfiler(path, filename, "Mind 1", 300, null, CodeletsProfiler.FileFormat.JSON);
         m.insertCodelet(c);
         Codelet c2 = new TestCodelet("Codelet 2");
         c2.addInput(m4);

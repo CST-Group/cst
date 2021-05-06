@@ -105,6 +105,9 @@ public class MindRenderer extends DefaultTreeCellRenderer {
             case TreeElement.ICON_OBJECT2:
                 img = new ImageIcon(this.getClass().getClassLoader().getResource("object2.png"));
                 break;     
+            case TreeElement.ICON_OBJECT3:    
+                img = new ImageIcon(this.getClass().getClassLoader().getResource("object3.png"));
+                break;    
         }
         setOpenIcon(img);
         setClosedIcon(img);

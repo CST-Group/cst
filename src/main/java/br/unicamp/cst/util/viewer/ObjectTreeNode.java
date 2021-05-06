@@ -14,12 +14,15 @@ import br.unicamp.cst.representation.owrl.AbstractObject;
 import br.unicamp.cst.representation.owrl.Affordance;
 import br.unicamp.cst.representation.owrl.Property;
 import br.unicamp.cst.representation.owrl.QualityDimension;
+import br.unicamp.cst.representation.wme.Idea;
+import br.unicamp.cst.representation.wme.IdeaTreeNode;
 import br.unicamp.cst.util.TreeElement;
 import java.lang.reflect.Array;
 import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.concurrent.CopyOnWriteArrayList;
 import javax.swing.tree.DefaultMutableTreeNode;
 
 /**
@@ -91,7 +94,7 @@ public class ObjectTreeNode extends DefaultMutableTreeNode {
             return(objNode);
         }
         else if (obj instanceof List) {
-            List ll = (List) obj;
+            List ll = new CopyOnWriteArrayList((List) obj);
             String label = "";
             if (ll.size() > 0) label = "List["+ll.size()+"] of "+ll.get(0).getClass().getSimpleName();
             else label = "List[0]";
@@ -107,6 +110,12 @@ public class ObjectTreeNode extends DefaultMutableTreeNode {
         else if (obj instanceof AbstractObject) {
             AbstractObject ao = (AbstractObject) obj;
             DefaultMutableTreeNode objNode = addAbstractObject(fullname,ao,false); //addItem(fullname,ao.getName(),obj,TreeElement.ICON_OBJECT);
+            listtoavoidloops.add(obj);            
+            return(objNode);
+        }
+        else if (obj instanceof Idea) {
+            Idea ao = (Idea) obj;
+            DefaultMutableTreeNode objNode = addIdea(fullname,ao); 
             listtoavoidloops.add(obj);            
             return(objNode);
         }
@@ -179,5 +188,26 @@ public class ObjectTreeNode extends DefaultMutableTreeNode {
         DefaultMutableTreeNode affordanceNode = addItem(fullname,a.getName(),a,TreeElement.ICON_PROPERTY);//new DefaultMutableTreeNode(new TreeElement(a.getName(), TreeElement.NODE_NORMAL, a, TreeElement.ICON_AFFORDANCE));
         return(affordanceNode);
     }
+    
+    
+    // Beginnint of add functions for Ideas
+    
+    private DefaultMutableTreeNode addIdea(String fullname, Idea wo) {
+        DefaultMutableTreeNode objectNode;
+        switch(wo.getType()) {
+            default:
+            case 0: objectNode = addItem(fullname,wo.getValue().toString(),wo,TreeElement.ICON_OBJECT3);
+                    break;
+            case 1: objectNode = addItem(fullname,wo.getValue().toString(),wo,TreeElement.ICON_QUALITYDIM);
+                    break;
+            case 2: objectNode = addItem(fullname,wo.getValue().toString(),wo,TreeElement.ICON_OBJECT2);
+                    break;
+        }
+        for (Idea oo : wo.getL()) {
+            DefaultMutableTreeNode part = addIdea(fullname+"."+oo.getName(),oo);
+            objectNode.add(part);
+        }
+        return(objectNode);
+    }    
     
 }

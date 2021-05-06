@@ -81,6 +81,12 @@ public class RendererJTree extends DefaultTreeCellRenderer {
             case TreeElement.ICON_AFFORDANCE:    
                 img = new ImageIcon(this.getClass().getClassLoader().getResource("codelet2.png"));
                 break;
+            case TreeElement.ICON_OBJECT2:    
+                img = new ImageIcon(this.getClass().getClassLoader().getResource("object2.png"));
+                break; 
+            case TreeElement.ICON_OBJECT3:    
+                img = new ImageIcon(this.getClass().getClassLoader().getResource("object3.png"));
+                break;     
             // TODO: Criar um icone de erro
         }
         setOpenIcon(img);

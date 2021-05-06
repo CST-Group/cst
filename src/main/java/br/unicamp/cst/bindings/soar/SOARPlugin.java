@@ -45,9 +45,7 @@ import com.google.gson.GsonBuilder;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 
-import br.unicamp.cst.representation.owrl.AbstractObject;
-import br.unicamp.cst.representation.owrl.Property;
-import br.unicamp.cst.representation.owrl.QualityDimension;
+import br.unicamp.cst.representation.wme.Idea;
 
 /**
  * @author wander
@@ -63,9 +61,9 @@ public class SOARPlugin {
 
     private Identifier inputLinkIdentifier;
 
-    private AbstractObject inputLinkAO;
+    private Idea inputLinkIdea;
 
-    private AbstractObject outputLinkAO;
+    private Idea outputLinkIdea;
 
     // Ordinary Variables
     private String agentName;
@@ -843,17 +841,17 @@ public class SOARPlugin {
     Beginning of WorldObject Support methods
     -------------------------------------------------------------------------*/
 
-    public AbstractObject getWorldObject(Identifier id, String name) {
-        AbstractObject newwo = null;
+    public Idea getWorldObject(Identifier id, String name) {
+        Idea newwo = null;
         Iterator<Wme> It = id.getWmes();
         if (!It.hasNext()) {
             // This situation happens when the OutputLink is empty
-            newwo = new AbstractObject(name);
+            newwo = new Idea(name);
         }
         while (It.hasNext()) {
 
             if (newwo == null) {
-                newwo = new AbstractObject(name);
+                newwo = new Idea(name);
             }
 
             Wme wme = It.next();
@@ -861,18 +859,18 @@ public class SOARPlugin {
             Symbol v = wme.getValue();
             Identifier testv = v.asIdentifier();
             if (testv != null) { // The value is an identifier
-                AbstractObject child = getWorldObject(testv, a.toString());
-                newwo.addCompositePart(child);
+                Idea child = getWorldObject(testv, a.toString());
+                newwo.add(child);
             } else { // The value is a property
-                QualityDimension qd;
+                Idea qd;
                 Object value;
                 if (v.asDouble() != null) value = v.asDouble().getValue();
                 else if (v.asInteger() != null) value = v.asInteger().getValue();
                 else value = v.toString();
-                qd = new QualityDimension(a.toString(), value);
-                Property pp = new Property(a.toString(), qd);
+                qd = new Idea(a.toString(), value);
+                Idea pp = new Idea(a.toString(), qd);
                 //pp.setQualityDimension("VALUE", v.toString());
-                newwo.addProperty(pp);
+                newwo.add(pp);
             }
         }
         return (newwo);
@@ -882,8 +880,8 @@ public class SOARPlugin {
         Identifier ol = getAgent().getInputOutput().getOutputLink();
         if (ol == null) logger.severe("Error in cst.SOARPlugin: Unable to get access to OutputLink");
 
-        AbstractObject olao = getWorldObject(ol, "OutputLink");
-        setOutputLinkAO(olao);
+        Idea olao = getWorldObject(ol, "OutputLink");
+        setOutputLinkIdea(olao);
     }
 
     public void processInputLink() {
@@ -891,20 +889,20 @@ public class SOARPlugin {
         ((IdentifierImpl) getInputLinkIdentifier()).removeAllInputWmes();
         SymbolFactoryImpl sf = (SymbolFactoryImpl) getAgent().getSymbols();
         sf.reset();
-        processInputLink(getInputLinkAO(), getInputLinkIdentifier());
+        processInputLink(getInputLinkIdea(), getInputLinkIdentifier());
     }
 
-    public void processInputLink(AbstractObject il, Identifier id) {
+    public void processInputLink(Idea il, Identifier id) {
         if (il != null) {
-            List<AbstractObject> parts = il.getCompositeParts();
-            for (AbstractObject w : parts) {
+            List<Idea> parts = il.getL();
+            for (Idea w : parts) {
                 Identifier id2 = createIdWME(id, w.getName());
                 processInputLink(w, id2);
             }
-            List<Property> properties = il.getProperties();
-            for (Property p : properties) {
+            List<Idea> properties = il.getL();
+            for (Idea p : properties) {
                 Identifier id3 = createIdWME(id, p.getName());
-                for (QualityDimension qd : p.getQualityDimensions()) {
+                for (Idea qd : p.getL()) {
                     processQualityDimensionAtCreation(qd, id3);
                 }
             }
@@ -941,7 +939,7 @@ public class SOARPlugin {
 
     }
 
-    public void processQualityDimensionAtCreation(QualityDimension qd, Identifier id) {
+    public void processQualityDimensionAtCreation(Idea qd, Identifier id) {
         try {
             if (qd.isNumber()) {
                 Double value = (Double) qd.getValue();
@@ -1194,19 +1192,19 @@ public class SOARPlugin {
         this.operatorsPathList = operatorsPathList;
     }
 
-    public AbstractObject getInputLinkAO() {
-        return inputLinkAO;
+    public Idea getInputLinkIdea() {
+        return inputLinkIdea;
     }
 
-    public void setInputLinkAO(AbstractObject inputLinkAO) {
-        this.inputLinkAO = inputLinkAO;
+    public void setInputLinkIdea(Idea inputLinkAO) {
+        this.inputLinkIdea = inputLinkAO;
     }
 
-    public AbstractObject getOutputLinkAO() {
-        return outputLinkAO;
+    public Idea getOutputLinkIdea() {
+        return outputLinkIdea;
     }
 
-    public void setOutputLinkAO(AbstractObject outputLinkAO) {
-        this.outputLinkAO = outputLinkAO;
+    public void setOutputLinkIdea(Idea outputLinkAO) {
+        this.outputLinkIdea = outputLinkAO;
     }
 }

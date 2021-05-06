@@ -18,11 +18,11 @@ import br.unicamp.cst.representation.wme.Idea;
 public class Goal {
 
     private String id;
-    private Idea goalAbstractObjects;
+    private Idea goalIdeas;
 
     public Goal(String id, Idea goalIdeas){
         this.setId(id);
-        this.setGoalAbstractObjects(goalIdeas);
+        this.setGoalIdeas(goalIdeas);
     }
 
     public String getId() {
@@ -33,11 +33,11 @@ public class Goal {
         this.id = id;
     }
 
-    public Idea getGoalAbstractObjects() {
-        return goalAbstractObjects;
+    public Idea getGoalIdeas() {
+        return goalIdeas;
     }
 
-    public void setGoalAbstractObjects(Idea goalAbstractObjects) {
-        this.goalAbstractObjects = goalAbstractObjects;
+    public void setGoalIdeas(Idea goalIdeas) {
+        this.goalIdeas = goalIdeas;
     }
 }
