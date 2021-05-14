@@ -203,6 +203,7 @@ public class ObjectTreeNode extends DefaultMutableTreeNode {
             case 2: objectNode = addItem(fullname,wo.getValue().toString(),wo,TreeElement.ICON_OBJECT2);
                     break;
         }
+        if (wo.getType() == 0)
         for (Idea oo : wo.getL()) {
             DefaultMutableTreeNode part = addIdea(fullname+"."+oo.getName(),oo);
             objectNode.add(part);

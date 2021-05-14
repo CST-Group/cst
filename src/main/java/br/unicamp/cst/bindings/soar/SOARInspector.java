@@ -323,7 +323,7 @@ public class SOARInspector extends javax.swing.JFrame implements Observer,IdeaEd
     }//GEN-LAST:event_jWatchActionPerformed
 
     private void mInsertInputLinkActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_mInsertInputLinkActionPerformed
-        Idea il = new Idea("InputLink");
+        Idea il = Idea.createIdea("InputLink","",0);
         IdeaEditor aoe = new IdeaEditor(il,true);
         aoe.addListener(this);
         aoe.setVisible(true);

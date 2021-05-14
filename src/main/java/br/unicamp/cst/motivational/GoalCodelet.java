@@ -25,7 +25,7 @@ public abstract class GoalCodelet extends Codelet {
     private Memory goalMO;
 
     private Idea hypotheticalSituation;
-    private Goal goal;
+    private Idea goal;
 
     private boolean init = false;
 
@@ -65,7 +65,7 @@ public abstract class GoalCodelet extends Codelet {
         setInit(true);
     }
 
-    public abstract Goal goalGeneration(Idea hypoteticalSituation);
+    public abstract Idea goalGeneration(Idea hypoteticalSituation);
 
     public Memory getInputHypotheticalSituationsMO() {
         return inputHypotheticalSituationsMO;
@@ -91,11 +91,11 @@ public abstract class GoalCodelet extends Codelet {
         this.hypotheticalSituation = hypotheticalSituation;
     }
 
-    public Goal getGoal() {
+    public Idea getGoal() {
         return goal;
     }
 
-    public void setGoal(Goal goal) {
+    public void setGoal(Idea goal) {
         this.goal = goal;
     }
 

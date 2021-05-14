@@ -11,12 +11,20 @@
 package br.unicamp.cst.representation.wme;
 
 import br.unicamp.cst.util.TestComplexMemoryObjectInfo;
+import java.lang.reflect.Field;
+import java.lang.reflect.ParameterizedType;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 import javax.swing.tree.DefaultMutableTreeNode;
+import static junit.framework.Assert.assertEquals;
 import org.junit.Test;
 
+
 public class TestIdea {
+    
+    List<TestComplexMemoryObjectInfo> l;
     
     public Idea initialize() {
         Idea node = new Idea("Test","",0);
@@ -29,48 +37,38 @@ public class TestIdea {
         return(node);
     }
     
-    void print(String s,List<Object> o) {
-        for (Object oo : o)
-            if (oo != null)
-                System.out.println("get(\""+s+"\") : "+oo.toString()+" -> "+oo.getClass().getSimpleName());
-            else System.out.println("get(\""+s+"\") : "+"null");
+    void print(String s,Idea o) {
+        if (o != null) {
+            if (o.getValue() != null) System.out.println("get(\""+s+"\") : "+o.getName()+" -> "+o.getValue().toString());
+            else System.out.println("get(\""+s+"\") : "+o.getName()+" -> null");
+        }
+        else System.out.println("get(\""+s+"\") : "+"null");
     }
     
     @Test 
     public void testGet() {
+        System.out.println("\n Starting the testGet ...");
         Idea n = initialize();
-        List<Object> o = n.get("child1");
-        print("child1",o);
-        o = n.get("child1",true);
+        Idea o = n.get("child1");
+        System.out.println();
         print("child1",o);
         o = n.get("child1.subchild1");
         print("child1.subchild1",o);
-        o = n.get("child1.subchild1",true);
-        print("child1.subchild1",o);
         o = n.get("child1.subchild1.subsubchild1");
-        print("child1.subchild1.subsubchild1",o);
-        o = n.get("child1.subchild1.subsubchild1",true);
         print("child1.subchild1.subsubchild1",o);
         o = n.get("child2");
         print("child2",o);
-        o = n.get("child2",true);
-        print("child2",o);
         o = n.get("child2.array");
-        print("child2.array",o);
-        o = n.get("child2.array",true);
         print("child2.array",o);
         o = n.get("child3");
         print("child3",o);
-        o = n.get("child3",true);
-        print("child3",o);
         o = n.get("child4");
-        print("child4",o);     
-        o = n.get("child4",true);
         print("child4",o);     
     }
     
     @Test 
-    public void testWMNode() {
+    public void testIdea() {
+        System.out.println("\n Starting the testIdea ...");
         Idea ln = new Idea("a");
         Idea ln2 = new Idea("b");
         Idea ln3 = new Idea("c");
@@ -82,19 +80,75 @@ public class TestIdea {
         ln3.add(v1);
         System.out.println(ln.toStringFull());
         Date d = new Date();
-        Idea complexnode = new Idea("teste");
-        complexnode.addObject(d,"date");
+        Idea complexnode = Idea.createIdea("complexnode","",0);
+        System.out.println("Adding the object date within complexnode");
+        complexnode.addObject(d,"complexnode.date");
         DefaultMutableTreeNode dt = new DefaultMutableTreeNode(d);
-        complexnode.addObject(dt, "defaultMutableTreeNode");
-        complexnode.addObject(complexnode,"recursion");
-        IdeaPanel wmp = new IdeaPanel(new Idea("Root","[S1]",0),true);
-        complexnode.addObject(wmp, "wmpanel");
+        System.out.println("Adding the object defaultMutableTreeNode within complexnode");
+        complexnode.addObject(dt, "teste.defaultMutableTreeNode");
+        System.out.println("Adding the object complexnode within itself with the name recursion");
+        complexnode.addObject(complexnode,"complexnode.recursion");
+        IdeaPanel wmp = new IdeaPanel(Idea.createIdea("Root","[S1]",0),true);
+        System.out.println("Adding the object wmpanel within complexnode");
+        complexnode.addObject(wmp, "complexnode.wmpanel");
         TestComplexMemoryObjectInfo ttt = new TestComplexMemoryObjectInfo();
-        complexnode.addObject(ttt,"complex");
+        ttt.testbyte = 10;
+        ttt.testshort = 0xa;
+        ttt.testlong = 23;
+        ttt.testint = 3;
+        ttt.testfloat = 3.12f;
+        ttt.testdouble = 3.21;
+        ttt.testboolean = true;
+        for (int i=0;i<ttt.testdoublearray.length;i++)
+            ttt.testdoublearray[i] = i*0.1;
+        for (int i=0;i<ttt.testfloatarray.length;i++)
+            ttt.testfloatarray[i] = i*0.1f;
+        for (int i=0;i<ttt.testlongarray.length;i++)
+            ttt.testlongarray[i] = i*2;
+        for (int i=0;i<ttt.testintarray.length;i++)
+            ttt.testintarray[i] = i*2;
+        for (short i=0;i<ttt.testshortarray.length;i++)
+            ttt.testshortarray[i] = i;
+        for (byte i=0;i<ttt.testbytearray.length;i++)
+            ttt.testbytearray[i] = i;
+        System.out.println("Adding the object complex within complexnode");
+        complexnode.addObject(ttt,"complexnode.complex");
         System.out.println("Finished creation of objects");
         System.out.println(complexnode.toStringFull());
+        TestComplexMemoryObjectInfo returned = (TestComplexMemoryObjectInfo) complexnode.getObject("complex", "br.unicamp.cst.util.TestComplexMemoryObjectInfo");
+        System.out.println("Recovered object: "+returned.toString());
+        System.out.println("Returned: "+returned.testdate);
+        System.out.println("ttt: "+ttt.testdate);
+        assertEquals(returned.equals(ttt),0);
+        double[] nt = new double[3];
+        nt[0] = 1.2;
+        nt[1] = 2.3;
+        nt[2] = 3.1;
+        Idea i_nt = Idea.createIdea("novo","", 0);
+        i_nt.addObject(nt,"d");
+        System.out.println(i_nt.toStringFull());
+        double[] ntr = (double[]) i_nt.getObject("d","double[]");
+        System.out.println("nt: "+nt[0]+" "+nt[1]+" "+nt[2]);
+        List<TestComplexMemoryObjectInfo> l = new ArrayList<TestComplexMemoryObjectInfo>();
+        l.add(new TestComplexMemoryObjectInfo());
+        l.add(new TestComplexMemoryObjectInfo());
+        l.add(new TestComplexMemoryObjectInfo());
         
+        Idea node = Idea.createIdea("root","", 0);
+        Field stringListField=null;
+        try {stringListField = TestIdea.class.getDeclaredField("l");} catch(Exception e) { e.printStackTrace();}
+        ParameterizedType stringListType = (ParameterizedType) stringListField.getGenericType();
+        Class<?> stringListClass = (Class<?>) stringListType.getActualTypeArguments()[0];
         
+        System.out.println("Classe: "+l.getClass().getTypeParameters()+" "+stringListClass.getCanonicalName());
+        node.reset();
+        node.addObject(l,"lista");
+        System.out.println(node.toStringFull(true));
+        TestComplexMemoryObjectInfo[] l2 = (TestComplexMemoryObjectInfo[]) node.getObject("lista", "br.unicamp.cst.util.TestComplexMemoryObjectInfo[]");
+        if (l2.length == 3) System.out.println("Yes ! I got 3 objects !!!");
+        List<TestComplexMemoryObjectInfo> l3;
+        if (l2 != null) l3 = Arrays.asList(l2);
+        else System.out.println("Unfortunately I was not able to recover the list");
     }
     
 }

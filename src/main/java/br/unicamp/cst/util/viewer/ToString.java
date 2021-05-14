@@ -42,6 +42,10 @@ public class ToString {
             byte b = (byte) n;
             s = String.format("%x", b);
         }
+        else if (n instanceof Short) {
+            short sh = (short) n;
+            s = String.format("%d", sh);
+        }
         else if (n instanceof Boolean) {
             boolean b = (boolean) n;
             if (b == true) s = "true";

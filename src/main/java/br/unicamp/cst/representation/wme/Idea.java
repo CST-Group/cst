@@ -13,10 +13,15 @@ package br.unicamp.cst.representation.wme;
 import br.unicamp.cst.util.viewer.ToString;
 import java.lang.reflect.Array;
 import java.lang.reflect.Field;
+import java.lang.reflect.ParameterizedType;
+import java.text.SimpleDateFormat;
 //import java.lang.reflect.InaccessibleObjectException;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.TimeZone;
 import java.util.concurrent.CopyOnWriteArrayList;
 
 
@@ -25,29 +30,41 @@ import java.util.concurrent.CopyOnWriteArrayList;
  * @author rgudwin
  */
 public class Idea {
+    private long id;
     private String name="";
     private Object value="";
     private List<Idea> l= new CopyOnWriteArrayList<>();
     private int type=0;
     private IdeaComparator ideaComparator = new IdeaComparator();
-
+    public static HashMap<String,Idea> repo = new HashMap<>();
+    transient static ArrayList<Object> listtoavoidloops = new ArrayList<>();
+    private static long lastId = 0;
+    
+    public static long genId() {
+        return(lastId++);
+    }
+    
     public Idea() {
-        
+        id = genId();
     }
     
     public Idea(String name) {
         this.name = name;
+        id = genId();
     }
     
     public Idea(String name, Object value, int type) {
         this.name = name;
-        this.value = value;
+        if (value != null) this.value = value;
+        else this.value = "null";
         this.type = type;
+        id = genId();
     }
     
     public Idea(String name, Object value) {
         type = 1;
         this.name = name;
+        id = genId();
         if (value instanceof String) {
             String svalue = (String) value;
             try {
@@ -64,9 +81,34 @@ public class Idea {
         }
         else this.value = value;
     }
+    
+    public static Idea createIdea(String name, Object value, int type) {
+        //System.out.print("Creating Idea "+name+"."+type);
+        Idea ret = repo.get(name+"."+type);
+        if (ret == null) {
+            ret = new Idea(name,value,type);
+            repo.put(name+"."+type, ret);
+            //System.out.println(" ... created new Idea");
+        }
+        else if (ret.getType() != type) {
+            ret = new Idea(name,value,type);
+            //System.out.println(name+" "+value.toString()+" "+type+" ... recycled Idea");
+            //System.out.println("Full factory: "+repo.size());
+        }
+        else { 
+            ret.setValue(value);
+            ret.l= new CopyOnWriteArrayList<>();
+        }    
+        //else System.out.println("name: "+name+" ... recycled Idea");
+        return(ret);
+    }
 
     public String getName() {
-        return name;
+        return ToString.getSimpleName(name);
+    }
+    
+    public String getFullName() {
+        return(name);
     }
 
     public void setName(String name) {
@@ -87,71 +129,110 @@ public class Idea {
         return(node);
     }
     
+    public static void reset() {
+        listtoavoidloops = new ArrayList<>();
+    }
+    
     public String toString() {
         return(name);
     }
     
     public String toStringFull() {
-        listtoavoidloops = new ArrayList<>();
-        return(toStringFull(1));
+        return(toStringFull(false));
     }
     
-    public String toStringPlus() {
-        if (isType(1)) return("- "+name+": "+value);
-        else {
-            String appendix = "";
-            if (value != null && !value.equals("")) appendix = " ["+value+"]";
-            return("* "+ name+appendix);
-        }            
+    public String toStringFull(boolean withid) {
+        reset();
+        return(toStringFull(1,withid));
     }
     
-    public String toStringFull(int level) {
+    public String toStringPlus(boolean withid) {
+        String appendix = "";
+        String out;
+        switch(getType()) {
+            default:
+            case 0: if (value != null && !value.equals("")) appendix = " ["+value+"]";
+                    if (withid) appendix += " <"+id+">";
+                    out = "* "+ getName()+appendix;
+                    break;
+            case 1: if (withid) appendix += " <"+id+">"; 
+                    out = "- "+getName()+": "+value+appendix;
+                    break;
+            case 2: if (value != null && !value.equals("")) appendix = " ["+value+"]";
+                    if (withid) appendix += " <"+id+">";
+                    appendix += " #";
+                    out = "* "+ getName()+appendix;
+        }           
+        return(out);
+                    
+    }
+    
+    public String toStringFull(int level, boolean withid) {
         String out; 
         if (isType(1)) {
-           out = toStringPlus()+"\n";
+           out = toStringPlus(withid)+"\n";
            return out; 
         }
         else {
-            out = toStringPlus()+"\n";
-            listtoavoidloops.add(toStringPlus());
+            out = toStringPlus(withid)+"\n";
+            listtoavoidloops.add(toStringPlus(withid));
             for (Idea ln : l) {
                 for (int i=0;i<level;i++) out += "   ";
-                if (listtoavoidloops.contains(ln.toStringPlus()) || already_exists(ln.toStringPlus())) {
-                    out += ln.toStringPlus()+"\n";
+                if (listtoavoidloops.contains(ln.toStringPlus(withid)) || already_exists(ln.toStringPlus(withid))) {
+                    out += ln.toStringPlus(withid)+"\n";
                 }
                     
-                else out += ln.toStringFull(level+1);
+                else out += ln.toStringFull(level+1,withid);
             }
             return(out);
         }
     }
     
-    public List<Object> get(String path) {
-        return(get(path,false));
-    }
+//    public List<Object> get(String path) {
+//        return(get(path,false));
+//    }
+//    
+//    public List<Object> get(String path, boolean value) {
+//        path = path.trim();
+//        int dot = path.indexOf(".");
+//        String name = path;
+//        String subPath = null;
+//        if (dot > -1) {
+//            name = path.substring(0, dot);
+//            subPath = path.substring(dot + 1);
+//        }
+//        List<Object> results = new ArrayList<>();
+//        for (Idea n : this.l) {
+//            if (n.getFullName().equals(name)) {
+//                if (subPath != null) {
+//                    results.addAll(n.get(subPath,value));
+//                } else {
+//                    if (value) results.add(n.getValue());
+//                    else results.add(n);
+//                }
+//            }
+//        }    
+//        return results;
+//    }    
     
-    public List<Object> get(String path, boolean value) {
-        path = path.trim();
-        int dot = path.indexOf(".");
-        String name = path;
-        String subPath = null;
-        if (dot > -1) {
-            name = path.substring(0, dot);
-            subPath = path.substring(dot + 1);
+    public Idea get(String path) {
+        String[] spath = path.split("\\.");
+        if (spath.length == 1) {
+            for (Idea i : getL()) {
+               if (i.getName().equals(spath[0]))
+                  return i;
+            }   
+            return null;
         }
-        List<Object> results = new ArrayList<>();
-        for (Idea n : this.l) {
-            if (n.getName().equals(name)) {
-                if (subPath != null) {
-                    results.addAll(n.get(subPath,value));
-                } else {
-                    if (value) results.add(n.getValue());
-                    else results.add(n);
-                }
+        else {
+            Idea i = this;
+            for (String s : spath) {
+               i = i.get(s);
+               if (i == null) return(null);
             }
-        }    
-        return results;
-    }    
+            return i;
+        }
+    }  
     
     public Object getValue() {
         return value;
@@ -229,6 +310,76 @@ public class Idea {
             return(true);
         return(false);
     }
+    
+    private Float tryParseFloat(String value) {
+        Float returnValue = null;
+
+        try {
+            returnValue = Float.parseFloat(value);
+        } catch (Exception ex) {
+            returnValue = null;
+        }
+
+        return returnValue;
+    }
+
+    private Double tryParseDouble(String value) {
+        Double returnValue = null;
+
+        try {
+            returnValue = Double.parseDouble(value);
+        } catch (Exception ex) {
+            returnValue = null;
+        }
+
+        return returnValue;
+    }
+
+    private Integer tryParseInteger(String value) {
+        Integer returnValue = null;
+
+        try {
+            returnValue = Integer.parseInt(value);
+        } catch (Exception ex) {
+            returnValue = null;
+        }
+
+        return returnValue;
+    }
+
+    private Long tryParseLong(String value) {
+        Long returnValue = null;
+
+        try {
+            returnValue = Long.parseLong(value);
+        } catch (Exception ex) {
+            returnValue = null;
+        }
+
+        return returnValue;
+    }
+
+    private Short tryParseShort(String value) {
+        Short returnValue = null;
+
+        try {
+            returnValue = Short.parseShort(value);
+        } catch (Exception ex) {
+            returnValue = null;
+        }
+
+        return returnValue;
+    }
+    
+    private Byte tryParseByte(String value) {
+        Byte returnValue = null;
+        try {
+            returnValue = Byte.parseByte(value,16);
+        } catch (Exception ex) {
+            returnValue = null;
+        }
+        return returnValue;
+    }
 
     public Idea clone() {
         Idea newnode;
@@ -259,10 +410,22 @@ public class Idea {
         return(result);
     }
     
-    transient static ArrayList<Object> listtoavoidloops = new ArrayList<>();
+    
+    public boolean isPrimitive(Object o) {
+        if (o == null) return(true);
+        if (o.getClass().isPrimitive()) return(true);
+        if (o instanceof Integer || 
+            o instanceof Long || 
+            o instanceof Double || 
+            o instanceof Float || 
+            o instanceof Boolean ||
+            o instanceof Short ||    
+            o instanceof Byte) return(true);
+        return(false);
+    }
     
     public boolean already_exists(Object o) {
-        if (o == null) return false;
+        if (o == null || isPrimitive(o)) return false;
         for (Object oo : listtoavoidloops)
            if (oo.hashCode() == o.hashCode()) return true;
         return false;
@@ -272,20 +435,417 @@ public class Idea {
         Collections.sort(l, ideaComparator);
     }
     
+    public Object createJavaObject(String classname) {
+        if (classname.equals("java.lang.Double")) {
+            return new Double(0.0);
+        }
+        else if (classname.equals("java.lang.Float")) {
+            return new Float(0.0);
+        }
+        else if (classname.equals("java.lang.Integer")) {
+            return new Integer(0);
+        }
+        else if (classname.equals("java.lang.Long")) {
+            return new Long(0);
+        }
+        else if (classname.equals("java.lang.Short")) {
+            short ret = 0;
+            return new Short(ret);
+        }
+        else if (classname.equals("java.lang.Byte")) {
+            byte ret = 0;
+            return new Byte(ret);
+        }
+        else if (classname.equals("java.lang.Boolean")) {
+            return new Boolean(false);
+        }
+        Class type = null;
+        Object javaObject = null;
+        try {
+            type = Class.forName(classname);
+            javaObject = type.newInstance();
+            type.cast(javaObject);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return (javaObject);
+    }
+    
+    public Object convertObject(Object origin, String className) {
+        if (origin == null) return(null);
+        String objectClass = origin.getClass().getName();
+        if (className.equals("double") || className.equals("java.lang.Double")) {
+            double value;
+            if (objectClass.equals("java.lang.String")) {
+                value = tryParseDouble((String) origin);
+            } else {
+                value = ((Number) origin).doubleValue();
+            }
+            return (value);
+        } else if (className.equals("float") || className.equals("java.lang.Float")) {
+            float value;
+            if (objectClass.equals("java.lang.String")) {
+                value = tryParseFloat((String) origin);
+            } else {
+                value = ((Number) origin).floatValue();
+            }
+            return (value);
+        } else if (className.equals("long") || className.equals("java.lang.Long")) {
+            long value;
+            if (objectClass.equals("java.lang.String")) {
+                value = tryParseLong((String) origin);
+            } else {
+                value = ((Number) origin).longValue();
+            }
+            return (value);
+        } else if (className.equals("int") || className.equals("java.lang.Integer")) {
+            int value;
+            if (objectClass.equals("java.lang.String")) {
+                value = tryParseInteger((String) origin);
+            } else {
+                value = ((Number) origin).intValue();
+            }
+            return (value);
+        } else if (className.equals("short") || className.equals("java.lang.Short")) {
+            short value;
+            if (objectClass.equals("java.lang.String")) {
+                value = tryParseShort((String) origin);
+            } else {
+                value = ((Number) origin).shortValue();
+            }
+            return (value);
+        } else if (className.equals("byte") || className.equals("java.lang.Byte")) {
+            Byte value;
+            if (objectClass.equals("java.lang.String")) {
+                value = tryParseByte((String) origin);
+            } else {
+                value = ((Number) origin).byteValue();
+            }
+            return (value);
+        } else if (className.equals("boolean") || className.equals("java.lang.Boolean")) {
+            boolean value;
+            if (objectClass.equals("java.lang.String")) {
+                if (((String)origin).equals("true"))
+                   value = true;
+                else value = false;
+            } else {
+                value = false;
+            }
+            return (value);
+        } else if (className.equals("java.util.Date")) {
+            Date value;
+            try {
+                SimpleDateFormat parser = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss.SSS");
+                parser.setTimeZone(TimeZone.getTimeZone("GMT"));
+                value = parser.parse((String) origin);
+                
+            } catch(Exception e) {
+                value = null;
+            }
+            return (value);
+        } else return (origin);
+    }
+    
+    public Object mountArray(Idea o, String classname) {
+        if (classname.equals("int[]")) {
+            int[] out = new int[o.getL().size()];
+            int j=0;
+            for (Idea i : o.getL()) {
+               out[j++] = (Integer) convertObject(i.getValue(),"java.lang.Integer");
+            }
+            return(out);
+        }
+        else if (classname.equals("double[]")) {
+            double[] out = new double[o.getL().size()];
+            int j=0;
+            for (Idea i : o.getL()) {
+               out[j++] = (Double) convertObject(i.getValue(),"java.lang.Double");
+            }
+            return(out);
+        }    
+        else if (classname.equals("float[]")) {
+            float[] out = new float[o.getL().size()];
+            int j=0;
+            for (Idea i : o.getL()) {
+               out[j++] = (Float) convertObject(i.getValue(),"java.lang.Float");
+            }
+            return(out);
+        }
+        else if (classname.equals("long[]")) {
+            long[] out = new long[o.getL().size()];
+            int j=0;
+            for (Idea i : o.getL()) {
+               out[j++] = (Long) convertObject(i.getValue(),"java.lang.Long");
+            }
+            return(out);
+        }
+        else if (classname.equals("short[]")) {
+            short[] out = new short[o.getL().size()];
+            int j=0;
+            for (Idea i : o.getL()) {
+               out[j++] = (Short) convertObject(i.getValue(),"java.lang.Short");
+            }
+            return(out);
+        }
+        else if (classname.equals("byte[]")) {
+            byte[] out = new byte[o.getL().size()];
+            int j=0;
+            for (Idea i : o.getL()) {
+               out[j++] = (Byte) convertObject(i.getValue(),"java.lang.Byte");
+            }
+            return(out);
+        }
+        else if (classname.equals("boolean[]")) {
+            boolean[] out = new boolean[o.getL().size()];
+            int j=0;
+            for (Idea i : o.getL()) {
+               out[j++] = (Boolean) convertObject(i.getValue(),"java.lang.Boolean");
+            }
+            return(out);
+        }    
+        else {
+            Object out=null;
+            String realclassname = classname.split("\\[\\]")[0];
+            try {
+               Class<?> c = Class.forName(realclassname);
+               out = Array.newInstance(c,o.getL().size());
+            } catch(Exception e) {
+               e.printStackTrace();
+            }
+            int j=0;
+            for (Idea i : o.getL()) {
+                if (i.getL().size() > 0) {
+                    Array.set(out, j++,getObject(o.getName()+"."+i.getName(),realclassname) );
+                }    
+                else
+                    Array.set(out,j++,null);
+            }
+            return(out);
+        }                    
+    }
+    
+    public void setField(Field field, Object o, Object ret) {
+        if (field.getType().getCanonicalName().equals("int[]")) {
+                            int[] out = new int[((Idea) o).getL().size()];
+                            int j=0;
+                            for (Idea i : ((Idea) o).getL()) {
+                                out[j++] = (Integer) convertObject(i.getValue(),"java.lang.Integer");
+                            }
+                            try {
+                                //System.out.println("As the field type is correct I am setting it ...");
+                                field.set(ret,out);
+                            }
+                            catch(Exception e) {
+                                System.out.println("Field "+field.getName()+" should be of type "+field.getType().getCanonicalName()+" but I received "+value.toString()+": "+value.getClass().getCanonicalName()+"");
+                            }
+                        }
+                        else if (field.getType().getCanonicalName().equals("double[]")) {
+                            double[] out = new double[((Idea) o).getL().size()];
+                            int j=0;
+                            for (Idea i : ((Idea) o).getL()) {
+                                out[j++] = (Double) convertObject(i.getValue(),"java.lang.Double");
+                            }
+                            try {
+                                //System.out.println("As the field type is correct I am setting it ...");
+                                field.set(ret,out);
+                            }
+                            catch(Exception e) {
+                                System.out.println("Field "+field.getName()+" should be of type "+field.getType().getCanonicalName()+" but I received "+value.toString()+": "+value.getClass().getCanonicalName()+"");
+                            }
+                        }
+                        else if (field.getType().getCanonicalName().equals("float[]")) {
+                            float[] out = new float[((Idea) o).getL().size()];
+                            int j=0;
+                            for (Idea i : ((Idea) o).getL()) {
+                                
+                                out[j++] = (Float) convertObject(i.getValue(),"java.lang.Float");
+                            }
+                            try {
+                                //System.out.println("As the field type is correct I am setting it ...");
+                                field.set(ret,out);
+                            }
+                            catch(Exception e) {
+                                System.out.println("Field "+field.getName()+" should be of type "+field.getType().getCanonicalName()+" but I received "+value.toString()+": "+value.getClass().getCanonicalName()+"");
+                            }
+                        }
+                        else if (field.getType().getCanonicalName().equals("long[]")) {
+                            long[] out = new long[((Idea) o).getL().size()];
+                            int j=0;
+                            for (Idea i : ((Idea) o).getL()) {
+                                out[j++] = (Long) convertObject(i.getValue(),"java.lang.Long");
+                            }
+                            try {
+                                //System.out.println("As the field type is correct I am setting it ...");
+                                field.set(ret,out);
+                            }
+                            catch(Exception e) {
+                                System.out.println("Field "+field.getName()+" should be of type "+field.getType().getCanonicalName()+" but I received "+value.toString()+": "+value.getClass().getCanonicalName()+"");
+                            }
+                        }
+                        else if (field.getType().getCanonicalName().equals("boolean[]")) {
+                            boolean[] out = new boolean[((Idea) o).getL().size()];
+                            int j=0;
+                            for (Idea i : ((Idea) o).getL()) {
+                                out[j++] = (Boolean) convertObject(i.getValue(),"java.lang.Boolean");
+                            }
+                            try {
+                                //System.out.println("As the field type is correct I am setting it ...");
+                                if (!field.isAccessible()) field.setAccessible(true);
+                                field.set(ret,out);
+                            }
+                            catch(Exception e) {
+                                System.out.println(e.getMessage());
+                                System.out.println("bField "+field.getName()+" should be of type "+field.getType().getCanonicalName()+" but I received "+value.toString()+": "+value.getClass().getCanonicalName()+"");
+                            }
+                        }
+                        else {
+                            Object out=null;
+                            try {
+                            Class<?> c = Class.forName(field.getType().getComponentType().getCanonicalName());
+                            out = Array.newInstance(c,((Idea)o).getL().size());
+                            } catch(Exception e) {
+                                e.printStackTrace();
+                            }
+                            int j=0;
+                            for (Idea i : ((Idea) o).getL()) {
+                                String ty = field.getType().getComponentType().getCanonicalName();
+                                if (i.getL().size() > 0)
+                                    Array.set(out, j++,getObject(i.getName(),ty) );
+                                else
+                                    Array.set(out,j++,null);
+                            }
+                            try {
+                                field.set(ret,out);
+                            }
+                            catch(Exception e) {
+                                System.out.println(e.getMessage());
+                                System.out.println("Array "+field.getName()+" should be of type "+field.getType().getCanonicalName()+" but I received "+value.toString()+": "+value.getClass().getCanonicalName()+"");
+                            }
+                            
+                        }
+                          
+                    
+    }
+    
+    public boolean isArray(String classname) {
+        String sname[] = classname.split("\\[");
+        if (sname.length == 2) return true;
+        else return false;
+    }
+    
+    public Object getObject(String name, String classname) {
+        //System.out.println("classname: "+classname);
+        if (classname.equals("java.lang.Double") ||
+            classname.equals("java.lang.Float") ||
+            classname.equals("java.lang.Integer") ||
+            classname.equals("java.lang.Short") ||
+            classname.equals("java.lang.Long") ||
+            classname.equals("java.lang.Byte") ||
+            classname.equals("java.lang.String") ||
+            classname.equals("java.util.Date") ) {
+            return convertObject(getValue(),classname);
+        }
+        if (isArray(classname)) {
+            //System.out.println("Trying to get the array "+getFullName()+"."+name);
+            Idea i = get(name);
+            if (i != null) {
+                return mountArray(i,classname);
+            }
+            else {
+                System.out.println("I didn't found "+getFullName()+"."+name+" ... I only know:");
+                for (Idea j : getL())
+                    System.out.println(j.getFullName());
+                return null;
+            }
+        }
+        if (classname.equals("java.util.List")) {
+            classname = "java.util.ArrayList";
+        }
+        Object ret = createJavaObject(classname);
+        try {
+            Field[] fieldList = ret.getClass().getDeclaredFields();
+            for (Field field : fieldList) {
+                String fieldClass = field.getType().getCanonicalName();
+                //System.out.println("Trying to get the Object "+getFullName()+"."+name+"."+field.getName()+" of type "+fieldClass);
+                Idea o = get(name+"."+field.getName());
+                if (o == null) {
+                    System.out.println("I didn't found "+getFullName()+"."+name+"."+field.getName()+" ... I only know:");
+                    for (Idea i : getL()) {
+                        System.out.println(i.getFullName());
+                    }
+                }
+                else {
+                    if (field.getType().isArray()) {
+                          Object out = mountArray(o,field.getType().getCanonicalName());
+                          try {
+                                if (!field.isAccessible()) field.setAccessible(true);
+                                field.set(ret,out);
+                            }
+                            catch(Exception e) {
+                                System.out.println(e.getMessage());
+                                System.out.println("Array "+field.getName()+" should be of type "+field.getType().getCanonicalName()+" but I received "+value.toString()+": "+value.getClass().getCanonicalName()+"");
+                            }
+                    }
+                    else if (field.getType().getCanonicalName().equals("java.util.List")) {
+                        List out = new ArrayList();
+                        for (Idea i : ((Idea) o).getL()) {
+                            ParameterizedType type = (ParameterizedType) field.getGenericType();
+                            String stype = type.getActualTypeArguments()[0].getTypeName();
+                            out.add(i.getObject(i.getFullName(), stype));
+                        }
+                        try {
+                                field.set(ret,out);
+                        }
+                        catch(Exception e) {
+                             System.out.println("Field "+field.getName()+" should be of type "+field.getType().getCanonicalName()+" but I received "+value.toString()+": "+value.getClass().getCanonicalName()+"");
+                        }
+                    }
+                    else {
+                        Object value = ((Idea) o).getValue();
+                        if (value == null) System.out.println("Value of "+field.getName()+" is null");
+                        value = convertObject(value,field.getType().getCanonicalName());
+                        try {
+                            field.set(ret,value);
+                        }
+                        catch(Exception e) {
+                            
+                            Object out;
+                            if (((Idea)o).getL().size() > 0) out = ((Idea)o).getObject(field.getName(),field.getType().getCanonicalName());
+                            else out = null;
+                            try {
+                                field.set(ret,out);
+                            } catch(Exception e2) {
+                                System.out.println(">> Field "+field.getName()+" should be of type "+field.getType().getCanonicalName()+" but I received "+value.toString()+": "+value.getClass().getCanonicalName()+"");
+                            }
+                            
+                        }
+                    }
+                    //System.out.println("Looking for field "+field.getName()+" of type "+field.getType()+" and found "+o.toString()+" which is from type "+o.getClass().getCanonicalName());
+                }
+            }    
+        } catch (Exception e) {
+            e.printStackTrace();
+            System.out.println("Exception: " + e.getStackTrace().toString());
+        }
+        return(ret);
+    }
+    
     public void addObject(Object obj, String fullname) {
         if (obj == null) {
-            Idea child = new Idea(ToString.getSimpleName(fullname),"null",0);
+            //Idea child = createIdea(ToString.getSimpleName(fullname),"null",0);
+            Idea child = createIdea(getFullName()+"."+fullname,"null",0);
             add(child);
             return;
         }
         if (listtoavoidloops.contains(obj) || already_exists(obj)) {
-             Idea child = new Idea(ToString.getSimpleName(fullname),obj.toString(),2);
+             Idea child = createIdea(getFullName()+"."+fullname,obj.toString(),2);
              add(child);
              return;            
         }
         String s = ToString.from(obj);
         if (s != null) {
-            Idea child = new Idea(ToString.getSimpleName(fullname),s,1);
+            //Idea child = createIdea(ToString.getSimpleName(fullname),s,1);
+            Idea child = createIdea(getFullName()+"."+fullname,s,1);
             add(child);
             return;
         }
@@ -297,22 +857,32 @@ public class Idea {
                 if (otype != null)
                     type = otype.getClass().getSimpleName();
             }
+            else {
+                type = type.split("\\[\\]")[0];
+                //System.out.println("The array of "+type+" is empty");
+                
+            }
             if (type.equalsIgnoreCase("Double") || type.equalsIgnoreCase("Integer") || 
                 type.equalsIgnoreCase("String") || type.equalsIgnoreCase("Float") || 
-                type.equalsIgnoreCase("Long") || type.equalsIgnoreCase("Boolean")) {
-                Idea anode = new Idea(ToString.getSimpleName(fullname));
+                type.equalsIgnoreCase("Long") || type.equalsIgnoreCase("Boolean") ||
+                type.equalsIgnoreCase("Short") || type.equalsIgnoreCase("Byte") ) {
+                //Idea anode = Idea.createIdea(ToString.getSimpleName(fullname),"",0);
+                Idea anode = Idea.createIdea(getFullName()+"."+fullname,"",0);
                 for (int i=0;i<l;i++) {
                     Object oo = Array.get(obj,i);
-                    Idea node = new Idea(ToString.el(ToString.getSimpleName(fullname), i),oo,1);
+                    //Idea node = createIdea(ToString.el(ToString.getSimpleName(fullname), i),oo,1);
+                    Idea node = createIdea(ToString.el(getFullName()+"."+fullname, i),oo,1);
                     anode.add(node);
                 }
                 this.add(anode);
             } 
             else {
-                Idea onode = new Idea(ToString.getSimpleName(fullname));
+                //Idea onode = createIdea(ToString.getSimpleName(fullname),"null",0);
+                Idea onode = createIdea(getFullName()+"."+fullname,"",0);
                 for (int i=0;i<l;i++) {
                     Object oo = Array.get(obj,i);
-                    onode.addObject(oo,ToString.el(ToString.getSimpleName(fullname), i));
+                    //onode.addObject(oo,ToString.el(ToString.getSimpleName(fullname), i));
+                    onode.addObject(oo,ToString.el(getFullName()+"."+fullname, i));
                     listtoavoidloops.add(obj);
                 }
                 this.add(onode);
@@ -322,12 +892,14 @@ public class Idea {
         else if (obj instanceof List) {
             List ll = (List) obj;
             String label = "";
-            if (ll.size() > 0) label = "List["+ll.size()+"] of "+ll.get(0).getClass().getSimpleName();
-            else label = "List[0]";
-            Idea onode = new Idea(ToString.getSimpleName(fullname));
+            if (ll.size() > 0) label = "{"+ll.size()+"} of "+ll.get(0).getClass().getSimpleName();
+            else label = "{0}";
+            //Idea onode = createIdea(ToString.getSimpleName(fullname),"null",0);
+            Idea onode = createIdea(getFullName()+"."+fullname,label,0);
             int i=0;
             for (Object o : ll) {
-                onode.addObject(o,ToString.el(ToString.getSimpleName(fullname),i));
+                //onode.addObject(o,ToString.el(ToString.getSimpleName(fullname),i));
+                onode.addObject(o,ToString.el(getFullName()+"."+fullname,i));
                 listtoavoidloops.add(obj);
                 i++;
             }
@@ -341,7 +913,8 @@ public class Idea {
             return;
         }
         else {
-            Idea ao = new Idea(ToString.getSimpleName(fullname));
+            //Idea ao = createIdea(ToString.getSimpleName(fullname),"null",0);
+            Idea ao = createIdea(getFullName()+"."+fullname,"",0);
             listtoavoidloops.add(obj);
             Field[] fields = obj.getClass().getDeclaredFields();
             for (Field field : fields) {
@@ -354,7 +927,11 @@ public class Idea {
                     } catch (Exception e) {
                         e.printStackTrace();} 
                     if (!already_exists(fo))
-                        ao.addObject(fo,fullname+"."+fname);  
+                        ao.addObject(fo,getFullName()+"."+fullname+"."+fname);  
+                    else {
+                        Idea fi = createIdea(getFullName()+"."+fullname+"."+fname,"",2);
+                        //System.out.println("Idea "+fullname+"."+fname+" of type "+fo.getClass().getCanonicalName()+" already exists ...");
+                    }
                 } catch (Exception e) {
                 }   
             }

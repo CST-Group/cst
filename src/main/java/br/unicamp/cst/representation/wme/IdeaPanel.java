@@ -363,19 +363,19 @@ public class IdeaPanel extends javax.swing.JPanel {
                     Idea ao;
                     Idea father;
                     if (level == 0) {
-                        newAO = new Idea(name);
+                        newAO = Idea.createIdea(name,"null",0);
                         parseAOs.add(newAO);
                     }
                     else {
                           switch(m) {
-                                case LINK:ao = new Idea(name);
+                                case LINK:ao = Idea.createIdea(name,"",0);
                                                parseAOs.add(ao);
                                                father = (Idea) parseAOs.get(level-1);
                                                father.add(ao);
                                                if (level >= parseAOs.size()) parseAOs.add(ao);
                                                else parseAOs.set(level, ao);
                                                break;
-                                case VALUE:Idea qd = new Idea(name,value);
+                                case VALUE:Idea qd = Idea.createIdea(name,value,1);
                                            father = (Idea) parseAOs.get(level-1);
                                            father.add(qd);
                                            break;
@@ -583,7 +583,7 @@ public class IdeaPanel extends javax.swing.JPanel {
         TreeElement te = node.getTreeElement();
         if (te.getIcon() == TreeElement.ICON_OBJECT || te.getIcon() == TreeElement.ICON_OBJECT2 || 
             te.getIcon() == TreeElement.ICON_CONFIGURATION || te.getIcon() == TreeElement.ICON_MIND ) {
-            Idea ln = new Idea(te.getName());
+            Idea ln = Idea.createIdea(te.getName(),"",0);
             int numberofchildren = node.getChildCount();
             for (int i=0;i<numberofchildren;i++) {
                 IdeaTreeNode c = (IdeaTreeNode) node.getChildAt(i);

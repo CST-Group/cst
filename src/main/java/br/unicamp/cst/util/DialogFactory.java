@@ -264,7 +264,7 @@ public class DialogFactory extends javax.swing.JDialog {
     dialog.dispose();
     if (dialog.ok == true) {
         String newname = dialog.jName.getText();
-        Idea newwmnode = new Idea(newname);
+        Idea newwmnode = Idea.createIdea(newname,"null",0);
         IdeaTreeNode newnode = baseNode.addIdentifier(newwmnode);
         return(newnode);
     }

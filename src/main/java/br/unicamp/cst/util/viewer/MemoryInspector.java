@@ -299,13 +299,15 @@ public class MemoryInspector extends javax.swing.JFrame {
     }
     
     public void updateTree(Memory m) {
+        if (m == null) return;
         String value;
         // update eval
         TreeElement teval = (TreeElement) ev_tn.getUserObject();
         value = String.format("%4.2f", m.getEvaluation());
         teval.setValue(value);
         // update timestamp
-        long timestamp = m.getTimestamp();
+        Long timestamp = m.getTimestamp();
+        if (timestamp == null) timestamp = 0L;
         String ts = TimeStamp.getStringTimeStamp(timestamp,"dd/MM/yyyy HH:mm:ss.SSS");
         TreeElement tts = (TreeElement) ts_tn.getUserObject();
         tts.setValue(ts);

@@ -42,7 +42,7 @@ public class IdeaTreeNode extends DefaultMutableTreeNode {
     }
     
     public IdeaTreeNode addRootNode(String rootNodeName) {
-        Idea rootWM = new Idea(rootNodeName);
+        Idea rootWM = Idea.createIdea(rootNodeName,"",0);
         IdeaTreeNode root = new IdeaTreeNode(rootNodeName, TreeElement.NODE_NORMAL, rootWM, TreeElement.ICON_CONFIGURATION);
         return(root);
     }
