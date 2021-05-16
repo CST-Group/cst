@@ -13,6 +13,7 @@ package br.unicamp.cst.representation.wme;
 import br.unicamp.cst.util.viewer.ToString;
 import java.lang.reflect.Array;
 import java.lang.reflect.Field;
+import java.lang.reflect.Modifier;
 import java.lang.reflect.ParameterizedType;
 import java.text.SimpleDateFormat;
 //import java.lang.reflect.InaccessibleObjectException;
@@ -21,6 +22,7 @@ import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.TimeZone;
 import java.util.concurrent.CopyOnWriteArrayList;
 
@@ -219,8 +221,11 @@ public class Idea {
         String[] spath = path.split("\\.");
         if (spath.length == 1) {
             for (Idea i : getL()) {
-               if (i.getName().equals(spath[0]))
-                  return i;
+               if (i != null && i.getName() != null && spath != null && spath.length > 0) {
+                    if (i.getName().equals(spath[0])) {
+                        return i;
+                    }
+                }
             }   
             return null;
         }
@@ -624,108 +629,108 @@ public class Idea {
         }                    
     }
     
-    public void setField(Field field, Object o, Object ret) {
-        if (field.getType().getCanonicalName().equals("int[]")) {
-                            int[] out = new int[((Idea) o).getL().size()];
-                            int j=0;
-                            for (Idea i : ((Idea) o).getL()) {
-                                out[j++] = (Integer) convertObject(i.getValue(),"java.lang.Integer");
-                            }
-                            try {
-                                //System.out.println("As the field type is correct I am setting it ...");
-                                field.set(ret,out);
-                            }
-                            catch(Exception e) {
-                                System.out.println("Field "+field.getName()+" should be of type "+field.getType().getCanonicalName()+" but I received "+value.toString()+": "+value.getClass().getCanonicalName()+"");
-                            }
-                        }
-                        else if (field.getType().getCanonicalName().equals("double[]")) {
-                            double[] out = new double[((Idea) o).getL().size()];
-                            int j=0;
-                            for (Idea i : ((Idea) o).getL()) {
-                                out[j++] = (Double) convertObject(i.getValue(),"java.lang.Double");
-                            }
-                            try {
-                                //System.out.println("As the field type is correct I am setting it ...");
-                                field.set(ret,out);
-                            }
-                            catch(Exception e) {
-                                System.out.println("Field "+field.getName()+" should be of type "+field.getType().getCanonicalName()+" but I received "+value.toString()+": "+value.getClass().getCanonicalName()+"");
-                            }
-                        }
-                        else if (field.getType().getCanonicalName().equals("float[]")) {
-                            float[] out = new float[((Idea) o).getL().size()];
-                            int j=0;
-                            for (Idea i : ((Idea) o).getL()) {
-                                
-                                out[j++] = (Float) convertObject(i.getValue(),"java.lang.Float");
-                            }
-                            try {
-                                //System.out.println("As the field type is correct I am setting it ...");
-                                field.set(ret,out);
-                            }
-                            catch(Exception e) {
-                                System.out.println("Field "+field.getName()+" should be of type "+field.getType().getCanonicalName()+" but I received "+value.toString()+": "+value.getClass().getCanonicalName()+"");
-                            }
-                        }
-                        else if (field.getType().getCanonicalName().equals("long[]")) {
-                            long[] out = new long[((Idea) o).getL().size()];
-                            int j=0;
-                            for (Idea i : ((Idea) o).getL()) {
-                                out[j++] = (Long) convertObject(i.getValue(),"java.lang.Long");
-                            }
-                            try {
-                                //System.out.println("As the field type is correct I am setting it ...");
-                                field.set(ret,out);
-                            }
-                            catch(Exception e) {
-                                System.out.println("Field "+field.getName()+" should be of type "+field.getType().getCanonicalName()+" but I received "+value.toString()+": "+value.getClass().getCanonicalName()+"");
-                            }
-                        }
-                        else if (field.getType().getCanonicalName().equals("boolean[]")) {
-                            boolean[] out = new boolean[((Idea) o).getL().size()];
-                            int j=0;
-                            for (Idea i : ((Idea) o).getL()) {
-                                out[j++] = (Boolean) convertObject(i.getValue(),"java.lang.Boolean");
-                            }
-                            try {
-                                //System.out.println("As the field type is correct I am setting it ...");
-                                if (!field.isAccessible()) field.setAccessible(true);
-                                field.set(ret,out);
-                            }
-                            catch(Exception e) {
-                                System.out.println(e.getMessage());
-                                System.out.println("bField "+field.getName()+" should be of type "+field.getType().getCanonicalName()+" but I received "+value.toString()+": "+value.getClass().getCanonicalName()+"");
-                            }
-                        }
-                        else {
-                            Object out=null;
-                            try {
-                            Class<?> c = Class.forName(field.getType().getComponentType().getCanonicalName());
-                            out = Array.newInstance(c,((Idea)o).getL().size());
-                            } catch(Exception e) {
-                                e.printStackTrace();
-                            }
-                            int j=0;
-                            for (Idea i : ((Idea) o).getL()) {
-                                String ty = field.getType().getComponentType().getCanonicalName();
-                                if (i.getL().size() > 0)
-                                    Array.set(out, j++,getObject(i.getName(),ty) );
-                                else
-                                    Array.set(out,j++,null);
-                            }
-                            try {
-                                field.set(ret,out);
-                            }
-                            catch(Exception e) {
-                                System.out.println(e.getMessage());
-                                System.out.println("Array "+field.getName()+" should be of type "+field.getType().getCanonicalName()+" but I received "+value.toString()+": "+value.getClass().getCanonicalName()+"");
-                            }
-                            
-                        }
-                          
-                    
-    }
+//    public void setField(Field field, Object o, Object ret) {
+//        if (field.getType().getCanonicalName().equals("int[]")) {
+//                            int[] out = new int[((Idea) o).getL().size()];
+//                            int j=0;
+//                            for (Idea i : ((Idea) o).getL()) {
+//                                out[j++] = (Integer) convertObject(i.getValue(),"java.lang.Integer");
+//                            }
+//                            try {
+//                                //System.out.println("As the field type is correct I am setting it ...");
+//                                field.set(ret,out);
+//                            }
+//                            catch(Exception e) {
+//                                System.out.println("Field "+field.getName()+" should be of type "+field.getType().getCanonicalName()+" but I received "+value.toString()+": "+value.getClass().getCanonicalName()+"");
+//                            }
+//                        }
+//                        else if (field.getType().getCanonicalName().equals("double[]")) {
+//                            double[] out = new double[((Idea) o).getL().size()];
+//                            int j=0;
+//                            for (Idea i : ((Idea) o).getL()) {
+//                                out[j++] = (Double) convertObject(i.getValue(),"java.lang.Double");
+//                            }
+//                            try {
+//                                //System.out.println("As the field type is correct I am setting it ...");
+//                                field.set(ret,out);
+//                            }
+//                            catch(Exception e) {
+//                                System.out.println("Field "+field.getName()+" should be of type "+field.getType().getCanonicalName()+" but I received "+value.toString()+": "+value.getClass().getCanonicalName()+"");
+//                            }
+//                        }
+//                        else if (field.getType().getCanonicalName().equals("float[]")) {
+//                            float[] out = new float[((Idea) o).getL().size()];
+//                            int j=0;
+//                            for (Idea i : ((Idea) o).getL()) {
+//                                
+//                                out[j++] = (Float) convertObject(i.getValue(),"java.lang.Float");
+//                            }
+//                            try {
+//                                //System.out.println("As the field type is correct I am setting it ...");
+//                                field.set(ret,out);
+//                            }
+//                            catch(Exception e) {
+//                                System.out.println("Field "+field.getName()+" should be of type "+field.getType().getCanonicalName()+" but I received "+value.toString()+": "+value.getClass().getCanonicalName()+"");
+//                            }
+//                        }
+//                        else if (field.getType().getCanonicalName().equals("long[]")) {
+//                            long[] out = new long[((Idea) o).getL().size()];
+//                            int j=0;
+//                            for (Idea i : ((Idea) o).getL()) {
+//                                out[j++] = (Long) convertObject(i.getValue(),"java.lang.Long");
+//                            }
+//                            try {
+//                                //System.out.println("As the field type is correct I am setting it ...");
+//                                field.set(ret,out);
+//                            }
+//                            catch(Exception e) {
+//                                System.out.println("Field "+field.getName()+" should be of type "+field.getType().getCanonicalName()+" but I received "+value.toString()+": "+value.getClass().getCanonicalName()+"");
+//                            }
+//                        }
+//                        else if (field.getType().getCanonicalName().equals("boolean[]")) {
+//                            boolean[] out = new boolean[((Idea) o).getL().size()];
+//                            int j=0;
+//                            for (Idea i : ((Idea) o).getL()) {
+//                                out[j++] = (Boolean) convertObject(i.getValue(),"java.lang.Boolean");
+//                            }
+//                            try {
+//                                //System.out.println("As the field type is correct I am setting it ...");
+//                                if (!field.isAccessible()) field.setAccessible(true);
+//                                field.set(ret,out);
+//                            }
+//                            catch(Exception e) {
+//                                System.out.println(e.getMessage());
+//                                System.out.println("bField "+field.getName()+" should be of type "+field.getType().getCanonicalName()+" but I received "+value.toString()+": "+value.getClass().getCanonicalName()+"");
+//                            }
+//                        }
+//                        else {
+//                            Object out=null;
+//                            try {
+//                            Class<?> c = Class.forName(field.getType().getComponentType().getCanonicalName());
+//                            out = Array.newInstance(c,((Idea)o).getL().size());
+//                            } catch(Exception e) {
+//                                e.printStackTrace();
+//                            }
+//                            int j=0;
+//                            for (Idea i : ((Idea) o).getL()) {
+//                                String ty = field.getType().getComponentType().getCanonicalName();
+//                                if (i.getL().size() > 0)
+//                                    Array.set(out, j++,getObject(i.getName(),ty) );
+//                                else
+//                                    Array.set(out,j++,null);
+//                            }
+//                            try {
+//                                field.set(ret,out);
+//                            }
+//                            catch(Exception e) {
+//                                System.out.println(e.getMessage());
+//                                System.out.println("Array "+field.getName()+" should be of type "+field.getType().getCanonicalName()+" but I received "+value.toString()+": "+value.getClass().getCanonicalName()+"");
+//                            }
+//                            
+//                        }
+//                          
+//                    
+//    }
     
     public boolean isArray(String classname) {
         String sname[] = classname.split("\\[");
@@ -766,7 +771,7 @@ public class Idea {
             Field[] fieldList = ret.getClass().getDeclaredFields();
             for (Field field : fieldList) {
                 String fieldClass = field.getType().getCanonicalName();
-                //System.out.println("Trying to get the Object "+getFullName()+"."+name+"."+field.getName()+" of type "+fieldClass);
+                //System.out.println("Trying to get the Object "+name+"+"+field.getName()+" of type "+fieldClass+" from "+getFullName());
                 Idea o = get(name+"."+field.getName());
                 if (o == null) {
                     System.out.println("I didn't found "+getFullName()+"."+name+"."+field.getName()+" ... I only know:");
@@ -788,31 +793,34 @@ public class Idea {
                     }
                     else if (field.getType().getCanonicalName().equals("java.util.List")) {
                         List out = new ArrayList();
-                        for (Idea i : ((Idea) o).getL()) {
+                        for (Idea i : o.getL()) {
                             ParameterizedType type = (ParameterizedType) field.getGenericType();
                             String stype = type.getActualTypeArguments()[0].getTypeName();
-                            out.add(i.getObject(i.getFullName(), stype));
+                            out.add(i.getObject(i.getName(), stype));
                         }
                         try {
-                                field.set(ret,out);
+                            if (!field.isAccessible()) field.setAccessible(true);
+                            field.set(ret,out);
                         }
                         catch(Exception e) {
                              System.out.println("Field "+field.getName()+" should be of type "+field.getType().getCanonicalName()+" but I received "+value.toString()+": "+value.getClass().getCanonicalName()+"");
                         }
                     }
                     else {
-                        Object value = ((Idea) o).getValue();
+                        Object value = o.getValue();
                         if (value == null) System.out.println("Value of "+field.getName()+" is null");
                         value = convertObject(value,field.getType().getCanonicalName());
                         try {
+                            if (!field.isAccessible()) field.setAccessible(true);
                             field.set(ret,value);
                         }
                         catch(Exception e) {
-                            
+                            o = get(name);
                             Object out;
-                            if (((Idea)o).getL().size() > 0) out = ((Idea)o).getObject(field.getName(),field.getType().getCanonicalName());
+                            if (o.getL().size() > 0) out = o.getObject(field.getName(),field.getType().getCanonicalName());
                             else out = null;
                             try {
+                                if (!field.isAccessible()) field.setAccessible(true);
                                 field.set(ret,out);
                             } catch(Exception e2) {
                                 System.out.println(">> Field "+field.getName()+" should be of type "+field.getType().getCanonicalName()+" but I received "+value.toString()+": "+value.getClass().getCanonicalName()+"");
@@ -831,6 +839,12 @@ public class Idea {
     }
     
     public void addObject(Object obj, String fullname) {
+        addObject(obj,fullname,true);
+    }
+    
+    public void addObject(Object obj, String fullname, boolean reset) {
+        if (reset) reset();
+        //System.out.println("addObject: "+getFullName()+"+"+fullname);
         if (obj == null) {
             //Idea child = createIdea(ToString.getSimpleName(fullname),"null",0);
             Idea child = createIdea(getFullName()+"."+fullname,"null",0);
@@ -839,6 +853,9 @@ public class Idea {
         }
         if (listtoavoidloops.contains(obj) || already_exists(obj)) {
              Idea child = createIdea(getFullName()+"."+fullname,obj.toString(),2);
+             Idea alternative = repo.get(getFullName()+"."+fullname);
+             if (alternative != null) System.out.println("Ah ... I already found "+getFullName()+"."+fullname);
+             else System.out.println("Strange ... it seems that "+getFullName()+"."+fullname+" is already in the repo but I can't find it");
              add(child);
              return;            
         }
@@ -877,12 +894,12 @@ public class Idea {
                 this.add(anode);
             } 
             else {
-                //Idea onode = createIdea(ToString.getSimpleName(fullname),"null",0);
+                //Idea onode = createIdea(ToString.getSimpleName(fullname),"",0);
                 Idea onode = createIdea(getFullName()+"."+fullname,"",0);
                 for (int i=0;i<l;i++) {
                     Object oo = Array.get(obj,i);
                     //onode.addObject(oo,ToString.el(ToString.getSimpleName(fullname), i));
-                    onode.addObject(oo,ToString.el(getFullName()+"."+fullname, i));
+                    onode.addObject(oo,ToString.el(fullname,i),false);
                     listtoavoidloops.add(obj);
                 }
                 this.add(onode);
@@ -890,6 +907,7 @@ public class Idea {
             return;
         }
         else if (obj instanceof List) {
+            //System.out.println("Creating idea for list "+getFullName()+"+"+fullname);
             List ll = (List) obj;
             String label = "";
             if (ll.size() > 0) label = "{"+ll.size()+"} of "+ll.get(0).getClass().getSimpleName();
@@ -898,8 +916,9 @@ public class Idea {
             Idea onode = createIdea(getFullName()+"."+fullname,label,0);
             int i=0;
             for (Object o : ll) {
-                //onode.addObject(o,ToString.el(ToString.getSimpleName(fullname),i));
-                onode.addObject(o,ToString.el(getFullName()+"."+fullname,i));
+                //System.out.println("Creating list item "+ToString.el(ToString.getSimpleName(fullname),i)+" with object of type "+o.getClass().getCanonicalName());
+                onode.addObject(o,ToString.el(ToString.getSimpleName(fullname),i),false);
+                //onode.addObject(o,ToString.el(fullname,i));
                 listtoavoidloops.add(obj);
                 i++;
             }
@@ -914,7 +933,8 @@ public class Idea {
         }
         else {
             //Idea ao = createIdea(ToString.getSimpleName(fullname),"null",0);
-            Idea ao = createIdea(getFullName()+"."+fullname,"",0);
+            //Idea ao = createIdea(getFullName()+"."+fullname,"",0);
+            Idea ao = createIdea(getFullName()+"."+ToString.getSimpleName(fullname),"",0);
             listtoavoidloops.add(obj);
             Field[] fields = obj.getClass().getDeclaredFields();
             for (Field field : fields) {
@@ -926,11 +946,31 @@ public class Idea {
                         fo = field.get(obj);
                     } catch (Exception e) {
                         e.printStackTrace();} 
-                    if (!already_exists(fo))
-                        ao.addObject(fo,getFullName()+"."+fullname+"."+fname);  
+                    if (!already_exists(fo)) {
+                        //System.out.println("getFullName(): "+getFullName()+"+"+ToString.getSimpleName(fullname)+"+"+fname);
+                        //ao.addObject(fo,ToString.getSimpleName(fullname)+"."+fname);  
+                        ao.addObject(fo,fname,false);  
+                    }    
                     else {
-                        Idea fi = createIdea(getFullName()+"."+fullname+"."+fname,"",2);
-                        //System.out.println("Idea "+fullname+"."+fname+" of type "+fo.getClass().getCanonicalName()+" already exists ...");
+                        String ideaname = getFullName()+"."+ToString.getSimpleName(fullname)+"."+fname;
+                        Idea fi = createIdea(ideaname,"",2);
+                        Idea alternative2 = null;
+                        if (!Modifier.isStatic(field.getModifiers())) {
+                            for (Map.Entry<String,Idea> entry : repo.entrySet()) {
+                                String key = entry.getKey();
+                                Idea v = entry.getValue();
+                                if (ToString.getSimpleName(ideaname).equals(ToString.getSimpleName(key))) {
+                                    System.out.println(ideaname+" "+key);
+                                }
+                            }
+                            System.out.println(fo.getClass().getCanonicalName());
+                            Idea alternative = repo.get(ideaname);
+                            if (alternative != null) System.out.println("Ah ... I already found "+ideaname);
+                            else System.out.println("Strange ... it seems that "+ideaname+" is already in the repo but I can't find it");
+                        }
+                        ao.add(fi);
+                        //System.out.println("Idea "+ideaname+" of type "+fo.getClass().getCanonicalName()+" already exists ...");
+                        //System.out.println(">>>>"+getFullName()+"+"+ToString.getSimpleName(fullname)+"+"+fname);
                     }
                 } catch (Exception e) {
                 }   

@@ -58,6 +58,40 @@ public class ToString {
         else if (n instanceof String) {
             s = (String) n;
         }
+        else if (n instanceof double[]) {
+            double[] value = (double[]) n;
+            if (value.length == 1)
+                s = String.format("%4.2f",value[0]);
+            else if (value.length == 2)
+                s = String.format("%4.2f,%4.2f",value[0],value[1]);
+            else if (value.length == 3)
+                s = String.format("%4.2f,%4.2f,%4.2f",value[0],value[1],value[2]);
+            else if (value.length == 4)
+                s = String.format("%4.2f,%4.2f,%4.2f,%4.2f",value[0],value[1],value[2],value[3]);
+            else if (value.length == 5)
+                s = String.format("%4.2f,%4.2f,%4.2f,%4.2f,%4.2f",value[0],value[1],value[2],value[3],value[4]);
+            else if (value.length == 6)
+                s = String.format("%4.2f,%4.2f,%4.2f,%4.2f,%4.2f,%4.2f",value[0],value[1],value[2],value[3],value[4],value[5]);
+            else
+                s = String.format("%4.2f,%4.2f,%4.2f,%4.2f,%4.2f,%4.2f...",value[0],value[1],value[2],value[3],value[4],value[5]);
+        }
+        else if (n instanceof float[]) {
+            float[] value = (float[]) n;
+            if (value.length == 1)
+                s = String.format("%4.2f",value[0]);
+            else if (value.length == 2)
+                s = String.format("%4.2f,%4.2f",value[0],value[1]);
+            else if (value.length == 3)
+                s = String.format("%4.2f,%4.2f,%4.2f",value[0],value[1],value[2]);
+            else if (value.length == 4)
+                s = String.format("%4.2f,%4.2f,%4.2f,%4.2f",value[0],value[1],value[2],value[3]);
+            else if (value.length == 5)
+                s = String.format("%4.2f,%4.2f,%4.2f,%4.2f,%4.2f",value[0],value[1],value[2],value[3],value[4]);
+            else if (value.length == 6)
+                s = String.format("%4.2f,%4.2f,%4.2f,%4.2f,%4.2f,%4.2f",value[0],value[1],value[2],value[3],value[4],value[5]);
+            else
+                s = String.format("%4.2f,%4.2f,%4.2f,%4.2f,%4.2f,%4.2f...",value[0],value[1],value[2],value[3],value[4],value[5]);
+        }
         return(s);
     }
     

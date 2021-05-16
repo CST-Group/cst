@@ -15,6 +15,7 @@ import java.lang.reflect.Field;
 import java.lang.reflect.ParameterizedType;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 import javax.swing.tree.DefaultMutableTreeNode;
@@ -129,10 +130,16 @@ public class TestIdea {
         System.out.println(i_nt.toStringFull());
         double[] ntr = (double[]) i_nt.getObject("d","double[]");
         System.out.println("nt: "+nt[0]+" "+nt[1]+" "+nt[2]);
-        List<TestComplexMemoryObjectInfo> l = new ArrayList<TestComplexMemoryObjectInfo>();
+        l = new ArrayList<TestComplexMemoryObjectInfo>();
         l.add(new TestComplexMemoryObjectInfo());
         l.add(new TestComplexMemoryObjectInfo());
         l.add(new TestComplexMemoryObjectInfo());
+        l.get(1).complextestlist2.set(0, 7.88);
+        l.get(1).complextestlist2.set(1, 8.88);
+        l.get(2).complextestlist2.set(0, 5.44);
+        l.get(2).complextestlist2.set(1, 6.44);
+        System.out.println("Testing if complextestlist2 is there ..."+l.get(1).complextestlist2.get(0)+" "+l.get(2).complextestlist2.get(1));
+        
         
         Idea node = Idea.createIdea("root","", 0);
         Field stringListField=null;
@@ -149,6 +156,14 @@ public class TestIdea {
         List<TestComplexMemoryObjectInfo> l3;
         if (l2 != null) l3 = Arrays.asList(l2);
         else System.out.println("Unfortunately I was not able to recover the list");
+        List<String> ls = new ArrayList<>();
+        for (String s : Idea.repo.keySet()) {
+            ls.add(s);
+        }
+        Collections.sort(ls);
+        for (String s : ls) {
+            System.out.println(s);
+        }
     }
     
 }
