@@ -129,6 +129,14 @@ artifacts
     archives javadocJar, sourcesJar, uberJar
 }
 
+publishing {
+    publications {
+        mavenJava(MavenPublication) {
+            from components.java
+        }
+    }
+}
+
 jacocoTestReport {
     reports {
         xml.enabled true
