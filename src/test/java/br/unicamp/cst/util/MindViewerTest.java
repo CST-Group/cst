@@ -62,7 +62,7 @@ public class MindViewerTest {
         System.out.println("MindViewerTest: running for 60s ");
         // ov.updateTree(m);  
         
-        Thread.sleep(60000);
+        Thread.sleep(1000);
         
         ov.setVisible(false);
     }

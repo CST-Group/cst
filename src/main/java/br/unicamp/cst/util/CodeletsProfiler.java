@@ -3,14 +3,12 @@ package br.unicamp.cst.util;
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileWriter;
-import java.util.Arrays;
-import java.util.Collection;
 import java.util.concurrent.ConcurrentLinkedQueue;
-import java.util.concurrent.atomic.AtomicBoolean;
 
 import br.unicamp.cst.core.entities.Codelet;
 import br.unicamp.cst.core.entities.Memory;
-import br.unicamp.cst.core.entities.Mind;
+import br.unicamp.cst.core.entities.MemoryContainer;
+import br.unicamp.cst.core.entities.MemoryObject;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import java.util.List;
@@ -35,7 +33,10 @@ public class CodeletsProfiler {
     private Integer queueSize;
     private long lastTimeMillis;
     private ConcurrentLinkedQueue<String> queue;  
-    private Gson gson = new GsonBuilder().setPrettyPrinting().create();
+    private Gson gson = //new GsonBuilder().setPrettyPrinting().create();
+            new GsonBuilder().registerTypeAdapter(Memory.class, new InterfaceAdapter<MemoryObject>())
+                             .registerTypeAdapter(Memory.class, new InterfaceAdapter<MemoryContainer>())
+                             .setPrettyPrinting().create();
     private FileFormat fileFormat;
     public enum FileFormat {CSV, JSON};
 

@@ -58,6 +58,13 @@ public class ToString {
         else if (n instanceof String) {
             s = (String) n;
         }
+        return(s);
+    }
+    
+    public static String fromArray(Object n) {
+        String s=null;
+        if (n == null)
+            s = "<NULL>";
         else if (n instanceof double[]) {
             double[] value = (double[]) n;
             if (value.length == 1)
@@ -72,7 +79,7 @@ public class ToString {
                 s = String.format("%4.2f,%4.2f,%4.2f,%4.2f,%4.2f",value[0],value[1],value[2],value[3],value[4]);
             else if (value.length == 6)
                 s = String.format("%4.2f,%4.2f,%4.2f,%4.2f,%4.2f,%4.2f",value[0],value[1],value[2],value[3],value[4],value[5]);
-            else
+            else if (value.length > 6)
                 s = String.format("%4.2f,%4.2f,%4.2f,%4.2f,%4.2f,%4.2f...",value[0],value[1],value[2],value[3],value[4],value[5]);
         }
         else if (n instanceof float[]) {
@@ -89,7 +96,7 @@ public class ToString {
                 s = String.format("%4.2f,%4.2f,%4.2f,%4.2f,%4.2f",value[0],value[1],value[2],value[3],value[4]);
             else if (value.length == 6)
                 s = String.format("%4.2f,%4.2f,%4.2f,%4.2f,%4.2f,%4.2f",value[0],value[1],value[2],value[3],value[4],value[5]);
-            else
+            else if (value.length > 6)
                 s = String.format("%4.2f,%4.2f,%4.2f,%4.2f,%4.2f,%4.2f...",value[0],value[1],value[2],value[3],value[4],value[5]);
         }
         return(s);

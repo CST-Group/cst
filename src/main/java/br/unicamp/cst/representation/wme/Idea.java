@@ -946,6 +946,7 @@ public class Idea {
                         fo = field.get(obj);
                     } catch (Exception e) {
                         e.printStackTrace();} 
+                    if (field.getName().equals("complextest")) System.out.println("complextest: "+fo.toString());
                     if (!already_exists(fo)) {
                         //System.out.println("getFullName(): "+getFullName()+"+"+ToString.getSimpleName(fullname)+"+"+fname);
                         //ao.addObject(fo,ToString.getSimpleName(fullname)+"."+fname);  
