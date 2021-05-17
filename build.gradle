@@ -38,32 +38,32 @@ dependencies {
    
    api 'com.google.code.gson:gson:2.8.6'
    //api 'org.slf4j:slf4j-api:1.7.5'
-   implementation 'net.openhft:compiler:2.3.0'  // Used by util/CodeBuilder.java
+   api 'net.openhft:compiler:2.3.0'  // Used by util/CodeBuilder.java
    //implementation 'com.google.code.gson:gson:2.7'
    //implementation 'org.slf4j:slf4j-api:1.7.5'
    //implementation 'net.openhft:compiler:2.3.0'
    
-   implementation group: 'org.jfree', name: 'jfreechart', version: '1.0.19'
-   implementation group: 'org.json', name: 'json', version: '20160212'
-   implementation group: 'net.sf.jung', name: 'jung-algorithms', version: '2.0.1'
-   implementation group: 'net.sf.jung', name: 'jung-graph-impl', version: '2.0.1'
-   implementation group: 'net.sf.jung', name: 'jung-visualization', version: '2.0.1'
-   implementation group: 'net.sf.jung', name: 'jung-api', version: '2.0.1'
-   implementation group: 'org.opt4j', name: 'opt4j-core', version: '3.1'  // Used in GLAS
-   implementation group: 'org.opt4j', name: 'opt4j-optimizers', version: '3.1'
-   implementation group: 'org.opt4j', name: 'opt4j-viewer', version: '3.1' 
-   implementation group: 'org.opt4j', name: 'opt4j-benchmarks', version: '3.1'
-   implementation group: 'org.opt4j', name: 'opt4j-operators', version: '3.1'
-   implementation group: 'org.opt4j', name: 'opt4j-satdecoding', version: '3.1'
-   implementation group: 'org.opt4j', name: 'opt4j-tutorial', version: '3.1'
-   implementation 'org.antlr:antlr4-runtime:4.5.3' // Used in OwrlBaseListener
-   implementation 'ch.qos.logback:logback-classic:1.0.11' // Used in JSoarCodelet
+   api group: 'org.jfree', name: 'jfreechart', version: '1.0.19'
+   api group: 'org.json', name: 'json', version: '20160212'
+   api group: 'net.sf.jung', name: 'jung-algorithms', version: '2.0.1'
+   api group: 'net.sf.jung', name: 'jung-graph-impl', version: '2.0.1'
+   api group: 'net.sf.jung', name: 'jung-visualization', version: '2.0.1'
+   api group: 'net.sf.jung', name: 'jung-api', version: '2.0.1'
+   api group: 'org.opt4j', name: 'opt4j-core', version: '3.1'  // Used in GLAS
+   api group: 'org.opt4j', name: 'opt4j-optimizers', version: '3.1'
+   api group: 'org.opt4j', name: 'opt4j-viewer', version: '3.1' 
+   api group: 'org.opt4j', name: 'opt4j-benchmarks', version: '3.1'
+   api group: 'org.opt4j', name: 'opt4j-operators', version: '3.1'
+   api group: 'org.opt4j', name: 'opt4j-satdecoding', version: '3.1'
+   api group: 'org.opt4j', name: 'opt4j-tutorial', version: '3.1'
+   api 'org.antlr:antlr4-runtime:4.5.3' // Used in OwrlBaseListener
+   api 'ch.qos.logback:logback-classic:1.0.11' // Used in JSoarCodelet
    api 'com.soartech:jsoar-core:4.1.0'
    api 'com.soartech:jsoar-debugger:4.1.0'
    //api 'org.ros.rosjava_core:rosjava:0.3.6'
    //implementation 'com.github.rosjava:rosjava_core:0.3.7'
    api 'com.github.rosjava:rosjava_core:0.3.7'
-   implementation 'org.ros.rosjava_bootstrap:message_generation:0.3.3'
+   api 'org.ros.rosjava_bootstrap:message_generation:0.3.3'
    //implementation group: 'aopalliance', name: 'aopalliance', version: '1.0'
    //implementation group: 'asm', name: 'asm', version: '3.1'
    //implementation group: 'org.sonatype.sisu.inject', name: 'cglib', version: '2.2.1-v20090111'
