@@ -40,7 +40,15 @@ public class IdeaTreeNodeComparator implements Comparator {
             }
             return(n); 
         }
-
+        
+        int getNumber(String name) {
+            String[] splitter = name.split("\\[");
+            if (splitter.length > 1) {
+                return(getInt(splitter[1].split("\\]")[0].trim()));
+            }
+            else return Integer.MIN_VALUE;
+        }
+        
         @Override
         public int compare(Object o1, Object o2)
         {
@@ -48,9 +56,9 @@ public class IdeaTreeNodeComparator implements Comparator {
             IdeaTreeNode wo2 = (IdeaTreeNode) o2;
             TreeElement te1 = wo1.getTreeElement();
             TreeElement te2 = wo2.getTreeElement();
-            //System.out.println("Comparing "+te1.getNamePlusValuePlusId()+" "+te1.getIcon()+" with "+te2.getNamePlusValuePlusId()+" "+te2.getIcon());
-            int try1 = getInt(te1.getName().split("\\[")[0].trim());
-            int try2 = getInt(te2.getName().split("\\[")[0].trim());
+            int try1 = getNumber(te1.getName());
+            int try2 = getNumber(te2.getName());
+            System.out.println(te1.getName()+": "+try1+" "+te2.getName()+": "+try2);
             if (try1 != Integer.MIN_VALUE && try2 != Integer.MIN_VALUE) {
                 if (try1 > try2) return(1);
                 else return(-1);

@@ -40,14 +40,22 @@ public class IdeaComparator implements Comparator {
             }
             return(n); 
         }
+        
+        int getNumber(String name) {
+            String[] splitter = name.split("\\[");
+            if (splitter.length > 1) {
+                return(getInt(splitter[1].split("\\]")[0].trim()));
+            }
+            else return Integer.MIN_VALUE;
+        }
 
         @Override
         public int compare(Object o1, Object o2)
         {
             Idea i1 = (Idea) o1;
             Idea i2 = (Idea) o2;
-            int try1 = getInt(i1.getName().split("\\[")[0].trim());
-            int try2 = getInt(i2.getName().split("\\[")[0].trim());
+            int try1 = getNumber(i1.getName());
+            int try2 = getNumber(i2.getName());
             if (try1 != Integer.MIN_VALUE && try2 != Integer.MIN_VALUE) {
                 if (try1 > try2) return(1);
                 else return(-1);
