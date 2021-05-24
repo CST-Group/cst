@@ -15,13 +15,14 @@ import br.unicamp.cst.representation.owrl.Affordance;
 import br.unicamp.cst.representation.owrl.Property;
 import br.unicamp.cst.representation.owrl.QualityDimension;
 import br.unicamp.cst.representation.wme.Idea;
-import br.unicamp.cst.representation.wme.IdeaTreeNode;
 import br.unicamp.cst.util.TreeElement;
 import java.lang.reflect.Array;
 import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArrayList;
 import javax.swing.tree.DefaultMutableTreeNode;
 
@@ -107,6 +108,22 @@ public class ObjectTreeNode extends DefaultMutableTreeNode {
             }
             return(objNode);
         }
+//        else if (obj instanceof Map) {
+//            ConcurrentHashMap<? extends Object,? extends Object> ll = new ConcurrentHashMap<>((Map) obj);
+//            ll.forEach((k,v)->(k.toString(),v.toString()));
+//            String label = "";
+//            Iterator<? extends Object> i = ll.
+//            if (ll.size() > 0) label = "Map["+ll.size()+"] of "+ll.keySet().'.get(0).getClass().getSimpleName();
+//            else label = "Map[0]";
+//            DefaultMutableTreeNode objNode = addItem(fullname,label,obj,TreeElement.ICON_OBJECT);
+//            int i=0;
+//            for (Map.Entry<Object,Object> entry : ll.entrySet()) {
+//                DefaultMutableTreeNode node = addObject(o,ToString.el(fullname,i));
+//                objNode.add(node);
+//                i++;
+//            }
+//            return(objNode);
+//        }
         else if (obj instanceof AbstractObject) {
             AbstractObject ao = (AbstractObject) obj;
             DefaultMutableTreeNode objNode = addAbstractObject(fullname,ao,false); //addItem(fullname,ao.getName(),obj,TreeElement.ICON_OBJECT);

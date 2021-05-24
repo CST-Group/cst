@@ -635,7 +635,7 @@ public class Idea {
                 String fieldClass = field.getType().getCanonicalName();
                 Idea o = get(name+"."+field.getName());
                 if (o == null) {
-                    System.out.println("I was not able to get "+getFullName()+"."+name+"."+field.getName());
+                    //System.out.println("I was not able to get "+getFullName()+"."+name+"."+field.getName());
                 }
                 else {
                     if (field.getType().isArray()) {
@@ -695,11 +695,11 @@ public class Idea {
         return(ret);
     }
     
-    public void addObject(Object obj, String fullname) {
+    public synchronized void addObject(Object obj, String fullname) {
         addObject(obj,fullname,true);
     }
     
-    public void addObject(Object obj, String fullname, boolean reset) {
+    public synchronized void addObject(Object obj, String fullname, boolean reset) {
         if (reset) reset();
         if (obj == null) {
             Idea child = createIdea(getFullName()+"."+fullname,"null",0);
@@ -788,7 +788,7 @@ public class Idea {
                         fo = field.get(obj);
                     } catch (Exception e) {
                         e.printStackTrace();} 
-                    if (field.getName().equals("complextest")) System.out.println("complextest: "+fo.toString());
+                    //if (field.getName().equals("complextest")) System.out.println("complextest: "+fo.toString());
                     if (!already_exists(fo)) {
                         ao.addObject(fo,fname,false);  
                     }    
