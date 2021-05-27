@@ -132,6 +132,7 @@ public abstract class RosTopicOneShotPublisherCodelet<T> extends Codelet impleme
 				@Override
 				protected void loop() throws InterruptedException {
 					publisher.publish(message);
+                                        enabled = false;
 				}
 			});
             }        
