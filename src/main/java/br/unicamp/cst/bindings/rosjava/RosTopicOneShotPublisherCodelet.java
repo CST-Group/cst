@@ -131,8 +131,11 @@ public abstract class RosTopicOneShotPublisherCodelet<T> extends Codelet impleme
 		    connectedNode.executeCancellableLoop(new CancellableLoop() {			
 				@Override
 				protected void loop() throws InterruptedException {
-					publisher.publish(message);
+                                    if (enabled) {   
+                                        publisher.publish(message);
+                                        System.out.println("Message sent !!!");
                                         enabled = false;
+                                    }    
 				}
 			});
             }        
