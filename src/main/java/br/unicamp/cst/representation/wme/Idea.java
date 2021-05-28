@@ -668,7 +668,6 @@ public class Idea {
                     else {
                         Object value = o.getValue();
                         if (value == null) System.out.println("Warning: value of "+field.getName()+" is null");
-                        System.out.println(o.getName()+" "+o.getValue());
                         value = convertObject(value,field.getType().getCanonicalName());
                         try {
                             if (!field.isAccessible()) field.setAccessible(true);
