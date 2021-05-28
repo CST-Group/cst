@@ -447,6 +447,7 @@ public class Idea {
     
     public Object convertObject(Object origin, String className) {
         if (origin == null) return(null);
+        if (origin.getClass().getCanonicalName().equals("java.lang.String") && ((String)origin).equalsIgnoreCase("null")) return(null);
         String objectClass = origin.getClass().getName();
         if (className.equals("double") || className.equals("java.lang.Double")) {
             double value;
@@ -621,7 +622,7 @@ public class Idea {
                 return mountArray(i,classname);
             }
             else {
-                System.out.println("I was not able to get "+getFullName()+"."+name);
+                //System.out.println("I was not able to get "+getFullName()+"."+name);
                 return null;
             }
         }
@@ -667,6 +668,7 @@ public class Idea {
                     else {
                         Object value = o.getValue();
                         if (value == null) System.out.println("Warning: value of "+field.getName()+" is null");
+                        System.out.println(o.getName()+" "+o.getValue());
                         value = convertObject(value,field.getType().getCanonicalName());
                         try {
                             if (!field.isAccessible()) field.setAccessible(true);

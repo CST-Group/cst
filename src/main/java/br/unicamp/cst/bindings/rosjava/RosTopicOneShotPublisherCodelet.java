@@ -133,7 +133,6 @@ public abstract class RosTopicOneShotPublisherCodelet<T> extends Codelet impleme
 				protected void loop() throws InterruptedException {
                                     if (enabled) {   
                                         publisher.publish(message);
-                                        System.out.println("Message sent !!!");
                                         enabled = false;
                                     }    
 				}
