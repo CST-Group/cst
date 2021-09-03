@@ -899,13 +899,13 @@ public class SOARPlugin {
                 Identifier id2 = createIdWME(id, w.getName());
                 processInputLink(w, id2);
             }
-            List<Idea> properties = il.getL();
-            for (Idea p : properties) {
-                Identifier id3 = createIdWME(id, p.getName());
-                for (Idea qd : p.getL()) {
-                    processQualityDimensionAtCreation(qd, id3);
-                }
-            }
+//            List<Idea> properties = il.getL();
+//            for (Idea p : properties) {
+//                Identifier id3 = createIdWME(id, p.getName());
+//                for (Idea qd : p.getL()) {
+//                    processQualityDimensionAtCreation(qd, id3);
+//                }
+//            }
         }
 
     }
@@ -939,41 +939,41 @@ public class SOARPlugin {
 
     }
 
-    public void processQualityDimensionAtCreation(Idea qd, Identifier id) {
-        try {
-            if (qd.isNumber()) {
-                Double value = (Double) qd.getValue();
-                createFloatWME(id, qd.getName(), (double) value);
-            } else if (qd.isString()) {
-                String value = (String) qd.getValue();
-                createStringWME(id, qd.getName(), (String) value);
-            } else if (qd.isBoolean()) {
-                Boolean value = (Boolean) qd.getValue();
-                createStringWME(id, qd.getName(), value.toString());
-            } else if (qd.isHashMap()) {
-
-                Identifier id4 = createIdWME(id, qd.getName());
-
-                HashMap<String, Object> value = (HashMap) qd.getValue();
-
-                for (HashMap.Entry<String, Object> entry : value.entrySet()) {
-                    if (entry.getValue() instanceof Double ||
-                            entry.getValue() instanceof Integer ||
-                            entry.getValue() instanceof Float ||
-                            entry.getValue() instanceof Long) {
-                        createFloatWME(id4, entry.getKey(), (double) entry.getValue());
-                    } else if (entry.getValue() instanceof Boolean) {
-                        createStringWME(id4, entry.getKey(), entry.getValue().toString());
-                    } else if (entry.getValue() instanceof String) {
-                        createStringWME(id4, entry.getKey(), entry.getValue().toString());
-                    }
-                }
-            }
-
-        } catch (Exception ex) {
-            ex.printStackTrace();
-        }
-    }
+//    public void processQualityDimensionAtCreation(Idea qd, Identifier id) {
+//        try {
+//            if (qd.isNumber()) {
+//                Double value = (Double) qd.getValue();
+//                createFloatWME(id, qd.getName(), (double) value);
+//            } else if (qd.isString()) {
+//                String value = (String) qd.getValue();
+//                createStringWME(id, qd.getName(), (String) value);
+//            } else if (qd.isBoolean()) {
+//                Boolean value = (Boolean) qd.getValue();
+//                createStringWME(id, qd.getName(), value.toString());
+//            } else if (qd.isHashMap()) {
+//
+//                Identifier id4 = createIdWME(id, qd.getName());
+//
+//                HashMap<String, Object> value = (HashMap) qd.getValue();
+//
+//                for (HashMap.Entry<String, Object> entry : value.entrySet()) {
+//                    if (entry.getValue() instanceof Double ||
+//                            entry.getValue() instanceof Integer ||
+//                            entry.getValue() instanceof Float ||
+//                            entry.getValue() instanceof Long) {
+//                        createFloatWME(id4, entry.getKey(), (double) entry.getValue());
+//                    } else if (entry.getValue() instanceof Boolean) {
+//                        createStringWME(id4, entry.getKey(), entry.getValue().toString());
+//                    } else if (entry.getValue() instanceof String) {
+//                        createStringWME(id4, entry.getKey(), entry.getValue().toString());
+//                    }
+//                }
+//            }
+//
+//        } catch (Exception ex) {
+//            ex.printStackTrace();
+//        }
+//    }
     
     /* -----------------------------------------------------------------------
     Beginning of JavaBeans Support methods

@@ -42,6 +42,8 @@ public class MemoryViewerTest {
         MemoryViewer mv2 = new MemoryViewer(mo);
         mv2.setVisible(true);
         rob.delay(5000);
+        mv.setVisible(false);
+        mv2.setVisible(false);
     }    
     
     Robot startRobot() {

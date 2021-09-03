@@ -37,7 +37,8 @@ public class TestIdeaPanel {
         
         try {
            Thread.sleep(2000);
-        } catch (Exception e) {}   
+        } catch (Exception e) {} 
+        frame.setVisible(false);
     }
     
 }    

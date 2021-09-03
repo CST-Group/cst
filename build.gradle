@@ -10,7 +10,7 @@ description = "CST is the Cognitive Systems Toolkit, a toolkit for the construct
 
 sourceCompatibility = 1.8
 targetCompatibility = 1.8
-version = '0.6.2'
+version = '0.7.0'
 
 repositories {
 	flatDir {
@@ -18,7 +18,7 @@ repositories {
     }
     mavenCentral()
     maven { 
-    	url "https://github.com/rosjava/rosjava_mvn_repo/raw/master"
+     	url "https://github.com/rosjava/rosjava_mvn_repo/raw/master"
     }
     maven {
       url "https://repository.springsource.com/maven/bundles/release"
@@ -116,6 +116,7 @@ task sourcesJar(type: Jar) {
     }
 }
 task uberJar(type: Jar) {
+    duplicatesStrategy = DuplicatesStrategy.EXCLUDE    
     archiveClassifier = 'full'
     from sourceSets.main.output
     dependsOn configurations.runtimeClasspath
@@ -139,6 +140,6 @@ publishing {
 
 jacocoTestReport {
     reports {
-        xml.enabled true
+        xml.required = true
     }
 }
