@@ -426,7 +426,7 @@ public abstract class Codelet implements Runnable {
 	 *            the type of memories to be fetched from the output.
 	 * @return the list of all memory objects in output of a given type.
 	 */
-	private synchronized ArrayList<Memory> getOutputsOfType(String type) {
+	public synchronized ArrayList<Memory> getOutputsOfType(String type) {
 		ArrayList<Memory> outputsOfType = new ArrayList<Memory>();
 
 		if (outputs != null && outputs.size() > 0)
