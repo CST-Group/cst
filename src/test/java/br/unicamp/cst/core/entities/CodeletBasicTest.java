@@ -1,23 +1,20 @@
 package br.unicamp.cst.core.entities;
 
 import br.unicamp.cst.core.exceptions.CodeletActivationBoundsException;
-import org.junit.Test;
-import org.opt4j.benchmarks.M;
-
+import br.unicamp.cst.core.exceptions.CodeletThresholdBoundsException;
+import java.util.Arrays;
+import java.util.List;
 import java.io.ByteArrayOutputStream;
 import java.io.PrintStream;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
 
+import org.junit.Test;
 import static org.junit.Assert.*;
 
 /**
  * @author wander
  *
  */
-public class CodeletBasicTests {
+public class CodeletBasicTest {
     // This class contains tests covering some core Codelet methods
     Codelet testCodelet = new Codelet() {
 
@@ -54,7 +51,9 @@ public class CodeletBasicTests {
         String actualMessage = exception.getMessage();
 
         assertTrue(actualMessage.contains(expectedMessage));
+        assertEquals(1.0, testCodelet.getActivation(), 0);
     }
+
     @Test
     public void lowerActivationBoundException(){
         Exception exception = assertThrows(CodeletActivationBoundsException.class, () -> {
@@ -64,6 +63,7 @@ public class CodeletBasicTests {
         String actualMessage = exception.getMessage();
 
         assertTrue(actualMessage.contains(expectedMessage));
+        assertEquals(0.0, testCodelet.getActivation(), 0);
     }
 
     @Test
@@ -145,16 +145,26 @@ public class CodeletBasicTests {
     }
 
     @Test
+    public void getOutputTest(){
+        List<Memory> dummyOutputs = Arrays.asList(new MemoryObject(), new MemoryObject());
+        dummyOutputs.get(0).setType("testName");
+        testCodelet.addOutputs(dummyOutputs);
+        assertEquals(dummyOutputs.get(0), testCodelet.getOutput("testName"));
+    }
+
+    @Test
+    public void getOutputNullReturnTest(){
+        List<Memory> dummyOutputs = Arrays.asList(new MemoryObject(), new MemoryObject());
+        testCodelet.addOutputs(dummyOutputs);
+        assertNull(testCodelet.getOutput("testName"));
+    }
+
+    @Test
     public void getOutputEnableFalseTest(){
         List<Memory> dummyOutputs = Arrays.asList(new MemoryObject(), new MemoryObject());
         testCodelet.setOutputs(dummyOutputs);
         testCodelet.getOutput("testType", 3);
-        //assertFalse(testCodelet);
-        //testCodelet.
 
-
-
-        //System.out.println("Hello Baeldung Readers!!");
 
         ByteArrayOutputStream outputStreamCaptor = new ByteArrayOutputStream();
         System.setOut(new PrintStream(outputStreamCaptor));
@@ -202,7 +212,24 @@ public class CodeletBasicTests {
 
     @Test
     public void getBroadcastNullTest(){
-        assertNull(testCodelet.getBroadcast("test_name"));
+        assertNull(testCodelet.getBroadcast("testName"));
+    }
+
+    @Test
+    public void getBroadcastTypeTest(){
+        List<Memory> dummyOutputs = Arrays.asList(new MemoryObject(), new MemoryObject());
+        dummyOutputs.get(0).setType("testName");
+        testCodelet.addBroadcasts(dummyOutputs);
+        assertEquals(dummyOutputs.get(0), testCodelet.getBroadcast("testName", 0));
+    }
+
+    @Test
+    public void getBroadcastTypeIndexTest(){
+        List<Memory> dummyOutputs = Arrays.asList(new MemoryObject(), new MemoryObject());
+        dummyOutputs.get(0).setType("testName");
+        dummyOutputs.get(1).setType("testName");
+        testCodelet.addBroadcasts(dummyOutputs);
+        assertEquals(dummyOutputs.get(1), testCodelet.getBroadcast("testName", 1));
     }
 
     @Test
@@ -237,6 +264,66 @@ public class CodeletBasicTests {
         assertEquals(expectedString, testCodelet.toString());
     }
 
+    @Test
+    public void setThresholdTest(){
+        try {
+            testCodelet.setThreshold(0.5);
+        } catch (CodeletThresholdBoundsException e) {
+            e.printStackTrace();
+        }
+        assertEquals(0.5, testCodelet.getThreshold(), 0);
+    }
+
+    @Test
+    public void upperThresholdBoundTest(){
+        Exception exception = assertThrows(CodeletThresholdBoundsException.class, () -> {
+            testCodelet.setThreshold(2.0);
+        });
+        String expectedMessage = "Codelet threshold set to value > 1.0";
+        String actualMessage = exception.getMessage();
+
+        assertTrue(actualMessage.contains(expectedMessage));
+        assertEquals(1.0, testCodelet.getThreshold(), 0);
+
+    }
+
+    @Test
+    public void lowerThresholdBoundTest(){
+        Exception exception = assertThrows(CodeletThresholdBoundsException.class, () -> {
+            testCodelet.setThreshold(-1.0);
+        });
+        String expectedMessage = "Codelet threshold set to value < 0.0";
+        String actualMessage = exception.getMessage();
+
+        assertTrue(actualMessage.contains(expectedMessage));
+        assertEquals(0.0, testCodelet.getThreshold(), 0);
+    }
+
+    @Test
+    public void getTimeStepTest(){
+        testCodelet.setTimeStep(222);
+        assertEquals(222, testCodelet.getTimeStep());
+    }
+
+
+    @Test
+    public void runProfilingTest(){
+        testCodelet.setProfiling(true);
+
+        ByteArrayOutputStream outputStreamCaptor = new ByteArrayOutputStream();
+        System.setOut(new PrintStream(outputStreamCaptor));
+
+        Mind mind = new Mind();
+        mind.insertCodelet(testCodelet);
+        mind.start();
+        try {
+            Thread.sleep(1000);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+
+        assertTrue(testCodelet.isProfiling());
+    }
 
 
 }
