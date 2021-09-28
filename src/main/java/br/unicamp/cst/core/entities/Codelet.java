@@ -21,8 +21,10 @@ import java.util.concurrent.locks.ReentrantLock;
 import br.unicamp.cst.core.exceptions.CodeletActivationBoundsException;
 import br.unicamp.cst.core.exceptions.CodeletThresholdBoundsException;
 import br.unicamp.cst.core.exceptions.MemoryObjectNotFoundException;
+import br.unicamp.cst.util.CodeletsProfiler;
 import br.unicamp.cst.util.ExecutionTimeWriter;
 import br.unicamp.cst.util.ProfileInfo;
+import br.unicamp.cst.util.CodeletsProfiler.FileFormat;
 
 /**
  * The <b><i>Codelet</i></b> class, together with the <b><i>MemoryObject</i></b>
@@ -136,6 +138,11 @@ public abstract class Codelet implements Runnable {
 	 */
 	private List<ProfileInfo> profileInfo = new ArrayList<>();
 
+        /**
+	 * Codelet profiler
+	 */
+	private CodeletsProfiler codeletProfiler;
+
 	/**
 	 * When first activated, the thread containing this codelet runs the proc()
 	 * method
@@ -169,6 +176,9 @@ public abstract class Codelet implements Runnable {
 	 */
 	public synchronized void stop() {
 		this.setLoop(false);
+		if (Codelet.this.codeletProfiler != null) {
+			Codelet.this.codeletProfiler.finishProfile(Codelet.this);
+		}
 	}
 
 	/**
@@ -739,6 +749,33 @@ public abstract class Codelet implements Runnable {
 	public synchronized void setProfiling(boolean isProfiling) {
 		this.isProfiling = isProfiling;
 	}
+	
+	/**
+	 * Sets Codelet Profiler
+	 * 
+	 * @param filePath 
+	 * 			path to create file
+	 * @param fileName
+	 * 			name file
+	 * @param mindIdentifier
+	 * 			mind identifier in file
+	 * @param queueSize
+	 * 			max queue size which a write in file must be done
+	 * @param intervalTimeMillis
+	 * 			max interval in millis which a write in file must be done
+	 * @param fileFormat
+	 * 			desired file format CSV or JSON
+	 * 		  
+	 */
+	public void setCodeletProfiler(String filePath, String fileName, String mindIdentifier,Integer queueSize, Long intervalTimeMillis, FileFormat fileFormat) {
+		if (intervalTimeMillis == null) {
+		  this.codeletProfiler = new CodeletsProfiler(filePath, fileName, mindIdentifier, queueSize, fileFormat);
+		} else if (queueSize == null) {
+			this.codeletProfiler = new CodeletsProfiler(filePath, fileName, mindIdentifier, intervalTimeMillis, fileFormat);
+		} else {
+			this.codeletProfiler = new CodeletsProfiler(filePath, fileName, mindIdentifier, queueSize, intervalTimeMillis, fileFormat);
+		}		
+	}
 
 	private class CodeletTimerTask extends TimerTask {
 
@@ -773,12 +810,13 @@ public abstract class Codelet implements Runnable {
 
 			} finally {
 
-				if (shouldLoop())
+				if (shouldLoop()) 
 					timer.schedule(new CodeletTimerTask(), timeStep);
-
+				if (Codelet.this.codeletProfiler != null) {
+					Codelet.this.codeletProfiler.profile(Codelet.this);
+				}
 				if (isProfiling) {
-
-					endTime = System.currentTimeMillis();
+                    endTime = System.currentTimeMillis();
 					duration = (endTime - startTime);
 					ProfileInfo pi = new ProfileInfo(duration, startTime, laststarttime);
 					profileInfo.add(pi);
@@ -798,6 +836,7 @@ public abstract class Codelet implements Runnable {
 					}
 
 				}
+                                
 
 			}
 
