@@ -16,11 +16,9 @@ import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
 import java.lang.reflect.ParameterizedType;
 import java.text.SimpleDateFormat;
-//import java.lang.reflect.InaccessibleObjectException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.TimeZone;
@@ -622,7 +620,6 @@ public class Idea {
                 return mountArray(i,classname);
             }
             else {
-                //System.out.println("I was not able to get "+getFullName()+"."+name);
                 return null;
             }
         }
@@ -789,7 +786,6 @@ public class Idea {
                         fo = field.get(obj);
                     } catch (Exception e) {
                         e.printStackTrace();} 
-                    //if (field.getName().equals("complextest")) System.out.println("complextest: "+fo.toString());
                     if (!already_exists(fo)) {
                         ao.addObject(fo,fname,false);  
                     }    

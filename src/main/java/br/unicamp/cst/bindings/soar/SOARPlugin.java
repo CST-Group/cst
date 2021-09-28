@@ -16,7 +16,6 @@ import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -752,22 +751,6 @@ public class SOARPlugin {
 
     }
 
-//    public void printWME(Identifier id, int level) {
-//        Iterator<Wme> It = id.getWmes();
-//        while (It.hasNext()) {
-//            Wme wme = It.next();
-//            Identifier idd = wme.getIdentifier();
-//            Symbol a = wme.getAttribute();
-//            Symbol v = wme.getValue();
-//            Identifier testv = v.asIdentifier();
-//            for (int i = 0; i < level; i++) System.out.print("   ");
-//            if (testv != null) {
-//                System.out.print("(" + idd.toString() + "," + a.toString() + "," + v.toString() + ")\n");
-//                printWME(testv, level + 1);
-//            } else System.out.print("(" + idd.toString() + "," + a.toString() + "," + v.toString() + ")\n");
-//        }
-//    }
-
     public void printInputWMEs() {
         Identifier il = getAgent().getInputOutput().getInputLink();
         System.out.println("Input --->");
@@ -899,13 +882,6 @@ public class SOARPlugin {
                 Identifier id2 = createIdWME(id, w.getName());
                 processInputLink(w, id2);
             }
-//            List<Idea> properties = il.getL();
-//            for (Idea p : properties) {
-//                Identifier id3 = createIdWME(id, p.getName());
-//                for (Idea qd : p.getL()) {
-//                    processQualityDimensionAtCreation(qd, id3);
-//                }
-//            }
         }
 
     }
@@ -939,41 +915,6 @@ public class SOARPlugin {
 
     }
 
-//    public void processQualityDimensionAtCreation(Idea qd, Identifier id) {
-//        try {
-//            if (qd.isNumber()) {
-//                Double value = (Double) qd.getValue();
-//                createFloatWME(id, qd.getName(), (double) value);
-//            } else if (qd.isString()) {
-//                String value = (String) qd.getValue();
-//                createStringWME(id, qd.getName(), (String) value);
-//            } else if (qd.isBoolean()) {
-//                Boolean value = (Boolean) qd.getValue();
-//                createStringWME(id, qd.getName(), value.toString());
-//            } else if (qd.isHashMap()) {
-//
-//                Identifier id4 = createIdWME(id, qd.getName());
-//
-//                HashMap<String, Object> value = (HashMap) qd.getValue();
-//
-//                for (HashMap.Entry<String, Object> entry : value.entrySet()) {
-//                    if (entry.getValue() instanceof Double ||
-//                            entry.getValue() instanceof Integer ||
-//                            entry.getValue() instanceof Float ||
-//                            entry.getValue() instanceof Long) {
-//                        createFloatWME(id4, entry.getKey(), (double) entry.getValue());
-//                    } else if (entry.getValue() instanceof Boolean) {
-//                        createStringWME(id4, entry.getKey(), entry.getValue().toString());
-//                    } else if (entry.getValue() instanceof String) {
-//                        createStringWME(id4, entry.getKey(), entry.getValue().toString());
-//                    }
-//                }
-//            }
-//
-//        } catch (Exception ex) {
-//            ex.printStackTrace();
-//        }
-//    }
     
     /* -----------------------------------------------------------------------
     Beginning of JavaBeans Support methods
@@ -1070,8 +1011,7 @@ public class SOARPlugin {
     }
 
     public Object getJavaObject(Identifier id, Object parent, String package_with_beans_classes) {
-        //String commandType = command.getId();
-
+        
         Object javaObject = null;
         Class type = null;
 
@@ -1084,7 +1024,6 @@ public class SOARPlugin {
             Symbol v = wme.getValue();
             Identifier testv = v.asIdentifier();
             if (testv != null) { // The value is an identifier: recursion
-                //System.out.println("Class name: "+a.toString()+" "+package_with_beans_classes+"."+a.toString());
                 Object child = createJavaObject(package_with_beans_classes + "." + a.toString());
                 if (parent != null) setField(parent, a.toString(), child);
                 javaObject = getJavaObject(testv, child, package_with_beans_classes);
