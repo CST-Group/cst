@@ -31,11 +31,11 @@ import javax.swing.tree.DefaultTreeCellRenderer;
 public class MindRenderer extends DefaultTreeCellRenderer {
     
     DefaultMutableTreeNode texttobewritten = new DefaultMutableTreeNode();
-    boolean debug = false;
+    int format = 0;
     
-    public MindRenderer(boolean debugvalue) {
+    public MindRenderer(int format) {
         super();
-        debug = debugvalue;
+        this.format = format;
     }
     
     public String getSimpleName(String fullname) {
@@ -102,6 +102,12 @@ public class MindRenderer extends DefaultTreeCellRenderer {
             case TreeElement.ICON_AFFORDANCE:    
                 img = new ImageIcon(this.getClass().getClassLoader().getResource("codelet2.png"));
                 break;
+            case TreeElement.ICON_OBJECT2:
+                img = new ImageIcon(this.getClass().getClassLoader().getResource("object2.png"));
+                break;     
+            case TreeElement.ICON_OBJECT3:    
+                img = new ImageIcon(this.getClass().getClassLoader().getResource("object3.png"));
+                break;    
         }
         setOpenIcon(img);
         setClosedIcon(img);
@@ -109,8 +115,9 @@ public class MindRenderer extends DefaultTreeCellRenderer {
 
         String hex = "#" + Integer.toHexString(node.getColor().getRGB()).substring(2);
         String htmltext;
-        if (debug) htmltext = "<html><font color=\"" + hex + "\">" + node.getName()+" : "+node.getValue()+" ["+node.getId_node()+"]" + "</font></html>";
-        else htmltext = "<html><font color=\"" + hex + "\">" + getSimpleName(node.getName())+" : "+node.getValue()+"</font></html>";
+        if (format == 0) htmltext = "<html><font color=\"" + hex + "\">" + node.getName()+" : "+node.getValue()+" ["+node.getId_node()+"]" + "</font></html>";
+        else if (format == 1) htmltext = "<html><font color=\"" + hex + "\">" + getSimpleName(node.getName())+" : "+node.getValue()+"</font></html>";
+        else htmltext = "<html><font color=\"" + hex + "\">" + node.getName()+"</font></html>";
         objectNode = texttobewritten;
         objectNode.setUserObject(htmltext);
         value = objectNode;

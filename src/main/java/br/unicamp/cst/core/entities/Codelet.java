@@ -776,6 +776,11 @@ public abstract class Codelet implements Runnable {
 			this.codeletProfiler = new CodeletsProfiler(filePath, fileName, mindIdentifier, queueSize, intervalTimeMillis, fileFormat);
 		}		
 	}
+        
+        private void raiseException() throws MemoryObjectNotFoundException {
+            throw new MemoryObjectNotFoundException("This Codelet could not find a memory object it needs: "
+							+ Codelet.this.name);
+        }
 
 	private class CodeletTimerTask extends TimerTask {
 
@@ -798,8 +803,11 @@ public abstract class Codelet implements Runnable {
 					if (activation >= threshold)
 						proc();
 				} else {
-					throw new MemoryObjectNotFoundException("This Codelet could not find a memory object it needs: "
-							+ Codelet.this.name);
+                                     
+                                    raiseException();
+                                   
+//					throw new MemoryObjectNotFoundException("This Codelet could not find a memory object it needs: "
+//							+ Codelet.this.name);
 				}
 
 				enable_count = 0;

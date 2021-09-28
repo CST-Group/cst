@@ -34,6 +34,12 @@ public final class Property implements Entity {
         this(name);
         addQualityDimension(qd);
     }
+    
+    public Property(String name, Object value) {
+        this(name);
+        QualityDimension qd = new QualityDimension("value",value);
+        addQualityDimension(qd);
+    }
 
     public Property(String name, List<QualityDimension> qd) {
         setName(name);
@@ -50,6 +56,11 @@ public final class Property implements Entity {
 
     public void addQualityDimension(QualityDimension qd) {
         qualityDimensions.add(qd);
+    }
+    
+    public void addQualityDimension(String key, Object value) {
+        QualityDimension qd = new QualityDimension(key,value);
+        addQualityDimension(qd);
     }
 
     public String getName() {
@@ -123,14 +134,28 @@ public final class Property implements Entity {
         return results;
     }
     
-    public String toString(int level) {
+    public String toStringFull(int level) {
         String out="";
         out += name+"\n";
         for (QualityDimension qd : qualityDimensions) {
             for (int i=0;i<level;i++) out += "   ";
-            out += "- "+qd.toString(level+1);
+            out += "- "+qd.toStringFull(level+1);
         }
         return out;
+    }
+    
+    public String getResumedQDs(int limit) {
+        String result = "";
+        if (qualityDimensions.size() > 1) result = "(";
+        int n = 0;
+        for (QualityDimension qd : qualityDimensions) {
+            result += qd.getResumedValue();
+            if (n++ < qualityDimensions.size()) result += " ";
+        }
+        if (qualityDimensions.size() > 1) result += ")";
+        if (result.length() > limit)
+            result = result.substring(0, limit)+"...";
+        return(result);
     }
 
 }

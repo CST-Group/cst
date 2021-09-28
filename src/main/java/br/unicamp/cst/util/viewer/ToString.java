@@ -1,8 +1,13 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
+/***********************************************************************************************
+ * Copyright (c) 2012  DCA-FEEC-UNICAMP
+ * All rights reserved. This program and the accompanying materials
+ * are made available under the terms of the GNU Lesser Public License v3
+ * which accompanies this distribution, and is available at
+ * http://www.gnu.org/licenses/lgpl.html
+ * <p>
+ * Contributors:
+ * K. Raizer, A. L. O. Paraense, E. M. Froes, R. R. Gudwin - initial API and implementation
+ ***********************************************************************************************/
 package br.unicamp.cst.util.viewer;
 
 import br.unicamp.cst.util.TimeStamp;
@@ -37,6 +42,10 @@ public class ToString {
             byte b = (byte) n;
             s = String.format("%x", b);
         }
+        else if (n instanceof Short) {
+            short sh = (short) n;
+            s = String.format("%d", sh);
+        }
         else if (n instanceof Boolean) {
             boolean b = (boolean) n;
             if (b == true) s = "true";
@@ -52,9 +61,56 @@ public class ToString {
         return(s);
     }
     
+    public static String fromArray(Object n) {
+        String s=null;
+        if (n == null)
+            s = "<NULL>";
+        else if (n instanceof double[]) {
+            double[] value = (double[]) n;
+            if (value.length == 1)
+                s = String.format("%4.2f",value[0]);
+            else if (value.length == 2)
+                s = String.format("%4.2f,%4.2f",value[0],value[1]);
+            else if (value.length == 3)
+                s = String.format("%4.2f,%4.2f,%4.2f",value[0],value[1],value[2]);
+            else if (value.length == 4)
+                s = String.format("%4.2f,%4.2f,%4.2f,%4.2f",value[0],value[1],value[2],value[3]);
+            else if (value.length == 5)
+                s = String.format("%4.2f,%4.2f,%4.2f,%4.2f,%4.2f",value[0],value[1],value[2],value[3],value[4]);
+            else if (value.length == 6)
+                s = String.format("%4.2f,%4.2f,%4.2f,%4.2f,%4.2f,%4.2f",value[0],value[1],value[2],value[3],value[4],value[5]);
+            else if (value.length > 6)
+                s = String.format("%4.2f,%4.2f,%4.2f,%4.2f,%4.2f,%4.2f...",value[0],value[1],value[2],value[3],value[4],value[5]);
+        }
+        else if (n instanceof float[]) {
+            float[] value = (float[]) n;
+            if (value.length == 1)
+                s = String.format("%4.2f",value[0]);
+            else if (value.length == 2)
+                s = String.format("%4.2f,%4.2f",value[0],value[1]);
+            else if (value.length == 3)
+                s = String.format("%4.2f,%4.2f,%4.2f",value[0],value[1],value[2]);
+            else if (value.length == 4)
+                s = String.format("%4.2f,%4.2f,%4.2f,%4.2f",value[0],value[1],value[2],value[3]);
+            else if (value.length == 5)
+                s = String.format("%4.2f,%4.2f,%4.2f,%4.2f,%4.2f",value[0],value[1],value[2],value[3],value[4]);
+            else if (value.length == 6)
+                s = String.format("%4.2f,%4.2f,%4.2f,%4.2f,%4.2f,%4.2f",value[0],value[1],value[2],value[3],value[4],value[5]);
+            else if (value.length > 6)
+                s = String.format("%4.2f,%4.2f,%4.2f,%4.2f,%4.2f,%4.2f...",value[0],value[1],value[2],value[3],value[4],value[5]);
+        }
+        return(s);
+    }
+    
     public static String el(String name, int i) {
         String s = name +"["+i+"]";
         return(s);
     } 
+    
+    public static String getSimpleName(String fullname) {
+        String[] mc = fullname.split("\\.");
+        String simplename = mc[mc.length-1];
+        return (simplename);
+    }
     
 }

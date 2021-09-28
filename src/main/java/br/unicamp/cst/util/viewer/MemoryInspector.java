@@ -11,6 +11,11 @@
 package br.unicamp.cst.util.viewer;
 
 import br.unicamp.cst.core.entities.Memory;
+import br.unicamp.cst.representation.owrl.AbstractObject;
+import br.unicamp.cst.representation.owrl.Affordance;
+import br.unicamp.cst.representation.owrl.Property;
+import br.unicamp.cst.representation.owrl.QualityDimension;
+import br.unicamp.cst.representation.wme.Idea;
 import br.unicamp.cst.util.TimeStamp;
 import br.unicamp.cst.util.TreeElement;
 import java.awt.event.ActionEvent;
@@ -77,7 +82,7 @@ public class MemoryInspector extends javax.swing.JFrame {
         obj.add(ts_tn);
         DefaultTreeModel objTreeModel = new DefaultTreeModel(obj);
         objTree.setModel(objTreeModel);
-        objTree.setCellRenderer(new MindRenderer(false));
+        objTree.setCellRenderer(new MindRenderer(1));
         StartTimer();
         MouseListener ml;
         ml = new ObjectMouseAdapter(objTree);
@@ -199,6 +204,55 @@ public class MemoryInspector extends javax.swing.JFrame {
         }
     }
     
+    public void updateAffordance(Affordance a, String name) {
+        updateString("",name);
+    }
+    
+    public void updateQualityDimension(QualityDimension q, String name) {
+        updateString(q.getValue().toString(),name);
+    }
+    
+    public void updateProperty(Property p, String name) {
+        updateString(p.getResumedQDs(64),name);
+        List<QualityDimension> qds = p.getQualityDimensions();
+        for (QualityDimension q : qds) {
+            updateQualityDimension(q,name+"."+q.getName());
+        }
+    }
+    
+    public void updateAbstractObject(AbstractObject ao, String name, boolean setvalue) {
+        if (setvalue) updateString(ao.getName(),name);
+        else updateString("",name);
+        List<AbstractObject> parts = ao.getCompositeParts();
+        for (AbstractObject oo : parts) {
+            updateAbstractObject(oo,name+"."+oo.getName(),false);
+        }
+        List<AbstractObject> aggregates = ao.getAggregateParts();
+        for (AbstractObject oo : aggregates) {
+            updateAbstractObject(oo,name+"."+oo.getName(),false);
+        }
+        List<Property> props = ao.getProperties();
+        for (Property p : props) {
+            updateProperty(p,name+"."+p.getName());
+        }
+        List<Affordance> affordances = ao.getAffordances();
+        for (Affordance a : affordances) {
+            updateAffordance(a,name+"."+a.getName());
+        }
+    }
+    
+    public void updateIdea(Idea ao, String name) {
+        if (ao.getType() == 1) updateString(ao.getValue().toString(),name);
+        else {
+            if (!ao.getName().equals(ToString.getSimpleName(name))) updateString(ao.getName(),name);
+            else updateString("",name);
+        }
+        List<Idea> parts = ao.getL();
+        for (Idea oo : parts) {
+            updateIdea(oo,name+"."+oo.getName());
+        }
+    }
+    
     public void updateObject(Object o, String name) {
         if (!nodeAlreadyExists(name)) {
             includeNode(o,name);
@@ -217,6 +271,12 @@ public class MemoryInspector extends javax.swing.JFrame {
         }
         else if (o.getClass().isArray()) {
             updateArray(o,name);
+        }
+        else if (o instanceof AbstractObject) {
+            updateAbstractObject((AbstractObject)o,name,true);
+        }
+        else if (o instanceof Idea) {
+            updateIdea((Idea)o,name);
         }
         else {
             // if the object is not primitive, first update the object element
@@ -239,13 +299,15 @@ public class MemoryInspector extends javax.swing.JFrame {
     }
     
     public void updateTree(Memory m) {
+        if (m == null) return;
         String value;
         // update eval
         TreeElement teval = (TreeElement) ev_tn.getUserObject();
         value = String.format("%4.2f", m.getEvaluation());
         teval.setValue(value);
         // update timestamp
-        long timestamp = m.getTimestamp();
+        Long timestamp = m.getTimestamp();
+        if (timestamp == null) timestamp = 0L;
         String ts = TimeStamp.getStringTimeStamp(timestamp,"dd/MM/yyyy HH:mm:ss.SSS");
         TreeElement tts = (TreeElement) ts_tn.getUserObject();
         tts.setValue(ts);

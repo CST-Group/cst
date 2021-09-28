@@ -13,23 +13,21 @@ package br.unicamp.cst.motivational;
 import br.unicamp.cst.core.entities.Codelet;
 import br.unicamp.cst.core.entities.Memory;
 import br.unicamp.cst.core.exceptions.CodeletActivationBoundsException;
-import br.unicamp.cst.representation.owrl.AbstractObject;
-import br.unicamp.cst.representation.owrl.Property;
-import br.unicamp.cst.representation.owrl.QualityDimension;
+import br.unicamp.cst.representation.wme.Idea;
 
 import java.util.*;
 
 public abstract class AppraisalCodelet extends Codelet {
 
 
-    public static final String INPUT_ABSTRACT_OBJECT_MEMORY = "INPUT_ABSTRACT_OBJECT_MEMORY";
-    public static final String OUTPUT_ABSTRACT_OBJECT_MEMORY = "OUTPUT_ABSTRACT_OBJECT_MEMORY";
+    public static final String INPUT_IDEA_MEMORY = "INPUT_IDEA_MEMORY";
+    public static final String OUTPUT_IDEA_MEMORY = "OUTPUT_IDEA_MEMORY";
     public static final String OUTPUT_APPRAISAL_MEMORY = "OUTPUT_APPRAISAL_MEMORY";
 
 
     private String id;
-    private AbstractObject inputAbstractObject;
-    private AbstractObject outputAbstractObject;
+    private Idea inputAbstractObject;
+    private Idea outputAbstractObject;
     private Appraisal appraisal;
     private Memory inputAbstractObjectMO;
     private Memory outputAbstractObjectMO;
@@ -44,14 +42,14 @@ public abstract class AppraisalCodelet extends Codelet {
     @Override
     public void accessMemoryObjects() {
 
-        if (getInputAbstractObjectMO() == null) {
-            setInputAbstractObjectMO(this.getInput(INPUT_ABSTRACT_OBJECT_MEMORY, 0));
-            setInputAbstractObject((AbstractObject) getInputAbstractObjectMO().getI());
+        if (getInputIdeaMO() == null) {
+            setInputIdeaMO(this.getInput(INPUT_IDEA_MEMORY, 0));
+            setInputIdea((Idea) getInputIdeaMO().getI());
         }
 
-        if (getOutputAbstractObjectMO() == null) {
-            setOutputAbstractObjectMO(this.getOutput(OUTPUT_ABSTRACT_OBJECT_MEMORY, 0));
-            setOutputAbstractObject(getInputAbstractObject());
+        if (getOutputIdeaMO() == null) {
+            setOutputIdeaMO(this.getOutput(OUTPUT_IDEA_MEMORY, 0));
+            setOutputIdea(getInputIdea());
         }
 
         if (getOutputAppraisalMO() == null) {
@@ -63,35 +61,35 @@ public abstract class AppraisalCodelet extends Codelet {
 
     @Override
     public synchronized void calculateActivation() {
-        setInputAbstractObject((AbstractObject) getInputAbstractObjectMO().getI());
-        setAppraisal(appraisalGeneration(getInputAbstractObject().clone()));
+        setInputIdea((Idea) getInputIdeaMO().getI());
+        setAppraisal(appraisalGeneration(getInputIdea().clone()));
         getAppraisal().setName(getId());
 
-        Optional<Property> first = getInputAbstractObject().getProperties().stream().filter(property -> property.getName().equals(getId())).findFirst();
+        Optional<Idea> first = getInputIdea().getL().stream().filter(property -> property.getName().equals(getId())).findFirst();
 
         if (first.isPresent()) {
 
-            Property property = first.get();
+            Idea property = first.get();
 
-            QualityDimension evaluation = property.getQualityDimensions().stream().filter(quality -> quality.getName().equals("evaluation")).findFirst().get();
+            Idea evaluation = property.getL().stream().filter(quality -> quality.getName().equals("evaluation")).findFirst().get();
             evaluation.setValue(getAppraisal().getEvaluation());
 
-            QualityDimension currentState = property.getQualityDimensions().stream().filter(quality -> quality.getName().equals("currentStateEvaluation")).findFirst().get();
+            Idea currentState = property.getL().stream().filter(quality -> quality.getName().equals("currentStateEvaluation")).findFirst().get();
             currentState.setValue(getAppraisal().getCurrentStateEvaluation());
 
         } else {
 
-            List<QualityDimension> appraisalQ = new ArrayList<>();
+            List<Idea> appraisalQ = new ArrayList<>();
 
-            appraisalQ.add(new QualityDimension("evaluation", getAppraisal().getEvaluation()));
-            appraisalQ.add(new QualityDimension("currentStateEvaluation", getAppraisal().getCurrentStateEvaluation()));
+            appraisalQ.add(new Idea("evaluation", getAppraisal().getEvaluation(),1));
+            appraisalQ.add(new Idea("currentStateEvaluation", getAppraisal().getCurrentStateEvaluation(),1));
 
-            Property appraisalProperty = new Property(getId(), appraisalQ);
+            Idea appraisalProperty = new Idea(getId(), appraisalQ);
 
-            getInputAbstractObject().addProperty(appraisalProperty);
+            getInputIdea().add(appraisalProperty);
         }
 
-        setOutputAbstractObject(getInputAbstractObject());
+        setOutputIdea(getInputIdea());
 
         try {
             setActivation(getAppraisal().getEvaluation());
@@ -105,20 +103,20 @@ public abstract class AppraisalCodelet extends Codelet {
     public synchronized void proc(){
 
         getOutputAppraisalMO().setI(getAppraisal());
-        getOutputAbstractObjectMO().setI(getOutputAbstractObject());
+        getOutputIdeaMO().setI(getOutputIdea());
 
     }
 
 
 
-    public abstract Appraisal appraisalGeneration(AbstractObject inputAbstractObject);
+    public abstract Appraisal appraisalGeneration(Idea inputIdea);
 
-    public AbstractObject getInputAbstractObject() {
+    public Idea getInputIdea() {
         return inputAbstractObject;
     }
 
-    public void setInputAbstractObject(AbstractObject inputAbstractObject) {
-        this.inputAbstractObject = inputAbstractObject;
+    public void setInputIdea(Idea inputIdea) {
+        this.inputAbstractObject = inputIdea;
     }
 
     public Appraisal getAppraisal() {
@@ -129,12 +127,12 @@ public abstract class AppraisalCodelet extends Codelet {
         this.appraisal = appraisal;
     }
 
-    public Memory getInputAbstractObjectMO() {
+    public Memory getInputIdeaMO() {
         return inputAbstractObjectMO;
     }
 
-    public void setInputAbstractObjectMO(Memory inputAbstractObjectMO) {
-        this.inputAbstractObjectMO = inputAbstractObjectMO;
+    public void setInputIdeaMO(Memory inputIdeaMO) {
+        this.inputAbstractObjectMO = inputIdeaMO;
     }
 
     public String getId() {
@@ -145,20 +143,20 @@ public abstract class AppraisalCodelet extends Codelet {
         this.id = id;
     }
 
-    public Memory getOutputAbstractObjectMO() {
+    public Memory getOutputIdeaMO() {
         return outputAbstractObjectMO;
     }
 
-    public void setOutputAbstractObjectMO(Memory outputAbstractObjectMO) {
-        this.outputAbstractObjectMO = outputAbstractObjectMO;
+    public void setOutputIdeaMO(Memory outputIdeaMO) {
+        this.outputAbstractObjectMO = outputIdeaMO;
     }
 
-    public AbstractObject getOutputAbstractObject() {
+    public Idea getOutputIdea() {
         return outputAbstractObject;
     }
 
-    public void setOutputAbstractObject(AbstractObject outputAbstractObject) {
-        this.outputAbstractObject = outputAbstractObject;
+    public void setOutputIdea(Idea outputIdea) {
+        this.outputAbstractObject = outputIdea;
     }
 
     public Memory getOutputAppraisalMO() {

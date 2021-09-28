@@ -55,7 +55,7 @@ public class CodeletPanel extends javax.swing.JPanel {
         codelets.addCodelets(m,group);
         DefaultTreeModel codeletsTreeModel = new DefaultTreeModel(codelets);
         codeletsTree.setModel(codeletsTreeModel);
-        codeletsTree.setCellRenderer(new MindRenderer(false));
+        codeletsTree.setCellRenderer(new MindRenderer(1));
         StartTimer();
         MouseListener ml;
         ml = new MindMouseAdapter(codeletsTree);

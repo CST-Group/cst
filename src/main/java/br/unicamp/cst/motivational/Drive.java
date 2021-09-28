@@ -11,7 +11,6 @@
 
 package br.unicamp.cst.motivational;
 
-import br.unicamp.cst.core.entities.Memory;
 import br.unicamp.cst.util.viewer.ToString;
 
 import java.io.Serializable;

@@ -410,7 +410,7 @@ public class AbstractObjectEditor extends javax.swing.JFrame {
              if (!filename.equals("")) {
                 File logFile = new File(filename);
 	        BufferedWriter writer = new BufferedWriter(new FileWriter(logFile, true));
-                writer.write(root.toString());
+                writer.write(root.toStringFull());
                 writer.close();
              }
         } catch (Exception e) { e.printStackTrace(); }

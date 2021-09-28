@@ -180,7 +180,8 @@ public abstract class RosServiceClientCodelet<S,T> extends Codelet implements No
 		} catch (ServiceNotFoundException e) {
 			e.printStackTrace();
 		}
-		serviceMessageRequest = serviceClient.newMessage();
+                if (serviceClient != null) serviceMessageRequest = serviceClient.newMessage();
+                else System.out.println("ROSServiceClientCodelet: I was not able to create a new Service Client");
 	}
 
 	@Override
