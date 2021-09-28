@@ -11,15 +11,15 @@ import java.util.Observer;
 import javax.swing.ImageIcon;
 import javax.swing.JFileChooser;
 
-import br.unicamp.cst.representation.owrl.AbstractObject;
-import br.unicamp.cst.util.AbstractObjectEditor;
-import br.unicamp.cst.util.AbstractObjectEditorListener;
+import br.unicamp.cst.representation.wme.Idea;
+import br.unicamp.cst.util.wme.IdeaEditor;
+import br.unicamp.cst.util.wme.IdeaEditorListener;
 
 /**
  *
  * @author gudwin
  */
-public class SOARInspector extends javax.swing.JFrame implements Observer,AbstractObjectEditorListener {
+public class SOARInspector extends javax.swing.JFrame implements Observer,IdeaEditorListener {
     
     int debugstate = 0;
     JSoarCodelet SoarCodelet;
@@ -323,11 +323,11 @@ public class SOARInspector extends javax.swing.JFrame implements Observer,Abstra
     }//GEN-LAST:event_jWatchActionPerformed
 
     private void mInsertInputLinkActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_mInsertInputLinkActionPerformed
-        AbstractObject il = new AbstractObject("InputLink");
-        AbstractObjectEditor aoe = new AbstractObjectEditor(il);
+        Idea il = Idea.createIdea("InputLink","",0);
+        IdeaEditor aoe = new IdeaEditor(il,true);
         aoe.addListener(this);
         aoe.setVisible(true);
-        SoarCodelet.getJsoar().setInputLinkAO(il);
+        SoarCodelet.getJsoar().setInputLinkIdea(il);
     }//GEN-LAST:event_mInsertInputLinkActionPerformed
 
     private void mLoadRulesActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_mLoadRulesActionPerformed
@@ -439,8 +439,8 @@ public class SOARInspector extends javax.swing.JFrame implements Observer,Abstra
     }
     
     @Override
-    public void notifyRootChange(AbstractObject ao) {
-        SoarCodelet.getJsoar().setInputLinkAO(ao);
+    public void notifyRootChange(Idea ao) {
+        SoarCodelet.getJsoar().setInputLinkIdea(ao);
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables

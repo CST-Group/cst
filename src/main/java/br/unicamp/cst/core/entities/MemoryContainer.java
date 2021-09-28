@@ -118,6 +118,20 @@ public class MemoryContainer implements Memory {
 			return (null);
 		}
 	}
+        
+        /**
+	 * Gets the info of the memory which has the name passed.
+	 * 
+	 * @param name the name of the memory whose info is searched.
+	 * @return the info of the memory which has the name passed 
+         *          or null if it is not found.
+	 */
+	public synchronized Object getI(String name) {
+            for (Memory m : memories) {
+                if (m.getName().equals(name)) return(m.getI());
+            }
+            return(null);
+	}
 
 	/**
 	 * Gets the info of the memory filtered by the predicate.
@@ -262,6 +276,47 @@ public class MemoryContainer implements Memory {
 		}
 
 	}
+        
+        /**
+	 * Sets the info as the info and an evaluation passed to a Memory of the
+	 * type passed.
+	 * 
+	 * @param info
+	 *            the info.
+	 * @param evaluation
+	 *            the evaluation to set.
+	 * @param type
+	 *            the type of the Memory
+	 * @return the index of the memory
+	 */
+	public synchronized int setI(Object info, double evaluation, String type) {
+		int index = -1;
+		if (memories != null) {
+			boolean set = false;
+			for (int i = 0; i < memories.size(); i++) {
+				Memory memory = memories.get(i);
+				if (memory != null && memory instanceof MemoryObject) {
+					MemoryObject memoryObject = (MemoryObject) memory;
+					if (memoryObject.getName().equalsIgnoreCase(type)) {
+						memory.setI(info);
+						memory.setEvaluation(evaluation);
+						index = i;
+						set = true;
+						break;
+					}
+				}
+			}
+			if (!set) {
+				MemoryObject mo = new MemoryObject();
+				mo.setI(info);
+				mo.setEvaluation(evaluation);
+				mo.setType(type);
+				memories.add(mo);
+				index = memories.indexOf(mo);
+			}
+		}
+		return index;
+	}
 
 	/**
 	 * Gets the greatest evaluation of the memories in the memory list.
@@ -358,121 +413,48 @@ public class MemoryContainer implements Memory {
 
 	}
 
-	/**
-	 * Sets the Java String info as the info and an evaluation passed to a
-	 * Memory of the type passed.
-	 * 
-	 * @param info
-	 *            Java String info.
-	 * @param evaluation
-	 *            the evaluation to set.
-	 * @param type
-	 *            the type of the Memory
-	 * @return the index of the memory
-	 */
-	public synchronized int setI(String info, double evaluation, String type) {
+//	/**
+//	 * Sets the Java String info as the info and an evaluation passed to a
+//	 * Memory of the type passed.
+//	 * 
+//	 * @param info
+//	 *            Java String info.
+//	 * @param evaluation
+//	 *            the evaluation to set.
+//	 * @param type
+//	 *            the type of the Memory
+//	 * @return the index of the memory
+//	 */
+//	public synchronized int setI(String info, double evaluation, String type) {
+//		int index = -1;
+//		if (memories != null) {
+//			boolean set = false;
+//			for (int i = 0; i < memories.size(); i++) {
+//				Memory memory = memories.get(i);
+//				if (memory != null && memory instanceof MemoryObject) {
+//					MemoryObject memoryObject = (MemoryObject) memory;
+//					if (memoryObject.getName().equalsIgnoreCase(type)) {
+//						memory.setI(info);
+//						memory.setEvaluation(evaluation);
+//						index = i;
+//						set = true;
+//						break;
+//					}
+//				}
+//			}
+//			if (!set) {
+//				MemoryObject mo = new MemoryObject();
+//				mo.setI(info);
+//				mo.setEvaluation(evaluation);
+//				mo.setType(type);
+//				memories.add(mo);
+//				index = memories.indexOf(mo);
+//			}
+//		}
+//		return index;
+//	}
 
-		int index = -1;
-
-		if (memories != null) {
-
-			boolean set = false;
-
-			for (int i = 0; i < memories.size(); i++) {
-
-				Memory memory = memories.get(i);
-
-				if (memory != null && memory instanceof MemoryObject) {
-
-					MemoryObject memoryObject = (MemoryObject) memory;
-
-					if (memoryObject.getName().equalsIgnoreCase(type)) {
-
-						memory.setI(info);
-						memory.setEvaluation(evaluation);
-						index = i;
-						set = true;
-						break;
-
-					}
-				}
-
-			}
-
-			if (!set) {
-
-				MemoryObject mo = new MemoryObject();
-				mo.setI(info);
-				mo.setEvaluation(evaluation);
-				mo.setType(type);
-
-				memories.add(mo);
-
-				index = memories.indexOf(mo);
-
-			}
-		}
-
-		return index;
-	}
-
-	/**
-	 * Sets the info as the info and an evaluation passed to a Memory of the
-	 * type passed.
-	 * 
-	 * @param info
-	 *            the info.
-	 * @param evaluation
-	 *            the evaluation to set.
-	 * @param type
-	 *            the type of the Memory
-	 * @return the index of the memory
-	 */
-	public synchronized int setI(Object info, double evaluation, String type) {
-
-		int index = -1;
-
-		if (memories != null) {
-
-			boolean set = false;
-
-			for (int i = 0; i < memories.size(); i++) {
-
-				Memory memory = memories.get(i);
-
-				if (memory != null && memory instanceof MemoryObject) {
-
-					MemoryObject memoryObject = (MemoryObject) memory;
-
-					if (memoryObject.getName().equalsIgnoreCase(type)) {
-
-						memory.setI(info);
-						memory.setEvaluation(evaluation);
-						index = i;
-						set = true;
-						break;
-
-					}
-				}
-
-			}
-
-			if (!set) {
-
-				MemoryObject mo = new MemoryObject();
-				mo.setI(info);
-				mo.setEvaluation(evaluation);
-				mo.setType(type);
-
-				memories.add(mo);
-
-				index = memories.indexOf(mo);
-
-			}
-		}
-
-		return index;
-	}
+	
 
 	/**
 	 * Gets all the memories inside this container.
@@ -481,6 +463,20 @@ public class MemoryContainer implements Memory {
 	 */
 	public synchronized ArrayList<Memory> getAllMemories() {
 		return memories;
+	}
+        
+        /**
+	 * Gets the internal memory which has the name passed.
+	 * 
+	 * @param name the name of the memory whose info is searched.
+	 * @return the memory which has the name passed 
+         *          or null if it is not found.
+	 */
+	public synchronized Memory getInternalMemory(String name) {
+            for (Memory m : memories) {
+                if (m.getName().equals(name)) return(m);
+            }
+            return(null);
 	}
         
         /**

@@ -13,7 +13,6 @@ package br.unicamp.cst.motivational;
 
 import br.unicamp.cst.core.entities.Codelet;
 import br.unicamp.cst.core.entities.Memory;
-import br.unicamp.cst.core.exceptions.CodeletActivationBoundsException;
 
 import java.util.ArrayList;
 import java.util.List;

@@ -58,3 +58,8 @@ hs_err_pid*
 #Exception
 !/libs/*.jar
 !/gradle/wrapper/*.jar
+
+# Tests directories
+/tests/
+/profile/
+

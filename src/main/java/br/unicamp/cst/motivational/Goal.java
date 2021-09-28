@@ -10,7 +10,7 @@
  ******************************************************************************/
 package br.unicamp.cst.motivational;
 
-import br.unicamp.cst.representation.owrl.AbstractObject;
+import br.unicamp.cst.representation.wme.Idea;
 
 /**
  * Created by du on 19/12/16.
@@ -18,11 +18,11 @@ import br.unicamp.cst.representation.owrl.AbstractObject;
 public class Goal {
 
     private String id;
-    private AbstractObject goalAbstractObjects;
+    private Idea goalIdeas;
 
-    public Goal(String id, AbstractObject goalAbstractObjects){
+    public Goal(String id, Idea goalIdeas){
         this.setId(id);
-        this.setGoalAbstractObjects(goalAbstractObjects);
+        this.setGoalIdeas(goalIdeas);
     }
 
     public String getId() {
@@ -33,11 +33,11 @@ public class Goal {
         this.id = id;
     }
 
-    public AbstractObject getGoalAbstractObjects() {
-        return goalAbstractObjects;
+    public Idea getGoalIdeas() {
+        return goalIdeas;
     }
 
-    public void setGoalAbstractObjects(AbstractObject goalAbstractObjects) {
-        this.goalAbstractObjects = goalAbstractObjects;
+    public void setGoalIdeas(Idea goalIdeas) {
+        this.goalIdeas = goalIdeas;
     }
 }

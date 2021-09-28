@@ -55,6 +55,20 @@ public class QualityDimension implements Entity {
         return(false);   
     }
     
+    public boolean isFloat() {
+        String objectClassName = value.getClass().getName();
+        if (objectClassName.equals("java.lang.Double"))
+            return(true);
+        return(false);   
+    }
+    
+    public boolean isInteger() {
+        String objectClassName = value.getClass().getName();
+        if (objectClassName.equals("java.lang.Long"))
+            return(true);
+        return(false);   
+    }
+    
     public boolean isLong() {
         String objectClassName = value.getClass().getName();
         if (objectClassName.equals("java.lang.Long"))
@@ -94,10 +108,32 @@ public class QualityDimension implements Entity {
         return new QualityDimension(getName(), getValue());
     }
     
-    public String toString(int level) {
+    public String toStringFull(int level) {
         String out="";
         out += name+" : "+value+"\n";
         return out;
+    }
+    
+    public String getResumedValue() {
+        String result; 
+        if (isFloat() || isDouble()) {
+            result = String.format("%4.1f",getValue());
+        }
+        else {
+            try {
+               int trial = Integer.parseInt(getValue().toString());
+               result = String.format("%d",trial);
+            } catch(Exception ee) {
+               try { 
+                    double trial = Double.parseDouble(getValue().toString());
+                    result = String.format("%4.1f",trial);
+               }
+               catch(Exception e) {
+                   result = getValue().toString();
+               }
+            }   
+        }           
+        return(result);
     }
 
 }

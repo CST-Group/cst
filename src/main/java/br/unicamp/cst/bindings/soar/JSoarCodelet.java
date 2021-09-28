@@ -20,9 +20,7 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 
 import br.unicamp.cst.core.entities.Codelet;
-import br.unicamp.cst.representation.owrl.AbstractObject;
-import br.unicamp.cst.representation.owrl.Property;
-import br.unicamp.cst.representation.owrl.QualityDimension;
+import br.unicamp.cst.representation.wme.Idea;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.jsoar.kernel.symbols.Identifier;
@@ -76,11 +74,11 @@ public abstract class JSoarCodelet extends Codelet {
     public synchronized ArrayList<Object> getOutputInObject(String package_with_beans_classes){
 
         ArrayList<Object> commandList = null;
-        AbstractObject ol = getJsoar().getOutputLinkAO();
+        Idea ol = getJsoar().getOutputLinkIdea();
 
         if(ol != null) {
             commandList = new ArrayList<Object>();
-            for (AbstractObject command : ol.getCompositeParts()) {
+            for (Idea command : ol.getL()) {
                 commandList.add(buildObject(command, package_with_beans_classes));
             }
         }
@@ -91,7 +89,7 @@ public abstract class JSoarCodelet extends Codelet {
     }
 
 
-    public synchronized Object buildObject(AbstractObject command, String package_with_beans_classes){
+    public synchronized Object buildObject(Idea command, String package_with_beans_classes){
 
         ArrayList<Object> arrayList = new ArrayList<>();
         String commandType = command.getName();
@@ -106,11 +104,11 @@ public abstract class JSoarCodelet extends Codelet {
             } catch (Exception e) {
                 e.printStackTrace();
             }
-            for (Property p : command.getProperties()) {
+            for (Idea p : command.getL()) {
                 try {
                     for (Field field : type.getDeclaredFields()) {
                         if (p.getName().equals(field.getName())) {
-                            QualityDimension value = p.getQualityDimensions().get(0);
+                            Idea value = p.getL().get(0);
                             if (value.isDouble()) {
                                 float fvalue = ((Double) value.getValue()).floatValue();
                                 field.set(commandObject, fvalue);
@@ -129,7 +127,7 @@ public abstract class JSoarCodelet extends Codelet {
             }
         }
 
-        for (AbstractObject comp: command.getCompositeList()) {
+        for (Idea comp: command.getL()) {
             Object object = buildObject(comp, package_with_beans_classes);
 
             if(commandType.toUpperCase().contains(ARRAY)){
@@ -264,8 +262,8 @@ public abstract class JSoarCodelet extends Codelet {
         getJsoar().buildWmeInputTreeFromJson(json, getJsoar().getInputLinkIdentifier());
     }
     
-    public void setInputLinkAO(AbstractObject wo){
-        getJsoar().setInputLinkAO(wo);
+    public void setInputLinkIdea(Idea wo){
+        getJsoar().setInputLinkIdea(wo);
     }
 
     public void processInputLink(){
