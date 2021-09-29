@@ -1,12 +1,8 @@
 package br.unicamp.cst.core.entities;
 
 import static org.junit.Assert.*;
-
-import br.unicamp.cst.core.exceptions.CodeletActivationBoundsException;
 import org.junit.Test;
 
-import java.io.ByteArrayOutputStream;
-import java.io.PrintStream;
 import java.util.Arrays;
 import java.util.List;
 

@@ -1,8 +1,6 @@
 package br.unicamp.cst.core.entities;
 
 import org.junit.Test;
-import org.opt4j.benchmarks.M;
-
 import static org.junit.Assert.*;
 
 /**

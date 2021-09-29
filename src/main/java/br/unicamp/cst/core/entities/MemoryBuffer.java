@@ -29,7 +29,7 @@ public class MemoryBuffer {
 	/** A memory buffer is essentially a fifo list of MO */
 	private ArrayList<MemoryObject> memoryObjects;
 
-	private int maxcapacity;
+	private int maxCapacity;
 
 	/** Safe lock for multithread access */
 	public volatile Lock lock = new ReentrantLock();
@@ -39,23 +39,23 @@ public class MemoryBuffer {
 	/**
 	 * Safe access through reentrant locks.
 	 * 
-	 * @param accesing
+	 * @param accessing
 	 *            the accessing Codelet
-	 * @return true is is impeding access
+	 * @return true if it is impeding access
 	 */
-	public boolean impendingAccess(Codelet accesing) {
+	public boolean impendingAccess(Codelet accessing) {
 		Boolean myLock = false;
 		Boolean yourLock = false;
 		try {
 			myLock = lock.tryLock();
-			yourLock = accesing.lock.tryLock();
+			yourLock = accessing.lock.tryLock();
 		} finally {
 			if (!(myLock && yourLock)) {
 				if (myLock) {
 					lock.unlock();
 				}
 				if (yourLock) {
-					accesing.lock.unlock();
+					accessing.lock.unlock();
 				}
 			}
 		}
@@ -65,19 +65,19 @@ public class MemoryBuffer {
 	/**
 	 * Creates a MemoryBuffer.
 	 * 
-	 * @param maxcapacity
+	 * @param maxCapacity
 	 *            maximum number of elements this buffer holds at a given time.
 	 * @param rawMemory
 	 *            singleton instance of the system's raw memory.
 	 */
-	public MemoryBuffer(int maxcapacity, RawMemory rawMemory) {
+	public MemoryBuffer(int maxCapacity, RawMemory rawMemory) {
 		memoryObjects = new ArrayList<MemoryObject>();
-		this.maxcapacity = maxcapacity;
+		this.maxCapacity = maxCapacity;
 		this.rawMemory = rawMemory;
 	}
 
 	/**
-	 * Adds a lits of memory objects.
+	 * Adds a list of memory objects.
 	 * 
 	 * @param contents
 	 *            list of Memory Objects to be added
@@ -85,7 +85,7 @@ public class MemoryBuffer {
 	public synchronized void putList(List<MemoryObject> contents) {
 
 		for (MemoryObject thisContent : contents) {
-			if (memoryObjects.size() == maxcapacity) {
+			if (memoryObjects.size() == maxCapacity) {
 
 				memoryObjects.remove(0); // Gets rid of older content
 
@@ -104,7 +104,7 @@ public class MemoryBuffer {
 
 	public synchronized void put(MemoryObject content) {
 
-		if (memoryObjects.size() == maxcapacity) {
+		if (memoryObjects.size() == maxCapacity) {
 			if (rawMemory != null)
 				rawMemory.destroyMemoryObject(memoryObjects.get(0));// Gets rid
 																	// of older
@@ -215,8 +215,6 @@ public class MemoryBuffer {
 	 * Clears all memory objects from this buffer.
 	 */
 	public synchronized void clear() {
-		// memoryObjects.clear();
-
 		if (rawMemory != null)
 			for (int i = 0; i < memoryObjects.size(); i++) {
 				rawMemory.destroyMemoryObject(memoryObjects.get(i));
