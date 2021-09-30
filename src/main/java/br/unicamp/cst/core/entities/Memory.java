@@ -57,6 +57,14 @@ public interface Memory {
 	String getName();
 
 	/**
+	 * Sets the type of this memory.
+	 *
+	 *@param type
+	 * 	 *            the value to be set as type.
+	 */
+	void setType(String type);
+
+	/**
 	 * Sets the evaluation of this memory.
 	 * 
 	 * @param eval
