@@ -7,7 +7,7 @@ import static org.junit.Assert.*;
  * @author wander
  *
  */
-public class MemoryObjectBasicTest {
+public class MemoryObjectTest {
 
     @Test
     public void idTest(){

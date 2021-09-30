@@ -14,7 +14,7 @@ import static org.junit.Assert.*;
  * @author wander
  *
  */
-public class CodeletBasicTest {
+public class CodeletTest {
     // This class contains tests covering some core Codelet methods
     Codelet testCodelet = new Codelet() {
 

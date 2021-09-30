@@ -10,7 +10,7 @@ import static org.junit.Assert.*;
  * @author wander
  *
  */
-public class MindBasicTest {
+public class MindTest {
     Codelet testCodelet = new Codelet() {
 
         @Override
