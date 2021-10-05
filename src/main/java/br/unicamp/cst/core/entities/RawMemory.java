@@ -63,8 +63,10 @@ public class RawMemory {
 
 		synchronized (allMemories) {
 			for (Memory mo : this.allMemories) {
-				if (mo.getName().equalsIgnoreCase(type)) {
-					listOfType.add(mo);
+				if (mo.getName() != null){
+					if (mo.getName().equalsIgnoreCase(type)) {
+						listOfType.add(mo);
+					}
 				}
 			}
 		}
@@ -98,7 +100,8 @@ public class RawMemory {
 
 	/**
 	 * Adds a new Memory to the Raw Memory.
-	 * 
+	 *
+	 * @deprecated
 	 * @param mo
 	 *            memory to be added.
 	 */
@@ -200,7 +203,7 @@ public class RawMemory {
 	 */
 	public void shutDown() {
 		synchronized (allMemories) {
-			this.allMemories.clear();
+			allMemories = new ArrayList<Memory>();
 		}
 	}
 }
