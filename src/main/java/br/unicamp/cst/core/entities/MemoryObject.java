@@ -114,7 +114,9 @@ public class MemoryObject implements Memory, Serializable {
 	 * This method is deprecated after v0.1. For the time being, it has been
 	 * kept only for backward compatibility. Use the {@link #setI(Object info)
 	 * setI} method instead.
-	 * 
+	 *
+	 * @deprecated use {@link #setI(Object info)} instead.
+	 *
 	 * @param info
 	 *            the info in memory object to set.
 	 */

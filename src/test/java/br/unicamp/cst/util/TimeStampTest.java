@@ -23,7 +23,9 @@ public class TimeStampTest {
 		TimeStamp.setStartTime();
 		try {
 			Thread.sleep(3358);
-		} catch (Exception e) {}
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
 		System.out.println(TimeStamp.getDelaySinceStart());
 	}
 }
