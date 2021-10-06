@@ -37,6 +37,7 @@ jobs:
         uses: paambaati/codeclimate-action@v3.0.0
         env:
           CC_TEST_REPORTER_ID: 430594ee361ff2e93ebf0a942f639b8092c6f17b7c5098f9c75abc404311dfc7
+          JACOCO_SOURCE_PATH: JACOCO_SOURCE_PATH=src/main/java
       - name: Slack Notification
         uses: rtCamp/action-slack-notify@v2
         env:
