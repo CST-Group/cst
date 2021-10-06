@@ -31,6 +31,8 @@ jobs:
         run: |
           rm -f ~/.gradle/caches/modules-2/modules-2.lock
           rm -f ~/.gradle/caches/modules-2/gc.properties
+      - name: After Script
+        run: JACOCO_SOURCE_PATH=src/main/java ./cc-test-reporter format-coverage ./build/reports/jacoco/test/jacocoTestReport.xml --input-type jacoco
       - name: Test & publish code coverage
         uses: paambaati/codeclimate-action@v3.0.0
         env:
