@@ -21,6 +21,8 @@ jobs:
         run: curl -L https://codeclimate.com/downloads/test-reporter/test-reporter-latest-linux-amd64 > ./cc-test-reporter && chmod +x ./cc-test-reporter && ./cc-test-reporter before-build
       - name: Validate Gradle wrapper
         uses: gradle/wrapper-validation-action@e6e38bacfdf1a337459f332974bb2327a31aaf4b
+      - name: Run headless test
+        uses: GabrielBB/xvfb-action@v1
       - name: Build with Gradle
         run: ./gradlew clean build jacocoTestReport
       - name: Cleanup Gradle Cache
