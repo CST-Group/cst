@@ -31,13 +31,13 @@ jobs:
         run: |
           rm -f ~/.gradle/caches/modules-2/modules-2.lock
           rm -f ~/.gradle/caches/modules-2/gc.properties
-      - name: After Script
-        run: JACOCO_SOURCE_PATH=src/main/java ./cc-test-reporter format-coverage ./build/reports/jacoco/test/jacocoTestReport.xml --input-type jacoco
       - name: Test & publish code coverage
         uses: paambaati/codeclimate-action@v3.0.0
         env:
           CC_TEST_REPORTER_ID: 430594ee361ff2e93ebf0a942f639b8092c6f17b7c5098f9c75abc404311dfc7
-          JACOCO_SOURCE_PATH: JACOCO_SOURCE_PATH=src/main/java
+          JACOCO_SOURCE_PATH: "${{github.workspace}}/src/main/java"
+        with:
+          coverageLocations: ${{github.workspace}}/src/main/java/target/site/jacoco/jacoco.xml:jacoco
       - name: Slack Notification
         uses: rtCamp/action-slack-notify@v2
         env:
