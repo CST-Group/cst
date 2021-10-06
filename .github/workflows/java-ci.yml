@@ -31,8 +31,6 @@ jobs:
         run: |
           rm -f ~/.gradle/caches/modules-2/modules-2.lock
           rm -f ~/.gradle/caches/modules-2/gc.properties
-      - name: After Script
-        run: JACOCO_SOURCE_PATH=src/main/java ./cc-test-reporter format-coverage ./build/reports/jacoco/test/jacocoTestReport.xml --input-type jacoco
       - name: Test & publish code coverage
         uses: paambaati/codeclimate-action@v3.0.0
         env:
@@ -40,7 +38,7 @@ jobs:
           JACOCO_SOURCE_PATH: "${{github.workspace}}/src/main/java"
         with:
           coverageLocations: ${{github.workspace}}/build/reports/jacoco/test/jacocoTestReport.xml:jacoco
-      - name: Slack Notification
-        uses: rtCamp/action-slack-notify@v2
-        env:
-          SLACK_WEBHOOK: DIAJW9rKJA8Btxe2gxRh39d2/AHKTeJeJIV5fr7dnh2SqRTcoXQU0fMFVjS09VEoReKmGYyoLsh5LCAdD+2eLc16RtWk4dEEz7SelZMzCmB2jdaTFyK5QlDU6cfQZW6FW23UZWKRQisHq77++NWrdPL97rFcWzNqiuefWOdVIWwiy32xw/4EaqgrgzCPQFBP9fgWnNBdN7FnD23SlBhVgNnWL2wUmOFQo3J/OnbYK54gK4woeIKfMuPclSI0HHu366GMtBr9DeuDtWrTzPJ4xavnRIK2jndxEoNYJNs0/ta2z3IrLmRDNzyzjjRCIj37xQlmFFEvvfgsTJzSkg5ZhAK/v2wJ1ZO2eChgh5YLALMK/dSkExuSCPmHrpchsm2gQe61lXOsoFvf8ZXBNQ1t6yAnyYeVlIEnvIderb03cWOcxOMGu3QS6HR7SbiB8JMaoV9x3L2R9rIsf8QFGogbn7gliDUueaOlWfX24ChZGs8kQK+INDWLpbBkNLPwA5H4S61UWeP1VZ6mlHwfd3SQ3EcWDZgQ5+nyD7XVq6QySBDwqkD9nUA7SBuGEtaym5YoyIaVmz36XXd87IJKXQSZTZTeLol7YJ/BVFRkDeMHlxkPeQurE7wx0W//taOsn5Nafb90fUj4A+q22RwoifbXAv1j2y7iBRaGjb2mkMNZ8cM=
+      #- name: Slack Notification
+      #  uses: rtCamp/action-slack-notify@v2
+      #  env:
+      #    SLACK_WEBHOOK: DIAJW9rKJA8Btxe2gxRh39d2/AHKTeJeJIV5fr7dnh2SqRTcoXQU0fMFVjS09VEoReKmGYyoLsh5LCAdD+2eLc16RtWk4dEEz7SelZMzCmB2jdaTFyK5QlDU6cfQZW6FW23UZWKRQisHq77++NWrdPL97rFcWzNqiuefWOdVIWwiy32xw/4EaqgrgzCPQFBP9fgWnNBdN7FnD23SlBhVgNnWL2wUmOFQo3J/OnbYK54gK4woeIKfMuPclSI0HHu366GMtBr9DeuDtWrTzPJ4xavnRIK2jndxEoNYJNs0/ta2z3IrLmRDNzyzjjRCIj37xQlmFFEvvfgsTJzSkg5ZhAK/v2wJ1ZO2eChgh5YLALMK/dSkExuSCPmHrpchsm2gQe61lXOsoFvf8ZXBNQ1t6yAnyYeVlIEnvIderb03cWOcxOMGu3QS6HR7SbiB8JMaoV9x3L2R9rIsf8QFGogbn7gliDUueaOlWfX24ChZGs8kQK+INDWLpbBkNLPwA5H4S61UWeP1VZ6mlHwfd3SQ3EcWDZgQ5+nyD7XVq6QySBDwqkD9nUA7SBuGEtaym5YoyIaVmz36XXd87IJKXQSZTZTeLol7YJ/BVFRkDeMHlxkPeQurE7wx0W//taOsn5Nafb90fUj4A+q22RwoifbXAv1j2y7iBRaGjb2mkMNZ8cM=
