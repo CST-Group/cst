@@ -64,6 +64,7 @@ dependencies {
    //implementation 'com.github.rosjava:rosjava_core:0.3.7'
    api 'com.github.rosjava:rosjava_core:0.3.7'
    api 'org.ros.rosjava_bootstrap:message_generation:0.3.3'
+   api 'com.github.masecla22:java-express:0.2.2'
    //implementation group: 'aopalliance', name: 'aopalliance', version: '1.0'
    //implementation group: 'asm', name: 'asm', version: '3.1'
    //implementation group: 'org.sonatype.sisu.inject', name: 'cglib', version: '2.2.1-v20090111'
