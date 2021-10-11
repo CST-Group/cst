@@ -104,7 +104,7 @@ public class RawMemory {
 	 * @deprecated
 	 * @param mo
 	 *            memory to be added.
-	 */
+	 */ 
 	@Deprecated
 	public synchronized void addMemoryObject(Memory mo) {
 		synchronized (allMemories) {
