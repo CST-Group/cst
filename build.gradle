@@ -124,7 +124,8 @@ task uberJar(type: Jar) {
         configurations.runtimeClasspath.findAll { it.name.endsWith('jar') }.collect { zipTree(it) }
     }
     exclude 'META-INF/*.RSA', 'META-INF/*.SF','META-INF/*.DSA'
-    exclude 'org/apache/commons/*'
+    exclude '/org/apache/commons/logging/*'
+
 }
 artifacts
 {
