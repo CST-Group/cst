@@ -13,7 +13,7 @@ public class WorkingMemoryViewerTest {
 	
 	@Test
 	public void testWorkingMemoryViewer() throws InterruptedException {
-        String soarRulesPath = "src/test/java/br/unicamp/cst/bindings/soar/soarRules.soar";
+        String soarRulesPath = "src/test/java/br/unicamp/cst/bindings/soar/smartCar.soar";
         JSoarCodelet soarCodelet = new TestJSoarCodelet(soarRulesPath);
         WorkingMemoryViewer ov = new WorkingMemoryViewer("Teste",soarCodelet);
         ov.setVisible(true);

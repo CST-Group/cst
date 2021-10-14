@@ -23,6 +23,7 @@ import java.util.Map.Entry;
 import java.util.Set;
 import java.util.logging.Logger;
 
+import com.google.common.primitives.Doubles;
 import org.jsoar.kernel.Agent;
 import org.jsoar.kernel.Phase;
 import org.jsoar.kernel.RunType;
@@ -879,8 +880,22 @@ public class SOARPlugin {
         if (il != null) {
             List<Idea> parts = il.getL();
             for (Idea w : parts) {
-                Identifier id2 = createIdWME(id, w.getName());
-                processInputLink(w, id2);
+                if (w.getValue().equals("") ){
+                    Identifier id2 = createIdWME(id, w.getName());
+                    processInputLink(w, id2);
+                }
+                else{
+                    Object value;
+                    //Double newValue = Doubles.tryParse(w.getValue().toString());
+
+                    if (Doubles.tryParse(w.getValue().toString()) != null) {
+                        value = Doubles.tryParse(w.getValue().toString());
+                        createFloatWME(id, w.getName(), (double) value);
+                    }  else if (w.getValue() instanceof String) {
+                        value = (String) w.getValue();
+                        createStringWME(id, w.getName(), (String) value);
+                    }
+                }
             }
         }
 
