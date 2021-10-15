@@ -830,12 +830,12 @@ public class SOARPlugin {
         Iterator<Wme> It = id.getWmes();
         if (!It.hasNext()) {
             // This situation happens when the OutputLink is empty
-            newwo = Idea.createIdea(name,"null",0);
+            newwo = Idea.createIdea(name,"",0);
         }
         while (It.hasNext()) {
 
             if (newwo == null) {
-                newwo = Idea.createIdea(name,"null",phase);
+                newwo = Idea.createIdea(name,"",phase);
             }
 
             Wme wme = It.next();
@@ -886,7 +886,6 @@ public class SOARPlugin {
                 }
                 else{
                     Object value;
-                    //Double newValue = Doubles.tryParse(w.getValue().toString());
 
                     if (Doubles.tryParse(w.getValue().toString()) != null) {
                         value = Doubles.tryParse(w.getValue().toString());

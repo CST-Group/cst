@@ -16,6 +16,7 @@ import java.lang.reflect.Field;
 import java.util.*;
 import java.util.Map.Entry;
 
+import com.google.common.primitives.Doubles;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 
@@ -23,6 +24,8 @@ import br.unicamp.cst.core.entities.Codelet;
 import br.unicamp.cst.representation.wme.Idea;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+
+import org.checkerframework.checker.nullness.qual.Nullable;
 import org.jsoar.kernel.symbols.Identifier;
 import org.slf4j.LoggerFactory;
 
@@ -108,15 +111,16 @@ public abstract class JSoarCodelet extends Codelet {
                 try {
                     for (Field field : type.getDeclaredFields()) {
                         if (p.getName().equals(field.getName())) {
-                            Idea value = p.getL().get(0);
-                            if (value.isDouble()) {
-                                float fvalue = ((Double) value.getValue()).floatValue();
+                            Object value = ((Idea) p.getValue()).getValue();
+                            if (Doubles.tryParse(value.toString()) != null) {
+                                Double fvalue = Doubles.tryParse(value.toString());
                                 field.set(commandObject, fvalue);
-                            } else if (value.isLong()) {
-                                float fvalue = ((Long) value.getValue()).floatValue();
-                                field.set(commandObject, fvalue);
-                            } else {
-                                field.set(commandObject, value.getValue());
+                            } //else if (value.isLong()) {
+                              //  float fvalue = ((Long) value.getValue()).floatValue();
+                              //  field.set(commandObject, fvalue);
+                            //}
+                            else {
+                                field.set(commandObject, value.toString());
                             }
                         }
                     }
@@ -130,19 +134,22 @@ public abstract class JSoarCodelet extends Codelet {
         for (Idea comp: command.getL()) {
             Object object = buildObject(comp, package_with_beans_classes);
 
-            if(commandType.toUpperCase().contains(ARRAY)){
-                arrayList.add(object);
-            }else{
-                for (Field field: type.getDeclaredFields()) {
-                    if(comp.getName().toUpperCase().contains(field.getName().toUpperCase())){
-                        try {
-                            field.set(commandObject, object);
-                        } catch (IllegalAccessException e) {
-                            e.printStackTrace();
+            if(object != null){
+                if(commandType.toUpperCase().contains(ARRAY)){
+                    arrayList.add(object);
+                }else{
+                    for (Field field: type.getDeclaredFields()) {
+                        if(comp.getName().toUpperCase().contains(field.getName().toUpperCase())){
+                            try {
+                                field.set(commandObject, object);
+                            } catch (IllegalAccessException e) {
+                                e.printStackTrace();
+                            }
                         }
                     }
                 }
             }
+
         }
 
         return arrayList.size() > 0 ? arrayList : commandObject;
