@@ -115,10 +115,7 @@ public abstract class JSoarCodelet extends Codelet {
                             if (Doubles.tryParse(value.toString()) != null) {
                                 Double fvalue = Doubles.tryParse(value.toString());
                                 field.set(commandObject, fvalue);
-                            } //else if (value.isLong()) {
-                              //  float fvalue = ((Long) value.getValue()).floatValue();
-                              //  field.set(commandObject, fvalue);
-                            //}
+                            }
                             else {
                                 field.set(commandObject, value.toString());
                             }
@@ -168,14 +165,10 @@ public abstract class JSoarCodelet extends Codelet {
                 Class type = Class.forName(package_with_beans_classes+"."+key);
                 Object command = type.newInstance();
                 type.cast(command);
-                for(Field field : type.getFields()){
+                for(Field field : type.getDeclaredFields()){
                     if(commandtype.has(field.getName())){
                         if(commandtype.get(field.getName()).getAsJsonPrimitive().isNumber()){
                             field.set(command, commandtype.get(field.getName()).getAsFloat());
-                            
-                        }else if(commandtype.get(field.getName()).getAsJsonPrimitive().isBoolean()){
-                            field.set(command, commandtype.get(field.getName()).getAsBoolean());
-                            
                         }else{
                             field.set(command, commandtype.get(field.getName()).getAsString());
                         }
@@ -197,12 +190,12 @@ public abstract class JSoarCodelet extends Codelet {
     public JsonObject createJson(String pathToLeaf, Object value){
         JsonObject json = new JsonObject();
         Class a = value.getClass();
-        if(a==String.class){
+        if(value instanceof String){
             String specvalue =(String)value;
             json = getJsoar().createJsonFromString(pathToLeaf,specvalue);
         }
-        else if(a==double.class){
-            double specvalue =(double)value;
+        else if(value instanceof Number){
+            double specvalue = (double) (int) value;
             json = getJsoar().createJsonFromString(pathToLeaf,specvalue);
         }
         return json;

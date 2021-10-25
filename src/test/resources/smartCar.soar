@@ -32,6 +32,7 @@ sp {apply*change
    (<ol> ^SoarCommandChange <command>)
    (<command> ^productionName change)
    (<command> ^quantity 2)
+   (<command> ^apply true)
    (interrupt)
 }
 
