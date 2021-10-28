@@ -1,0 +1,64 @@
+    syntax = "proto3";
+
+     option java_package = "pb";
+
+     message IMemoryProperties  {
+         string name = 1;
+         float timestamp = 2;
+         double evaluation = 3;
+         float I = 4;
+         repeated IMemoryProperties memories = 5;
+     }
+
+     message ICodeletProperties {
+         string name = 1;
+         double activation = 2;
+         float timestamp = 3;
+         repeated IMemoryProperties broadcast = 4;
+         repeated IMemoryProperties inputs = 5;
+         repeated IMemoryProperties outputs = 6;
+
+     }
+
+     message jsonRetornado {
+         string json = 1;
+     }
+
+     message responseInfo {
+         jsonRetornado response = 1;
+     }
+
+     message APIResponse {
+         repeated IMemoryProperties memories = 1;
+         repeated ICodeletProperties codelets = 2;
+     }
+     message memoriesResponse {
+        repeated IMemoryProperties memories = 1;
+     }
+     message codeletsResponse {
+         repeated ICodeletProperties codelets = 1;
+      }
+
+     message indexInfo {
+        int64 index = 1;
+     }
+
+     message Empty {
+     }
+
+
+     message infoAdd {
+        string json = 1;
+     }
+
+     message responseOK{
+        string mensagem = 1;
+     }
+
+     service grpcService{
+       rpc getMemoriesAndCodelets(Empty) returns (APIResponse) {};
+       rpc getMemories(Empty) returns (memoriesResponse) {};
+       rpc getCodelets(Empty) returns (codeletsResponse) {};
+       rpc getInfo(indexInfo) returns (responseInfo) {};
+       rpc setInfo(infoAdd) returns (responseOK) {};
+     }
