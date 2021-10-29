@@ -223,19 +223,16 @@ public abstract class JSoarCodelet extends Codelet {
         else if(a==Integer.class){
             Integer spec = (Integer) value;
             double specvalue = spec.doubleValue();
-            //double specvalue =(double)value;
             getJsoar().addBranchToJson(newBranch, json, specvalue);
         }
         else if(a==Long.class){
             Long spec = (Long) value;
             double specvalue = spec.doubleValue();
-            //double specvalue =(double)value;
             getJsoar().addBranchToJson(newBranch, json, specvalue);
         }
         else if(a==Double.class){
             Double spec = (Double) value;
-            double specvalue = spec;//.doubleValue();
-            //double specvalue =(double)value;
+            double specvalue = spec;
             getJsoar().addBranchToJson(newBranch, json, specvalue);
         }
         
@@ -246,12 +243,11 @@ public abstract class JSoarCodelet extends Codelet {
     }
     
     public void addToWme(String newBranch, Object value){
-        Class a = value.getClass();
-        if(a==String.class){
+        if(value instanceof String){
             String specvalue =(String)value;
             getJsoar().addBranchToWme(newBranch,specvalue, getJsoar().getInputLinkIdentifier());
         }
-        else if(a==double.class){
+        else if(value instanceof Double){
             double specvalue =(double)value;
             getJsoar().addBranchToWme(newBranch,specvalue, getJsoar().getInputLinkIdentifier());
         }
@@ -259,7 +255,7 @@ public abstract class JSoarCodelet extends Codelet {
     }
     
     public void setInputLinkJson(JsonObject json){
-        getJsoar().buildWmeInputTreeFromJson(json, getJsoar().getInputLinkIdentifier());
+        getJsoar().setInputLinkIdea((Idea)getJsoar().createIdeaFromJson(json));
     }
     
     public void setInputLinkIdea(Idea wo){
