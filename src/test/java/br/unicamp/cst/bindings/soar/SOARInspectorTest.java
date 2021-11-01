@@ -24,7 +24,7 @@ public class SOARInspectorTest {
     @Test
     public void testSOARInspector() throws InterruptedException {
     	
-    	//String soarRulesPath="src/test/java/br/unicamp/cst/bindings/soar/soarRules.soar";
+    	//String soarRulesPath="src/test/java/br/unicamp/cst/bindings/soar/smartCar.soar";
         String soarRulesPath="src/test/resources/mac.soar";
         JSoarCodelet soarCodelet = new TestJSoarCodelet(soarRulesPath);
         SOARInspector si = new SOARInspector(soarCodelet);

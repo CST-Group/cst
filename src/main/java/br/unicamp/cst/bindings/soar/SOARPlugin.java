@@ -12,6 +12,7 @@
 package br.unicamp.cst.bindings.soar;
 
 import java.io.File;
+import java.lang.reflect.Array;
 import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -23,6 +24,7 @@ import java.util.Map.Entry;
 import java.util.Set;
 import java.util.logging.Logger;
 
+import com.google.common.primitives.Doubles;
 import org.jsoar.kernel.Agent;
 import org.jsoar.kernel.Phase;
 import org.jsoar.kernel.RunType;
@@ -564,39 +566,56 @@ public class SOARPlugin {
         return json;
     }
 
-    public void buildWmeInputTreeFromJson(JsonObject json, Identifier id) {
-        Set<Map.Entry<String, JsonElement>> entryset = json.entrySet();
+    public Object createIdeaFromJson(JsonObject jsonInput){
+        Set<Map.Entry<String, JsonElement>> entryset = jsonInput.entrySet();
         Entry<String, JsonElement> entry;
-        Object value;
+        Object value = null;
         Iterator<Entry<String, JsonElement>> itr = entryset.iterator();
+
+        ArrayList<Idea> answerList = new ArrayList<>();
         while (itr.hasNext()) {
             entry = itr.next();
             String key = entry.getKey();
+
             if (entry.getValue().isJsonPrimitive()) {
+
                 if (entry.getValue().getAsJsonPrimitive().isNumber()) {
                     value = (double) entry.getValue().getAsJsonPrimitive().getAsDouble();
-                    createFloatWME(id, key, (double) value);
                 } else if (entry.getValue().getAsJsonPrimitive().isString()) {
                     value = (String) entry.getValue().getAsJsonPrimitive().getAsString();
-                    createStringWME(id, key, (String) value);
                 } else if (entry.getValue().getAsJsonPrimitive().isBoolean()) {
                     value = (Boolean) entry.getValue().getAsJsonPrimitive().getAsBoolean();
-                    createStringWME(id, key, value.toString());
                 }
+                answerList.add(Idea.createIdea(key, value, 0));
+
             } else if (entry.getValue().isJsonObject()) {
-                Identifier newID = createIdWME(id, key);
                 if (entry.getValue().getAsJsonObject().size() == 0) {
                     continue;
                 }
-                buildWmeInputTreeFromJson(entry.getValue().getAsJsonObject(), newID);
+                Idea answer = Idea.createIdea(key, "", 0);
+                Object nested = createIdeaFromJson(entry.getValue().getAsJsonObject());
+
+                if (nested instanceof ArrayList) {
+                    for (Object idea : (ArrayList)nested){
+                        answer.add((Idea) idea);
+                    }
+                }
+                else{
+                    answer.add((Idea) nested);
+                }
+                answerList.add(answer);
             }
         }
+        if (answerList.size() == 1){
+            return answerList.get(0);
+        }
+        return answerList;
     }
 
-    //
+
     public void addBranchToJson(String newBranch, JsonObject json, double value) {
         String[] newNodes = newBranch.split("\\.");
-        JsonObject temp;// = new JsonObject();
+        JsonObject temp;
 
         if (newNodes.length > 1) {
             if (json.has(newNodes[0])) {
@@ -612,7 +631,7 @@ public class SOARPlugin {
 
     public void addBranchToJson(String newBranch, JsonObject json, String value) {
         String[] newNodes = newBranch.split("\\.");
-        JsonObject temp;// = new JsonObject();
+        JsonObject temp;
 
         if (newNodes.length > 1) {
             if (json.has(newNodes[0])) {
@@ -643,7 +662,6 @@ public class SOARPlugin {
     }
 
 
-    //testar
     public void removeBranchFromJson(String pathToOldBranch, JsonObject json) {
         String[] oldNodes = pathToOldBranch.split("\\.");
         if (oldNodes.length > 1) {
@@ -662,7 +680,7 @@ public class SOARPlugin {
         List<Wme> WM = Wmes.matcher(getAgent()).filter(getAgent().getInputOutput().getInputLink());
 
         if (containsWme(WM, newNodes[0])) {
-            Identifier id = WM.get(WM.indexOf(newNodes[0])).getIdentifier();
+            Identifier id = WM.get(indexOfWME(WM, newNodes[0])).getIdentifier();
             addBranchToWme(newBranch.substring(newNodes[0].length() + 1), value, id);
         } else {
             if (newNodes.length > 1) {
@@ -690,6 +708,18 @@ public class SOARPlugin {
                 createStringWME(ID, newNodes[0], value);
             }
         }
+    }
+
+    public int indexOfWME(List<Wme> WM, String name){
+        int answer = -1;
+
+        for (int i=0; i< WM.size(); i++){
+            if (WM.get(i).getAttribute().toString().equals(name)){
+                answer = i;
+            }
+        }
+
+        return answer;
     }
 
     //new
@@ -725,7 +755,7 @@ public class SOARPlugin {
     public boolean containsWme(final List<Wme> list, final String name) {
         boolean found = false;
         for (int i = 0; i < list.size(); i++) {
-            if (list.get(i).equals(getAgent().getSymbols().createString(name))) {
+            if (list.get(i).getAttribute().toString().equals(name)) {
                 found = true;
                 break;
             }
@@ -829,12 +859,12 @@ public class SOARPlugin {
         Iterator<Wme> It = id.getWmes();
         if (!It.hasNext()) {
             // This situation happens when the OutputLink is empty
-            newwo = Idea.createIdea(name,"null",0);
+            newwo = Idea.createIdea(name,"",0);
         }
         while (It.hasNext()) {
 
             if (newwo == null) {
-                newwo = Idea.createIdea(name,"null",phase);
+                newwo = Idea.createIdea(name,"",phase);
             }
 
             Wme wme = It.next();
@@ -879,8 +909,21 @@ public class SOARPlugin {
         if (il != null) {
             List<Idea> parts = il.getL();
             for (Idea w : parts) {
-                Identifier id2 = createIdWME(id, w.getName());
-                processInputLink(w, id2);
+                if (w.getValue().equals("") ){
+                    Identifier id2 = createIdWME(id, w.getName());
+                    processInputLink(w, id2);
+                }
+                else{
+                    Object value;
+
+                    if (Doubles.tryParse(w.getValue().toString()) != null) {
+                        value = Doubles.tryParse(w.getValue().toString());
+                        createFloatWME(id, w.getName(), (double) value);
+                    }  else if (w.getValue() instanceof String) {
+                        value = (String) w.getValue();
+                        createStringWME(id, w.getName(), (String) value);
+                    }
+                }
             }
         }
 
