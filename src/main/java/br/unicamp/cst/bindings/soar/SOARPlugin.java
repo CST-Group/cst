@@ -14,15 +14,10 @@ package br.unicamp.cst.bindings.soar;
 import java.io.File;
 import java.lang.reflect.Array;
 import java.lang.reflect.Field;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Date;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.Map.Entry;
-import java.util.Set;
 import java.util.logging.Logger;
+import java.util.stream.Collectors;
 
 import com.google.common.primitives.Doubles;
 import org.jsoar.kernel.Agent;
@@ -479,6 +474,10 @@ public class SOARPlugin {
         return inputLinkIdentifier;
     }
 
+    public Wme getInputLinkWme(){
+        return Wmes.matcher(getAgent()).filter(getAgent().getInputOutput().getInputLink()).get(0);
+    }
+
     public synchronized List<Identifier> getStates() {
         List<Identifier> li = new ArrayList<Identifier>();
 
@@ -674,42 +673,6 @@ public class SOARPlugin {
     }
 
 
-    public void addBranchToWme(String newBranch, double value, Identifier ID) {
-        String[] newNodes = newBranch.split("\\.");
-
-        List<Wme> WM = Wmes.matcher(getAgent()).filter(getAgent().getInputOutput().getInputLink());
-
-        if (containsWme(WM, newNodes[0])) {
-            Identifier id = WM.get(indexOfWME(WM, newNodes[0])).getIdentifier();
-            addBranchToWme(newBranch.substring(newNodes[0].length() + 1), value, id);
-        } else {
-            if (newNodes.length > 1) {
-                Identifier newID = createIdWME(ID, newNodes[0]);
-                addBranchToWme(newBranch.substring(newNodes[0].length() + 1), value, newID);
-            } else if (newNodes.length == 1) {
-                createFloatWME(ID, newNodes[0], value);
-            }
-        }
-    }
-
-    public void addBranchToWme(String newBranch, String value, Identifier ID) {
-        String[] newNodes = newBranch.split("\\.");
-
-        List<Wme> WM = Wmes.matcher(getAgent()).filter(getAgent().getInputOutput().getInputLink());
-
-        if (containsWme(WM, newNodes[0])) {
-            Identifier id = WM.get(WM.indexOf(newNodes[0])).getIdentifier();
-            addBranchToWme(newBranch.substring(newNodes[0].length() + 1), value, id);
-        } else {
-            if (newNodes.length > 1) {
-                Identifier newID = createIdWME(ID, newNodes[0]);
-                addBranchToWme(newBranch.substring(newNodes[0].length() + 1), value, newID);
-            } else if (newNodes.length == 1) {
-                createStringWME(ID, newNodes[0], value);
-            }
-        }
-    }
-
     public int indexOfWME(List<Wme> WM, String name){
         int answer = -1;
 
@@ -762,6 +725,10 @@ public class SOARPlugin {
         }
         return found;
     }
+
+    //public Wme getWmeByName(List<Wme> wmeList, final String name){
+    //    wmeList.stream().
+    //}
 
 
     public String toPrettyFormat(JsonObject json) {

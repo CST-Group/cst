@@ -1,19 +1,11 @@
 package br.unicamp.cst.bindings.soar;
 
-import br.unicamp.cst.bindings.soar.PlansSubsystemModule;
 import br.unicamp.cst.core.entities.Mind;
-import br.unicamp.cst.core.exceptions.CodeletThresholdBoundsException;
 import br.unicamp.cst.representation.wme.Idea;
-import ch.qos.logback.core.encoder.EchoEncoder;
 import com.google.gson.*;
-import org.jsoar.kernel.symbols.Identifier;
 import org.junit.Test;
-
-import java.io.ByteArrayOutputStream;
 import java.io.File;
-import java.io.PrintStream;
 import java.util.ArrayList;
-import java.util.List;
 
 import static org.junit.Assert.*;
 
@@ -209,6 +201,50 @@ public class JSoarCodeletTest {
 
         mind.shutDown();
         assertTrue(outputList.get(0) instanceof SoarCommandChange);
+        assertEquals("change", ((SoarCommandChange)outputList.get(0)).getProductionName());
+        assertEquals(2, ((SoarCommandChange)outputList.get(0)).getQuantity(), 0);
+    }
+
+    @Test
+    public void buildJavaObjectNestedTest(){
+        Mind mind = new Mind();
+
+        Idea il = Idea.createIdea("InputLink", "", 0);
+        Idea cp = Idea.createIdea("CURRENT_PERCEPTION", "", 1);
+        Idea conf = Idea.createIdea("CONFIGURATION", "", 2);
+        Idea smart = Idea.createIdea("SMARTCAR_INFO", "", 3);
+        Idea tf = Idea.createIdea("TRAFFIC_LIGHT", "", 4);
+        Idea current_phase = Idea.createIdea("CURRENT_PHASE","", 5);
+        Idea phase = Idea.createIdea("PHASE", "RED", 6);
+        Idea numb = Idea.createIdea("NUMBER", "4", 7);
+
+
+        current_phase.add(numb);
+        current_phase.add(phase);
+        tf.add(current_phase);
+        conf.add(tf);
+        conf.add(smart);
+        cp.add(conf);
+        il.add(cp);
+
+        String soarRulesPath="src/test/resources/smartCarNested.soar";
+        jSoarCodelet.initSoarPlugin("testAgent", new File(soarRulesPath), false);
+        jSoarCodelet.setInputLinkIdea(il);
+
+        mind.insertCodelet(jSoarCodelet);
+
+        mind.start();
+        try{
+            Thread.sleep(3000L);
+        }catch(Exception e){
+            e.printStackTrace();
+        }
+
+        ArrayList<Object> outputList = jSoarCodelet.getOutputInObject("br.unicamp.cst.bindings.soar");
+
+        mind.shutDown();
+        assertTrue(outputList.get(0) instanceof SoarCommandNested);
+        assertTrue(((SoarCommandNested)outputList.get(0)).getNestedClass() instanceof SoarCommandChange);
         assertEquals("change", ((SoarCommandChange)outputList.get(0)).getProductionName());
         assertEquals(2, ((SoarCommandChange)outputList.get(0)).getQuantity(), 0);
     }
@@ -466,19 +502,19 @@ public class JSoarCodeletTest {
             e.printStackTrace();
         }
 
-        String jsonString = "{\"InputLink\":{\"CURRENT_PERCEPTION\":{\"CONFIGURATION\":{\"TRAFFIC_LIGHT\":{\"CURRENT_PHASE\":{\"PHASE\":\"RED\",\"NUMBER\":4.0}}}}}}";
+        String jsonString = "{\"InputLink\":{\"CURRENT_PERCEPTION\":{\"CONFIGURATION\":{\"TRAFFIC_LIGHT\":{\"CURRENT_PHASE\":{\"PHASE\":\"RED\",\"NUMBER\":4.0,\"INFO\":\"OK\"}},\"SMARTCAR\":{\"INFO\":\"NO\"}}}}}";
         JsonObject expectedJson = JsonParser.parseString(jsonString).getAsJsonObject();
 
         JsonObject testJson = jSoarCodelet.createJson(
                 "InputLink.CURRENT_PERCEPTION.CONFIGURATION.TRAFFIC_LIGHT.CURRENT_PHASE.PHASE", "RED");
 
         jSoarCodelet.addToJson("InputLink.CURRENT_PERCEPTION.CONFIGURATION.TRAFFIC_LIGHT.CURRENT_PHASE.NUMBER", testJson, 4.0);
+        jSoarCodelet.addToJson("InputLink.CURRENT_PERCEPTION.CONFIGURATION.TRAFFIC_LIGHT.CURRENT_PHASE.INFO", testJson, "OK");
+        jSoarCodelet.addToJson("InputLink.CURRENT_PERCEPTION.CONFIGURATION.SMARTCAR", testJson, JsonParser.parseString("{\"INFO\":\"NO\"}").getAsJsonObject());
 
         mind.shutDown();
         assertEquals(expectedJson, testJson);
     }
-
-
 
 
     @Test
@@ -522,5 +558,79 @@ public class JSoarCodeletTest {
         assertEquals(expectedOutput, outputLink);
         mind.shutDown();
     }
-    
+
+    @Test
+    public void setAndGetNameTest(){
+        Mind mind = new Mind();
+
+        String jsonString = "{\"InputLink\":{\"CURRENT_PERCEPTION\":{\"CONFIGURATION\":{\"TRAFFIC_LIGHT\":{\"CURRENT_PHASE\":{\"PHASE\":\"RED\",\"NUMBER\":4.0}},\"SMARTCAR_INFO\":\"NO\"}}}}";
+        JsonObject jsonInput = JsonParser.parseString(jsonString).getAsJsonObject();
+
+        String soarRulesPath="src/test/resources/smartCar.soar";
+        jSoarCodelet.initSoarPlugin("testAgent", new File(soarRulesPath), false);
+        jSoarCodelet.setInputLinkJson(jsonInput);
+
+        mind.insertCodelet(jSoarCodelet);
+
+
+        String name = "testName";
+        jSoarCodelet.setAgentName(name);
+
+
+        assertEquals(name, jSoarCodelet.getAgentName());
+    }
+
+    @Test
+    public void setAndGetProductionPathTest(){
+        Mind mind = new Mind();
+
+        String jsonString = "{\"InputLink\":{\"CURRENT_PERCEPTION\":{\"CONFIGURATION\":{\"TRAFFIC_LIGHT\":{\"CURRENT_PHASE\":{\"PHASE\":\"RED\",\"NUMBER\":4.0}},\"SMARTCAR_INFO\":\"NO\"}}}}";
+        JsonObject jsonInput = JsonParser.parseString(jsonString).getAsJsonObject();
+
+        String soarRulesPath="src/test/resources/smartCar.soar";
+        jSoarCodelet.initSoarPlugin("testAgent", null, false);
+        jSoarCodelet.setInputLinkJson(jsonInput);
+
+        mind.insertCodelet(jSoarCodelet);
+
+        jSoarCodelet.setProductionPath(new File(soarRulesPath));
+
+
+        assertEquals(new File(soarRulesPath), jSoarCodelet.getProductionPath());
+    }
+
+    @Test
+    public void removeFromJsonTest(){
+        Mind mind = new Mind();
+        Idea il = Idea.createIdea("InputLink", "", 0);
+
+        String soarRulesPath="src/test/resources/smartCar.soar";
+        jSoarCodelet.initSoarPlugin("testAgent", new File(soarRulesPath), false);
+        jSoarCodelet.setInputLinkIdea(il);
+
+        mind.insertCodelet(jSoarCodelet);
+
+        mind.start();
+
+        try{
+            Thread.sleep(3000L);
+        }catch(Exception e){
+            e.printStackTrace();
+        }
+
+        String jsonString = "{\"InputLink\":{\"CURRENT_PERCEPTION\":{\"CONFIGURATION\":{\"TRAFFIC_LIGHT\":{\"CURRENT_PHASE\":{\"PHASE\":\"RED\",\"NUMBER\":4.0}},\"SMARTCAR\":{\"INFO\":\"NO\"}}}}}";
+        JsonObject expectedJson = JsonParser.parseString(jsonString).getAsJsonObject();
+
+        JsonObject testJson = jSoarCodelet.createJson(
+                "InputLink.CURRENT_PERCEPTION.CONFIGURATION.TRAFFIC_LIGHT.CURRENT_PHASE.PHASE", "RED");
+
+        jSoarCodelet.addToJson("InputLink.CURRENT_PERCEPTION.CONFIGURATION.TRAFFIC_LIGHT.CURRENT_PHASE.NUMBER", testJson, 4.0);
+        jSoarCodelet.addToJson("InputLink.CURRENT_PERCEPTION.CONFIGURATION.TRAFFIC_LIGHT.CURRENT_PHASE.INFO", testJson, "OK");
+        jSoarCodelet.addToJson("InputLink.CURRENT_PERCEPTION.CONFIGURATION.SMARTCAR", testJson, JsonParser.parseString("{\"INFO\":\"NO\"}").getAsJsonObject());
+
+        jSoarCodelet.removeJson("InputLink.CURRENT_PERCEPTION.CONFIGURATION.TRAFFIC_LIGHT.CURRENT_PHASE.INFO", testJson);
+        mind.shutDown();
+        assertEquals(expectedJson, testJson);
+    }
+
 }
