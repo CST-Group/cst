@@ -245,8 +245,8 @@ public class JSoarCodeletTest {
         mind.shutDown();
         assertTrue(outputList.get(0) instanceof SoarCommandNested);
         assertTrue(((SoarCommandNested)outputList.get(0)).getNestedClass() instanceof SoarCommandChange);
-        assertEquals("change", ((SoarCommandChange)outputList.get(0)).getProductionName());
-        assertEquals(2, ((SoarCommandChange)outputList.get(0)).getQuantity(), 0);
+        assertEquals(5, ((SoarCommandChange)((SoarCommandNested)outputList.get(0)).getNestedClass()).getQuantity(), 0);
+        assertEquals(2, ((SoarCommandNested)outputList.get(0)).getQuantity(), 0);
     }
 
 

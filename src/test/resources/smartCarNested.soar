@@ -33,7 +33,8 @@ sp {apply*change
    (<command> ^productionName change)
    (<command> ^quantity 2)
    (<command> ^apply true)
-   (<command> ^SoarCommandChange <command2>)
+   (<command> ^nestedClass <nest>)
+   (<nest> ^SoarCommandChange <command2>)
    (<command2> ^quantity 5)
    (interrupt)
 }

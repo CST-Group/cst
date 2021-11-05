@@ -113,61 +113,31 @@ public abstract class JSoarCodelet extends Codelet {
                 try {
                     for (Field field : type.getDeclaredFields()) {
                         if (p.getName().equals(field.getName())) {
-                            Object value = ((Idea) p.getValue()).getValue();
-                            if (Doubles.tryParse(value.toString()) != null) {
-                                Double fvalue = Doubles.tryParse(value.toString());
-                                field.set(commandObject, fvalue);
-                            }
-                            else {
-                                field.set(commandObject, value.toString());
-                            }
+                           if(p.getL().isEmpty()){
+                               Object value = ((Idea) p.getValue()).getValue();
+                               if (Doubles.tryParse(value.toString()) != null) {
+                                   Double fvalue = Doubles.tryParse(value.toString());
+                                   field.set(commandObject, fvalue);
+                               }
+                               else {
+                                   field.set(commandObject, value.toString());
+                               }
+                           }
+                           else{
+                               for(Idea subP : p.getL()){
+                                   Object newObj = buildObject(subP, package_with_beans_classes);
+
+                                   field.set(commandObject, newObj);
+                               }
+                           }
+
+
                         }
                     }
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
 
-            }
-        }
-
-        for (Idea comp: command.getL()) {
-            Object nestedObject = buildObject(comp, package_with_beans_classes);
-            String nestedCommandType = comp.getName();
-            if(nestedObject != null){
-                try {
-                    Class nestedType = Class.forName(package_with_beans_classes + "." + nestedCommandType);
-
-                    for (Idea p : comp.getL()) {
-                        for (Field field : nestedType.getDeclaredFields()) {
-                            if (p.getName().equals(field.getName())) {
-                                Object value = ((Idea) p.getValue()).getValue();
-                                if (Doubles.tryParse(value.toString()) != null) {
-                                    Double fvalue = Doubles.tryParse(value.toString());
-                                    field.set(nestedObject, fvalue);
-                                }
-                                else {
-                                    field.set(nestedObject, value.toString());
-                                }
-                            }
-                        }
-
-                        //for(Field field : ){}
-                        //try {
-                        /*for (Field field: nestedType.getDeclaredFields()) {
-                            if(field.toString().toUpperCase().contains(nestedCommandType.toUpperCase())){
-                                try {
-                                    field.set(commandObject, object);
-                                } catch (IllegalAccessException e) {
-                                    e.printStackTrace();
-                                }
-                            }
-                        }*/
-                        //} catch (Exception e) {
-                        //    e.printStackTrace();
-                        //}
-
-                    }
-                }catch (Exception e){e.printStackTrace();}
             }
         }
 
