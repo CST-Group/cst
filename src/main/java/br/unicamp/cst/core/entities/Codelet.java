@@ -52,7 +52,7 @@ import br.unicamp.cst.util.CodeletsProfiler.FileFormat;
  * @see Mind
  * @see Runnable
  */
-public abstract class Codelet implements Runnable {
+public abstract class Codelet implements Runnable, MemoryObserver {
 	/**
 	 * Activation level of the Codelet. Ranges from 0.0 to 1.0d.
 	 */
@@ -781,11 +781,78 @@ public abstract class Codelet implements Runnable {
             throw new MemoryObjectNotFoundException("This Codelet could not find a memory object it needs: "
 							+ Codelet.this.name);
         }
+        
+        @Override
+    	public void notifyCodelet() {
+    		long startTime = 0l;
+    		long endTime = 0l;
+    		long duration = 0l;
+
+    		try {
+
+    			if (isProfiling)
+    				startTime = System.currentTimeMillis();
+
+    			accessMemoryObjects();// tries to connect to memory objects
+
+    			if (enable_count == 0) {
+    				calculateActivation();
+    				if (activation >= threshold)
+    					proc();
+    			} else {
+                                     
+                                    raiseException();
+                                   
+//    				throw new MemoryObjectNotFoundException("This Codelet could not find a memory object it needs: "
+//    						+ Codelet.this.name);
+    			}
+
+    			enable_count = 0;
+
+    		} catch (Exception e) {
+
+    			e.printStackTrace();
+
+    		} finally {
+
+    			//if (shouldLoop()) 
+    				//timer.schedule(new CodeletTimerTask(), timeStep);
+    			if (Codelet.this.codeletProfiler != null) {
+    				Codelet.this.codeletProfiler.profile(Codelet.this);
+    			}
+    			if (isProfiling) {
+                    endTime = System.currentTimeMillis();
+    				duration = (endTime - startTime);
+    				ProfileInfo pi = new ProfileInfo(duration, startTime, laststarttime);
+    				profileInfo.add(pi);
+    				laststarttime = startTime;
+
+    				if (profileInfo.size() >= 50) {
+
+    					ExecutionTimeWriter executionTimeWriter = new ExecutionTimeWriter();
+    					executionTimeWriter.setCodeletName(name);
+    					executionTimeWriter.setProfileInfo(profileInfo);
+
+    					Thread thread = new Thread(executionTimeWriter);
+    					thread.start();
+
+    					profileInfo = new ArrayList<>();
+
+    				}
+
+    			}
+                                
+
+    		}
+    		
+    	}
 
 	private class CodeletTimerTask extends TimerTask {
 
 		@Override
 		public synchronized void run() {
+			
+			System.out.println(">>>>>>>>>>>>> CodeletTimerTask run - codelet " + name);
 
 			long startTime = 0l;
 			long endTime = 0l;
@@ -818,6 +885,7 @@ public abstract class Codelet implements Runnable {
 
 			} finally {
 
+				System.out.println("    ===== shouldLoop() " + shouldLoop());
 				if (shouldLoop()) 
 					timer.schedule(new CodeletTimerTask(), timeStep);
 				if (Codelet.this.codeletProfiler != null) {
