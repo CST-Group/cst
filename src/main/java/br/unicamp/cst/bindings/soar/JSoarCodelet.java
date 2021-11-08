@@ -26,6 +26,8 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import org.checkerframework.checker.nullness.qual.Nullable;
+import org.jsoar.kernel.memory.Wme;
+import org.jsoar.kernel.memory.Wmes;
 import org.jsoar.kernel.symbols.Identifier;
 import org.slf4j.LoggerFactory;
 
@@ -111,14 +113,25 @@ public abstract class JSoarCodelet extends Codelet {
                 try {
                     for (Field field : type.getDeclaredFields()) {
                         if (p.getName().equals(field.getName())) {
-                            Object value = ((Idea) p.getValue()).getValue();
-                            if (Doubles.tryParse(value.toString()) != null) {
-                                Double fvalue = Doubles.tryParse(value.toString());
-                                field.set(commandObject, fvalue);
-                            }
-                            else {
-                                field.set(commandObject, value.toString());
-                            }
+                           if(p.getL().isEmpty()){
+                               Object value = ((Idea) p.getValue()).getValue();
+                               if (Doubles.tryParse(value.toString()) != null) {
+                                   Double fvalue = Doubles.tryParse(value.toString());
+                                   field.set(commandObject, fvalue);
+                               }
+                               else {
+                                   field.set(commandObject, value.toString());
+                               }
+                           }
+                           else{
+                               for(Idea subP : p.getL()){
+                                   Object newObj = buildObject(subP, package_with_beans_classes);
+
+                                   field.set(commandObject, newObj);
+                               }
+                           }
+
+
                         }
                     }
                 } catch (Exception e) {
@@ -128,29 +141,10 @@ public abstract class JSoarCodelet extends Codelet {
             }
         }
 
-        for (Idea comp: command.getL()) {
-            Object object = buildObject(comp, package_with_beans_classes);
-
-            if(object != null){
-                if(commandType.toUpperCase().contains(ARRAY)){
-                    arrayList.add(object);
-                }else{
-                    for (Field field: type.getDeclaredFields()) {
-                        if(comp.getName().toUpperCase().contains(field.getName().toUpperCase())){
-                            try {
-                                field.set(commandObject, object);
-                            } catch (IllegalAccessException e) {
-                                e.printStackTrace();
-                            }
-                        }
-                    }
-                }
-            }
-
-        }
-
         return arrayList.size() > 0 ? arrayList : commandObject;
     }
+
+    //TODO: separate in setSimpleField and setObjectField
     
     public ArrayList<Object> getCommandsJSON(String package_with_beans_classes){
         ArrayList<Object> commandList = new ArrayList<Object>();
@@ -211,48 +205,20 @@ public abstract class JSoarCodelet extends Codelet {
             getJsoar().addBranchToJson(newBranch, json, specvalue);
             return;
         }
-        Class a = value.getClass();
-        if(a==String.class){
+        if(value instanceof String){
             String specvalue =(String)value;
             getJsoar().addBranchToJson(newBranch, json, specvalue);
         }
-        else if(a==double.class || a==float.class){
-            double specvalue =(double)value;
+        else if(value instanceof  Number){
+            Double specvalue =(Double)value;
             getJsoar().addBranchToJson(newBranch, json, specvalue);
         }
-        else if(a==Integer.class){
-            Integer spec = (Integer) value;
-            double specvalue = spec.doubleValue();
-            getJsoar().addBranchToJson(newBranch, json, specvalue);
-        }
-        else if(a==Long.class){
-            Long spec = (Long) value;
-            double specvalue = spec.doubleValue();
-            getJsoar().addBranchToJson(newBranch, json, specvalue);
-        }
-        else if(a==Double.class){
-            Double spec = (Double) value;
-            double specvalue = spec;
-            getJsoar().addBranchToJson(newBranch, json, specvalue);
-        }
-        
         else{
             JsonObject specvalue = (JsonObject)value;
             getJsoar().addBranchToJson(newBranch, json, specvalue);
         }
     }
-    
-    public void addToWme(String newBranch, Object value){
-        if(value instanceof String){
-            String specvalue =(String)value;
-            getJsoar().addBranchToWme(newBranch,specvalue, getJsoar().getInputLinkIdentifier());
-        }
-        else if(value instanceof Double){
-            double specvalue =(double)value;
-            getJsoar().addBranchToWme(newBranch,specvalue, getJsoar().getInputLinkIdentifier());
-        }
-        
-    }
+
     
     public void setInputLinkJson(JsonObject json){
         getJsoar().setInputLinkIdea((Idea)getJsoar().createIdeaFromJson(json));
@@ -262,14 +228,6 @@ public abstract class JSoarCodelet extends Codelet {
         getJsoar().setInputLinkIdea(wo);
     }
 
-    public void processInputLink(){
-        getJsoar().processInputLink();
-    }
-    
-    public void removeWme(String pathToNode){
-        getJsoar().removeBranchFromWme(pathToNode);
-    }
-    
     public void removeJson(String pathToOldBranch, JsonObject json){
         getJsoar().removeBranchFromJson(pathToOldBranch, json);
     }
