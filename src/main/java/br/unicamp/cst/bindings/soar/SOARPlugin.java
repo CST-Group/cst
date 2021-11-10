@@ -12,18 +12,15 @@
 package br.unicamp.cst.bindings.soar;
 
 import java.io.File;
-import java.lang.reflect.Array;
 import java.lang.reflect.Field;
 import java.util.*;
 import java.util.Map.Entry;
 import java.util.logging.Logger;
-import java.util.stream.Collectors;
 
 import com.google.common.primitives.Doubles;
 import org.jsoar.kernel.Agent;
 import org.jsoar.kernel.Phase;
 import org.jsoar.kernel.RunType;
-import org.jsoar.kernel.io.InputWme;
 import org.jsoar.kernel.memory.Wme;
 import org.jsoar.kernel.memory.Wmes;
 import org.jsoar.kernel.symbols.DoubleSymbol;
@@ -150,61 +147,16 @@ public class SOARPlugin {
     }
     
     public void post_mstep()  {
-        processOutputLink();
+        /*processOutputLink();
         try {
                 Thread.sleep(1); // why this is needed ? 
         } catch (InterruptedException e) {
                 e.printStackTrace();
-        }
+        }*/
         setOperatorsPathList(new ArrayList<>());
     }
     
-    
-    
     /*************************************************/
-
-    public void step_old() {
-        Date initDate=null;
-        
-        if (getDebugState() == 1) {
-            initDate = new Date();
-            if (getPhase() == 0) processInputLink();           
-            setPhase(stepSOAR(1, RunType.PHASES));
-        }    
-        else {
-            //System.out.println("Starting SOAR step");
-            resetSimulation();
-            processInputLink();
-            getWMEStringInput();
-            //System.out.println("Before:\n"+getWMEString(getInitialState()));
-            runSOAR();
-            //System.out.println("After:\n"+getWMEString(getInitialState()));
-            processOutputLink();
-            getWMEStringOutput();
-            //System.out.println("Finishing SOAR step");
-        }
-            
-        if (getPhase() == 3 && getDebugState() == 1) {
-            getOperatorsPathList().addAll(getOperatorsInCurrentPhase(getStates()));
-        }
-
-        if (getPhase() == 5) {
-            try {
-                Thread.sleep(1);
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
-            setPhase(-1);
-            resetSimulation();
-            setOperatorsPathList(new ArrayList<>());
-        }
-
-        if(getDebugState() == 1) {
-            double diff = (new Date()).getTime() - initDate.getTime();
-            logger.info("Time of Soar Cycle :" + diff);
-        }
-        	
-    }
 
     public void moveToFinalStep() {
         while (getPhase() != -1) {
@@ -229,7 +181,7 @@ public class SOARPlugin {
         getAgent().stop();
     }
 
-    public void runSOAR() {
+    /*public void runSOAR() {
         setInputLinkAsString(getWMEStringInput());
         try {
             if (getAgent() != null) {
@@ -239,7 +191,18 @@ public class SOARPlugin {
             logger.severe("Error while running SOAR step" + e);
         }
         setOutputLinkAsString(getWMEStringOutput());
+    }*/
+
+    public void runSOAR() {
+        try {
+            if (getAgent() != null) {
+                step();
+            }
+        } catch (Exception e) {
+            logger.severe("Error while running SOAR step" + e);
+        }
     }
+
 
     public void resetSimulation() {
         getAgent().initialize();
@@ -265,26 +228,18 @@ public class SOARPlugin {
 
     }
 
-    private String getParameterValue(String par) {
+    /*private String getParameterValue(String par) {
         List<Wme> Commands = Wmes.matcher(getAgent()).filter(getAgent().getInputOutput().getOutputLink());
         List<Wme> Parameters = Wmes.matcher(getAgent()).filter(Commands.get(0));
         String parvalue = "";
         for (Wme w : Parameters)
             if (w.getAttribute().toString().equals(par)) parvalue = w.getValue().toString();
         return (parvalue);
-    }
+    }*/
 
     public void printWMEs(List<Wme> Commands) {
         String s = getWMEsAsString(Commands);
         System.out.println(s);
-//        for (Wme wme : Commands) {
-//            System.out.print("(" + wme.getIdentifier().toString() + "," + wme.getAttribute().toString() + "," + wme.getValue().toString() + ")\n");
-//            Iterator<Wme> children = wme.getChildren();
-//            while (children.hasNext()) {
-//                Wme child = children.next();
-//                System.out.print("(" + child.getIdentifier().toString() + "," + child.getAttribute().toString() + "," + child.getValue().toString() + ")\n");
-//            }
-//        }
     }
 
     public String getWMEsAsString(List<Wme> Commands) {
@@ -293,13 +248,13 @@ public class SOARPlugin {
         for (Wme wme : Commands) {
             preference = "";
             if (wme.isAcceptable()) preference = " +";
-            result += "(" + wme.getIdentifier().toString() + "," + wme.getAttribute().toString() + "," + wme.getValue().toString() + preference + ")\n";
+            result += "(" + wme.getIdentifier().toString() + "," + wme.getAttribute().toString() + "," + wme.getValue().toString() + preference + ")\n   ";
             Iterator<Wme> children = wme.getChildren();
             while (children.hasNext()) {
                 Wme child = children.next();
                 preference = "";
                 if (child.isAcceptable()) preference = " +";
-                result += "(" + child.getIdentifier().toString() + "," + child.getAttribute().toString() + "," + child.getValue().toString() + preference + ")\n";
+                result += "(" + child.getIdentifier().toString() + "," + child.getAttribute().toString() + "," + child.getValue().toString() + preference + ")\n   ";
             }
         }
         return (result);
@@ -324,13 +279,11 @@ public class SOARPlugin {
     }
 
     public List<Wme> getOutputLink_WME() {
-        List<Wme> olwme = Wmes.matcher(getAgent()).filter(getAgent().getInputOutput().getOutputLink());
-        return (olwme);
+        return Wmes.matcher(getAgent()).filter(getAgent().getInputOutput().getOutputLink());
     }
 
     public List<Wme> getInputLink_WME() {
-        List<Wme> ilwme = Wmes.matcher(getAgent()).filter(getAgent().getInputOutput().getInputLink());
-        return (ilwme);
+        return Wmes.matcher(getAgent()).filter(getAgent().getInputOutput().getInputLink());
     }
 
     public JsonObject getOutputLinkJSON() {
@@ -342,13 +295,12 @@ public class SOARPlugin {
                 for (Wme command : Commands) {
                     String commandType = command.getAttribute().toString();
                     json.add(commandType, new JsonObject());
-                    String parameter = command.getAttribute().toString();
-                    String parvalue = command.getValue().toString();
+
                     Iterator<Wme> children = command.getChildren();
                     while (children.hasNext()) {
                         Wme child = children.next();
-                        parameter = child.getAttribute().toString();
-                        parvalue = child.getValue().toString();
+                        String parameter = child.getAttribute().toString();
+                        String parvalue = child.getValue().toString();
                         Float floatvalue = tryParseFloat(parvalue);
                         if (floatvalue != null) {
                             json.get(commandType).getAsJsonObject().addProperty(parameter, floatvalue);
@@ -373,7 +325,7 @@ public class SOARPlugin {
      * @return The Float Value or null otherwise
      */
     private Float tryParseFloat(String value) {
-        Float returnValue = null;
+        Float returnValue;
 
         try {
             returnValue = Float.parseFloat(value);
@@ -384,55 +336,6 @@ public class SOARPlugin {
         return returnValue;
     }
 
-    private Double tryParseDouble(String value) {
-        Double returnValue = null;
-
-        try {
-            returnValue = Double.parseDouble(value);
-        } catch (Exception ex) {
-            returnValue = null;
-        }
-
-        return returnValue;
-    }
-
-    private Integer tryParseInteger(String value) {
-        Integer returnValue = null;
-
-        try {
-            returnValue = Integer.parseInt(value);
-        } catch (Exception ex) {
-            returnValue = null;
-        }
-
-        return returnValue;
-    }
-
-    private Long tryParseLong(String value) {
-        Long returnValue = null;
-
-        try {
-            returnValue = Long.parseLong(value);
-        } catch (Exception ex) {
-            returnValue = null;
-        }
-
-        return returnValue;
-    }
-
-    private Short tryParseShort(String value) {
-        Short returnValue = null;
-
-        try {
-            returnValue = Short.parseShort(value);
-        } catch (Exception ex) {
-            returnValue = null;
-        }
-
-        return returnValue;
-    }
-
-
     //CreateWME methods
     public Identifier createIdWME(Identifier id, String s) {
         SymbolFactoryImpl sf = (SymbolFactoryImpl) getAgent().getSymbols();
@@ -441,28 +344,16 @@ public class SOARPlugin {
         return (newID);
     }
 
-    public Identifier createIdWME(String s) {
-        return (createIdWME(getInputLinkIdentifier(), s));
-    }
-
     public void createFloatWME(Identifier id, String s, double value) {
         SymbolFactory sf = getAgent().getSymbols();
         DoubleSymbol newID = sf.createDouble(value);
         getAgent().getInputOutput().addInputWme(id, sf.createString(s), newID);
     }
 
-    public void createFloatWME(String s, double value) {
-        createFloatWME(getInputLinkIdentifier(), s, value);
-    }
-
-    public InputWme createStringWME(Identifier id, String s, String value) {
+    public void createStringWME(Identifier id, String s, String value) {
         SymbolFactory sf = getAgent().getSymbols();
         StringSymbol newID = sf.createString(value);
-        return getAgent().getInputOutput().addInputWme(id, sf.createString(s), newID);
-    }
-
-    public void createStringWME(String s, String value) {
-        createStringWME(getInputLinkIdentifier(), s, value);
+        getAgent().getInputOutput().addInputWme(id, sf.createString(s), newID);
     }
 
     public Identifier getOutputLinkIdentifier() {
@@ -959,47 +850,65 @@ public class SOARPlugin {
 
     public Object convertObject(Object origin, String className) {
         String objectClass = origin.getClass().getName();
-        if (className.equals("double") || className.equals("java.lang.Double")) {
-            double value;
-            if (objectClass.equals("java.lang.String")) {
-                value = tryParseDouble((String) origin);
-            } else {
-                value = ((Number) origin).doubleValue();
+        try {
+            switch (className) {
+                case "double":
+                case "java.lang.Double": {
+                    double value;
+                    if (objectClass.equals("java.lang.String")) {
+                        value = Double.parseDouble((String) origin);
+                    } else {
+                        value = ((Number) origin).doubleValue();
+                    }
+                    return (value);
+                }
+                case "float":
+                case "java.lang.Float": {
+                    float value;
+                    if (objectClass.equals("java.lang.String")) {
+                        value = tryParseFloat((String) origin);
+                    } else {
+                        value = ((Number) origin).floatValue();
+                    }
+                    return (value);
+                }
+                case "long":
+                case "java.lang.Long": {
+                    long value;
+                    if (objectClass.equals("java.lang.String")) {
+                        value = Long.parseLong((String) origin);
+                    } else {
+                        value = ((Number) origin).longValue();
+                    }
+                    return (value);
+                }
+                case "int":
+                case "java.lang.Integer": {
+                    int value;
+                    if (objectClass.equals("java.lang.String")) {
+                        value = Integer.parseInt((String) origin);
+                    } else {
+                        value = ((Number) origin).intValue();
+                    }
+                    return (value);
+                }
+                case "short":
+                case "java.lang.Short": {
+                    short value;
+                    if (objectClass.equals("java.lang.String")) {
+                        value = Short.parseShort((String) origin);
+                    } else {
+                        value = ((Number) origin).shortValue();
+                    }
+                    return (value);
+                }
+                default:
+                    return (origin);
             }
-            return (value);
-        } else if (className.equals("float") || className.equals("java.lang.Float")) {
-            float value;
-            if (objectClass.equals("java.lang.String")) {
-                value = tryParseFloat((String) origin);
-            } else {
-                value = ((Number) origin).floatValue();
-            }
-            return (value);
-        } else if (className.equals("long") || className.equals("java.lang.Long")) {
-            long value;
-            if (objectClass.equals("java.lang.String")) {
-                value = tryParseLong((String) origin);
-            } else {
-                value = ((Number) origin).longValue();
-            }
-            return (value);
-        } else if (className.equals("int") || className.equals("java.lang.Integer")) {
-            int value;
-            if (objectClass.equals("java.lang.String")) {
-                value = tryParseInteger((String) origin);
-            } else {
-                value = ((Number) origin).intValue();
-            }
-            return (value);
-        } else if (className.equals("short") || className.equals("java.lang.Short")) {
-            short value;
-            if (objectClass.equals("java.lang.String")) {
-                value = tryParseShort((String) origin);
-            } else {
-                value = ((Number) origin).shortValue();
-            }
-            return (value);
-        } else return (origin);
+        } catch (Exception e){
+            e.printStackTrace();
+            return null;
+        }
     }
 
     public void setField(Object o, String fieldName, Object value) {

@@ -25,9 +25,6 @@ import br.unicamp.cst.representation.wme.Idea;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import org.checkerframework.checker.nullness.qual.Nullable;
-import org.jsoar.kernel.memory.Wme;
-import org.jsoar.kernel.memory.Wmes;
 import org.jsoar.kernel.symbols.Identifier;
 import org.slf4j.LoggerFactory;
 
@@ -82,7 +79,7 @@ public abstract class JSoarCodelet extends Codelet {
         Idea ol = getJsoar().getOutputLinkIdea();
 
         if(ol != null) {
-            commandList = new ArrayList<Object>();
+            commandList = new ArrayList<>();
             for (Idea command : ol.getL()) {
                 commandList.add(buildObject(command, package_with_beans_classes));
             }
@@ -144,7 +141,6 @@ public abstract class JSoarCodelet extends Codelet {
         return arrayList.size() > 0 ? arrayList : commandObject;
     }
 
-    //TODO: separate in setSimpleField and setObjectField
     
     public ArrayList<Object> getCommandsJSON(String package_with_beans_classes){
         ArrayList<Object> commandList = new ArrayList<Object>();
@@ -183,7 +179,6 @@ public abstract class JSoarCodelet extends Codelet {
     
     public JsonObject createJson(String pathToLeaf, Object value){
         JsonObject json = new JsonObject();
-        Class a = value.getClass();
         if(value instanceof String){
             String specvalue =(String)value;
             json = getJsoar().createJsonFromString(pathToLeaf,specvalue);

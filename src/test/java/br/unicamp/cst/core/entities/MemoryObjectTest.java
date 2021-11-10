@@ -65,10 +65,79 @@ public class MemoryObjectTest {
         MemoryObject otherMO = new MemoryObject();
         MemoryObject thirdMO = new MemoryObject();
         MemoryObject fourthMO = new MemoryObject();
+
+        mo.setI(0.0);
+        otherMO.setI(0.0);
+        thirdMO.setI(1.0);
+
+        assertNotEquals(fourthMO, mo);
+        assertNotEquals(mo, thirdMO);
+
+        mo.setEvaluation(0.0);
+        otherMO.setEvaluation(0.0);
+        thirdMO.setEvaluation(1.0);
+
+        fourthMO.setI(0.0);
+        fourthMO.setEvaluation(null);
+
+        assertNotEquals(fourthMO, mo);
+        assertNotEquals(mo, thirdMO);
+
+
+        mo.setIdmemoryobject(1000L);
+        otherMO.setIdmemoryobject(2000L);
+        thirdMO.setIdmemoryobject(2000L);
+
+
+        fourthMO.setEvaluation(0.0);
+        fourthMO.setIdmemoryobject(null);
+
+        assertNotEquals(fourthMO, mo);
+        assertNotEquals(mo, otherMO);
+
+        otherMO.setIdmemoryobject(1000L);
+        fourthMO.setIdmemoryobject(1000L);
+
+        mo.setType("firstName");
+        otherMO.setType("firstName");
+        thirdMO.setType("secondName");
+
+        assertNotEquals(fourthMO, mo);
+        assertNotEquals(mo, thirdMO);
+
+        fourthMO.setType("firstName");
+
+        mo.setTimestamp(100L);
+        otherMO.setTimestamp(100L);
+        thirdMO.setTimestamp(200L);
+        fourthMO.setTimestamp(null);
+
+        assertNotEquals(fourthMO, mo);
+        assertNotEquals(mo, thirdMO);
+
+        fourthMO.setTimestamp(200L);
+        assertNotEquals(fourthMO, mo);
+
+        assertEquals(mo, otherMO);
+    }
+
+
+
+    @Test
+    public void equalsFalseNullTest(){
+        MemoryObject mo = new MemoryObject();
+        MemoryObject otherMO = new MemoryObject();
+        MemoryObject thirdMO = new MemoryObject();
+        MemoryObject fourthMO = new MemoryObject();
         Mind mind = new Mind();
 
-        assertFalse(mo.equals(null));
-        assertFalse(mo.equals(mind));
+        /*
+        * id
+        * id
+        * name
+        * timestamp
+        * timestamp
+        * */
 
         mo.setI(0.0);
         otherMO.setI(0.0);
