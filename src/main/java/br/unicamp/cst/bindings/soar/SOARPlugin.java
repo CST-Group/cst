@@ -118,8 +118,7 @@ public class SOARPlugin {
         resetSimulation();
         processInputLink(); // Transform AO into WMEs
     }
-    
-    //int kk=0;
+
     int oldphase = -1;
     public void mstep()
     {
@@ -135,7 +134,6 @@ public class SOARPlugin {
             phase = -1;
         }
         oldphase = phase;
-        //System.out.println(kk++ + " Micro-step: "+phase);
     }
     
     public void finish_msteps() {
@@ -147,12 +145,6 @@ public class SOARPlugin {
     }
     
     public void post_mstep()  {
-        /*processOutputLink();
-        try {
-                Thread.sleep(1); // why this is needed ? 
-        } catch (InterruptedException e) {
-                e.printStackTrace();
-        }*/
         setOperatorsPathList(new ArrayList<>());
     }
     
@@ -181,17 +173,6 @@ public class SOARPlugin {
         getAgent().stop();
     }
 
-    /*public void runSOAR() {
-        setInputLinkAsString(getWMEStringInput());
-        try {
-            if (getAgent() != null) {
-                getAgent().runForever();
-            }
-        } catch (Exception e) {
-            logger.severe("Error while running SOAR step" + e);
-        }
-        setOutputLinkAsString(getWMEStringOutput());
-    }*/
 
     public void runSOAR() {
         try {
@@ -227,15 +208,6 @@ public class SOARPlugin {
         } else return (6);
 
     }
-
-    /*private String getParameterValue(String par) {
-        List<Wme> Commands = Wmes.matcher(getAgent()).filter(getAgent().getInputOutput().getOutputLink());
-        List<Wme> Parameters = Wmes.matcher(getAgent()).filter(Commands.get(0));
-        String parvalue = "";
-        for (Wme w : Parameters)
-            if (w.getAttribute().toString().equals(par)) parvalue = w.getValue().toString();
-        return (parvalue);
-    }*/
 
     public void printWMEs(List<Wme> Commands) {
         String s = getWMEsAsString(Commands);
@@ -393,7 +365,7 @@ public class SOARPlugin {
         return (li);
     }
 
-    //organizar
+
     private void removeWME(Identifier Attribute) {
         while (getAgent().getInputOutput().getInputLink().getWmes().hasNext()) {
             Wme candidate = getAgent().getInputOutput().getInputLink().getWmes().next();
@@ -537,8 +509,7 @@ public class SOARPlugin {
 
     public void addBranchToJson(String newBranch, JsonObject json, JsonObject value) {
         String[] newNodes = newBranch.split("\\.");
-        JsonObject temp;// = new JsonObject();
-
+        JsonObject temp;
         if (newNodes.length > 1) {
             if (json.has(newNodes[0])) {
                 addBranchToJson(newBranch.substring(newNodes[0].length() + 1), json.getAsJsonObject(newNodes[0]), value);
