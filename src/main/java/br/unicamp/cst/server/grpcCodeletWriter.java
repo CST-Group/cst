@@ -7,13 +7,11 @@ import pb.Service;
 import java.util.ArrayList;
 
 public class grpcCodeletWriter extends Codelet {
-    private ArrayList<Integer> clientesAtivos;
     private Boolean send = Boolean.FALSE;
     private ClientsObservers clientsObservers;
 
-    public grpcCodeletWriter(String name, ArrayList<Integer> clientesAtivos){
+    public grpcCodeletWriter(String name){
         setName(name);
-        this.clientesAtivos = clientesAtivos;
         this.clientsObservers = ClientsObservers.getInstance();
     }
 
