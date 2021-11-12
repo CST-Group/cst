@@ -47,6 +47,7 @@
      }
 
 
+
      message infoAdd {
         string json = 1;
      }
@@ -55,10 +56,13 @@
         string mensagem = 1;
      }
 
+
+
      service grpcService{
        rpc getMemoriesAndCodelets(Empty) returns (APIResponse) {};
        rpc getMemories(Empty) returns (memoriesResponse) {};
        rpc getCodelets(Empty) returns (codeletsResponse) {};
        rpc getInfo(indexInfo) returns (responseInfo) {};
        rpc setInfo(infoAdd) returns (responseOK) {};
+       rpc sendCodelet(stream codeletsResponse) returns (stream codeletsResponse) {};
      }
