@@ -80,7 +80,6 @@ public class SOARPlugin {
             setProductionPath(_productionPath);
 
             // create Soar kernel And Agent
-            //setThreaded(ThreadedAgent.create());
             Agent agent = new Agent();
             agent.setName(_agentName);
             setAgent(agent);
@@ -329,8 +328,7 @@ public class SOARPlugin {
     }
 
     public Identifier getOutputLinkIdentifier() {
-        Identifier ol = getAgent().getInputOutput().getOutputLink();
-        return (ol);
+        return getAgent().getInputOutput().getOutputLink();
     }
 
     public Identifier getInputLinkIdentifier() {
@@ -363,16 +361,6 @@ public class SOARPlugin {
         }
 
         return (li);
-    }
-
-
-    private void removeWME(Identifier Attribute) {
-        while (getAgent().getInputOutput().getInputLink().getWmes().hasNext()) {
-            Wme candidate = getAgent().getInputOutput().getInputLink().getWmes().next();
-            if (candidate.getAttribute() == Attribute) {
-                getAgent().getInputOutput().getInputLink().getWmes().remove();
-            }
-        }
     }
 
 
@@ -547,33 +535,25 @@ public class SOARPlugin {
         return answer;
     }
 
-    //new
-    public void removeBranchFromWme(String pathToNode) {
-        String[] newNodes = pathToNode.split("\\.");
-        List<Wme> WM = Wmes.matcher(getAgent()).filter(getAgent().getInputOutput().getInputLink());
-        if (containsWme(WM, newNodes[0])) {
-            removeBranchFromWme(pathToNode.substring(newNodes[0].length() + 1));
-            if (newNodes.length == 1) {
-                removeWME(getAgent().getSymbols().createString(newNodes[0]).asIdentifier());
-            }
-        }
-    }
 
     public JsonObject fromBeanToJson(Object bean) {
         JsonObject json = new JsonObject();
-        Class type = bean.getClass();
-
-        json.add(type.getName(), new JsonObject());
+        Class<?> type = bean.getClass();
+        json.addProperty("class", type.getCanonicalName());
         try {
             Object obj = type.newInstance();
             type.cast(obj);
-
-            for (Field field : type.getFields()) {
-                json.addProperty(field.getName(), field.get(bean).toString());
+            for (Field field : type.getDeclaredFields()) {
+                if (field.get(bean) != null){
+                    json.addProperty(field.getName(), field.get(bean).toString());
+                }
+                else{
+                    json.addProperty(field.getName(), (String) null);
+                }
             }
         } catch (Exception e) {
+            e.printStackTrace();
         }
-
         return json;
     }
 
@@ -587,10 +567,6 @@ public class SOARPlugin {
         }
         return found;
     }
-
-    //public Wme getWmeByName(List<Wme> wmeList, final String name){
-    //    wmeList.stream().
-    //}
 
 
     public String toPrettyFormat(JsonObject json) {
@@ -606,7 +582,6 @@ public class SOARPlugin {
     public void printWME(Identifier id) {
         String ids = getWMEString(id);
         System.out.println(ids);
-        //printWME(id, 0);
 
     }
 
@@ -654,7 +629,6 @@ public class SOARPlugin {
     public String getWMEStringInput() {
         String out = "";
         Identifier il = getAgent().getInputOutput().getInputLink();
-        //out += "Input --->\n";
         out += getWMEString(il);
         setInputLinkAsString(out);
         return (out);
@@ -663,7 +637,6 @@ public class SOARPlugin {
     public String getWMEStringOutput() {
         String out = "";
         Identifier ol = getAgent().getInputOutput().getOutputLink();
-        //out += "Output --->\n";
         out += getWMEString(ol);
         setOutputLinkAsString(out);
         return (out);
@@ -711,7 +684,6 @@ public class SOARPlugin {
                 else value = v.toString();
                 qd = new Idea(a.toString(), value);
                 Idea pp = new Idea(a.toString(), qd);
-                //pp.setQualityDimension("VALUE", v.toString());
                 newwo.add(pp);
             }
         }
@@ -887,10 +859,8 @@ public class SOARPlugin {
         try {
             Field[] fieldList = type.getFields();
             for (Field field : fieldList) {
-                //String valueClass = value.getClass().getId();
                 String fieldClass = field.getType().getCanonicalName();
                 if (field.getName().equals(fieldName)) {
-                    //System.out.println("Class: "+o.getClass().getId()+" Field: "+field.getId()+" type: "+fieldClass+" Value: "+valueClass);
                     field.set(o, convertObject(value, fieldClass));
                 }
             }

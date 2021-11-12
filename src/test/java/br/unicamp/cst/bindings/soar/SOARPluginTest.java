@@ -233,11 +233,7 @@ public class SOARPluginTest {
         String jsonString = "{\"InputLink\":{\"CURRENT_PERCEPTION\":{\"CONFIGURATION\":{\"TRAFFIC_LIGHT\":{\"CURRENT_PHASE\":{\"PHASE\":\"RED\",\"NUMBER\":4.0}},\"SMARTCAR_INFO\":\"NO\"}}}}";
         JsonObject jsonInput = JsonParser.parseString(jsonString).getAsJsonObject();
 
-
         soarPlugin.setInputLinkIdea((Idea)soarPlugin.createIdeaFromJson(jsonInput));
-
-        ByteArrayOutputStream outputStreamCaptor = new ByteArrayOutputStream();
-        System.setOut(new PrintStream(outputStreamCaptor));
 
         soarPlugin.runSOAR();
 
@@ -301,9 +297,58 @@ public class SOARPluginTest {
         assertEquals("java.lang.Long", soarPlugin.convertObject(2, "long").getClass().getCanonicalName());
     }
 
-    /*@Test
-    public void createIDWMETest(){
+    @Test
+    public void getInputLinkIdentifierTest(){
+        String soarRulesPath="src/test/resources/smartCar.soar";
+        SOARPlugin soarPlugin = new SOARPlugin("testName", new File(soarRulesPath), false);
 
-    }*/
+        String jsonString = "{\"InputLink\":{\"CURRENT_PERCEPTION\":{\"CONFIGURATION\":{\"TRAFFIC_LIGHT\":{\"CURRENT_PHASE\":{\"PHASE\":\"RED\",\"NUMBER\":4.0}},\"SMARTCAR_INFO\":\"NO\"}}}}";
+        JsonObject jsonInput = JsonParser.parseString(jsonString).getAsJsonObject();
+
+
+        soarPlugin.setInputLinkIdea((Idea)soarPlugin.createIdeaFromJson(jsonInput));
+
+        soarPlugin.runSOAR();
+
+        try{
+            Thread.sleep(5000L);
+        }
+        catch (Exception e){
+            e.printStackTrace();
+        }
+
+        String out_id = soarPlugin.getOutputLinkIdentifier().toString();
+        assertEquals("I3", out_id);
+        soarPlugin.stopSOAR();
+    }
+
+    @Test
+    public void fromBeanToJsonTest(){
+        String soarRulesPath="src/test/resources/smartCar.soar";
+        SOARPlugin soarPlugin = new SOARPlugin("testName", new File(soarRulesPath), false);
+
+        String jsonString = "{\"InputLink\":{\"CURRENT_PERCEPTION\":{\"CONFIGURATION\":{\"TRAFFIC_LIGHT\":{\"CURRENT_PHASE\":{\"PHASE\":\"RED\",\"NUMBER\":4.0}},\"SMARTCAR_INFO\":\"NO\"}}}}";
+        JsonObject jsonInput = JsonParser.parseString(jsonString).getAsJsonObject();
+
+        soarPlugin.setInputLinkIdea((Idea)soarPlugin.createIdeaFromJson(jsonInput));
+
+
+        soarPlugin.runSOAR();
+
+        try{
+            Thread.sleep(2000L);
+        }
+        catch (Exception e){
+            e.printStackTrace();
+        }
+
+        JsonObject expectedJson = JsonParser.parseString("{\"class\":\"br.unicamp.cst.bindings.soar.SoarCommandChange\",\"productionName\":null,\"quantity\":\"0.0\",\"apply\":\"false\"}").getAsJsonObject();
+
+        JsonObject jsonObject = soarPlugin.fromBeanToJson(new SoarCommandChange());
+
+        assertEquals(expectedJson, jsonObject);
+        soarPlugin.stopSOAR();
+    }
+
 
 }
