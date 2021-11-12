@@ -31,6 +31,30 @@ public class grpcCodeletWriter extends Codelet {
     public void proc() {
 
     }
-    
+
+    public StreamObserver<Service.codeletsResponse> sendRec(StreamObserver<Service.codeletsResponse> responseObserver){
+        clientsObservers.addObserver(responseObserver);
+        StreamObserver<Service.codeletsResponse> request = new StreamObserver<Service.codeletsResponse>() {
+            @Override
+            public void onNext(Service.codeletsResponse value) {
+                clientsObservers.getObservers().forEach(observer -> {observer.onNext(value);});
+            }
+
+            @Override
+            public void onError(Throwable t) {
+                clientsObservers.getObservers().remove(responseObserver);
+            }
+
+            @Override
+            public void onCompleted() {
+                clientsObservers.getObservers().forEach(
+                        observer -> {observer.onCompleted();}
+                        );
+            }
+        };
+        return request;
+    }
+
+
 
 }
