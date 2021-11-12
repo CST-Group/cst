@@ -31,7 +31,7 @@ public class grpcCodeletWriter extends Codelet {
     public void proc() {
 
     }
-
+/*
     public StreamObserver<Service.codeletsResponse> sendRec(StreamObserver<Service.codeletsResponse> responseObserver){
         clientsObservers.addObserver(responseObserver);
         StreamObserver<Service.codeletsResponse> request = new StreamObserver<Service.codeletsResponse>() {
@@ -52,7 +52,7 @@ public class grpcCodeletWriter extends Codelet {
         };
         return request;
     }
-
+*/
 
 
 }
