@@ -79,7 +79,10 @@ public abstract class Codelet implements Runnable, MemoryObserver {
 
 	/** defines if proc() should be automatically called in a loop */
 	protected boolean loop = true; //
-
+	
+	/** defines if codelet is a memory observer (runs when memory input changes) */
+	protected boolean isMemoryObserver = false; //
+	
 	/**
 	 * If the proc() method is set to be called automatically in a loop, this
 	 * variable stores the time step for such a loop. A timeStep of value 0
@@ -751,6 +754,16 @@ public abstract class Codelet implements Runnable, MemoryObserver {
 	}
 	
 	/**
+	 * Sets this Codelet to be a memory observer.
+	 * 
+	 * @param loop
+	 *            the loop to set
+	 */
+	public synchronized void setIsMemoryObserver(boolean isMemoryObserver) {
+		this.isMemoryObserver = isMemoryObserver;
+	}
+	
+	/**
 	 * Sets Codelet Profiler
 	 * 
 	 * @param filePath 
@@ -815,8 +828,6 @@ public abstract class Codelet implements Runnable, MemoryObserver {
 
     		} finally {
 
-    			//if (shouldLoop()) 
-    				//timer.schedule(new CodeletTimerTask(), timeStep);
     			if (Codelet.this.codeletProfiler != null) {
     				Codelet.this.codeletProfiler.profile(Codelet.this);
     			}
@@ -852,8 +863,6 @@ public abstract class Codelet implements Runnable, MemoryObserver {
 		@Override
 		public synchronized void run() {
 			
-			System.out.println(">>>>>>>>>>>>> CodeletTimerTask run - codelet " + name);
-
 			long startTime = 0l;
 			long endTime = 0l;
 			long duration = 0l;
@@ -885,8 +894,7 @@ public abstract class Codelet implements Runnable, MemoryObserver {
 
 			} finally {
 
-				System.out.println("    ===== shouldLoop() " + shouldLoop());
-				if (shouldLoop()) 
+				if (!isMemoryObserver && shouldLoop()) 
 					timer.schedule(new CodeletTimerTask(), timeStep);
 				if (Codelet.this.codeletProfiler != null) {
 					Codelet.this.codeletProfiler.profile(Codelet.this);
