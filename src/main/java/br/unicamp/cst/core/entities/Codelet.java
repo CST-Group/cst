@@ -816,8 +816,6 @@ public abstract class Codelet implements Runnable, MemoryObserver {
                                      
                                     raiseException();
                                    
-//    				throw new MemoryObjectNotFoundException("This Codelet could not find a memory object it needs: "
-//    						+ Codelet.this.name);
     			}
 
     			enable_count = 0;
@@ -882,8 +880,6 @@ public abstract class Codelet implements Runnable, MemoryObserver {
                                      
                                     raiseException();
                                    
-//					throw new MemoryObjectNotFoundException("This Codelet could not find a memory object it needs: "
-//							+ Codelet.this.name);
 				}
 
 				enable_count = 0;
