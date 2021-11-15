@@ -13,8 +13,10 @@ package br.unicamp.cst.core.entities;
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Set;
 
 /**
  * A Memory Object is a generic information holder, acting as a sign or an
@@ -68,7 +70,7 @@ public class MemoryObject implements Memory, Serializable {
 	/**
 	 * List of codetlets that observes memory
 	 */
-	private List<MemoryObserver> memoryObservers;
+	private Set<MemoryObserver> memoryObservers;
 
 	/**
 	 * Creates a MemoryObject.
@@ -260,7 +262,7 @@ public class MemoryObject implements Memory, Serializable {
 	 */
 	public void addMemoryObservers(MemoryObserver memoryObserver) {
 		if (this.memoryObservers == null) {
-			this.memoryObservers = new ArrayList<MemoryObserver>(); 
+			this.memoryObservers = new HashSet<MemoryObserver>(); 
 		}
 		this.memoryObservers.add(memoryObserver);
 	}

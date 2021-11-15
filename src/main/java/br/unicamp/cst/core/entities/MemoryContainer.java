@@ -53,8 +53,7 @@ public class MemoryContainer implements Memory {
 	/**
 	 * Creates a MemoryContainer.
 	 * 
-	 * @param type
-	 *            the type of the memories inside the container.
+	 * @param type the type of the memories inside the container.
 	 */
 	public MemoryContainer(String type) {
 
@@ -66,8 +65,7 @@ public class MemoryContainer implements Memory {
 	/**
 	 * Sets the type of the memories inside the container.
 	 * 
-	 * @param name
-	 *            the type of the memories inside the container.
+	 * @param name the type of the memories inside the container.
 	 */
 	public synchronized void setType(String name) {
 		this.name = name;
@@ -103,8 +101,7 @@ public class MemoryContainer implements Memory {
 	/**
 	 * Gets the info of the memory which has the index passed.
 	 * 
-	 * @param index
-	 *            the index of the memory whose info is searched.
+	 * @param index the index of the memory whose info is searched.
 	 * @return the info of the memory which has the index passe or null is not
 	 *         found.
 	 */
@@ -118,26 +115,26 @@ public class MemoryContainer implements Memory {
 			return (null);
 		}
 	}
-        
-        /**
+
+	/**
 	 * Gets the info of the memory which has the name passed.
 	 * 
 	 * @param name the name of the memory whose info is searched.
-	 * @return the info of the memory which has the name passed 
-         *          or null if it is not found.
+	 * @return the info of the memory which has the name passed or null if it is not
+	 *         found.
 	 */
 	public synchronized Object getI(String name) {
-            for (Memory m : memories) {
-                if (m.getName().equals(name)) return(m.getI());
-            }
-            return(null);
+		for (Memory m : memories) {
+			if (m.getName().equals(name))
+				return (m.getI());
+		}
+		return (null);
 	}
 
 	/**
 	 * Gets the info of the memory filtered by the predicate.
 	 * 
-	 * @param predicate
-	 *            the predicate to be used to filter the stream.
+	 * @param predicate the predicate to be used to filter the stream.
 	 * @return the info of the memory or null if not found.
 	 */
 	public synchronized Object getI(Predicate<Memory> predicate) {
@@ -164,8 +161,7 @@ public class MemoryContainer implements Memory {
 	/**
 	 * Gets the info of the memory reduced by the binary operator passed.
 	 * 
-	 * @param accumulator
-	 *            the binary operator.
+	 * @param accumulator the binary operator.
 	 * @return the info of the memory or null if not found.
 	 */
 	public synchronized Object getI(BinaryOperator<Memory> accumulator) {
@@ -190,8 +186,7 @@ public class MemoryContainer implements Memory {
 	}
 
 	/**
-	 * MemoryContainer inserts the info as a new MemoryObject in its Memory
-	 * list.
+	 * MemoryContainer inserts the info as a new MemoryObject in its Memory list.
 	 */
 	@Override
 	public synchronized int setI(Object info) {
@@ -201,10 +196,8 @@ public class MemoryContainer implements Memory {
 	/**
 	 * Creates a Memory Object with the info and the evaluation passed.
 	 * 
-	 * @param info
-	 *            the info of the new Memory Object.
-	 * @param evaluation
-	 *            the evaluation of the new Memory Object.
+	 * @param info       the info of the new Memory Object.
+	 * @param evaluation the evaluation of the new Memory Object.
 	 * @return the index of the new Memory Object.
 	 */
 	public synchronized int setI(Object info, Double evaluation) {
@@ -224,10 +217,8 @@ public class MemoryContainer implements Memory {
 	/**
 	 * Sets the info of the Memory with the index passed.
 	 * 
-	 * @param info
-	 *            the information to be set in the
-	 * @param index
-	 *            the index of the memory inside the container.
+	 * @param info  the information to be set in the
+	 * @param index the index of the memory inside the container.
 	 */
 	public synchronized void setI(Object info, int index) {
 
@@ -248,15 +239,12 @@ public class MemoryContainer implements Memory {
 	}
 
 	/**
-	 * Sets the info and the evaluation of the memory with the index passed
-	 * inside this container.
+	 * Sets the info and the evaluation of the memory with the index passed inside
+	 * this container.
 	 * 
-	 * @param info
-	 *            the information to be set in the.
-	 * @param index
-	 *            the index of the memory inside this container.
-	 * @param evaluation
-	 *            the evaluation to be set.
+	 * @param info       the information to be set in the.
+	 * @param index      the index of the memory inside this container.
+	 * @param evaluation the evaluation to be set.
 	 */
 	public synchronized void setI(Object info, Double evaluation, int index) {
 
@@ -276,17 +264,14 @@ public class MemoryContainer implements Memory {
 		}
 
 	}
-        
-        /**
-	 * Sets the info as the info and an evaluation passed to a Memory of the
-	 * type passed.
+
+	/**
+	 * Sets the info as the info and an evaluation passed to a Memory of the type
+	 * passed.
 	 * 
-	 * @param info
-	 *            the info.
-	 * @param evaluation
-	 *            the evaluation to set.
-	 * @param type
-	 *            the type of the Memory
+	 * @param info       the info.
+	 * @param evaluation the evaluation to set.
+	 * @param type       the type of the Memory
 	 * @return the index of the memory
 	 */
 	public synchronized int setI(Object info, double evaluation, String type) {
@@ -363,10 +348,8 @@ public class MemoryContainer implements Memory {
 	 * Sets the evaluation of the memory with the index passed inside this
 	 * container.
 	 * 
-	 * @param eval
-	 *            the evaluation to set.
-	 * @param index
-	 *            the index of the memory inside this container.
+	 * @param eval  the evaluation to set.
+	 * @param index the index of the memory inside this container.
 	 */
 	public synchronized void setEvaluation(Double eval, int index) {
 
@@ -394,8 +377,7 @@ public class MemoryContainer implements Memory {
 	/**
 	 * Adds a memory to this container.
 	 * 
-	 * @param memory
-	 *            the memory to be added in this container
+	 * @param memory the memory to be added in this container
 	 */
 	public synchronized int add(Memory memory) {
 
@@ -454,8 +436,6 @@ public class MemoryContainer implements Memory {
 //		return index;
 //	}
 
-	
-
 	/**
 	 * Gets all the memories inside this container.
 	 * 
@@ -464,36 +444,45 @@ public class MemoryContainer implements Memory {
 	public synchronized ArrayList<Memory> getAllMemories() {
 		return memories;
 	}
-        
-        /**
+
+	/**
 	 * Gets the internal memory which has the name passed.
 	 * 
 	 * @param name the name of the memory whose info is searched.
-	 * @return the memory which has the name passed 
-         *          or null if it is not found.
+	 * @return the memory which has the name passed or null if it is not found.
 	 */
 	public synchronized Memory getInternalMemory(String name) {
-            for (Memory m : memories) {
-                if (m.getName().equals(name)) return(m);
-            }
-            return(null);
-	}
-        
-        /**
-         * Get the TimeStamp of the internal Memory which has the greatest evaluation.
-         * @return 
-         */
-        public synchronized Long getTimestamp() {
-            double maxEval = 0.0d;
-            Long timestamp = null;
-            for (Memory memory : memories) {
-		double memoryEval = memory.getEvaluation();
-		if (memoryEval >= maxEval) {
-                    maxEval = memoryEval;
-                    timestamp = memory.getTimestamp();
+		for (Memory m : memories) {
+			if (m.getName().equals(name))
+				return (m);
 		}
-            }
-            return timestamp;
+		return (null);
+	}
+
+	/**
+	 * Get the TimeStamp of the internal Memory which has the greatest evaluation.
+	 * 
+	 * @return
+	 */
+	public synchronized Long getTimestamp() {
+		double maxEval = 0.0d;
+		Long timestamp = null;
+		for (Memory memory : memories) {
+			double memoryEval = memory.getEvaluation();
+			if (memoryEval >= maxEval) {
+				maxEval = memoryEval;
+				timestamp = memory.getTimestamp();
+			}
+		}
+		return timestamp;
+	}
+
+	@Override
+	public void addMemoryObservers(MemoryObserver memoryObserver) {
+		for (Memory memory : memories) {
+			memory.addMemoryObservers(memoryObserver);
+		}
+
 	}
 
 }

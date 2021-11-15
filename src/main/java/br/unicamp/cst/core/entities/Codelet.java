@@ -340,6 +340,9 @@ public abstract class Codelet implements Runnable, MemoryObserver {
 	 *            one input to set.
 	 */
 	public synchronized void addInput(Memory input) {
+		if (isMemoryObserver) {
+			input.addMemoryObservers(this);
+		}
 		this.inputs.add(input);
 	}
 
@@ -350,6 +353,11 @@ public abstract class Codelet implements Runnable, MemoryObserver {
 	 *            a list of inputs.
 	 */
 	public synchronized void addInputs(List<Memory> inputs) {
+		if (isMemoryObserver) {
+		    for (Memory memory : inputs) {
+		    	memory.addMemoryObservers(this);
+			}
+		}
 		this.inputs.addAll(inputs);
 	}
 
@@ -514,6 +522,9 @@ public abstract class Codelet implements Runnable, MemoryObserver {
 	 *            one broadcast input to set.
 	 */
 	public synchronized void addBroadcast(Memory b) {
+		if (isMemoryObserver) {
+			b.addMemoryObservers(this);
+		}
 		this.broadcast.add(b);
 	}
 
@@ -524,6 +535,11 @@ public abstract class Codelet implements Runnable, MemoryObserver {
 	 *            one input to set.
 	 */
 	public synchronized void addBroadcasts(List<Memory> broadcast) {
+		if (isMemoryObserver) {
+			for (Memory memory : broadcast) {
+				memory.addMemoryObservers(this);
+			}
+		}
 		this.broadcast.addAll(broadcast);
 	}
 

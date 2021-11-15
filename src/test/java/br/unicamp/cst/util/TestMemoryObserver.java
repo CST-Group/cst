@@ -125,19 +125,22 @@ public class TestMemoryObserver {
 		CodeletToTest c2 = new CodeletToTest("Codelet 2");
 		c2.setIsMemoryObserver(true);
 		c2.addInput(m4);
+		c2.addInput(m7);
 		c2.addInput(m5);
 		c2.addOutput(m6);
 		c2.addOutput(m3);
 		c2.addBroadcast(m5);
 		mo.addMemoryObservers(c2);
+		m7.addMemoryObservers(c2);
 		m.insertCodelet(c2);
 		m.start();
 		mo.setI(10);
+		m7.setI(100, 0);
 		Thread.sleep(2000);
 		m.shutDown();
 
 		assertEquals(2, c.getCounter());
-		assertEquals(2, c2.getCounter());
+		assertEquals(3, c2.getCounter());
 	}
 	
 	@Test
@@ -191,6 +194,58 @@ public class TestMemoryObserver {
 		m.shutDown();
 
 		assertEquals(5, c.getCounter());
-		assertEquals(1, c2.getCounter());
+		assertEquals(2, c2.getCounter());
+	}
+	
+	@Test
+	public void test4() throws InterruptedException {
+		// Codelet runs being a Memory Observer, and memories inputs are changed, add same memory more than once
+		Mind m = new Mind();
+		MemoryObject m1 = m.createMemoryObject("M1", 0.12);
+		MemoryObject m2 = m.createMemoryObject("M2", 0.32);
+		MemoryObject m3 = m.createMemoryObject("M3", 0.44);
+		MemoryObject m4 = m.createMemoryObject("M4", 0.52);
+		MemoryObject m5 = m.createMemoryObject("M5", 0.12);
+		MemoryContainer m6 = m.createMemoryContainer("C1");
+		MemoryContainer m7 = m.createMemoryContainer("C2");
+		TestComplexMemoryObjectInfo mComplex = new TestComplexMemoryObjectInfo();
+		mComplex.complextest = new TestComplexMemoryObjectInfo();
+		for (int i = 0; i < 3; i++)
+			mComplex.complextestarray[i] = new TestComplexMemoryObjectInfo();
+		MemoryObject mo = new MemoryObject();
+		mo.setType("TestObject");
+		mo.setI(mComplex);
+		m7.setI(0.55, 0.23);
+		m6.setI(0.33, 0.22);
+		m6.setI(0.12, 0.13);
+		m6.setI(m7);
+		CodeletToTest c = new CodeletToTest("Codelet 1");
+		c.setIsMemoryObserver(true);
+		mo.addMemoryObservers(c);
+		mo.addMemoryObservers(c);
+		m2.addMemoryObservers(c);
+		m2.addMemoryObservers(c);
+		m4.addMemoryObservers(c);
+		m.insertCodelet(c);
+		CodeletToTest c2 = new CodeletToTest("Codelet 2");
+		c2.setIsMemoryObserver(true);
+		c2.addInput(m4);
+		c2.addInput(m4);
+		c2.addInput(m5);
+		c2.addOutput(m6);
+		c2.addOutput(m3);
+		c2.addBroadcast(m5);
+		c2.addBroadcast(m5);
+		m.insertCodelet(c2);
+		m.start();
+		mo.setI(10);
+		mo.setI(4);
+		m2.setI(1);
+		m4.setI(2);
+		Thread.sleep(2000);
+		m.shutDown();
+
+		assertEquals(5, c.getCounter());
+		assertEquals(2, c2.getCounter());
 	}
 }
