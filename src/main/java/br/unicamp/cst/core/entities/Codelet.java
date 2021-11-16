@@ -772,8 +772,8 @@ public abstract class Codelet implements Runnable, MemoryObserver {
 	/**
 	 * Sets this Codelet to be a memory observer.
 	 * 
-	 * @param loop
-	 *            the loop to set
+	 * @param isMemoryObserver
+	 *            the isMemoryObserver to set
 	 */
 	public synchronized void setIsMemoryObserver(boolean isMemoryObserver) {
 		this.isMemoryObserver = isMemoryObserver;
@@ -811,6 +811,9 @@ public abstract class Codelet implements Runnable, MemoryObserver {
 							+ Codelet.this.name);
         }
         
+        /**
+         *  runs when codelet is a memory observer and memory input changes
+         */
         @Override
     	public void notifyCodelet() {
     		long startTime = 0l;
