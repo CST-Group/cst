@@ -44,7 +44,7 @@ class CodeletToTest extends Codelet {
 public class TestMemoryObserver {
 
 	@Test
-	public void test1() throws InterruptedException {
+	public void noMemoryChangeTest() throws InterruptedException {
 		// Codelet runs being a Memory Observer, in this case memory info does not
 		// change, so codelet wont run
 		Mind m = new Mind();
