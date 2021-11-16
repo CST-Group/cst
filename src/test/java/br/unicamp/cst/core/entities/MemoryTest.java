@@ -55,7 +55,7 @@ public class MemoryTest {
         }
 
 		@Override
-		public void addMemoryObservers(MemoryObserver memoryObserver) {
+		public void addMemoryObserver(MemoryObserver memoryObserver) {
 			// TODO Auto-generated method stub
 			
 		}
