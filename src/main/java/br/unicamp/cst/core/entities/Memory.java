@@ -83,7 +83,7 @@ public interface Memory {
 	 * Add a memory observer to its list
 	 * @param memoryObserver
 	 */
-	public void addMemoryObservers(MemoryObserver memoryObserver);
+	public void addMemoryObserver(MemoryObserver memoryObserver);
 	
 
 }
