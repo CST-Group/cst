@@ -104,6 +104,9 @@ public class TestMemoryObserver {
 		MemoryObject m5 = m.createMemoryObject("M5", 0.12);
 		MemoryContainer m6 = m.createMemoryContainer("C1");
 		MemoryContainer m7 = m.createMemoryContainer("C2");
+		MemoryContainer m8 = m.createMemoryContainer("C3");
+		m7.add(m4);
+		m8.add(m7);
 		TestComplexMemoryObjectInfo mComplex = new TestComplexMemoryObjectInfo();
 		mComplex.complextest = new TestComplexMemoryObjectInfo();
 		for (int i = 0; i < 3; i++)
@@ -134,11 +137,11 @@ public class TestMemoryObserver {
 		c2.addOutput(m3);
 		c2.addBroadcast(m5);
 		mo.addMemoryObservers(c2);
-		m7.addMemoryObservers(c2);
+		m8.addMemoryObservers(c2);
 		m.insertCodelet(c2);
 		m.start();
 		mo.setI(10);
-		m7.setI(100, 0);
+		m8.setI(100, 0);
 		Thread.sleep(2000);
 		m.shutDown();
 
