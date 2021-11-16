@@ -249,15 +249,17 @@ public class TestMemoryObserver {
 		c2.addBroadcasts(broadcasts);
 		m.insertCodelet(c2);
 		m.start();
-		mo.setI(10);
-		mo.setI(4);
-		m2.setI(1);
-		m4.setI(2);
+		for (int i = 0; i < 60; i++) {
+			mo.setI(i);
+			mo.setI(i);
+			m2.setI(i);
+			m4.setI(i);
+		}
 		Thread.sleep(2000);
 		m.shutDown();
 
-		assertEquals(5, c.getCounter());
-		assertEquals(2, c2.getCounter());
+		assertEquals(241, c.getCounter());
+		assertEquals(61, c2.getCounter());
 		assertTrue(c2.isProfiling());
 	}
 }
