@@ -478,9 +478,9 @@ public class MemoryContainer implements Memory {
 	}
 
 	@Override
-	public void addMemoryObservers(MemoryObserver memoryObserver) {
+	public void addMemoryObserver(MemoryObserver memoryObserver) {
 		for (Memory memory : memories) {
-			memory.addMemoryObservers(memoryObserver);
+			memory.addMemoryObserver(memoryObserver);
 		}
 
 	}

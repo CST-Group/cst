@@ -260,7 +260,7 @@ public class MemoryObject implements Memory, Serializable {
 	 * Add a memory observer to its list
 	 * @param memoryObserver
 	 */
-	public void addMemoryObservers(MemoryObserver memoryObserver) {
+	public void addMemoryObserver(MemoryObserver memoryObserver) {
 		if (this.memoryObservers == null) {
 			this.memoryObservers = new HashSet<MemoryObserver>(); 
 		}

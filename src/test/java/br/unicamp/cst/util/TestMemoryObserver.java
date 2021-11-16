@@ -74,7 +74,7 @@ public class TestMemoryObserver {
 		c.addOutput(m4);
 		c.addBroadcast(m5);
 		c.addBroadcast(mo);
-		mo.addMemoryObservers(c);
+		mo.addMemoryObserver(c);
 		m.insertCodelet(c);
 		CodeletToTest c2 = new CodeletToTest("Codelet 2");
 		c2.setIsMemoryObserver(true);
@@ -83,7 +83,7 @@ public class TestMemoryObserver {
 		c2.addOutput(m6);
 		c2.addOutput(m3);
 		c2.addBroadcast(m5);
-		mo.addMemoryObservers(c);
+		mo.addMemoryObserver(c);
 		m.insertCodelet(c2);
 		m.start();
 		Thread.sleep(2000);
@@ -126,7 +126,7 @@ public class TestMemoryObserver {
 		c.addOutput(m4);
 		c.addBroadcast(m5);
 		c.addBroadcast(mo);
-		mo.addMemoryObservers(c);
+		mo.addMemoryObserver(c);
 		m.insertCodelet(c);
 		CodeletToTest c2 = new CodeletToTest("Codelet 2");
 		c2.setIsMemoryObserver(true);
@@ -136,8 +136,8 @@ public class TestMemoryObserver {
 		c2.addOutput(m6);
 		c2.addOutput(m3);
 		c2.addBroadcast(m5);
-		mo.addMemoryObservers(c2);
-		m8.addMemoryObservers(c2);
+		mo.addMemoryObserver(c2);
+		m8.addMemoryObserver(c2);
 		m.insertCodelet(c2);
 		m.start();
 		mo.setI(10);
@@ -179,9 +179,9 @@ public class TestMemoryObserver {
 		c.addOutput(m4);
 		c.addBroadcast(m5);
 		c.addBroadcast(mo);
-		mo.addMemoryObservers(c);
-		m2.addMemoryObservers(c);
-		m4.addMemoryObservers(c);
+		mo.addMemoryObserver(c);
+		m2.addMemoryObserver(c);
+		m4.addMemoryObserver(c);
 		m.insertCodelet(c);
 		CodeletToTest c2 = new CodeletToTest("Codelet 2");
 		c2.setIsMemoryObserver(true);
@@ -227,11 +227,11 @@ public class TestMemoryObserver {
 		m6.setI(m7);
 		CodeletToTest c = new CodeletToTest("Codelet 1");
 		c.setIsMemoryObserver(true);
-		mo.addMemoryObservers(c);
-		mo.addMemoryObservers(c);
-		m2.addMemoryObservers(c);
-		m2.addMemoryObservers(c);
-		m4.addMemoryObservers(c);
+		mo.addMemoryObserver(c);
+		mo.addMemoryObserver(c);
+		m2.addMemoryObserver(c);
+		m2.addMemoryObserver(c);
+		m4.addMemoryObserver(c);
 		m.insertCodelet(c);
 		CodeletToTest c2 = new CodeletToTest("Codelet 2");
 		c2.setIsMemoryObserver(true);
