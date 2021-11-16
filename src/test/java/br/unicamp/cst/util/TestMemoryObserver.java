@@ -2,9 +2,14 @@ package br.unicamp.cst.util;
 
 import static org.junit.Assert.*;
 
+import java.util.ArrayList;
+
 import org.junit.Test;
 
+import com.sun.tools.javac.util.List;
+
 import br.unicamp.cst.core.entities.Codelet;
+import br.unicamp.cst.core.entities.Memory;
 import br.unicamp.cst.core.entities.MemoryContainer;
 import br.unicamp.cst.core.entities.MemoryObject;
 import br.unicamp.cst.core.entities.Mind;
@@ -229,9 +234,11 @@ public class TestMemoryObserver {
 		m.insertCodelet(c);
 		CodeletToTest c2 = new CodeletToTest("Codelet 2");
 		c2.setIsMemoryObserver(true);
-		c2.addInput(m4);
-		c2.addInput(m4);
-		c2.addInput(m5);
+		ArrayList<Memory> memories = new ArrayList<Memory>();
+		memories.add(m4);
+		memories.add(m4);
+		memories.add(m5);
+		c2.addInputs(memories);
 		c2.addOutput(m6);
 		c2.addOutput(m3);
 		c2.addBroadcast(m5);
