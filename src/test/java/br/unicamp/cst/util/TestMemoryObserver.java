@@ -235,6 +235,7 @@ public class TestMemoryObserver {
 		m.insertCodelet(c);
 		CodeletToTest c2 = new CodeletToTest("Codelet 2");
 		c2.setIsMemoryObserver(true);
+		c2.setProfiling(true);
 		ArrayList<Memory> memories = new ArrayList<Memory>();
 		memories.add(m4);
 		memories.add(m4);
@@ -257,5 +258,6 @@ public class TestMemoryObserver {
 
 		assertEquals(5, c.getCounter());
 		assertEquals(2, c2.getCounter());
+		assertTrue(c2.isProfiling());
 	}
 }
