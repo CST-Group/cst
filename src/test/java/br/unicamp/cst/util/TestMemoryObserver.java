@@ -6,8 +6,6 @@ import java.util.ArrayList;
 
 import org.junit.Test;
 
-import com.sun.tools.javac.util.List;
-
 import br.unicamp.cst.core.entities.Codelet;
 import br.unicamp.cst.core.entities.Memory;
 import br.unicamp.cst.core.entities.MemoryContainer;
