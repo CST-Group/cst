@@ -204,7 +204,7 @@ public class TestMemoryObserver {
 	}
 	
 	@Test
-	public void test4() throws InterruptedException {
+	public void addSameMemoryTest() throws InterruptedException {
 		// Codelet runs being a Memory Observer, and memories inputs are changed, add same memory more than once
 		Mind m = new Mind();
 		MemoryObject m1 = m.createMemoryObject("M1", 0.12);
