@@ -239,8 +239,10 @@ public class TestMemoryObserver {
 		c2.addInputs(memories);
 		c2.addOutput(m6);
 		c2.addOutput(m3);
-		c2.addBroadcast(m5);
-		c2.addBroadcast(m5);
+		ArrayList<Memory> broadcasts = new ArrayList<Memory>();
+		broadcasts.add(m5);
+		broadcasts.add(m5);
+		c2.addBroadcasts(broadcasts);
 		m.insertCodelet(c2);
 		m.start();
 		mo.setI(10);
