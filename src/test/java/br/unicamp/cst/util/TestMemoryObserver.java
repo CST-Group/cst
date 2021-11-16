@@ -150,7 +150,7 @@ public class TestMemoryObserver {
 	}
 	
 	@Test
-	public void test3() throws InterruptedException {
+	public void multipleMemoryChangesTest() throws InterruptedException {
 		// Codelet runs being a Memory Observer, and memories inputs are changed
 		Mind m = new Mind();
 		MemoryObject m1 = m.createMemoryObject("M1", 0.12);
