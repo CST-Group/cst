@@ -102,6 +102,13 @@ public class GrpcServer extends grpcServiceGrpc.grpcServiceImplBase {
         response.setMensagem("Json armazenado na posição: " + (this.info.size()-1));
         responseObserver.onNext(response.build());
         responseObserver.onCompleted();
+
+    }
+
+    @Override
+    public StreamObserver<Service.codeletsResponse> sendCodelet(StreamObserver<Service.codeletsResponse> responseObserver) {
+        grpcCodeletWriter gcw = new grpcCodeletWriter("TESTE");
+        return gcw.sendRec(responseObserver);
     }
 
 
