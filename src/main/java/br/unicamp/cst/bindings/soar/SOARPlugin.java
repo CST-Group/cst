@@ -366,16 +366,6 @@ public class SOARPlugin {
     }
 
 
-    private void removeWME(Identifier Attribute) {
-        while (getAgent().getInputOutput().getInputLink().getWmes().hasNext()) {
-            Wme candidate = getAgent().getInputOutput().getInputLink().getWmes().next();
-            if (candidate.getAttribute() == Attribute) {
-                getAgent().getInputOutput().getInputLink().getWmes().remove();
-            }
-        }
-    }
-
-
     public JsonObject createJsonFromString(String pathToLeaf, double value) {
         String[] treeNodes = pathToLeaf.split("\\.");
         JsonObject json = new JsonObject();
@@ -535,57 +525,54 @@ public class SOARPlugin {
     }
 
 
-    public int indexOfWME(List<Wme> WM, String name){
-        int answer = -1;
-
-        for (int i=0; i< WM.size(); i++){
-            if (WM.get(i).getAttribute().toString().equals(name)){
-                answer = i;
-            }
-        }
-
-        return answer;
-    }
-
-    //new
-    public void removeBranchFromWme(String pathToNode) {
-        String[] newNodes = pathToNode.split("\\.");
-        List<Wme> WM = Wmes.matcher(getAgent()).filter(getAgent().getInputOutput().getInputLink());
-        if (containsWme(WM, newNodes[0])) {
-            removeBranchFromWme(pathToNode.substring(newNodes[0].length() + 1));
-            if (newNodes.length == 1) {
-                removeWME(getAgent().getSymbols().createString(newNodes[0]).asIdentifier());
-            }
-        }
-    }
-
     public JsonObject fromBeanToJson(Object bean) {
         JsonObject json = new JsonObject();
         Class type = bean.getClass();
 
         json.add(type.getName(), new JsonObject());
         try {
-            Object obj = type.newInstance();
-            type.cast(obj);
-
-            for (Field field : type.getFields()) {
-                json.addProperty(field.getName(), field.get(bean).toString());
+            for (Field field : type.getDeclaredFields()) {
+                json.get(type.getName()).getAsJsonObject().addProperty(field.getName(), field.get(bean).toString());
             }
         } catch (Exception e) {
+            e.printStackTrace();
         }
-
         return json;
     }
 
     public boolean containsWme(final List<Wme> list, final String name) {
-        boolean found = false;
+        boolean found; // = false;
         for (int i = 0; i < list.size(); i++) {
-            if (list.get(i).getAttribute().toString().equals(name)) {
-                found = true;
-                break;
+            found = hasWMEChild(list.get(i), name);
+            if(found) return true;
+            //if (list.get(i).getAttribute().toString().equals(name)) {
+            //    found = true;
+            //    break;
+            //}
+            //else if(list.get(i).getChildren().hasNext()){
+            //    return containsWme(list.get(i).getChildren()., name);
+            //}
+        }
+        return false;
+    }
+
+    public boolean hasWMEChild(Wme rootWME, String name){
+        boolean found;
+
+        while(rootWME.getChildren().hasNext()){
+            Wme child = rootWME.getChildren().next();
+            if(child.getAttribute().toString().equals(name)){
+                return true;
+            }
+            else if(child.getChildren().hasNext()){
+                found = hasWMEChild(child, name);
+                return found;
+            }
+            else{
+                return false;
             }
         }
-        return found;
+        return false;
     }
 
     //public Wme getWmeByName(List<Wme> wmeList, final String name){
@@ -768,8 +755,8 @@ public class SOARPlugin {
             Symbol a = wme.getAttribute();
             Symbol v = wme.getValue();
 
-            if (a.asString().getValue().equals(idName)) {
-                resultId = a.asIdentifier();
+            if (a.toString().equals(idName)) {
+                resultId = v.asIdentifier();
                 break;
             } else {
                 if (v.asIdentifier() != null) {
@@ -780,10 +767,7 @@ public class SOARPlugin {
             }
         }
 
-        if (resultId != null)
-            return resultId;
-        else
-            return id;
+        return resultId;
 
     }
 
