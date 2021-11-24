@@ -233,11 +233,7 @@ public class SOARPluginTest {
         String jsonString = "{\"InputLink\":{\"CURRENT_PERCEPTION\":{\"CONFIGURATION\":{\"TRAFFIC_LIGHT\":{\"CURRENT_PHASE\":{\"PHASE\":\"RED\",\"NUMBER\":4.0}},\"SMARTCAR_INFO\":\"NO\"}}}}";
         JsonObject jsonInput = JsonParser.parseString(jsonString).getAsJsonObject();
 
-
         soarPlugin.setInputLinkIdea((Idea)soarPlugin.createIdeaFromJson(jsonInput));
-
-        ByteArrayOutputStream outputStreamCaptor = new ByteArrayOutputStream();
-        System.setOut(new PrintStream(outputStreamCaptor));
 
         soarPlugin.runSOAR();
 
@@ -302,6 +298,7 @@ public class SOARPluginTest {
     }
 
     @Test
+
     public void getOutputLinkIdentifierTest(){
         String soarRulesPath="src/test/resources/smartCar.soar";
         SOARPlugin soarPlugin = new SOARPlugin("testName", new File(soarRulesPath), false);
@@ -418,7 +415,6 @@ public class SOARPluginTest {
 
     @Test
     public void fromBeanToJsonTest(){
-
         String soarRulesPath="src/test/resources/smartCar.soar";
         SOARPlugin soarPlugin = new SOARPlugin("testName", new File(soarRulesPath), false);
 
@@ -470,7 +466,6 @@ public class SOARPluginTest {
         String jsonString = "{\"InputLink\":{\"CURRENT_PERCEPTION\":{\"CONFIGURATION\":{\"TRAFFIC_LIGHT\":{\"CURRENT_PHASE\":{\"PHASE\":\"RED\",\"NUMBER\":4.0}},\"SMARTCAR_INFO\":\"NO\"}}}}";
         JsonObject jsonInput = JsonParser.parseString(jsonString).getAsJsonObject();
 
-
         soarPlugin.setInputLinkIdea((Idea)soarPlugin.createIdeaFromJson(jsonInput));
 
         soarPlugin.runSOAR();
@@ -481,6 +476,7 @@ public class SOARPluginTest {
         catch (Exception e){
             e.printStackTrace();
         }
+
 
         String expectedOutput = "(I3,SoarCommandChange,C1)\n" +
                 "   (C1,productionName,change)\n" +
@@ -680,6 +676,16 @@ public class SOARPluginTest {
         catch (Exception e){
             e.printStackTrace();
         }
+=======
+        JsonObject expectedJson = JsonParser.parseString("{\"class\":\"br.unicamp.cst.bindings.soar.SoarCommandChange\",\"productionName\":null,\"quantity\":\"0.0\",\"apply\":\"false\"}").getAsJsonObject();
+
+        JsonObject jsonObject = soarPlugin.fromBeanToJson(new SoarCommandChange());
+
+        assertEquals(expectedJson, jsonObject);
+        soarPlugin.stopSOAR();
+    }
+
+>>>>>>> eef0ceaf671730f509cd8f7dfa1bbef513d2c837
 
         String expectedOutput = "(I3,SoarCommandChange,C1)\n" +
                 "   (C1,productionName,change)\n" +

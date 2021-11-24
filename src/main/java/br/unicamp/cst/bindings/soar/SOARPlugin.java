@@ -80,7 +80,6 @@ public class SOARPlugin {
             setProductionPath(_productionPath);
 
             // create Soar kernel And Agent
-            //setThreaded(ThreadedAgent.create());
             Agent agent = new Agent();
             agent.setName(_agentName);
             setAgent(agent);
@@ -329,8 +328,7 @@ public class SOARPlugin {
     }
 
     public Identifier getOutputLinkIdentifier() {
-        Identifier ol = getAgent().getInputOutput().getOutputLink();
-        return (ol);
+        return getAgent().getInputOutput().getOutputLink();
     }
 
     public Identifier getInputLinkIdentifier() {
@@ -525,9 +523,22 @@ public class SOARPlugin {
     }
 
 
+    public int indexOfWME(List<Wme> WM, String name){
+        int answer = -1;
+
+        for (int i=0; i< WM.size(); i++){
+            if (WM.get(i).getAttribute().toString().equals(name)){
+                answer = i;
+            }
+        }
+
+        return answer;
+    }
+
+
     public JsonObject fromBeanToJson(Object bean) {
         JsonObject json = new JsonObject();
-        Class type = bean.getClass();
+        Class<?> type = bean.getClass();
 
         json.add(type.getName(), new JsonObject());
         try {
@@ -575,10 +586,6 @@ public class SOARPlugin {
         return false;
     }
 
-    //public Wme getWmeByName(List<Wme> wmeList, final String name){
-    //    wmeList.stream().
-    //}
-
 
     public String toPrettyFormat(JsonObject json) {
         Gson gson = new GsonBuilder().setPrettyPrinting().create();
@@ -593,7 +600,6 @@ public class SOARPlugin {
     public void printWME(Identifier id) {
         String ids = getWMEString(id);
         System.out.println(ids);
-        //printWME(id, 0);
 
     }
 
@@ -641,7 +647,6 @@ public class SOARPlugin {
     public String getWMEStringInput() {
         String out = "";
         Identifier il = getAgent().getInputOutput().getInputLink();
-        //out += "Input --->\n";
         out += getWMEString(il);
         setInputLinkAsString(out);
         return (out);
@@ -650,7 +655,6 @@ public class SOARPlugin {
     public String getWMEStringOutput() {
         String out = "";
         Identifier ol = getAgent().getInputOutput().getOutputLink();
-        //out += "Output --->\n";
         out += getWMEString(ol);
         setOutputLinkAsString(out);
         return (out);
@@ -698,7 +702,6 @@ public class SOARPlugin {
                 else value = v.toString();
                 qd = new Idea(a.toString(), value);
                 Idea pp = new Idea(a.toString(), qd);
-                //pp.setQualityDimension("VALUE", v.toString());
                 newwo.add(pp);
             }
         }
@@ -871,10 +874,8 @@ public class SOARPlugin {
         try {
             Field[] fieldList = type.getFields();
             for (Field field : fieldList) {
-                //String valueClass = value.getClass().getId();
                 String fieldClass = field.getType().getCanonicalName();
                 if (field.getName().equals(fieldName)) {
-                    //System.out.println("Class: "+o.getClass().getId()+" Field: "+field.getId()+" type: "+fieldClass+" Value: "+valueClass);
                     field.set(o, convertObject(value, fieldClass));
                 }
             }
