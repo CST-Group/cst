@@ -459,7 +459,7 @@ public class SOARPluginTest {
 
     @Test
     public void containsWmeTest(){
-        //getIndexOfWME
+
         String soarRulesPath="src/test/resources/smartCar.soar";
         SOARPlugin soarPlugin = new SOARPlugin("testName", new File(soarRulesPath), false);
 
@@ -642,7 +642,7 @@ public class SOARPluginTest {
             e.printStackTrace();
         }
 
-        String id = soarPlugin.searchInInputLink("CONFIGURATION", soarPlugin.getInputLinkIdentifier()).toString();
+        String id = soarPlugin.searchInInputOutputLink("CONFIGURATION", soarPlugin.getInputLinkIdentifier()).toString();
 
         String expectedOutput = "(I3,SoarCommandChange,C1)\n" +
                 "   (C1,productionName,change)\n" +
@@ -652,15 +652,38 @@ public class SOARPluginTest {
         String actualOutput = soarPlugin.getOutputLinkAsString();
         assertEquals("I3", soarPlugin.getOutputLinkIdentifier().toString());
         assertEquals(expectedOutput, actualOutput);
-        assertEquals("W2", id);
-        assertNull(soarPlugin.searchInInputLink("DISRUPTION", soarPlugin.getInputLinkIdentifier()));
+        assertEquals("W1", id);
+        assertNull(soarPlugin.searchInInputOutputLink("DISRUPTION", soarPlugin.getInputLinkIdentifier()));
 
     }
 
-    /*@Test
-    public void getOutputLinkIdentifierTest(){
+    @Test
+    public void createJavaObjectTest(){
         String soarRulesPath="src/test/resources/smartCar.soar";
         SOARPlugin soarPlugin = new SOARPlugin("testName", new File(soarRulesPath), false);
+
+        Object result = soarPlugin.createJavaObject("br.unicamp.cst.bindings.soar.SoarCommandChange");
+        Object nullResult = soarPlugin.createJavaObject("br.unicamp.cst.bindings.soar.SOARCommandChange");
+
+        assertTrue(result instanceof SoarCommandChange);
+        assertNull(nullResult);
+    }
+
+    @Test
+    public void isNumberTest(){
+        String soarRulesPath="src/test/resources/smartCar.soar";
+        SOARPlugin soarPlugin = new SOARPlugin("testName", new File(soarRulesPath), false);
+
+        assertTrue(soarPlugin.isNumber(2));
+        assertFalse(soarPlugin.isNumber("not a number"));
+    }
+
+    @Test
+    public void getJavaObjectTest(){
+        String soarRulesPath="src/test/resources/smartCar.soar";
+        SOARPlugin soarPlugin = new SOARPlugin("testName", new File(soarRulesPath), false);
+
+        soarPlugin.loadRules(soarRulesPath);
 
         String jsonString = "{\"InputLink\":{\"CURRENT_PERCEPTION\":{\"CONFIGURATION\":{\"TRAFFIC_LIGHT\":{\"CURRENT_PHASE\":{\"PHASE\":\"RED\",\"NUMBER\":4.0}},\"SMARTCAR_INFO\":\"NO\"}}}}";
         JsonObject jsonInput = JsonParser.parseString(jsonString).getAsJsonObject();
@@ -676,16 +699,6 @@ public class SOARPluginTest {
         catch (Exception e){
             e.printStackTrace();
         }
-=======
-        JsonObject expectedJson = JsonParser.parseString("{\"class\":\"br.unicamp.cst.bindings.soar.SoarCommandChange\",\"productionName\":null,\"quantity\":\"0.0\",\"apply\":\"false\"}").getAsJsonObject();
-
-        JsonObject jsonObject = soarPlugin.fromBeanToJson(new SoarCommandChange());
-
-        assertEquals(expectedJson, jsonObject);
-        soarPlugin.stopSOAR();
-    }
-
->>>>>>> eef0ceaf671730f509cd8f7dfa1bbef513d2c837
 
         String expectedOutput = "(I3,SoarCommandChange,C1)\n" +
                 "   (C1,productionName,change)\n" +
@@ -693,8 +706,25 @@ public class SOARPluginTest {
                 "   (C1,apply,true)\n";
 
         String actualOutput = soarPlugin.getOutputLinkAsString();
+
+        Identifier id = soarPlugin.getOutputLinkIdentifier();
+
+
+        Object javaObject = soarPlugin.getJavaObject(soarPlugin.searchInInputOutputLinkWME(
+                "SoarCommandChange", id),
+                new SoarCommandChange(),
+                "br.unicamp.cst.bindings.soar");
+
+        Object javaObject_2 = soarPlugin.getJavaObject(soarPlugin.searchInInputOutputLinkWME(
+                "SoarCommandChange", id),
+                null,
+                "br.unicamp.cst.bindings.soar");
+
+
         assertEquals("I3", soarPlugin.getOutputLinkIdentifier().toString());
         assertEquals(expectedOutput, actualOutput);
+        assertTrue(javaObject instanceof SoarCommandChange);
+        assertTrue(javaObject_2 instanceof SoarCommandChange);
         soarPlugin.stopSOAR();
-    }*/
+    }
 }

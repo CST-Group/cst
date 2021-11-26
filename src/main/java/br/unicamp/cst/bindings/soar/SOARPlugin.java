@@ -523,18 +523,6 @@ public class SOARPlugin {
     }
 
 
-    public int indexOfWME(List<Wme> WM, String name){
-        int answer = -1;
-
-        for (int i=0; i< WM.size(); i++){
-            if (WM.get(i).getAttribute().toString().equals(name)){
-                answer = i;
-            }
-        }
-
-        return answer;
-    }
-
 
     public JsonObject fromBeanToJson(Object bean) {
         JsonObject json = new JsonObject();
@@ -552,38 +540,28 @@ public class SOARPlugin {
     }
 
     public boolean containsWme(final List<Wme> list, final String name) {
-        boolean found; // = false;
-        for (int i = 0; i < list.size(); i++) {
-            found = hasWMEChild(list.get(i), name);
-            if(found) return true;
-            //if (list.get(i).getAttribute().toString().equals(name)) {
-            //    found = true;
-            //    break;
-            //}
-            //else if(list.get(i).getChildren().hasNext()){
-            //    return containsWme(list.get(i).getChildren()., name);
-            //}
+        boolean found;
+        for (Wme wme : list) {
+            found = hasWMEChild(wme, name);
+            if (found) return true;
         }
         return false;
     }
 
     public boolean hasWMEChild(Wme rootWME, String name){
-        boolean found;
+        boolean found = false;
 
-        while(rootWME.getChildren().hasNext()){
-            Wme child = rootWME.getChildren().next();
+        Iterator<Wme> children = rootWME.getChildren();
+        while(children.hasNext()){
+            Wme child = children.next();
             if(child.getAttribute().toString().equals(name)){
                 return true;
             }
             else if(child.getChildren().hasNext()){
                 found = hasWMEChild(child, name);
-                return found;
-            }
-            else{
-                return false;
             }
         }
-        return false;
+        return found;
     }
 
 
@@ -748,22 +726,30 @@ public class SOARPlugin {
 
     }
 
-    public Identifier searchInInputLink(String idName, Identifier id) {
+
+    public Identifier searchInInputOutputLink(String idName, Identifier id) {
+        Wme wme = searchInInputOutputLinkWME(idName, id);
+        if (wme == null){ return null;}
+
+        return wme.getIdentifier();
+    }
+
+    public Wme searchInInputOutputLinkWME(String idName, Identifier id) {
 
         List<Wme> wmes = Wmes.matcher(getAgent()).filter(id);
 
-        Identifier resultId = null;
+        Wme resultId = null;
 
         for (Wme wme : wmes) {
             Symbol a = wme.getAttribute();
             Symbol v = wme.getValue();
 
             if (a.toString().equals(idName)) {
-                resultId = v.asIdentifier();
+                resultId = wme;
                 break;
             } else {
                 if (v.asIdentifier() != null) {
-                    resultId = searchInInputLink(idName, v.asIdentifier());
+                    resultId = searchInInputOutputLinkWME(idName, v.asIdentifier());
                 } else {
                     resultId = null;
                 }
@@ -885,13 +871,13 @@ public class SOARPlugin {
         }
     }
 
-    public Object getJavaObject(Identifier id, Object parent, String package_with_beans_classes) {
+    public Object getJavaObject(Wme toGetJava, Object parent, String package_with_beans_classes) {
         
         Object javaObject = null;
         Class type = null;
+        Identifier id = toGetJava.getIdentifier();
 
-
-        Iterator<Wme> It = id.getWmes();
+        Iterator<Wme> It = toGetJava.getChildren();
         while (It.hasNext()) {
             Wme wme = It.next();
             Identifier idd = wme.getIdentifier();
@@ -901,13 +887,20 @@ public class SOARPlugin {
             if (testv != null) { // The value is an identifier: recursion
                 Object child = createJavaObject(package_with_beans_classes + "." + a.toString());
                 if (parent != null) setField(parent, a.toString(), child);
-                javaObject = getJavaObject(testv, child, package_with_beans_classes);
+                javaObject = getJavaObject(wme, child, package_with_beans_classes);
             } else { // The value is a property
                 Object value;
                 if (v.asDouble() != null) value = v.asDouble().getValue();
                 else if (v.asInteger() != null) value = v.asInteger().getValue();
                 else value = v.toString();
-                setField(parent, a.toString(), value);
+                if (parent != null) {
+                    setField(parent, a.toString(), value);
+                }
+                else if(javaObject == null){
+                    javaObject = createJavaObject(package_with_beans_classes + "." + toGetJava.getAttribute().toString());
+                    setField(javaObject, a.toString(), value);
+                }
+                else{setField(javaObject, a.toString(), value);}
             }
         }
         if (parent == null) return (javaObject);
