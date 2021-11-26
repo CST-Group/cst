@@ -874,13 +874,10 @@ public class SOARPlugin {
     public Object getJavaObject(Wme toGetJava, Object parent, String package_with_beans_classes) {
         
         Object javaObject = null;
-        Class type = null;
-        Identifier id = toGetJava.getIdentifier();
 
         Iterator<Wme> It = toGetJava.getChildren();
         while (It.hasNext()) {
             Wme wme = It.next();
-            Identifier idd = wme.getIdentifier();
             Symbol a = wme.getAttribute();
             Symbol v = wme.getValue();
             Identifier testv = v.asIdentifier();
