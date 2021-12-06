@@ -53,6 +53,12 @@ public class MemoryTest {
         public Long getTimestamp() {
             return this.timestamp;
         }
+
+		@Override
+		public void addMemoryObserver(MemoryObserver memoryObserver) {
+			// TODO Auto-generated method stub
+			
+		}
     };
 
     @Test

@@ -79,5 +79,11 @@ public interface Memory {
 	 */
 	public Long getTimestamp();
 	
+	/**
+	 * Add a memory observer to its list
+	 * @param memoryObserver
+	 */
+	public void addMemoryObserver(MemoryObserver memoryObserver);
+	
 
 }
