@@ -80,7 +80,6 @@ public class SOARPlugin {
             setProductionPath(_productionPath);
 
             // create Soar kernel And Agent
-            //setThreaded(ThreadedAgent.create());
             Agent agent = new Agent();
             agent.setName(_agentName);
             setAgent(agent);
@@ -329,8 +328,7 @@ public class SOARPlugin {
     }
 
     public Identifier getOutputLinkIdentifier() {
-        Identifier ol = getAgent().getInputOutput().getOutputLink();
-        return (ol);
+        return getAgent().getInputOutput().getOutputLink();
     }
 
     public Identifier getInputLinkIdentifier() {
@@ -363,16 +361,6 @@ public class SOARPlugin {
         }
 
         return (li);
-    }
-
-
-    private void removeWME(Identifier Attribute) {
-        while (getAgent().getInputOutput().getInputLink().getWmes().hasNext()) {
-            Wme candidate = getAgent().getInputOutput().getInputLink().getWmes().next();
-            if (candidate.getAttribute() == Attribute) {
-                getAgent().getInputOutput().getInputLink().getWmes().remove();
-            }
-        }
     }
 
 
@@ -535,62 +523,46 @@ public class SOARPlugin {
     }
 
 
-    public int indexOfWME(List<Wme> WM, String name){
-        int answer = -1;
-
-        for (int i=0; i< WM.size(); i++){
-            if (WM.get(i).getAttribute().toString().equals(name)){
-                answer = i;
-            }
-        }
-
-        return answer;
-    }
-
-    //new
-    public void removeBranchFromWme(String pathToNode) {
-        String[] newNodes = pathToNode.split("\\.");
-        List<Wme> WM = Wmes.matcher(getAgent()).filter(getAgent().getInputOutput().getInputLink());
-        if (containsWme(WM, newNodes[0])) {
-            removeBranchFromWme(pathToNode.substring(newNodes[0].length() + 1));
-            if (newNodes.length == 1) {
-                removeWME(getAgent().getSymbols().createString(newNodes[0]).asIdentifier());
-            }
-        }
-    }
 
     public JsonObject fromBeanToJson(Object bean) {
         JsonObject json = new JsonObject();
-        Class type = bean.getClass();
+        Class<?> type = bean.getClass();
 
         json.add(type.getName(), new JsonObject());
         try {
-            Object obj = type.newInstance();
-            type.cast(obj);
-
-            for (Field field : type.getFields()) {
-                json.addProperty(field.getName(), field.get(bean).toString());
+            for (Field field : type.getDeclaredFields()) {
+                json.get(type.getName()).getAsJsonObject().addProperty(field.getName(), field.get(bean).toString());
             }
         } catch (Exception e) {
+            e.printStackTrace();
         }
-
         return json;
     }
 
     public boolean containsWme(final List<Wme> list, final String name) {
+        boolean found;
+        for (Wme wme : list) {
+            found = hasWMEChild(wme, name);
+            if (found) return true;
+        }
+        return false;
+    }
+
+    public boolean hasWMEChild(Wme rootWME, String name){
         boolean found = false;
-        for (int i = 0; i < list.size(); i++) {
-            if (list.get(i).getAttribute().toString().equals(name)) {
-                found = true;
-                break;
+
+        Iterator<Wme> children = rootWME.getChildren();
+        while(children.hasNext()){
+            Wme child = children.next();
+            if(child.getAttribute().toString().equals(name)){
+                return true;
+            }
+            else if(child.getChildren().hasNext()){
+                found = hasWMEChild(child, name);
             }
         }
         return found;
     }
-
-    //public Wme getWmeByName(List<Wme> wmeList, final String name){
-    //    wmeList.stream().
-    //}
 
 
     public String toPrettyFormat(JsonObject json) {
@@ -606,7 +578,6 @@ public class SOARPlugin {
     public void printWME(Identifier id) {
         String ids = getWMEString(id);
         System.out.println(ids);
-        //printWME(id, 0);
 
     }
 
@@ -654,7 +625,6 @@ public class SOARPlugin {
     public String getWMEStringInput() {
         String out = "";
         Identifier il = getAgent().getInputOutput().getInputLink();
-        //out += "Input --->\n";
         out += getWMEString(il);
         setInputLinkAsString(out);
         return (out);
@@ -663,7 +633,6 @@ public class SOARPlugin {
     public String getWMEStringOutput() {
         String out = "";
         Identifier ol = getAgent().getInputOutput().getOutputLink();
-        //out += "Output --->\n";
         out += getWMEString(ol);
         setOutputLinkAsString(out);
         return (out);
@@ -711,7 +680,6 @@ public class SOARPlugin {
                 else value = v.toString();
                 qd = new Idea(a.toString(), value);
                 Idea pp = new Idea(a.toString(), qd);
-                //pp.setQualityDimension("VALUE", v.toString());
                 newwo.add(pp);
             }
         }
@@ -758,32 +726,37 @@ public class SOARPlugin {
 
     }
 
-    public Identifier searchInInputLink(String idName, Identifier id) {
+
+    public Identifier searchInInputOutputLink(String idName, Identifier id) {
+        Wme wme = searchInInputOutputLinkWME(idName, id);
+        if (wme == null){ return null;}
+
+        return wme.getIdentifier();
+    }
+
+    public Wme searchInInputOutputLinkWME(String idName, Identifier id) {
 
         List<Wme> wmes = Wmes.matcher(getAgent()).filter(id);
 
-        Identifier resultId = null;
+        Wme resultId = null;
 
         for (Wme wme : wmes) {
             Symbol a = wme.getAttribute();
             Symbol v = wme.getValue();
 
-            if (a.asString().getValue().equals(idName)) {
-                resultId = a.asIdentifier();
+            if (a.toString().equals(idName)) {
+                resultId = wme;
                 break;
             } else {
                 if (v.asIdentifier() != null) {
-                    resultId = searchInInputLink(idName, v.asIdentifier());
+                    resultId = searchInInputOutputLinkWME(idName, v.asIdentifier());
                 } else {
                     resultId = null;
                 }
             }
         }
 
-        if (resultId != null)
-            return resultId;
-        else
-            return id;
+        return resultId;
 
     }
 
@@ -887,10 +860,8 @@ public class SOARPlugin {
         try {
             Field[] fieldList = type.getFields();
             for (Field field : fieldList) {
-                //String valueClass = value.getClass().getId();
                 String fieldClass = field.getType().getCanonicalName();
                 if (field.getName().equals(fieldName)) {
-                    //System.out.println("Class: "+o.getClass().getId()+" Field: "+field.getId()+" type: "+fieldClass+" Value: "+valueClass);
                     field.set(o, convertObject(value, fieldClass));
                 }
             }
@@ -900,29 +871,33 @@ public class SOARPlugin {
         }
     }
 
-    public Object getJavaObject(Identifier id, Object parent, String package_with_beans_classes) {
+    public Object getJavaObject(Wme toGetJava, Object parent, String package_with_beans_classes) {
         
         Object javaObject = null;
-        Class type = null;
 
-
-        Iterator<Wme> It = id.getWmes();
+        Iterator<Wme> It = toGetJava.getChildren();
         while (It.hasNext()) {
             Wme wme = It.next();
-            Identifier idd = wme.getIdentifier();
             Symbol a = wme.getAttribute();
             Symbol v = wme.getValue();
             Identifier testv = v.asIdentifier();
             if (testv != null) { // The value is an identifier: recursion
                 Object child = createJavaObject(package_with_beans_classes + "." + a.toString());
                 if (parent != null) setField(parent, a.toString(), child);
-                javaObject = getJavaObject(testv, child, package_with_beans_classes);
+                javaObject = getJavaObject(wme, child, package_with_beans_classes);
             } else { // The value is a property
                 Object value;
                 if (v.asDouble() != null) value = v.asDouble().getValue();
                 else if (v.asInteger() != null) value = v.asInteger().getValue();
                 else value = v.toString();
-                setField(parent, a.toString(), value);
+                if (parent != null) {
+                    setField(parent, a.toString(), value);
+                }
+                else if(javaObject == null){
+                    javaObject = createJavaObject(package_with_beans_classes + "." + toGetJava.getAttribute().toString());
+                    setField(javaObject, a.toString(), value);
+                }
+                else{setField(javaObject, a.toString(), value);}
             }
         }
         if (parent == null) return (javaObject);
