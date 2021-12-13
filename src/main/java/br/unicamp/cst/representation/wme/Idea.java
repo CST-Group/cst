@@ -10,7 +10,7 @@
  ***********************************************************************************************/
 package br.unicamp.cst.representation.wme;
 
-import br.unicamp.cst.util.viewer.ToString;
+import br.unicamp.cst.motivational.ToString;
 import java.lang.reflect.Array;
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;

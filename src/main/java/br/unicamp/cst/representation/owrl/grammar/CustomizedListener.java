@@ -13,7 +13,8 @@ package br.unicamp.cst.representation.owrl.grammar;
 import br.unicamp.cst.representation.owrl.Property;
 import br.unicamp.cst.representation.owrl.QualityDimension;
 import br.unicamp.cst.representation.owrl.AbstractObject;
-import br.unicamp.cst.util.Pair;
+import br.unicamp.cst.representation.owrl.Pair;
+
 import java.util.ArrayList;
 import java.util.List;
 

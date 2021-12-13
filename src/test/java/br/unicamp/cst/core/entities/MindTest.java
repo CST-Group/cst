@@ -1,6 +1,5 @@
 package br.unicamp.cst.core.entities;
 
-import br.unicamp.cst.bindings.soar.PlansSubsystemModule;
 import org.junit.Test;
 
 import static org.junit.Assert.*;
@@ -78,15 +77,5 @@ public class MindTest {
         assertTrue(mind.getMemoryGroups().containsKey("testGroup"));
         assertEquals(mo, mind.getMemoryGroups().get("testGroup").get(0));
         assertEquals(1, mind.getMemoryGroups().get("testGroup").size());
-    }
-
-    @Test
-    public void setPlanSubsystemTest(){
-        Mind mind = new Mind();
-        PlansSubsystemModule module = new PlansSubsystemModule();
-
-        mind.setPlansSubsystemModule(module);
-
-        assertEquals(module, mind.getPlansSubsystemModule());
     }
 }

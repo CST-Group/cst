@@ -21,10 +21,10 @@ import java.util.concurrent.locks.ReentrantLock;
 import br.unicamp.cst.core.exceptions.CodeletActivationBoundsException;
 import br.unicamp.cst.core.exceptions.CodeletThresholdBoundsException;
 import br.unicamp.cst.core.exceptions.MemoryObjectNotFoundException;
-import br.unicamp.cst.util.CodeletsProfiler;
-import br.unicamp.cst.util.ExecutionTimeWriter;
-import br.unicamp.cst.util.ProfileInfo;
-import br.unicamp.cst.util.CodeletsProfiler.FileFormat;
+import br.unicamp.cst.core.profiler.CodeletsProfiler;
+import br.unicamp.cst.core.profiler.CodeletsProfiler.FileFormat;
+import br.unicamp.cst.core.profiler.ExecutionTimeWriter;
+import br.unicamp.cst.core.profiler.ProfileInfo;
 
 /**
  * The <b><i>Codelet</i></b> class, together with the <b><i>MemoryObject</i></b>

@@ -10,7 +10,6 @@
  ***********************************************************************************************/
 package br.unicamp.cst.representation.wme;
 
-import br.unicamp.cst.util.TreeElement;
 import java.util.Comparator;
 
 /**

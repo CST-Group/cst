@@ -12,10 +12,7 @@
  */
 package br.unicamp.cst.representation.owrl;
 
-import br.unicamp.cst.util.CodeBuilder;
-import br.unicamp.cst.util.NameGenerator;
-import br.unicamp.cst.util.Pair;
-import br.unicamp.cst.util.viewer.ToString;
+import br.unicamp.cst.motivational.ToString;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
