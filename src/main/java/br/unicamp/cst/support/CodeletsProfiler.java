@@ -1,4 +1,4 @@
-package br.unicamp.cst.core.profiler;
+package br.unicamp.cst.support;
 
 import br.unicamp.cst.core.entities.Codelet;
 import br.unicamp.cst.core.entities.Memory;

@@ -40,6 +40,11 @@ public class MemoryTest {
         }
 
         @Override
+        public void setName(String type) {
+            this.name = type;
+        }
+        
+        @Override
         public void setType(String type) {
             this.name = type;
         }

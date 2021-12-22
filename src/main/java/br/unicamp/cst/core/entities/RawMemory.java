@@ -157,7 +157,7 @@ public class RawMemory {
 		mo.setI(info);
 		mo.setTimestamp(System.currentTimeMillis());
 		mo.setEvaluation(0.0d);
-		mo.setType(name);
+		mo.setName(name);
 
 		// adding the new object to raw memory
 		this.addMemory(mo);

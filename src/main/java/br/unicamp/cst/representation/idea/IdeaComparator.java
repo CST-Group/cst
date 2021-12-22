@@ -8,7 +8,7 @@
  * Contributors:
  * K. Raizer, A. L. O. Paraense, E. M. Froes, R. R. Gudwin - initial API and implementation
  ***********************************************************************************************/
-package br.unicamp.cst.representation.wme;
+package br.unicamp.cst.representation.idea;
 
 import java.util.Comparator;
 

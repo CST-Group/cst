@@ -67,7 +67,17 @@ public class MemoryContainer implements Memory {
 	 * 
 	 * @param name the type of the memories inside the container.
 	 */
+        @Deprecated
 	public synchronized void setType(String name) {
+		this.name = name;
+	}
+        
+        /**
+	 * Sets the name of the container.
+	 * 
+	 * @param name the type of the memories inside the container.
+	 */
+	public synchronized void setName(String name) {
 		this.name = name;
 	}
 
@@ -206,7 +216,7 @@ public class MemoryContainer implements Memory {
 		mo.setI(info);
 		if (evaluation != -1.0)
 			mo.setEvaluation(evaluation);
-		mo.setType("");
+		mo.setName("");
 
 		memories.add(mo);
 
@@ -295,7 +305,7 @@ public class MemoryContainer implements Memory {
 				MemoryObject mo = new MemoryObject();
 				mo.setI(info);
 				mo.setEvaluation(evaluation);
-				mo.setType(type);
+				mo.setName(type);
 				memories.add(mo);
 				index = memories.indexOf(mo);
 			}
@@ -378,6 +388,7 @@ public class MemoryContainer implements Memory {
 	 * Adds a memory to this container.
 	 * 
 	 * @param memory the memory to be added in this container
+         * @return the index of the added memory
 	 */
 	public synchronized int add(Memory memory) {
 
@@ -462,7 +473,7 @@ public class MemoryContainer implements Memory {
 	/**
 	 * Get the TimeStamp of the internal Memory which has the greatest evaluation.
 	 * 
-	 * @return
+	 * @return the timestamp in Long format
 	 */
 	public synchronized Long getTimestamp() {
 		double maxEval = 0.0d;

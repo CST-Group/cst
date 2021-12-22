@@ -24,32 +24,32 @@ public class MemoryObjectNotFoundException extends Exception {
 	}
 
 	/**
-	 * @param message
+	 * @param message the message
 	 */
 	public MemoryObjectNotFoundException(String message) {
 		super(message);
 	}
 
 	/**
-	 * @param cause
+	 * @param cause the cause of the exception
 	 */
 	public MemoryObjectNotFoundException(Throwable cause) {
 		super(cause);
 	}
 
 	/**
-	 * @param message
-	 * @param cause
+	 * @param message the message
+	 * @param cause the cause of the exception
 	 */
 	public MemoryObjectNotFoundException(String message, Throwable cause) {
 		super(message, cause);
 	}
 
 	/**
-	 * @param message
-	 * @param cause
-	 * @param enableSuppression
-	 * @param writableStackTrace
+	 * @param message the message
+	 * @param cause the cause of the exception
+	 * @param enableSuppression if enable is to be supressed
+	 * @param writableStackTrace if there should be a writable StackTrace
 	 */
 	public MemoryObjectNotFoundException(String message, Throwable cause, boolean enableSuppression,
 			boolean writableStackTrace) {

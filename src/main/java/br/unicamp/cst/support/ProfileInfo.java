@@ -3,7 +3,7 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package br.unicamp.cst.core.profiler;
+package br.unicamp.cst.support;
 
 /**
  *

@@ -57,9 +57,9 @@ public class LongTermMemory
 
         /** 
          * This method receive a object "File" as parameter and return the contents of the file in a byte array.
-         * @param file
-         * @return byte array.
-         * @throws IOException 
+         * @param file the file to get bytes from
+         * @return byte[] array of bytes taken from the file.
+         * @throws IOException IOException
          */
 	public static byte[] getBytesFromFile(File file) throws IOException {
 		InputStream is = new FileInputStream(file);
@@ -169,7 +169,7 @@ public class LongTermMemory
 		if(ltmMO!=null)
 		{
 			if(rawMemory!=null)
-				rawMemory.addMemoryObject(ltmMO);
+				rawMemory.addMemory(ltmMO);
 		}
 		
 		}

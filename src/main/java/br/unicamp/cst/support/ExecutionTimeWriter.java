@@ -1,7 +1,7 @@
 /**
  * 
  */
-package br.unicamp.cst.core.profiler;
+package br.unicamp.cst.support;
 
 import br.unicamp.cst.motivational.TimeStamp;
 
@@ -21,7 +21,7 @@ public class ExecutionTimeWriter implements Runnable {
 	private List<ProfileInfo> profileInfo;
         
         
-        public static String path = "";
+        public String path = "";
 	
 	/* (non-Javadoc)
 	 * @see java.lang.Runnable#run()
@@ -74,6 +74,13 @@ public class ExecutionTimeWriter implements Runnable {
 	 */
 	public void setCodeletName(String codeletName) {
 		this.codeletName = codeletName;
+	}
+        
+        /**
+	 * @param cPath the path to set
+	 */
+	public void setPath(String cPath) {
+		this.path = cPath;
 	}
 
 	/**

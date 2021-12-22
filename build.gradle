@@ -10,22 +10,22 @@ description = "CST is the Cognitive Systems Toolkit, a toolkit for the construct
 
 sourceCompatibility = 1.8
 targetCompatibility = 1.8
-version = '0.8.0'
+version = '1.0.0'
 
 repositories {
-	flatDir {
-        dirs 'libs'
-    }
+    //flatDir {
+    //    dirs 'libs'
+    //}
     mavenCentral()
-    maven { 
-     	url "https://github.com/rosjava/rosjava_mvn_repo/raw/master"
-    }
-    maven {
-      url "https://repository.springsource.com/maven/bundles/release"
-    }
-    maven {
-      url "https://repository.springsource.com/maven/bundles/external"
-    }
+    //maven { 
+    // 	url "https://github.com/rosjava/rosjava_mvn_repo/raw/master"
+    //}
+    //maven {
+    //  url "https://repository.springsource.com/maven/bundles/release"
+    //}
+    //maven {
+    //  url "https://repository.springsource.com/maven/bundles/external"
+    //}
     maven { url 'https://jitpack.io' }
 }
 
@@ -38,12 +38,12 @@ dependencies {
    
    api 'com.google.code.gson:gson:2.8.6'
    //api 'org.slf4j:slf4j-api:1.7.5'
-   api 'net.openhft:compiler:2.3.0'  // Used by util/CodeBuilder.java
+   api 'net.openhft:compiler:2.3.0'  // Used by representation/owrl/CodeBuilder.java
    //implementation 'com.google.code.gson:gson:2.7'
    //implementation 'org.slf4j:slf4j-api:1.7.5'
    //implementation 'net.openhft:compiler:2.3.0'
    
-   api group: 'org.jfree', name: 'jfreechart', version: '1.0.19'
+   //api group: 'org.jfree', name: 'jfreechart', version: '1.0.19'
    api group: 'org.json', name: 'json', version: '20160212'
    api group: 'net.sf.jung', name: 'jung-algorithms', version: '2.0.1'
    api group: 'net.sf.jung', name: 'jung-graph-impl', version: '2.0.1'
@@ -57,13 +57,13 @@ dependencies {
    api group: 'org.opt4j', name: 'opt4j-satdecoding', version: '3.1'
    api group: 'org.opt4j', name: 'opt4j-tutorial', version: '3.1'
    api 'org.antlr:antlr4-runtime:4.5.3' // Used in OwrlBaseListener
-   api 'ch.qos.logback:logback-classic:1.0.11' // Used in JSoarCodelet
-   api 'com.soartech:jsoar-core:4.1.0'
-   api 'com.soartech:jsoar-debugger:4.1.0'
+   //api 'ch.qos.logback:logback-classic:1.0.11' // Used in JSoarCodelet
+   //api 'com.soartech:jsoar-core:4.1.0'
+   //api 'com.soartech:jsoar-debugger:4.1.0'
    //api 'org.ros.rosjava_core:rosjava:0.3.6'
    //implementation 'com.github.rosjava:rosjava_core:0.3.7'
-   api 'com.github.rosjava:rosjava_core:0.3.7'
-   api 'org.ros.rosjava_bootstrap:message_generation:0.3.3'
+   //api 'com.github.rosjava:rosjava_core:0.3.7'
+   //api 'org.ros.rosjava_bootstrap:message_generation:0.3.3'
    //implementation group: 'aopalliance', name: 'aopalliance', version: '1.0'
    //implementation group: 'asm', name: 'asm', version: '3.1'
    //implementation group: 'org.sonatype.sisu.inject', name: 'cglib', version: '2.2.1-v20090111'
@@ -83,10 +83,10 @@ dependencies {
    //implementation 'org.apache.commons:com.springsource.org.apache.commons.logging:1.1.1' // Used by jsoar-core and jsoar-debugger
    //implementation 'org.apache.commons:com.springsource.org.apache.commons.net:2.0.0'  // Used by jsoar-core and jsoar-debugger
    //implementation 'com.google.guava:guava:28.0-jre' // Used by jsoar-core and jsoar-debugger
-   testImplementation 'com.1stleg:jnativehook:2.1.0'
-   testImplementation group: 'junit', name: 'junit', version: '4.12'
-   testImplementation 'org.ros.rosjava_messages:std_msgs:0.5.11'
-   testImplementation 'org.ros.rosjava_messages:rosjava_test_msgs:0.3.0'
+   //testImplementation 'com.1stleg:jnativehook:2.1.0'
+   testImplementation group: 'junit', name: 'junit', version: '4.13'
+   //testImplementation 'org.ros.rosjava_messages:std_msgs:0.5.11'
+   //testImplementation 'org.ros.rosjava_messages:rosjava_test_msgs:0.3.0'
 }
 
 jar {

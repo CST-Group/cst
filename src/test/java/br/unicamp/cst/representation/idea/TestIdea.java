@@ -8,7 +8,7 @@
  * Contributors:
  * K. Raizer, A. L. O. Paraense, E. M. Froes, R. R. Gudwin - initial API and implementation
  ***********************************************************************************************/
-package br.unicamp.cst.representation.wme;
+package br.unicamp.cst.representation.idea;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.ParameterizedType;
@@ -18,9 +18,10 @@ import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 import javax.swing.tree.DefaultMutableTreeNode;
-import static junit.framework.Assert.assertEquals;
+
 
 import br.unicamp.cst.core.profiler.TestComplexMemoryObjectInfo;
+import static org.junit.Assert.assertEquals;
 import org.junit.Test;
 
 

@@ -21,10 +21,10 @@ import java.util.concurrent.locks.ReentrantLock;
 import br.unicamp.cst.core.exceptions.CodeletActivationBoundsException;
 import br.unicamp.cst.core.exceptions.CodeletThresholdBoundsException;
 import br.unicamp.cst.core.exceptions.MemoryObjectNotFoundException;
-import br.unicamp.cst.core.profiler.CodeletsProfiler;
-import br.unicamp.cst.core.profiler.CodeletsProfiler.FileFormat;
-import br.unicamp.cst.core.profiler.ExecutionTimeWriter;
-import br.unicamp.cst.core.profiler.ProfileInfo;
+import br.unicamp.cst.support.CodeletsProfiler;
+import br.unicamp.cst.support.CodeletsProfiler.FileFormat;
+import br.unicamp.cst.support.ExecutionTimeWriter;
+import br.unicamp.cst.support.ProfileInfo;
 
 /**
  * The <b><i>Codelet</i></b> class, together with the <b><i>MemoryObject</i></b>
@@ -256,6 +256,26 @@ public abstract class Codelet implements Runnable, MemoryObserver {
 		this.loop = loop;
 	}
 
+        /**
+	 * Gets the enable status.
+	 * 
+	 * @return the enable state.
+	 */
+	public synchronized boolean getEnabled() {
+		return enabled;
+	}
+        
+        /**
+	 * Set the enable status.
+	 * 
+	 * @param status the new enable status
+	 */
+	public synchronized void setEnabled(boolean status) {
+		enabled = status;
+                if (status == true) enable_count = 0;
+	}
+        
+        
 	/**
 	 * Gets this Codelet name.
 	 * 
@@ -859,6 +879,7 @@ public abstract class Codelet implements Runnable, MemoryObserver {
 
     					ExecutionTimeWriter executionTimeWriter = new ExecutionTimeWriter();
     					executionTimeWriter.setCodeletName(name);
+                                        executionTimeWriter.setPath("profile/");
     					executionTimeWriter.setProfileInfo(profileInfo);
 
     					Thread thread = new Thread(executionTimeWriter);
@@ -925,6 +946,7 @@ public abstract class Codelet implements Runnable, MemoryObserver {
 
 						ExecutionTimeWriter executionTimeWriter = new ExecutionTimeWriter();
 						executionTimeWriter.setCodeletName(name);
+                                                executionTimeWriter.setPath("profile/");
 						executionTimeWriter.setProfileInfo(profileInfo);
 
 						Thread thread = new Thread(executionTimeWriter);
