@@ -3,8 +3,6 @@
  */
 package br.unicamp.cst.support;
 
-import br.unicamp.cst.motivational.TimeStamp;
-
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileWriter;

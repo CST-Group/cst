@@ -45,10 +45,10 @@ dependencies {
    
    //api group: 'org.jfree', name: 'jfreechart', version: '1.0.19'
    api group: 'org.json', name: 'json', version: '20160212'
-   api group: 'net.sf.jung', name: 'jung-algorithms', version: '2.0.1'
-   api group: 'net.sf.jung', name: 'jung-graph-impl', version: '2.0.1'
-   api group: 'net.sf.jung', name: 'jung-visualization', version: '2.0.1'
-   api group: 'net.sf.jung', name: 'jung-api', version: '2.0.1'
+   //api group: 'net.sf.jung', name: 'jung-algorithms', version: '2.0.1'
+   //api group: 'net.sf.jung', name: 'jung-graph-impl', version: '2.0.1'
+   //api group: 'net.sf.jung', name: 'jung-visualization', version: '2.0.1'
+   //api group: 'net.sf.jung', name: 'jung-api', version: '2.0.1'
    api group: 'org.opt4j', name: 'opt4j-core', version: '3.1'  // Used in GLAS
    api group: 'org.opt4j', name: 'opt4j-optimizers', version: '3.1'
    api group: 'org.opt4j', name: 'opt4j-viewer', version: '3.1' 

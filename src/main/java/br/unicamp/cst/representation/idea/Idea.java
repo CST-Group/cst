@@ -10,7 +10,7 @@
  ***********************************************************************************************/
 package br.unicamp.cst.representation.idea;
 
-import br.unicamp.cst.motivational.ToString;
+import br.unicamp.cst.support.ToString;
 import java.lang.reflect.Array;
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;

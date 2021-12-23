@@ -8,7 +8,7 @@
  * Contributors:
  *     K. Raizer, A. L. O. Paraense, R. R. Gudwin - initial API and implementation
  ******************************************************************************/
-package br.unicamp.cst.support;
+package br.unicamp.cst.language;
 
 import java.util.ArrayList;
 import java.util.List;

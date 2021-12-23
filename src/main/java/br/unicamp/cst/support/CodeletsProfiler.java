@@ -4,7 +4,7 @@ import br.unicamp.cst.core.entities.Codelet;
 import br.unicamp.cst.core.entities.Memory;
 import br.unicamp.cst.core.entities.MemoryContainer;
 import br.unicamp.cst.core.entities.MemoryObject;
-import br.unicamp.cst.motivational.TimeStamp;
+import br.unicamp.cst.support.TimeStamp;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 
