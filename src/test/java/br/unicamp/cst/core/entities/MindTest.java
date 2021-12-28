@@ -1,6 +1,15 @@
+/***********************************************************************************************
+ * Copyright (c) 2012  DCA-FEEC-UNICAMP
+ * All rights reserved. This program and the accompanying materials
+ * are made available under the terms of the GNU Lesser Public License v3
+ * which accompanies this distribution, and is available at
+ * http://www.gnu.org/licenses/lgpl.html
+ * <p>
+ * Contributors:
+ * K. Raizer, A. L. O. Paraense, E. M. Froes, R. R. Gudwin - initial API and implementation
+ ***********************************************************************************************/
 package br.unicamp.cst.core.entities;
 
-import br.unicamp.cst.bindings.soar.PlansSubsystemModule;
 import org.junit.Test;
 
 import static org.junit.Assert.*;
@@ -78,15 +87,5 @@ public class MindTest {
         assertTrue(mind.getMemoryGroups().containsKey("testGroup"));
         assertEquals(mo, mind.getMemoryGroups().get("testGroup").get(0));
         assertEquals(1, mind.getMemoryGroups().get("testGroup").size());
-    }
-
-    @Test
-    public void setPlanSubsystemTest(){
-        Mind mind = new Mind();
-        PlansSubsystemModule module = new PlansSubsystemModule();
-
-        mind.setPlansSubsystemModule(module);
-
-        assertEquals(module, mind.getPlansSubsystemModule());
     }
 }

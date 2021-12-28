@@ -35,10 +35,10 @@ private String behaviorPropositionString;
 
         /**
 	 * Constructor that initializes all attributes and composes "behaviorPropositionString".
-         * @param name
-         * @param addList
-         * @param delList
-         * @param actionList
+         * @param name the name of the behavior proposition
+         * @param addList add-list of strings to add
+         * @param delList del-list of strings to delete
+         * @param actionList list of actions
 	 */
 	public BehaviorProposition(String name, ArrayList<String> addList, ArrayList<String> delList,ArrayList<String> actionList){
 		this.name=name;
@@ -52,7 +52,7 @@ private String behaviorPropositionString;
         
         /**
 	 * Constructor receive the "behaviorPropositionString" String as parameter and initialize all attributes of class.
-         * @param behaviorPropositionString
+         * @param behaviorPropositionString the string with the behavior proposition
 	 */
 	public BehaviorProposition(String behaviorPropositionString){
 		this.behaviorPropositionString=behaviorPropositionString;

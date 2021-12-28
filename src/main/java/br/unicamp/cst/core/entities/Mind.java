@@ -11,7 +11,6 @@
 
 package br.unicamp.cst.core.entities;
 
-import br.unicamp.cst.bindings.soar.PlansSubsystemModule;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
@@ -30,17 +29,14 @@ public class Mind {
         protected ConcurrentHashMap<String,ArrayList> codeletGroups;
         protected ConcurrentHashMap<String,ArrayList> memoryGroups;
 
-	private PlansSubsystemModule plansSubsystemModule;
-
 	/**
 	 * Creates the Mind.
 	 */
 	public Mind() {
 		codeRack = new CodeRack();
 		rawMemory = new RawMemory();
-                codeletGroups = new ConcurrentHashMap();
-                memoryGroups = new ConcurrentHashMap();
-		plansSubsystemModule = new PlansSubsystemModule();
+		codeletGroups = new ConcurrentHashMap();
+		memoryGroups = new ConcurrentHashMap();
 	}
 
 	/**
@@ -272,22 +268,4 @@ public class Mind {
 			codeRack.shutDown();
 	}
 
-	/**
-	 * Gets the Plans Subsystem Module.
-	 * 
-	 * @return the Plans Subsystem Module.
-	 */
-	public PlansSubsystemModule getPlansSubsystemModule() {
-		return plansSubsystemModule;
-	}
-
-	/**
-	 * Sets the Plans Subsystem Module.
-	 * 
-	 * @param plansSubsystemModule
-	 *            the Plans Subsystem Module to set.
-	 */
-	public void setPlansSubsystemModule(PlansSubsystemModule plansSubsystemModule) {
-		this.plansSubsystemModule = plansSubsystemModule;
-	}
 }

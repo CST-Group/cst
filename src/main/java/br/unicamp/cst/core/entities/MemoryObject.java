@@ -178,7 +178,18 @@ public class MemoryObject implements Memory, Serializable {
 	 * @param name
 	 *            the type to set.
 	 */
+        @Deprecated
 	public synchronized void setType(String name) {
+		this.name = name;
+	}
+        
+        /**
+	 * Sets the name of the memory.
+	 * 
+	 * @param name
+	 *            the type to set.
+	 */
+	public synchronized void setName(String name) {
 		this.name = name;
 	}
 
@@ -258,7 +269,7 @@ public class MemoryObject implements Memory, Serializable {
 
 	/**
 	 * Add a memory observer to its list
-	 * @param memoryObserver
+	 * @param memoryObserver the MemoryObserve to be added
 	 */
 	public void addMemoryObserver(MemoryObserver memoryObserver) {
 		if (this.memoryObservers == null) {

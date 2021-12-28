@@ -10,10 +10,7 @@
  ******************************************************************************/
 package br.unicamp.cst.behavior.bn;
 
-import br.unicamp.cst.behavior.bn.support.SingleThreadBHCodelet;
-import br.unicamp.cst.behavior.bn.support.BNplot;
-import br.unicamp.cst.behavior.bn.support.BehaviorsWTA;
-import br.unicamp.cst.behavior.bn.support.BHMonitor;
+
 import java.util.ArrayList;
 import java.util.Iterator;
 
@@ -62,35 +59,9 @@ public class BehaviorNetwork
 		}
 		
 	}
+        
+        
 
-	/**
-	 * Creates a new graphic, showing all behaviors and its activations along time. And destroys any previous running graphics of this instance.
-	 */
-	public void showGraphics()
-	{
-		if(codeRack!=null)
-		{
-			if(monitor!=null)
-			{			
-				codeRack.destroyCodelet(monitor);
-			}
-			monitor = codeRack.insertCodelet(new BHMonitor(this));
-			monitor.start();
-		}
-	}
-	
-	public void showGraphics(ArrayList<String> behaviorsIWantShownInGraphics) 
-	{
-		if(codeRack!=null)
-		{
-			if(monitor!=null)
-			{
-				codeRack.destroyCodelet(monitor);
-			}
-			monitor = codeRack.insertCodelet(new BHMonitor(this,behaviorsIWantShownInGraphics,globalVariables));
-			monitor.start();
-		}
-	}
 	
 	/**
 	 *  Starts all competences threads
@@ -239,37 +210,69 @@ public class BehaviorNetwork
 			be.setSetToZeroWhenActivated(val);
 		}
 	}
-	/**
-	 * Plots a graph with all behaviors. 
-	 * Simple arrows denote activation connections 
-	 * whilst circled arrows illustrate inhibitive connections.
-	 */
-	public void plotBN() {
-		BNplot bnPlot = new BNplot(this.getBehaviors());
-		
-		bnPlot.plot();
-		
-	}
-	
-	/**
-	 * Plots a graph with only the given behaviors. 
-	 * Simple arrows denote activation connections 
-	 * whilst circled arrows illustrate inhibitive connections.
-	 */
-	public void plotBN(ArrayList<String> behaviorsIWantShownInGraphics) {
-		ArrayList<Behavior> beIWannaShow=new ArrayList<Behavior>();
-		for(Behavior be:this.getBehaviors()){
-			if(behaviorsIWantShownInGraphics.contains(be.getName())){
-				beIWannaShow.add(be);
-			}
-		}
-		
-		
-		BNplot bnPlot = new BNplot(beIWannaShow);
-		
-		bnPlot.plot();
-		
-	}
+
+// The following code was commented due to use a graphics tool to show the state of the BehaviorNetwork. 
+// This should be moved out from this class and be used within the cst-utils project        
+
+//	/**
+//	 * Creates a new graphic, showing all behaviors and its activations along time. And destroys any previous running graphics of this instance.
+//	 */
+//	public void showGraphics()
+//	{
+//		if(codeRack!=null)
+//		{
+//			if(monitor!=null)
+//			{			
+//				codeRack.destroyCodelet(monitor);
+//			}
+//			monitor = codeRack.insertCodelet(new BHMonitor(this));
+//			monitor.start();
+//		}
+//	}
+//	
+//	public void showGraphics(ArrayList<String> behaviorsIWantShownInGraphics) 
+//	{
+//		if(codeRack!=null)
+//		{
+//			if(monitor!=null)
+//			{
+//				codeRack.destroyCodelet(monitor);
+//			}
+//			monitor = codeRack.insertCodelet(new BHMonitor(this,behaviorsIWantShownInGraphics,globalVariables));
+//			monitor.start();
+//		}
+//	}        
+//        /**
+//	 * Plots a graph with all behaviors. 
+//	 * Simple arrows denote activation connections 
+//	 * whilst circled arrows illustrate inhibitive connections.
+//	 */
+//	public void plotBN() {
+//		BNplot bnPlot = new BNplot(this.getBehaviors());
+//		
+//		bnPlot.plot();
+//		
+//	}
+//	
+//	/**
+//	 * Plots a graph with only the given behaviors. 
+//	 * Simple arrows denote activation connections 
+//	 * whilst circled arrows illustrate inhibitive connections.
+//	 */
+//	public void plotBN(ArrayList<String> behaviorsIWantShownInGraphics) {
+//		ArrayList<Behavior> beIWannaShow=new ArrayList<Behavior>();
+//		for(Behavior be:this.getBehaviors()){
+//			if(behaviorsIWantShownInGraphics.contains(be.getName())){
+//				beIWannaShow.add(be);
+//			}
+//		}
+//		
+//		
+//		BNplot bnPlot = new BNplot(beIWannaShow);
+//		
+//		bnPlot.plot();
+//		
+//	}
 	
 	
 
