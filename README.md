@@ -63,6 +63,19 @@ Sometimes, the version number (tag) in this README gets out of date, as maintain
 
 Download the latest [release](https://github.com/CST-Group/cst/releases) and set it as a dependency in your project.
 
+
+# CST packages
+
+There are four CST repos:
+
+- [CST](https://github.com/CST-Group/cst) (this repo)
+- [CST-Bindings](https://github.com/CST-Group/cst-bindings)
+- [CST-Desktop](https://github.com/CST-Group/cst-desktop)
+- [CST-Legacy](https://github.com/CST-Group/cst-legacy)
+
+The original [CST](https://github.com/CST-Group/cst) repo contains all core functionalities and some additional packages. It has no *Swing* or other graphical entities, being suitable to both desktop and mobile environments. [CST-Bindings](https://github.com/CST-Group/cst-bindings) contains the needed classes to communicate with [ROS](https://www.ros.org/) and [SOAR Cognitive Architecture](https://soar.eecs.umich.edu/). [CST-Desktop](https://github.com/CST-Group/cst-desktop) contains some utility classes as well. It is also the complete toolkit, as it has a chain dependency with the other three repos. Finally, all classes that were once important but became obsolete as CST evolved are in [CST-Legacy](https://github.com/CST-Group/cst-legacy).
+
+
 ## Building the source code
 
 This release uses gradle to download the dependencies from MavenCentral. It does not require you to have gradle installed in your system because it uses the [Gradle Wrapper](https://docs.gradle.org/current/userguide/gradle_wrapper.html). Depending on your operational system, you might execute the gradlew script or the gradlew.bat script in order to compile the code. You might need the JDK to be properly installed in order to build the code. You should call "gradlew <task>" in order to build the code. Available tasks can be discovered using "gradlew tasks". After calling "gradlew build", the CST library will be available at build/libs directory.
