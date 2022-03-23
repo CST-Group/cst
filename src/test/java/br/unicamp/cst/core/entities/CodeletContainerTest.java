@@ -184,14 +184,12 @@ public class CodeletContainerTest {
 		
 		for (Codelet codelet : codeletContainer.getAll()) {
 			for (Memory mem : codelet.getInputs()) {
-				System.out.println("---------------- mem.getI() " + mem.getI());
 				assertEquals(10, mem.getI());
 			}
 		}
 		
 		for (Codelet codelet : codeletContainer.getAll()) {
 			for (Memory mem : codelet.getBroadcast()) {
-				System.out.println(">>>>>>>>>>>>>. mem.getI() " + mem.getI());
 				assertEquals(10, mem.getI());
 			}
 		}

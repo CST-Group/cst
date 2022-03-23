@@ -5,6 +5,27 @@ import java.util.List;
 
 public class CodeletContainer implements Memory {
 	
+	/**
+	 * Highest Activation level of the Codelet List. Ranges from 0.0 to 1.0d.
+	 */
+	protected double activation = 0.0d;
+	
+	/**
+	 * Input memories, the ones that are read.
+	 */
+	protected List<Memory> inputs = new ArrayList<Memory>();
+	
+	/**
+	 * Output memories, the ones that are written.
+	 */
+	protected List<Memory> outputs = new ArrayList<Memory>();
+	
+	/**
+	 * Input memories, the ones that were broadcasted.
+	 */
+	protected List<Memory> broadcast = new ArrayList<Memory>();
+
+	
 	private ArrayList<Codelet> codelets;
 	
 	/**
@@ -24,7 +45,76 @@ public class CodeletContainer implements Memory {
 		this.codelets = codelets;
 	}
 	
+	/**
+	 * Gets this Codelet activation.
+	 * 
+	 * @return the activation
+	 */
+	public synchronized double getActivation() {
+		double maxActivation = 0.0d;
+
+		for (Codelet codelet : codelets) {
+
+			double codeletActivation = codelet.getActivation();
+
+			if (codeletActivation >= maxActivation) {
+
+				maxActivation = codeletActivation;
+			}
+
+		}
+		activation = maxActivation;
+		return activation;
+	}
+	
+	/**
+	 * Gets the input memories list.
+	 * 
+	 * @return the inputs.
+	 */
+	public synchronized List<Memory> getInputs() {
+		return inputs;
+	}
+
+	/**
+	 * Sets the input memories list.
+	 * 
+	 * @param inputs
+	 *            the inputs to set.
+	 */
+	public synchronized void setInputs(List<Memory> inputs) {
+		for (Codelet codelet : codelets) {
+			codelet.setInputs(inputs);
+		}
+		this.inputs = inputs;
+	}
+	
+	/**
+	 * Gets the list of broadcast memories.
+	 * 
+	 * @return the broadcast.
+	 */
+	public synchronized List<Memory> getBroadcast() {
+		return broadcast;
+	}
+
+	/**
+	 * Sets the list of broadcast memories.
+	 * 
+	 * @param broadcast
+	 *            the broadcast to set.
+	 */
+	public synchronized void setBroadcast(List<Memory> broadcast) {
+		for (Codelet codelet : codelets) {
+			codelet.setBroadcast(broadcast);
+		}
+		this.broadcast = broadcast;
+	}
+
+
+	
 	public void addCodelet(Codelet codelet) {
+		codelet.setInputs(inputs);
 		this.codelets.add(codelet);
 	}
 	
@@ -197,6 +287,7 @@ public class CodeletContainer implements Memory {
 		for (Codelet codelet : codelets) {
 			codeletsOutputs.addAll(codelet.getOutputs());
 		}
+		outputs = codeletsOutputs;
 		return codeletsOutputs;
 	}
 	
