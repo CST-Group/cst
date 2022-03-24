@@ -1,29 +1,27 @@
 package br.unicamp.cst.core.entities;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class CodeletContainer implements Memory {
 	
-	/**
-	 * Highest Activation level of the Codelet List. Ranges from 0.0 to 1.0d.
-	 */
-	protected double activation = 0.0d;
 	
 	/**
 	 * Input memories, the ones that are read.
 	 */
-	protected List<Memory> inputs = new ArrayList<Memory>();
+	protected HashMap<String, List<Memory>> inputs = new HashMap<String, List<Memory>>();
 	
 	/**
 	 * Output memories, the ones that are written.
 	 */
-	protected List<Memory> outputs = new ArrayList<Memory>();
+	protected HashMap<String, List<Memory>> outputs = new HashMap<String, List<Memory>>();
 	
 	/**
 	 * Input memories, the ones that were broadcasted.
 	 */
-	protected List<Memory> broadcast = new ArrayList<Memory>();
+	protected HashMap<String, List<Memory>> broadcast = new HashMap<String, List<Memory>>();
 
 	
 	private ArrayList<Codelet> codelets;
@@ -42,7 +40,10 @@ public class CodeletContainer implements Memory {
 
 	public CodeletContainer(ArrayList<Codelet> codelets) {
 		super();
-		this.codelets = codelets;
+		this.codelets = new ArrayList<Codelet>();
+		codelets.forEach((codelet) -> {
+			this.addCodelet(codelet);
+		});
 	}
 	
 	/**
@@ -63,8 +64,7 @@ public class CodeletContainer implements Memory {
 			}
 
 		}
-		activation = maxActivation;
-		return activation;
+		return maxActivation;
 	}
 	
 	/**
@@ -72,7 +72,7 @@ public class CodeletContainer implements Memory {
 	 * 
 	 * @return the inputs.
 	 */
-	public synchronized List<Memory> getInputs() {
+	public synchronized HashMap<String, List<Memory>> getInputs() {
 		return inputs;
 	}
 
@@ -83,10 +83,13 @@ public class CodeletContainer implements Memory {
 	 *            the inputs to set.
 	 */
 	public synchronized void setInputs(List<Memory> inputs) {
+		for (Map.Entry<String, List<Memory>> set :
+			this.inputs.entrySet()) {
+			set.getValue().addAll(inputs);
+		}
 		for (Codelet codelet : codelets) {
 			codelet.setInputs(inputs);
 		}
-		this.inputs = inputs;
 	}
 	
 	/**
@@ -94,7 +97,7 @@ public class CodeletContainer implements Memory {
 	 * 
 	 * @return the broadcast.
 	 */
-	public synchronized List<Memory> getBroadcast() {
+	public synchronized HashMap<String, List<Memory>> getBroadcast() {
 		return broadcast;
 	}
 
@@ -105,20 +108,74 @@ public class CodeletContainer implements Memory {
 	 *            the broadcast to set.
 	 */
 	public synchronized void setBroadcast(List<Memory> broadcast) {
+		for (Map.Entry<String, List<Memory>> set :
+			this.broadcast.entrySet()) {
+			set.getValue().addAll(broadcast);
+		}
 		for (Codelet codelet : codelets) {
 			codelet.setBroadcast(broadcast);
 		}
-		this.broadcast = broadcast;
 	}
 
-
-	
 	public void addCodelet(Codelet codelet) {
-		codelet.setInputs(inputs);
+		List<Memory> addedInputs = new ArrayList<Memory>(codelet.inputs);
+		//add the inputs from added codelet to each codelet from container, all must have the same inputs
+		codelets.forEach((cod) -> {
+			cod.addInputs(addedInputs);
+		});
+		//add the inputs from the other codelets to the added codelet, all must have the same inputs
+		inputs.forEach((key, value) -> {
+			codelet.addInputs(value);
+		});
+		//add the added codelet to the hashmap so it can be deleted when codelet is removed
+		inputs.put(codelet.name, addedInputs);
+		
+		//same logic from inputs
+		List<Memory> addedBroadcasts =  new ArrayList<Memory>(codelet.broadcast);
+		codelets.forEach((cod) -> {
+			cod.addBroadcasts(addedBroadcasts);
+		});
+		broadcast.forEach((key, value) -> {
+			codelet.addBroadcasts(value);
+		});
+		broadcast.put(codelet.name, addedBroadcasts);
+		
+		//same logic from inputs
+		List<Memory> addedOutputs =  new ArrayList<Memory>(codelet.outputs);
+		codelets.forEach((cod) -> {
+			cod.addOutputs(addedOutputs);
+		});
+		outputs.forEach((key, value) -> {
+			codelet.addOutputs(value);
+		});
+		outputs.put(codelet.name, addedOutputs);
+		
 		this.codelets.add(codelet);
+
 	}
 	
 	public void removeCodelet(Codelet codelet) {
+		this.codelets.remove(codelet);
+		
+		List<Memory> inputsToRemoveFromEachCodelet = inputs.get(codelet.name);
+		codelets.forEach((cod) -> {
+			cod.inputs.removeAll(inputsToRemoveFromEachCodelet);
+		});
+		inputs.remove(codelet.name);
+		
+		List<Memory> broadcastsToRemoveFromEachCodelet = broadcast.get(codelet.name);
+		codelets.forEach((cod) -> {
+			cod.broadcast.removeAll(broadcastsToRemoveFromEachCodelet);
+		});
+		broadcast.remove(codelet.name);
+		
+		
+		List<Memory> outputsToRemoveFromEachCodelet = outputs.get(codelet.name);
+		codelets.forEach((cod) -> {
+			cod.outputs.removeAll(outputsToRemoveFromEachCodelet);
+		});
+		outputs.remove(codelet.name);
+		
 		this.codelets.remove(codelet);
 	}
 
@@ -282,13 +339,8 @@ public class CodeletContainer implements Memory {
 		}
 	}
 	
-	public synchronized List<Memory> getOutputs() {
-		List<Memory> codeletsOutputs = new ArrayList<Memory>();
-		for (Codelet codelet : codelets) {
-			codeletsOutputs.addAll(codelet.getOutputs());
-		}
-		outputs = codeletsOutputs;
-		return codeletsOutputs;
+	public synchronized HashMap<String, List<Memory>> getOutputs() {
+		return outputs;
 	}
 	
 	public List<Codelet> getAll() {
