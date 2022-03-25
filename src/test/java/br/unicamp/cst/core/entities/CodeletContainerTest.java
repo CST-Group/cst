@@ -196,7 +196,7 @@ public class CodeletContainerTest {
 		
 		for (Codelet codelet : codeletContainer.getAll()) {
 			for (Memory mem : codelet.getBroadcast()) {
-				assertEquals(10, mem.getI());
+				assertEquals(0.32, mem.getI());
 			}
 		}
 		
@@ -206,8 +206,8 @@ public class CodeletContainerTest {
 		expectedOutputs.add(memoryOutput2);
 		expectedOutputs.add(memoryOutput3);
 		assertArrayEquals(expectedOutputs.toArray(), codeletContainer.getOutputs().toArray());
-		//assertEquals(0.22, codeletContainer.getOutputs().get(codeletTwo.getName()).get(0).getI());
-		//assertEquals("MEMORY_OUTPUT_3", codeletContainer.getOutputs().get(codeletThree.getName()).get(0).getName());
+		assertEquals(0.22, codeletContainer.getOutputs().get(1).getI());
+		assertEquals("MEMORY_OUTPUT_3", codeletContainer.getOutputs().get(2).getName());
 		assertEquals(0, codeletContainer.getEvaluation(), 0);
 		
 	}

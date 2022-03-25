@@ -187,9 +187,6 @@ public class CodeletContainer implements Memory {
 			for (Memory memoryInput : codelet.inputs) {
 				memoryInput.setI(info);
 			}
-			for (Memory memoryBroadcast : codelet.broadcast) {
-				memoryBroadcast.setI(info);
-			}
 		}
 		return -1;
 	}
