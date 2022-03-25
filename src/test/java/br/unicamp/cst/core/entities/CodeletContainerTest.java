@@ -1,9 +1,11 @@
 package br.unicamp.cst.core.entities;
 
+import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import org.junit.Test;
 
@@ -137,10 +139,10 @@ public class CodeletContainerTest {
 		Thread.sleep(2000);
 		mind.shutDown();
 		
-		assertEquals(3, codeletContainer.getOutputs().size());
-		assertEquals(new ArrayList<Memory>(), codeletContainer.getOutputs().get(codeletOne.getName()));
-		assertEquals(new ArrayList<Memory>(), codeletContainer.getOutputs().get(codeletTwo.getName()));
-		assertEquals(new ArrayList<Memory>(), codeletContainer.getOutputs().get(codeletThree.getName()));
+		assertEquals(0, codeletContainer.getOutputs().size());
+		assertEquals(new ArrayList<Memory>(), codeletContainer.getOutputs());
+		assertEquals(new ArrayList<Memory>(), codeletContainer.getOutputs());
+		assertEquals(new ArrayList<Memory>(), codeletContainer.getOutputs());
 		assertEquals(0, codeletContainer.getEvaluation(), 0);
 		
 	}
@@ -199,9 +201,13 @@ public class CodeletContainerTest {
 		}
 		
 		assertEquals(3, codeletContainer.getOutputs().size());
-		assertEquals("MEMORY_OUTPUT_1", codeletContainer.getOutputs().get(codeletOne.getName()).get(0).getName());
-		assertEquals(0.22, codeletContainer.getOutputs().get(codeletTwo.getName()).get(0).getI());
-		assertEquals("MEMORY_OUTPUT_3", codeletContainer.getOutputs().get(codeletThree.getName()).get(0).getName());
+		List<Memory> expectedOutputs = new ArrayList<Memory>();
+		expectedOutputs.add(memoryOutput1);
+		expectedOutputs.add(memoryOutput2);
+		expectedOutputs.add(memoryOutput3);
+		assertArrayEquals(expectedOutputs.toArray(), codeletContainer.getOutputs().toArray());
+		//assertEquals(0.22, codeletContainer.getOutputs().get(codeletTwo.getName()).get(0).getI());
+		//assertEquals("MEMORY_OUTPUT_3", codeletContainer.getOutputs().get(codeletThree.getName()).get(0).getName());
 		assertEquals(0, codeletContainer.getEvaluation(), 0);
 		
 	}
@@ -244,29 +250,35 @@ public class CodeletContainerTest {
 		
 		
 		assertEquals(3, codeletContainer.getOutputs().size());
-		assertEquals(1, codeletContainer.getOutputs().get(codeletOne.getName()).size());
-		assertEquals("MEMORY_OUTPUT_1", codeletContainer.getOutputs().get(codeletOne.getName()).get(0).getName());
-		assertEquals(1, codeletContainer.getOutputs().get(codeletTwo.getName()).size());
-		assertEquals("MEMORY_OUTPUT_2", codeletContainer.getOutputs().get(codeletTwo.getName()).get(0).getName());
-		assertEquals(1, codeletContainer.getOutputs().get(codeletThree.getName()).size());
-		assertEquals("MEMORY_OUTPUT_3", codeletContainer.getOutputs().get(codeletThree.getName()).get(0).getName());
+		List<Memory> expectedOutputs = new ArrayList<Memory>();
+		expectedOutputs.add(memoryOutput1);
+		expectedOutputs.add(memoryOutput2);
+		expectedOutputs.add(memoryOutput3);
+		assertArrayEquals(expectedOutputs.toArray(), codeletContainer.getOutputs().toArray());
+		assertEquals("MEMORY_OUTPUT_1", codeletContainer.getOutputs().get(0).getName());
+		assertEquals("MEMORY_OUTPUT_2", codeletContainer.getOutputs().get(1).getName());
+		assertEquals("MEMORY_OUTPUT_3", codeletContainer.getOutputs().get(2).getName());
 		assertEquals(3, codeletContainer.getCodelet(codeletOne.getName()).outputs.size());
 		assertEquals(3, codeletContainer.getCodelet(codeletTwo.getName()).outputs.size());
 		assertEquals(3, codeletContainer.getCodelet(codeletThree.getName()).outputs.size());
 		
-		assertEquals(3, codeletContainer.getInputs().size());
-		assertEquals(1, codeletContainer.getInputs().get(codeletOne.getName()).size());
-		assertEquals("MEMORY_INPUT_1", codeletContainer.getInputs().get(codeletOne.getName()).get(0).getName());
-		assertEquals(1, codeletContainer.getInputs().get(codeletThree.getName()).size());
-		assertEquals("MEMORY_INPUT_4", codeletContainer.getInputs().get(codeletThree.getName()).get(0).getName());
+		assertEquals(2, codeletContainer.getInputs().size());
+		List<Memory> expectedInputs = new ArrayList<Memory>();
+		expectedInputs.add(memoryInput1);
+		expectedInputs.add(memoryInput4);
+		assertArrayEquals(expectedInputs.toArray(), codeletContainer.getInputs().toArray());
+		assertEquals("MEMORY_INPUT_1", codeletContainer.getInputs().get(0).getName());
+		assertEquals("MEMORY_INPUT_4", codeletContainer.getInputs().get(1).getName());
 		assertEquals(2, codeletContainer.getCodelet(codeletOne.getName()).inputs.size());
 		assertEquals(2, codeletContainer.getCodelet(codeletThree.getName()).inputs.size());
 		
-		assertEquals(3, codeletContainer.getBroadcast().size());
-		assertEquals(1, codeletContainer.getBroadcast().get(codeletOne.getName()).size());
-		assertEquals("MEMORY_INPUT_2", codeletContainer.getBroadcast().get(codeletOne.getName()).get(0).getName());
-		assertEquals(1, codeletContainer.getBroadcast().get(codeletTwo.getName()).size());
-		assertEquals("MEMORY_INPUT_3", codeletContainer.getBroadcast().get(codeletTwo.getName()).get(0).getName());
+		assertEquals(2, codeletContainer.getBroadcast().size());
+		List<Memory> expectedBroadcast = new ArrayList<Memory>();
+		expectedBroadcast.add(memoryInput2);
+		expectedBroadcast.add(memoryInput3);
+		assertArrayEquals(expectedBroadcast.toArray(), codeletContainer.getBroadcast().toArray());
+		assertEquals("MEMORY_INPUT_2", codeletContainer.getBroadcast().get(0).getName());
+		assertEquals("MEMORY_INPUT_3", codeletContainer.getBroadcast().get(1).getName());
 		assertEquals(2, codeletContainer.getCodelet(codeletOne.getName()).broadcast.size());
 		assertEquals(2, codeletContainer.getCodelet(codeletTwo.getName()).broadcast.size());
 	}
@@ -306,73 +318,78 @@ public class CodeletContainerTest {
 		
 		
 		assertEquals(3, codeletContainer.getOutputs().size());
-		assertEquals(1, codeletContainer.getOutputs().get(codeletOne.getName()).size());
-		assertEquals("MEMORY_OUTPUT_1", codeletContainer.getOutputs().get(codeletOne.getName()).get(0).getName());
-		assertEquals(1, codeletContainer.getOutputs().get(codeletTwo.getName()).size());
-		assertEquals("MEMORY_OUTPUT_2", codeletContainer.getOutputs().get(codeletTwo.getName()).get(0).getName());
-		assertEquals(1, codeletContainer.getOutputs().get(codeletThree.getName()).size());
-		assertEquals("MEMORY_OUTPUT_3", codeletContainer.getOutputs().get(codeletThree.getName()).get(0).getName());
+		List<Memory> expectedOutputs = new ArrayList<Memory>();
+		expectedOutputs.add(memoryOutput1);
+		expectedOutputs.add(memoryOutput2);
+		expectedOutputs.add(memoryOutput3);
+		assertArrayEquals(expectedOutputs.toArray(), codeletContainer.getOutputs().toArray());
+		assertEquals("MEMORY_OUTPUT_1", codeletContainer.getOutputs().get(0).getName());
+		assertEquals("MEMORY_OUTPUT_2", codeletContainer.getOutputs().get(1).getName());
+		assertEquals("MEMORY_OUTPUT_3", codeletContainer.getOutputs().get(2).getName());
 		assertEquals(3, codeletContainer.getCodelet(codeletOne.getName()).outputs.size());
 		assertEquals(3, codeletContainer.getCodelet(codeletTwo.getName()).outputs.size());
 		assertEquals(3, codeletContainer.getCodelet(codeletThree.getName()).outputs.size());
 		
-		assertEquals(3, codeletContainer.getInputs().size());
-		assertEquals(1, codeletContainer.getInputs().get(codeletOne.getName()).size());
-		assertEquals("MEMORY_INPUT_1", codeletContainer.getInputs().get(codeletOne.getName()).get(0).getName());
-		assertEquals(1, codeletContainer.getInputs().get(codeletThree.getName()).size());
-		assertEquals("MEMORY_INPUT_4", codeletContainer.getInputs().get(codeletThree.getName()).get(0).getName());
+		assertEquals(2, codeletContainer.getInputs().size());
+		List<Memory> expectedInputs = new ArrayList<Memory>();
+		expectedInputs.add(memoryInput1);
+		expectedInputs.add(memoryInput4);
+		assertArrayEquals(expectedInputs.toArray(), codeletContainer.getInputs().toArray());
+		assertEquals("MEMORY_INPUT_1", codeletContainer.getInputs().get(0).getName());
+		assertEquals("MEMORY_INPUT_4", codeletContainer.getInputs().get(1).getName());
 		assertEquals(2, codeletContainer.getCodelet(codeletOne.getName()).inputs.size());
 		assertEquals(2, codeletContainer.getCodelet(codeletThree.getName()).inputs.size());
 		
-		assertEquals(3, codeletContainer.getBroadcast().size());
-		assertEquals(1, codeletContainer.getBroadcast().get(codeletOne.getName()).size());
-		assertEquals("MEMORY_INPUT_2", codeletContainer.getBroadcast().get(codeletOne.getName()).get(0).getName());
-		assertEquals(1, codeletContainer.getBroadcast().get(codeletTwo.getName()).size());
-		assertEquals("MEMORY_INPUT_3", codeletContainer.getBroadcast().get(codeletTwo.getName()).get(0).getName());
+		assertEquals(2, codeletContainer.getBroadcast().size());
+		List<Memory> expectedBroadcast = new ArrayList<Memory>();
+		expectedBroadcast.add(memoryInput2);
+		expectedBroadcast.add(memoryInput3);
+		assertArrayEquals(expectedBroadcast.toArray(), codeletContainer.getBroadcast().toArray());
+		assertEquals("MEMORY_INPUT_2", codeletContainer.getBroadcast().get(0).getName());
+		assertEquals("MEMORY_INPUT_3", codeletContainer.getBroadcast().get(1).getName());
 		assertEquals(2, codeletContainer.getCodelet(codeletOne.getName()).broadcast.size());
 		assertEquals(2, codeletContainer.getCodelet(codeletTwo.getName()).broadcast.size());
 		
 		codeletContainer.removeCodelet(codeletOne);
 		
 		assertEquals(2, codeletContainer.getOutputs().size());
-		assertNull(codeletContainer.getOutputs().get(codeletOne.getName()));
-		assertEquals(1, codeletContainer.getOutputs().get(codeletTwo.getName()).size());
-		assertEquals("MEMORY_OUTPUT_2", codeletContainer.getOutputs().get(codeletTwo.getName()).get(0).getName());
-		assertEquals(1, codeletContainer.getOutputs().get(codeletThree.getName()).size());
-		assertEquals("MEMORY_OUTPUT_3", codeletContainer.getOutputs().get(codeletThree.getName()).get(0).getName());
+		expectedOutputs = new ArrayList<Memory>();
+		expectedOutputs.add(memoryOutput2);
+		expectedOutputs.add(memoryOutput3);
+		assertArrayEquals(expectedOutputs.toArray(), codeletContainer.getOutputs().toArray());
 		assertEquals(2, codeletContainer.getCodelet(codeletTwo.getName()).outputs.size());
 		assertEquals(2, codeletContainer.getCodelet(codeletThree.getName()).outputs.size());
 		
-		assertEquals(2, codeletContainer.getInputs().size());
-		assertNull(codeletContainer.getInputs().get(codeletOne.getName()));
-		assertEquals(1, codeletContainer.getInputs().get(codeletThree.getName()).size());
-		assertEquals("MEMORY_INPUT_4", codeletContainer.getInputs().get(codeletThree.getName()).get(0).getName());
+		assertEquals(1, codeletContainer.getInputs().size());
+		expectedInputs = new ArrayList<Memory>();
+		expectedInputs.add(memoryInput4);
+		assertArrayEquals(expectedInputs.toArray(), codeletContainer.getInputs().toArray());
+		assertEquals("MEMORY_INPUT_4", codeletContainer.getInputs().get(0).getName());
 		assertEquals(1, codeletContainer.getCodelet(codeletThree.getName()).inputs.size());
 		
-		assertEquals(2, codeletContainer.getBroadcast().size());
-		assertNull(codeletContainer.getBroadcast().get(codeletOne.getName()));
-		assertEquals(1, codeletContainer.getBroadcast().get(codeletTwo.getName()).size());
-		assertEquals("MEMORY_INPUT_3", codeletContainer.getBroadcast().get(codeletTwo.getName()).get(0).getName());
+		assertEquals(1, codeletContainer.getBroadcast().size());
+		expectedBroadcast = new ArrayList<Memory>();
+		expectedBroadcast.add(memoryInput3);
+		assertArrayEquals(expectedBroadcast.toArray(), codeletContainer.getBroadcast().toArray());
+		assertEquals("MEMORY_INPUT_3", codeletContainer.getBroadcast().get(0).getName());
 		assertEquals(1, codeletContainer.getCodelet(codeletTwo.getName()).broadcast.size());
 		
 		codeletContainer.removeCodelet(codeletTwo);
 		
 		assertEquals(1, codeletContainer.getOutputs().size());
-		assertNull(codeletContainer.getOutputs().get(codeletOne.getName()));
-		assertNull(codeletContainer.getOutputs().get(codeletTwo.getName()));
-		assertEquals(1, codeletContainer.getOutputs().get(codeletThree.getName()).size());
-		assertEquals("MEMORY_OUTPUT_3", codeletContainer.getOutputs().get(codeletThree.getName()).get(0).getName());
+		expectedOutputs = new ArrayList<Memory>();
+		expectedOutputs.add(memoryOutput3);
+		assertArrayEquals(expectedOutputs.toArray(), codeletContainer.getOutputs().toArray());
 		assertEquals(1, codeletContainer.getCodelet(codeletThree.getName()).outputs.size());
 		
 		assertEquals(1, codeletContainer.getInputs().size());
-		assertNull(codeletContainer.getInputs().get(codeletOne.getName()));
-		assertEquals(1, codeletContainer.getInputs().get(codeletThree.getName()).size());
-		assertEquals("MEMORY_INPUT_4", codeletContainer.getInputs().get(codeletThree.getName()).get(0).getName());
+		expectedInputs = new ArrayList<Memory>();
+		expectedInputs.add(memoryInput4);
+		assertArrayEquals(expectedInputs.toArray(), codeletContainer.getInputs().toArray());
+		assertEquals("MEMORY_INPUT_4", codeletContainer.getInputs().get(0).getName());
 		assertEquals(1, codeletContainer.getCodelet(codeletThree.getName()).inputs.size());
 		
-		assertEquals(1, codeletContainer.getBroadcast().size());
-		assertNull(codeletContainer.getBroadcast().get(codeletOne.getName()));
-		assertNull(codeletContainer.getBroadcast().get(codeletTwo.getName()));
+		assertEquals(0, codeletContainer.getBroadcast().size());
 		assertEquals(0, codeletContainer.getCodelet(codeletThree.getName()).broadcast.size());
 		
 		
