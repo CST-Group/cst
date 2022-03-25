@@ -7,16 +7,12 @@ import java.util.Map;
 
 public class CodeletContainer implements Memory {
 	
-	
-
 	private HashMap<String, List<Memory>> mapInputs = new HashMap<String, List<Memory>>();
 	
 	
 	private HashMap<String, List<Memory>> mapOutputs = new HashMap<String, List<Memory>>();
 	
-	/**
-	 * Input memories, the ones that were broadcasted.
-	 */
+
 	private HashMap<String, List<Memory>> mapBroadcast = new HashMap<String, List<Memory>>();
 	
 	/**
