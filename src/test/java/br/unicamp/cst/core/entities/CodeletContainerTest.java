@@ -30,7 +30,7 @@ public class CodeletContainerTest {
 
 		@Override
 		public void calculateActivation() {
-
+			activation = counter;
 		}
 
 		@Override
@@ -393,6 +393,219 @@ public class CodeletContainerTest {
 		assertEquals(0, codeletContainer.getCodelet(codeletThree.getName()).broadcast.size());
 		
 		
+	}
+	
+	@Test
+	public void getEvaluationTest() throws InterruptedException {
+		Codelet codeletOne = new CodeletToTestOne("Codelet 1");
+		Codelet codeletTwo = new CodeletToTestTwo("Codelet 2");
+		Codelet codeletThree = new CodeletToTestThree("Codelet 3");
+		
+		Mind mind = new Mind();
+		MemoryObject memory1 = mind.createMemoryObject("MEMORY1", 0.12);
+		MemoryObject memory2 = mind.createMemoryObject("MEMORY2", 0.32);
+		MemoryObject memory3 = mind.createMemoryObject("MEMORY3", 0.32);
+		MemoryObject memory4 = mind.createMemoryObject("MEMORY4", 0.32);
+		
+		codeletOne.addInput(memory1);
+		codeletOne.addBroadcast(memory2);
+		
+		codeletTwo.addBroadcast(memory3);
+		
+		codeletThree.addInput(memory4);
+		
+		ArrayList<Codelet> codeletContainerArray = new ArrayList<Codelet>();
+		codeletContainerArray.add(codeletOne);
+		codeletContainerArray.add(codeletTwo);
+		codeletContainerArray.add(codeletThree);
+		
+		CodeletContainer codeletContainer = new CodeletContainer(codeletContainerArray);
+		Double testValue = 100.0;
+		
+		mind.insertCodelet(codeletOne);
+		mind.insertCodelet(codeletTwo);
+		mind.insertCodelet(codeletThree);
+		memory1.setEvaluation(testValue);
+		codeletContainer.setI(10);
+		mind.start();
+		Thread.sleep(2000);
+		mind.shutDown();
+		
+	
+		
+		assertEquals(testValue, codeletContainer.getEvaluation());
+		
+		
+	}
+	
+	@Test
+	public void getActivationTest() throws InterruptedException {
+		Codelet codeletOne = new CodeletToTestOne("Codelet 1");
+		Codelet codeletTwo = new CodeletToTestTwo("Codelet 2");
+		Codelet codeletThree = new CodeletToTestThree("Codelet 3");
+		
+		Mind mind = new Mind();
+		MemoryObject memory1 = mind.createMemoryObject("MEMORY1", 0.12);
+		MemoryObject memory2 = mind.createMemoryObject("MEMORY2", 0.32);
+		MemoryObject memory3 = mind.createMemoryObject("MEMORY3", 0.32);
+		MemoryObject memory4 = mind.createMemoryObject("MEMORY4", 0.32);
+		
+		codeletOne.addInput(memory1);
+		codeletOne.addBroadcast(memory2);
+		
+		codeletTwo.addBroadcast(memory3);
+		
+		codeletThree.addInput(memory4);
+		
+		ArrayList<Codelet> codeletContainerArray = new ArrayList<Codelet>();
+		codeletContainerArray.add(codeletOne);
+		codeletContainerArray.add(codeletTwo);
+		codeletContainerArray.add(codeletThree);
+		
+		CodeletContainer codeletContainer = new CodeletContainer(codeletContainerArray);
+		double testValue = 6.0;
+		
+		mind.insertCodelet(codeletOne);
+		mind.insertCodelet(codeletTwo);
+		mind.insertCodelet(codeletThree);
+		memory1.setEvaluation(testValue);
+		codeletContainer.setI(10);
+		mind.start();
+		Thread.sleep(2000);
+		mind.shutDown();
+		
+	
+		
+		assertEquals(testValue, codeletContainer.getActivation(), 0);
+		
+	}
+	
+	@Test
+	public void setInputsTest() throws InterruptedException {
+		Codelet codeletOne = new CodeletToTestOne("Codelet 1");
+		Codelet codeletTwo = new CodeletToTestTwo("Codelet 2");
+		Codelet codeletThree = new CodeletToTestThree("Codelet 3");
+		
+		Mind mind = new Mind();
+		MemoryObject memory1 = mind.createMemoryObject("MEMORY1", 0.12);
+		MemoryObject memory2 = mind.createMemoryObject("MEMORY2", 0.32);
+		MemoryObject memory3 = mind.createMemoryObject("MEMORY3", 0.32);
+		MemoryObject memory4 = mind.createMemoryObject("MEMORY4", 0.32);
+		
+		codeletOne.addInput(memory1);
+		codeletOne.addBroadcast(memory2);
+		
+		codeletTwo.addBroadcast(memory3);
+		
+		codeletThree.addInput(memory4);
+		
+		ArrayList<Codelet> codeletContainerArray = new ArrayList<Codelet>();
+		codeletContainerArray.add(codeletOne);
+		codeletContainerArray.add(codeletTwo);
+		codeletContainerArray.add(codeletThree);
+		
+		CodeletContainer codeletContainer = new CodeletContainer(codeletContainerArray);
+		
+		mind.insertCodelet(codeletOne);
+		mind.insertCodelet(codeletTwo);
+		mind.insertCodelet(codeletThree);
+
+		ArrayList<Memory> newInputs = new ArrayList<Memory>();
+		newInputs.add(memory1);
+		codeletContainer.setInputs(newInputs);
+		
+	
+		
+		assertEquals(newInputs, codeletContainer.getInputs());
+		
+	}
+	
+	@Test
+	public void setBroadcastTest() throws InterruptedException {
+		Codelet codeletOne = new CodeletToTestOne("Codelet 1");
+		Codelet codeletTwo = new CodeletToTestTwo("Codelet 2");
+		Codelet codeletThree = new CodeletToTestThree("Codelet 3");
+		
+		Mind mind = new Mind();
+		MemoryObject memory1 = mind.createMemoryObject("MEMORY1", 0.12);
+		MemoryObject memory2 = mind.createMemoryObject("MEMORY2", 0.32);
+		MemoryObject memory3 = mind.createMemoryObject("MEMORY3", 0.32);
+		MemoryObject memory4 = mind.createMemoryObject("MEMORY4", 0.32);
+		
+		codeletOne.addInput(memory1);
+		codeletOne.addBroadcast(memory2);
+		
+		codeletTwo.addBroadcast(memory3);
+		
+		codeletThree.addInput(memory4);
+		
+		ArrayList<Codelet> codeletContainerArray = new ArrayList<Codelet>();
+		codeletContainerArray.add(codeletOne);
+		codeletContainerArray.add(codeletTwo);
+		codeletContainerArray.add(codeletThree);
+		
+		CodeletContainer codeletContainer = new CodeletContainer(codeletContainerArray);
+		
+		mind.insertCodelet(codeletOne);
+		mind.insertCodelet(codeletTwo);
+		mind.insertCodelet(codeletThree);
+
+		ArrayList<Memory> newBroadcast = new ArrayList<Memory>();
+		newBroadcast.add(memory1);
+		codeletContainer.setBroadcast(newBroadcast);
+		
+	
+		
+		assertEquals(newBroadcast, codeletContainer.getBroadcast());
+		
+	}
+	
+	@Test
+	public void setNameTest() throws InterruptedException {
+		CodeletContainer codeletContainer = new CodeletContainer();
+		codeletContainer.setName("Container");
+		assertEquals("Container", codeletContainer.getName());
+	}
+	
+	@Test
+	public void addMemoryObserverTest() throws InterruptedException {
+		Codelet codeletOne = new CodeletToTestOne("Codelet 1");
+		Codelet codeletTwo = new CodeletToTestTwo("Codelet 2");
+		Codelet codeletThree = new CodeletToTestThree("Codelet 3");
+		
+		Mind mind = new Mind();
+		MemoryObject memory1 = mind.createMemoryObject("MEMORY1", 0.12);
+		MemoryObject memory2 = mind.createMemoryObject("MEMORY2", 0.32);
+		MemoryObject memory3 = mind.createMemoryObject("MEMORY3", 0.32);
+		MemoryObject memory4 = mind.createMemoryObject("MEMORY4", 0.32);
+		
+		codeletOne.setIsMemoryObserver(true);
+		codeletOne.addInput(memory1);
+		codeletOne.addBroadcast(memory2);
+		
+		codeletTwo.addBroadcast(memory3);
+		
+		codeletThree.addInput(memory4);
+		
+		ArrayList<Codelet> codeletContainerArray = new ArrayList<Codelet>();
+		codeletContainerArray.add(codeletOne);
+		codeletContainerArray.add(codeletTwo);
+		codeletContainerArray.add(codeletThree);
+		
+		CodeletContainer codeletContainer = new CodeletContainer(codeletContainerArray);
+		codeletContainer.addMemoryObserver(codeletOne);
+		
+		mind.insertCodelet(codeletOne);
+		mind.insertCodelet(codeletTwo);
+		mind.insertCodelet(codeletThree);
+		codeletContainer.setI(10);
+		mind.start();
+		Thread.sleep(2000);
+		mind.shutDown();
+		
+	
+		CodeletToTestOne codeletToTestOne = (CodeletToTestOne) codeletContainer.getCodelet("Codelet 1");
+		assertEquals(7, codeletToTestOne.getCounter());
 	}
 
 
