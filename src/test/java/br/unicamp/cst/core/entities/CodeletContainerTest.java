@@ -7,6 +7,8 @@ import static org.junit.Assert.assertNull;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.swing.plaf.synth.SynthOptionPaneUI;
+
 import org.junit.Test;
 
 
@@ -565,6 +567,26 @@ public class CodeletContainerTest {
 		CodeletContainer codeletContainer = new CodeletContainer();
 		codeletContainer.setName("Container");
 		assertEquals("Container", codeletContainer.getName());
+	}
+	
+	@Test
+	public void setTypeTest() throws InterruptedException {
+		CodeletContainer codeletContainer = new CodeletContainer();
+		codeletContainer.setType("Container");
+		assertEquals("Container", codeletContainer.getName());
+	}
+	
+	@Test
+	public void setEvaluationTest() throws InterruptedException {
+		Codelet codeletOne = new CodeletToTestOne("Codelet 1");
+		Mind mind = new Mind();
+		MemoryObject memory1 = mind.createMemoryObject("MEMORY1", 0.12);
+		codeletOne.addInput(memory1);
+		ArrayList<Codelet> codeletContainerArray = new ArrayList<Codelet>();
+		codeletContainerArray.add(codeletOne);
+		CodeletContainer codeletContainer = new CodeletContainer(codeletContainerArray);
+		codeletContainer.setEvaluation(5.0);;
+		assertEquals(5.0, codeletContainer.getCodelet("Codelet 1").getInputs().get(0).getEvaluation(),0);
 	}
 	
 	@Test

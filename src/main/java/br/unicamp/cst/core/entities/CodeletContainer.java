@@ -255,8 +255,9 @@ public class CodeletContainer implements Memory {
 
 	@Override
 	public void setEvaluation(Double eval) {
-		throw new UnsupportedOperationException(
-				"This method is not available for CodeletContainer.");
+		for (Memory memory : inputs) {
+			memory.setEvaluation(eval);
+		}
 
 	}
 
