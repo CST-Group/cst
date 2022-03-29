@@ -254,7 +254,7 @@ public class CodeletContainer implements Memory {
 	}
 
 	@Override
-	public void setEvaluation(Double eval) {
+	public synchronized void setEvaluation(Double eval) {
 		for (Memory memory : inputs) {
 			memory.setEvaluation(eval);
 		}
