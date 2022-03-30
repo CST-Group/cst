@@ -28,7 +28,7 @@ Note: This library is still under development, and some concepts or features mig
 ```
 	dependencies {
             ...
-            implementation 'com.github.CST-Group:cst:0.7.0'
+            implementation 'com.github.CST-Group:cst:1.1.0'
 	}
 ```
 
@@ -53,7 +53,7 @@ Sometimes, the version number (tag) in this README gets out of date, as maintain
 	<dependency>
 	    <groupId>com.github.CST-Group</groupId>
 	    <artifactId>cst</artifactId>
-	    <version>0.7.0</version>
+	    <version>1.1.0</version>
 	</dependency>
 ```
 
@@ -62,6 +62,19 @@ Sometimes, the version number (tag) in this README gets out of date, as maintain
 ### Manual
 
 Download the latest [release](https://github.com/CST-Group/cst/releases) and set it as a dependency in your project.
+
+
+# CST packages
+
+There are four CST repos:
+
+- [CST](https://github.com/CST-Group/cst) (this repo)
+- [CST-Bindings](https://github.com/CST-Group/cst-bindings)
+- [CST-Desktop](https://github.com/CST-Group/cst-desktop)
+- [CST-Legacy](https://github.com/CST-Group/cst-legacy)
+
+The original [CST](https://github.com/CST-Group/cst) repo contains all core functionalities and some additional packages. It has no *Swing* or other graphical entities, being suitable to both desktop and mobile environments. [CST-Bindings](https://github.com/CST-Group/cst-bindings) contains the needed classes to communicate with [ROS](https://www.ros.org/) and [SOAR Cognitive Architecture](https://soar.eecs.umich.edu/). [CST-Desktop](https://github.com/CST-Group/cst-desktop) contains some utility classes as well. It is also the complete toolkit, as it has a chain dependency with the other three repos. Finally, all classes that were once important but became obsolete as CST evolved are in [CST-Legacy](https://github.com/CST-Group/cst-legacy).
+
 
 ## Building the source code
 

@@ -59,10 +59,17 @@ public interface Memory {
 	/**
 	 * Sets the type of this memory.
 	 *
-	 *@param type
-	 * 	 *            the value to be set as type.
+	 * @param type the value to be set as type.
 	 */
+        @Deprecated
 	void setType(String type);
+        
+        /**
+	 * Sets the type of this memory.
+	 *
+	 * @param name the value to be set as name.
+	 */
+	void setName(String name);
 
 	/**
 	 * Sets the evaluation of this memory.
@@ -78,6 +85,12 @@ public interface Memory {
 	 * @return the timestamp of this Memory.
 	 */
 	public Long getTimestamp();
+	
+	/**
+	 * Add a memory observer to its list
+	 * @param memoryObserver MemoryObserver to be added
+	 */
+	public void addMemoryObserver(MemoryObserver memoryObserver);
 	
 
 }

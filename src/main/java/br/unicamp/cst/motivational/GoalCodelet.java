@@ -13,7 +13,7 @@ package br.unicamp.cst.motivational;
 import br.unicamp.cst.core.entities.Codelet;
 import br.unicamp.cst.core.entities.Memory;
 import br.unicamp.cst.core.exceptions.CodeletActivationBoundsException;
-import br.unicamp.cst.representation.wme.Idea;
+import br.unicamp.cst.representation.idea.Idea;
 
 public abstract class GoalCodelet extends Codelet {
 

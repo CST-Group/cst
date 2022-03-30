@@ -11,7 +11,7 @@
 package br.unicamp.cst.representation.owrl;
 
 import br.unicamp.cst.core.entities.CSTMessages;
-import br.unicamp.cst.util.CodeBuilder;
+
 import java.util.Arrays;
 import java.util.Date;
 import java.util.HashMap;

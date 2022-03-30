@@ -10,7 +10,7 @@
  ******************************************************************************/
 package br.unicamp.cst.motivational;
 
-import br.unicamp.cst.representation.wme.Idea;
+import br.unicamp.cst.representation.idea.Idea;
 
 /**
  * Created by du on 19/12/16.

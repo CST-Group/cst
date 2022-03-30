@@ -21,10 +21,10 @@ import java.util.concurrent.locks.ReentrantLock;
 import br.unicamp.cst.core.exceptions.CodeletActivationBoundsException;
 import br.unicamp.cst.core.exceptions.CodeletThresholdBoundsException;
 import br.unicamp.cst.core.exceptions.MemoryObjectNotFoundException;
-import br.unicamp.cst.util.CodeletsProfiler;
-import br.unicamp.cst.util.ExecutionTimeWriter;
-import br.unicamp.cst.util.ProfileInfo;
-import br.unicamp.cst.util.CodeletsProfiler.FileFormat;
+import br.unicamp.cst.support.CodeletsProfiler;
+import br.unicamp.cst.support.CodeletsProfiler.FileFormat;
+import br.unicamp.cst.support.ExecutionTimeWriter;
+import br.unicamp.cst.support.ProfileInfo;
 
 /**
  * The <b><i>Codelet</i></b> class, together with the <b><i>MemoryObject</i></b>
@@ -52,7 +52,7 @@ import br.unicamp.cst.util.CodeletsProfiler.FileFormat;
  * @see Mind
  * @see Runnable
  */
-public abstract class Codelet implements Runnable {
+public abstract class Codelet implements Runnable, MemoryObserver {
 	/**
 	 * Activation level of the Codelet. Ranges from 0.0 to 1.0d.
 	 */
@@ -79,7 +79,10 @@ public abstract class Codelet implements Runnable {
 
 	/** defines if proc() should be automatically called in a loop */
 	protected boolean loop = true; //
-
+	
+	/** defines if codelet is a memory observer (runs when memory input changes) */
+	protected boolean isMemoryObserver = false; //
+	
 	/**
 	 * If the proc() method is set to be called automatically in a loop, this
 	 * variable stores the time step for such a loop. A timeStep of value 0
@@ -253,6 +256,26 @@ public abstract class Codelet implements Runnable {
 		this.loop = loop;
 	}
 
+        /**
+	 * Gets the enable status.
+	 * 
+	 * @return the enable state.
+	 */
+	public synchronized boolean getEnabled() {
+		return enabled;
+	}
+        
+        /**
+	 * Set the enable status.
+	 * 
+	 * @param status the new enable status
+	 */
+	public synchronized void setEnabled(boolean status) {
+		enabled = status;
+                if (status == true) enable_count = 0;
+	}
+        
+        
 	/**
 	 * Gets this Codelet name.
 	 * 
@@ -337,6 +360,9 @@ public abstract class Codelet implements Runnable {
 	 *            one input to set.
 	 */
 	public synchronized void addInput(Memory input) {
+		if (isMemoryObserver) {
+			input.addMemoryObserver(this);
+		}
 		this.inputs.add(input);
 	}
 
@@ -347,6 +373,11 @@ public abstract class Codelet implements Runnable {
 	 *            a list of inputs.
 	 */
 	public synchronized void addInputs(List<Memory> inputs) {
+		if (isMemoryObserver) {
+		    for (Memory memory : inputs) {
+		    	memory.addMemoryObserver(this);
+			}
+		}
 		this.inputs.addAll(inputs);
 	}
 
@@ -511,6 +542,9 @@ public abstract class Codelet implements Runnable {
 	 *            one broadcast input to set.
 	 */
 	public synchronized void addBroadcast(Memory b) {
+		if (isMemoryObserver) {
+			b.addMemoryObserver(this);
+		}
 		this.broadcast.add(b);
 	}
 
@@ -521,6 +555,11 @@ public abstract class Codelet implements Runnable {
 	 *            one input to set.
 	 */
 	public synchronized void addBroadcasts(List<Memory> broadcast) {
+		if (isMemoryObserver) {
+			for (Memory memory : broadcast) {
+				memory.addMemoryObserver(this);
+			}
+		}
 		this.broadcast.addAll(broadcast);
 	}
 
@@ -751,6 +790,16 @@ public abstract class Codelet implements Runnable {
 	}
 	
 	/**
+	 * Sets this Codelet to be a memory observer.
+	 * 
+	 * @param isMemoryObserver
+	 *            the isMemoryObserver to set
+	 */
+	public synchronized void setIsMemoryObserver(boolean isMemoryObserver) {
+		this.isMemoryObserver = isMemoryObserver;
+	}
+	
+	/**
 	 * Sets Codelet Profiler
 	 * 
 	 * @param filePath 
@@ -781,12 +830,77 @@ public abstract class Codelet implements Runnable {
             throw new MemoryObjectNotFoundException("This Codelet could not find a memory object it needs: "
 							+ Codelet.this.name);
         }
+        
+        /**
+         *  runs when codelet is a memory observer and memory input changes
+         */
+        @Override
+    	public void notifyCodelet() {
+    		long startTime = 0l;
+    		long endTime = 0l;
+    		long duration = 0l;
+
+    		try {
+
+    			if (isProfiling)
+    				startTime = System.currentTimeMillis();
+
+    			accessMemoryObjects();// tries to connect to memory objects
+
+    			if (enable_count == 0) {
+    				calculateActivation();
+    				if (activation >= threshold)
+    					proc();
+    			} else {
+                                     
+                                    raiseException();
+                                   
+    			}
+
+    			enable_count = 0;
+
+    		} catch (Exception e) {
+
+    			e.printStackTrace();
+
+    		} finally {
+
+    			if (Codelet.this.codeletProfiler != null) {
+    				Codelet.this.codeletProfiler.profile(Codelet.this);
+    			}
+    			if (isProfiling) {
+                    endTime = System.currentTimeMillis();
+    				duration = (endTime - startTime);
+    				ProfileInfo pi = new ProfileInfo(duration, startTime, laststarttime);
+    				profileInfo.add(pi);
+    				laststarttime = startTime;
+
+    				if (profileInfo.size() >= 50) {
+
+    					ExecutionTimeWriter executionTimeWriter = new ExecutionTimeWriter();
+    					executionTimeWriter.setCodeletName(name);
+                                        executionTimeWriter.setPath("profile/");
+    					executionTimeWriter.setProfileInfo(profileInfo);
+
+    					Thread thread = new Thread(executionTimeWriter);
+    					thread.start();
+
+    					profileInfo = new ArrayList<>();
+
+    				}
+
+    			}
+                                
+
+    		}
+    		
+    	}
 
 	private class CodeletTimerTask extends TimerTask {
 
 		@Override
 		public synchronized void run() {
-
+			
 			long startTime = 0l;
 			long endTime = 0l;
 			long duration = 0l;
@@ -806,8 +920,6 @@ public abstract class Codelet implements Runnable {
                                      
                                     raiseException();
                                    
-//					throw new MemoryObjectNotFoundException("This Codelet could not find a memory object it needs: "
-//							+ Codelet.this.name);
 				}
 
 				enable_count = 0;
@@ -818,7 +930,7 @@ public abstract class Codelet implements Runnable {
 
 			} finally {
 
-				if (shouldLoop()) 
+				if (!isMemoryObserver && shouldLoop()) 
 					timer.schedule(new CodeletTimerTask(), timeStep);
 				if (Codelet.this.codeletProfiler != null) {
 					Codelet.this.codeletProfiler.profile(Codelet.this);
@@ -834,6 +946,7 @@ public abstract class Codelet implements Runnable {
 
 						ExecutionTimeWriter executionTimeWriter = new ExecutionTimeWriter();
 						executionTimeWriter.setCodeletName(name);
+                                                executionTimeWriter.setPath("profile/");
 						executionTimeWriter.setProfileInfo(profileInfo);
 
 						Thread thread = new Thread(executionTimeWriter);
