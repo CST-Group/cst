@@ -172,7 +172,7 @@ public class TestREST {
 		URL obj = new URL(GET_URL);
 		HttpURLConnection con = (HttpURLConnection) obj.openConnection();
 		con.setRequestMethod("GET");
-		con.setRequestProperty("User-Agent", USER_AGENT);
+		//con.setRequestProperty("User-Agent", USER_AGENT);
 		int responseCode = con.getResponseCode();
                 if (responseCode != 200)
                     System.out.println("GET Response Code :: " + responseCode);
