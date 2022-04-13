@@ -7,11 +7,11 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class MemoryJson {
-    private Long timestamp;
-    private volatile Double evaluation;
-    private volatile Object I;
-    private String name;
-    private ArrayList<MemoryJson> memories = new ArrayList<MemoryJson>();
+    public Long timestamp;
+    public volatile Double evaluation;
+    public volatile Object I;
+    public String name;
+    public ArrayList<MemoryJson> memories = new ArrayList<MemoryJson>();
 
     public MemoryJson(Memory memo) {
         timestamp = memo.getTimestamp();

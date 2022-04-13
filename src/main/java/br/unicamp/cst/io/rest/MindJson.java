@@ -7,8 +7,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class MindJson {
-    private List<MemoryJson> memories = new ArrayList<MemoryJson>();
-    private List<CodeletJson> codelets = new ArrayList<CodeletJson>();
+    public List<MemoryJson> memories = new ArrayList<MemoryJson>();
+    public List<CodeletJson> codelets = new ArrayList<CodeletJson>();
 
     public MindJson(List<Memory> memories, List<Codelet> cods) {
         for (int i = 0; i < memories.size(); i++) {

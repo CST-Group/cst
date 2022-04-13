@@ -6,12 +6,12 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class CodeletJson {
-    private double activation;
-    private long timestamp;
-    private String name;
-    private List<MemoryJson> broadcast = new ArrayList<MemoryJson>();
-    private List<MemoryJson> inputs = new ArrayList<MemoryJson>();
-    private List<MemoryJson> outputs = new ArrayList<MemoryJson>();
+    public double activation;
+    public long timestamp;
+    public String name;
+    public List<MemoryJson> broadcast = new ArrayList<MemoryJson>();
+    public List<MemoryJson> inputs = new ArrayList<MemoryJson>();
+    public List<MemoryJson> outputs = new ArrayList<MemoryJson>();
 
     public CodeletJson(Codelet cod) {
         this.activation = cod.getActivation();
