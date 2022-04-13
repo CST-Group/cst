@@ -214,6 +214,7 @@ public class TestREST {
                              .registerTypeAdapter(Memory.class, new InterfaceAdapter<MemoryContainer>())
                              .setPrettyPrinting().create();
             MindJson mj = gson.fromJson(mes,MindJson.class);
+            if (mj != null && mj.memories != null) {
             assertEquals(mj.memories.size(),7);
             for(int j=0;j<5;j++) {
                 MemoryJson mm = mj.memories.get(j);
@@ -227,6 +228,7 @@ public class TestREST {
             assertEquals(mj.codelets.size(),5);
             String time = TimeStamp.getStringTimeStamp(mj.memories.get(0).timestamp,"dd/MM/YYYY HH:mm:ss.SSS zzz");
             System.out.println("i: "+i+" time: "+time+" memories: "+mj.memories.size()+" codelets: "+mj.codelets.size());
+            } 
         }
     }
     
