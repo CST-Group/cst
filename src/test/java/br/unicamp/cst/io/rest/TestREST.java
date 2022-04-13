@@ -173,7 +173,12 @@ public class TestREST {
 		HttpURLConnection con = (HttpURLConnection) obj.openConnection();
 		con.setRequestMethod("GET");
 		//con.setRequestProperty("User-Agent", USER_AGENT);
-		int responseCode = con.getResponseCode();
+                int responseCode=0;
+                try {
+                    responseCode = con.getResponseCode();
+                } catch (java.net.ConnectException e) {
+                    e.printStackTrace();
+                }    
                 if (responseCode != 200)
                     System.out.println("GET Response Code :: " + responseCode);
 		if (responseCode == HttpURLConnection.HTTP_OK) { // success
