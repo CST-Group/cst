@@ -15,7 +15,6 @@ import br.unicamp.cst.core.entities.Memory;
 import br.unicamp.cst.core.entities.MemoryContainer;
 import br.unicamp.cst.core.entities.MemoryObject;
 import br.unicamp.cst.core.entities.Mind;
-import br.unicamp.cst.support.CodeletsProfiler;
 import br.unicamp.cst.support.InterfaceAdapter;
 import br.unicamp.cst.support.TimeStamp;
 import com.google.gson.Gson;
@@ -25,6 +24,7 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.util.Random;
 import java.util.Timer;
 import java.util.TimerTask;
 import static org.junit.Assert.assertEquals;
@@ -163,10 +163,12 @@ public class TestREST {
     }
     
     private static final String USER_AGENT = "Mozilla/5.0";
-    private static final String GET_URL = "http://localhost:4011/";
+    private String GET_URL;
+    private static int port;
     
     private String sendGET() throws IOException {
                 String message = "";
+                
 		URL obj = new URL(GET_URL);
 		HttpURLConnection con = (HttpURLConnection) obj.openConnection();
 		con.setRequestMethod("GET");
@@ -192,9 +194,14 @@ public class TestREST {
     
     @Test 
     public void testRest() throws IOException {
+        Random r = new Random();
+        // Finding a random port higher than 5000
+        port = 5000 + r.nextInt(50000);
+        GET_URL = "http://localhost:"+port+"/";
         TestREST tr = new TestREST();
         tr.StartTimer();
-    	RESTServer rs = new RESTServer(tr.m,4011,true);
+        System.out.println("Creating a server in port "+port);
+    	RESTServer rs = new RESTServer(tr.m,port,true);
         String mes;
         for (int i=0;i<10;i++) {
             mes = sendGET();
