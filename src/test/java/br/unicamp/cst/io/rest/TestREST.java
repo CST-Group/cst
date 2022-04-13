@@ -215,20 +215,21 @@ public class TestREST {
                              .setPrettyPrinting().create();
             MindJson mj = gson.fromJson(mes,MindJson.class);
             if (mj != null && mj.memories != null) {
-            assertEquals(mj.memories.size(),7);
-            for(int j=0;j<5;j++) {
-                MemoryJson mm = mj.memories.get(j);
-                String sname = "M"+(j+1);
-                assertEquals(mm.name,sname);
+                assertEquals(mj.memories.size(),7);
+                for(int j=0;j<5;j++) {
+                    MemoryJson mm = mj.memories.get(j);
+                    String sname = "M"+(j+1);
+                    assertEquals(mm.name,sname);
+                }
+                MemoryJson c = mj.memories.get(5);
+                assertEquals(c.name,"C1");
+                c = mj.memories.get(6);
+                assertEquals(c.name,"C2");
+                assertEquals(mj.codelets.size(),5);
+                String time = TimeStamp.getStringTimeStamp(mj.memories.get(0).timestamp,"dd/MM/YYYY HH:mm:ss.SSS zzz");
+                System.out.println("i: "+i+" time: "+time+" memories: "+mj.memories.size()+" codelets: "+mj.codelets.size());
             }
-            MemoryJson c = mj.memories.get(5);
-            assertEquals(c.name,"C1");
-            c = mj.memories.get(6);
-            assertEquals(c.name,"C2");
-            assertEquals(mj.codelets.size(),5);
-            String time = TimeStamp.getStringTimeStamp(mj.memories.get(0).timestamp,"dd/MM/YYYY HH:mm:ss.SSS zzz");
-            System.out.println("i: "+i+" time: "+time+" memories: "+mj.memories.size()+" codelets: "+mj.codelets.size());
-            } 
+            else System.out.println("Problem detected while reading back the information");
         }
     }
     
