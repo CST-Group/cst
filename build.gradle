@@ -6,7 +6,7 @@ plugins {
 
 group = 'com.github.CST-Group'
 
-description = "CST is the Cognitive Systems Toolkit, a toolkit for the construction of Cognitive Systems and Cognitive Architectures"
+description = "CST"
 
 sourceCompatibility = 1.8
 targetCompatibility = 1.8

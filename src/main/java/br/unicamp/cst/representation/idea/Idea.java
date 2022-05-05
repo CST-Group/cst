@@ -37,6 +37,8 @@ public class Idea {
     private Object value="";
     private List<Idea> l= new CopyOnWriteArrayList<>();
     private int type=0;
+    private String category="";
+    private int scope=1;  // 0: possibility, 1: existence, 2: law
     private transient IdeaComparator ideaComparator = new IdeaComparator();
     // This list is used while building a toStringFull()
     /**
@@ -136,6 +138,34 @@ public class Idea {
     }
     
     /**
+     * This constructor initializes the Idea with a name, a value, a type, a category and a scope. 
+     * @param name The name assigned to the Idea
+     * @param value The value to be assigned to the Idea (can be an empty String, or null). If the value is given a null value, it is substituted by the String "null". 
+     * @param type The type assigned to the Idea
+     * @param category The category assigned to the Idea
+     * @param scope The scope assigned to the Idea (0: possibility, 1: existence, 2: law)
+     */
+    public Idea(String name, Object value, int type, String category, int scope) {
+        this(name,value,type);
+        this.category = category;
+        this.scope = scope;
+    }
+    
+    /**
+     * This constructor initializes the Idea with a name, a value, a category and a scope. 
+     * The Idea type is guessed, based on its category
+     * @param name The name assigned to the Idea
+     * @param value The value to be assigned to the Idea (can be an empty String, or null). If the value is given a null value, it is substituted by the String "null". 
+     * @param category The category assigned to the Idea
+     * @param scope The scope assigned to the Idea (0: possibility, 1: existence, 2: law)
+     */
+    public Idea(String name, Object value, String category, int scope) {
+        this(name,value,guessType(category,scope));
+        this.category = category;
+        this.scope = scope;
+    }
+    
+    /**
      * The createIdea method is used as a static Idea factory, which tries to reuse Ideas with the same name. 
      * It can be used, for example, in cases where Ideas are created in a periodic way, being disposed in the sequence. 
      * The use of this method allows for a better use of memory, avoiding an excessive use of garbage collection mechanism. 
@@ -161,6 +191,58 @@ public class Idea {
             ret.l= new CopyOnWriteArrayList<>();
         }    
         return(ret);
+    }
+    
+    public static int guessType(String category, int scope) {
+        int guess = 0;
+        if (category != null) {
+            if (category.equalsIgnoreCase("AbstractObject") && scope == 1) {
+                guess = 0;
+            }
+            if (category.equalsIgnoreCase("Property") && scope == 1) {
+                guess = 1;
+            }
+            else if (category.equalsIgnoreCase("Link")) {
+                guess = 2;
+            }
+            else if (category.equalsIgnoreCase("QualityDimension")) {
+                guess = 3;
+            }
+            else if (category.equalsIgnoreCase("Episode") && scope == 1) {
+                guess = 4;
+            }
+            else if (category.equalsIgnoreCase("Composite")) {
+                guess = 5;
+            }
+            else if (category.equalsIgnoreCase("Aggregate")) {
+                guess = 6;
+            }
+            else if (category.equalsIgnoreCase("Configuration")) {
+                guess = 7;
+            }
+            else if (category.equalsIgnoreCase("TimeStep")) {
+                guess = 8;
+            }
+            else if (category.equalsIgnoreCase("Property") && scope == 2) {
+                guess = 9;
+            }
+            else if (category.equalsIgnoreCase("AbstractObject") && scope == 2) {
+                guess = 10;
+            }
+            else if (category.equalsIgnoreCase("Episode") && scope == 2) {
+                guess = 11;
+            }
+            else if (category.equalsIgnoreCase("Property") && scope == 0) {
+                guess = 12;
+            }
+            else if (category.equalsIgnoreCase("AbstractObject") && scope == 0) {
+                guess = 13;
+            }
+            else if (category.equalsIgnoreCase("Episode") && scope == 0) {
+                guess = 14;
+            }
+        }
+        return(guess);
     }
 
     /**
@@ -358,30 +440,71 @@ public class Idea {
      * This method returns the type of the current Idea. 
      * Even though the type can be used for any purpose,
      * the following reference for Idea types is used as a reference:
-     * 0 - AbstractObject
-     * 1 - Property
+     * 0 - AbstractObject (Existent)
+     * 1 - Property (Existent)
      * 2 - Link or Reference to another Idea
      * 3 - QualityDimension
-     * 4 - Episode
+     * 4 - Episode (Existent)
      * 5 - Composite
      * 6 - Aggregate
      * 7 - Configuration
      * 8 - TimeStep
-     * 9 - PropertyCategory
-     * 10 - ObjectCategory
-     * 11 - EpisodeCategory
+     * 9 - Property (Law)
+     * 10 - AbstractObject (Law)
+     * 11 - Episode (Law)
+     * 12 - Property (Possibility)
+     * 13 - AbstractObject (Possibility)
+     * 14 - Episode (Possibility)
      * @return an integer indicating the type of the Idea
      */
     public int getType() {
         return type;
     }
     
-    /** This method is used to set a new type for the Idea
-     * 
+    /** 
+     * This method is used to set a new type for the Idea
      * @param type the new type assigned to the Idea
      */
     public void setType(int type) {
         this.type = type;
+    }
+    
+    /**
+     * This method is used to get the category for the Idea
+     * @return a String with the name of the Idea category
+     */
+    public String getCategory() {
+        return category;
+    }
+    
+    /**
+     * This method is used to set the category for the Idea
+     * @param category a String with the name of the Idea category
+     */
+    public void setCategory(String category) {
+        this.category = category;
+    }
+    
+    /**
+     * This method is used to set the scope of the Idea
+     * The scope indicates if this idea is to be interpreted as
+     * a possibility (scope = 0), an existent (scope = 1) or a law
+     * (scope = 2)
+     * @return the Idea scope
+     */
+    public int getScope() {
+        return scope;
+    }
+    
+    /**
+     * This method is used to return the Idea's scope
+     * The scope indicates if this idea is to be interpreted as
+     * a possibility (scope = 0), an existent (scope = 1) or a law
+     * (scope = 2)
+     * @param scope the Idea's scope (0: possibility, 1: existent, 2:law)
+     */
+    public void setScope(int scope) {
+        this.scope = scope;
     }
     
     /**
