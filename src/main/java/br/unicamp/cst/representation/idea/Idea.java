@@ -1039,7 +1039,10 @@ public class Idea {
                                 if (!field.isAccessible()) field.setAccessible(true);
                                 field.set(ret,out);
                             } catch(Exception e2) {
-                                System.out.println(">> Field "+field.getName()+" should be of type "+field.getType().getCanonicalName()+" but I received "+value.toString()+": "+value.getClass().getCanonicalName()+"");
+                                if (value != null)
+                                   System.out.println(">> Field "+field.getName()+" should be of type "+field.getType().getCanonicalName()+" but I received "+value.toString()+": "+value.getClass().getCanonicalName());
+                                else
+                                   System.out.println(">> Field "+field.getName()+" should be of type "+field.getType().getCanonicalName()+" but I received <null>");
                             }
                             
                         }
