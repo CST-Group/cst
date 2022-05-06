@@ -168,4 +168,51 @@ public class TestIdea {
         }
     }
     
+    /* 0 - AbstractObject
+     * 1 - Property
+     * 2 - Link or Reference to another Idea
+     * 3 - QualityDimension
+     * 4 - Episode
+     * 5 - Composite
+     * 6 - Aggregate
+     * 7 - Configuration
+     * 8 - TimeStep
+     * 9 - PropertyCategory
+     * 10 - ObjectCategory
+     * 11 - EpisodeCategory
+     */
+    @Test 
+    public void testIdea2() {
+        Idea idea = new Idea("idea","idea","AbstractObject",1);
+        assertEquals(idea.getType(),0);
+        idea = new Idea("idea","idea","Property",1);
+        assertEquals(idea.getType(),1);
+        idea = new Idea("idea","idea","Link",1);
+        assertEquals(idea.getType(),2);
+        idea = new Idea("idea","idea","QualityDimension",1);
+        assertEquals(idea.getType(),3);
+        idea = new Idea("idea","idea","Episode",1);
+        assertEquals(idea.getType(),4);
+        idea = new Idea("idea","idea","Composite",1);
+        assertEquals(idea.getType(),5);
+        idea = new Idea("idea","idea","Aggregate",1);
+        assertEquals(idea.getType(),6);
+        idea = new Idea("idea","idea","Configuration",1);
+        assertEquals(idea.getType(),7);
+        idea = new Idea("idea","idea","TimeStep",1);
+        assertEquals(idea.getType(),8);
+        idea = new Idea("idea","idea","Property",2);
+        assertEquals(idea.getType(),9);
+        idea = new Idea("idea","idea","AbstractObject",2);
+        assertEquals(idea.getType(),10);
+        idea = new Idea("idea","idea","Episode",2);
+        assertEquals(idea.getType(),11);
+        idea = new Idea("idea","idea","Property",0);
+        assertEquals(idea.getType(),12);
+        idea = new Idea("idea","idea","AbstractObject",0);
+        assertEquals(idea.getType(),13);
+        idea = new Idea("idea","idea","Episode",0);
+        assertEquals(idea.getType(),14);
+    }
+    
 }

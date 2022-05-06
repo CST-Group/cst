@@ -197,16 +197,7 @@ public class TestREST {
           return(message);
 	}
     
-    @Test 
-    public void testRest() throws IOException {
-        Random r = new Random();
-        // Finding a random port higher than 5000
-        port = 5000 + r.nextInt(50000);
-        GET_URL = "http://localhost:"+port+"/";
-        TestREST tr = new TestREST();
-        tr.StartTimer();
-        System.out.println("Creating a server in port "+port);
-    	RESTServer rs = new RESTServer(tr.m,port,true);
+    private void processTest() throws IOException {
         String mes;
         for (int i=0;i<10;i++) {
             mes = sendGET();
@@ -231,6 +222,45 @@ public class TestREST {
             }
             else System.out.println("Problem detected while reading back the information");
         }
+    }
+    
+    @Test 
+    public void testRest() throws IOException {
+        Random r = new Random();
+        // Finding a random port higher than 5000
+        port = 5000 + r.nextInt(50000);
+        GET_URL = "http://localhost:"+port+"/";
+        TestREST tr = new TestREST();
+        tr.StartTimer();
+        System.out.println("Creating a server in port "+port);
+    	RESTServer rs = new RESTServer(tr.m,port,true);
+        processTest();
+    }
+    
+    @Test 
+    public void testRest2() throws IOException {
+        Random r = new Random();
+        // Finding a random port higher than 5000
+        port = 5000 + r.nextInt(50000);
+        GET_URL = "http://localhost:"+port+"/";
+        TestREST tr = new TestREST();
+        tr.StartTimer();
+        System.out.println("Creating a server in port "+port);
+    	RESTServer rs = new RESTServer(tr.m,port);
+        processTest();
+    }
+    
+    @Test 
+    public void testRest3() throws IOException {
+        Random r = new Random();
+        // Finding a random port higher than 5000
+        port = 5000 + r.nextInt(50000);
+        GET_URL = "http://localhost:"+port+"/";
+        TestREST tr = new TestREST();
+        tr.StartTimer();
+        System.out.println("Creating a server in port "+port);
+    	RESTServer rs = new RESTServer(tr.m,port,true,"*");
+        processTest();
     }
     
 }
