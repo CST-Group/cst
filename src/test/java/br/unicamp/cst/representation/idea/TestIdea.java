@@ -213,6 +213,11 @@ public class TestIdea {
         assertEquals(idea.getType(),13);
         idea = new Idea("idea","idea","Episode",0);
         assertEquals(idea.getType(),14);
+        idea = new Idea("idea","idea",0,"Episode",0);
+        idea.setCategory("Property");
+        idea.setScope(1);
+        assertEquals(idea.getCategory().equalsIgnoreCase("Property"),true);
+        assertEquals(idea.getScope(),1);
     }
     
 }
