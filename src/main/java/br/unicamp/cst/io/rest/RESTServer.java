@@ -1,8 +1,13 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
+/***********************************************************************************************
+ * Copyright (c) 2012  DCA-FEEC-UNICAMP
+ * All rights reserved. This program and the accompanying materials
+ * are made available under the terms of the GNU Lesser Public License v3
+ * which accompanies this distribution, and is available at
+ * http://www.gnu.org/licenses/lgpl.html
+ * <p>
+ * Contributors:
+ * K. Raizer, A. L. O. Paraense, E. M. Froes, R. R. Gudwin - initial API and implementation
+ * **********************************************************************************************/
 package br.unicamp.cst.io.rest;
 
 import br.unicamp.cst.core.entities.Memory;
@@ -25,6 +30,10 @@ import express.middleware.Middleware;
  * @author rgudwin
  */
 public class RESTServer {
+    
+    long refresh = 0; // A refresh of 0 means that every call will generate a new probe in mind
+    long lastaccess = 0;
+    String lastmessage = "";
     
     /**
      * 
@@ -53,6 +62,19 @@ public class RESTServer {
      * @param origin a pattern for users allowed to access the server - use "*" to allow everyone
      */
     public RESTServer(Mind m, int port, boolean pretty, String origin) {
+        this(m,port,pretty,origin,0L);
+    }
+    
+    /**
+     * 
+     * @param m the mind to observe
+     * @param port the port to install the REST server
+     * @param pretty set this to true to generate pretty printing JSON in the REST server
+     * @param origin a pattern for users allowed to access the server - use "*" to allow everyone
+     * @param nrefresh the refresh period in milliseconds
+     */
+    public RESTServer(Mind m, int port, boolean pretty, String origin, long nrefresh) {
+        refresh = nrefresh;
         Express app = new Express();
         Gson gson;
         if (pretty)
@@ -65,8 +87,14 @@ public class RESTServer {
         corsOptions.setOrigin(origin);
         app.use(Middleware.cors(corsOptions));
         app.get("/", (req, res) -> {
-            MindJson myJson = new MindJson(m.getRawMemory().getAllMemoryObjects(),m.getCodeRack().getAllCodelets());
-            res.send(gson.toJson(myJson));
+            long currentaccess = System.currentTimeMillis();
+            long diff = currentaccess - lastaccess;
+            if (diff > refresh) {
+                MindJson myJson = new MindJson(m);
+                lastmessage = gson.toJson(myJson);
+                lastaccess = currentaccess;
+            }
+            res.send(lastmessage);
         });
         app.listen(port);
     }
