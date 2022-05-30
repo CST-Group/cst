@@ -27,7 +27,8 @@ import java.util.concurrent.CopyOnWriteArrayList;
 
 
 /**
- *
+ * This class is used as the standard knowledge representation entity within CST
+ * 
  * @author rgudwin
  */
 public class Idea {
@@ -36,24 +37,72 @@ public class Idea {
     private Object value="";
     private List<Idea> l= new CopyOnWriteArrayList<>();
     private int type=0;
-    private IdeaComparator ideaComparator = new IdeaComparator();
+    private String category="";
+    private int scope=1;  // 0: possibility, 1: existence, 2: law
+    private transient IdeaComparator ideaComparator = new IdeaComparator();
+    // This list is used while building a toStringFull()
+    /**
+     * The repo hashmap is a list of known Ideas used by the createIdea factory method to 
+     * avoid that Ideas with a same new to be created. This list is used to reuse an 
+     * Idea with the same name. This variable provides a global list with all known 
+     * Ideas created so far. 
+     */
     public static ConcurrentHashMap<String,Idea> repo = new ConcurrentHashMap<>();
+    // This list is used while converting a Java Object to an Idea, to avoid recursions
     transient static CopyOnWriteArrayList<Object> listtoavoidloops = new CopyOnWriteArrayList<>();
-    private static long lastId = 0;
+    /**
+     * This variable stores the last Id used while creating new Ideas. 
+     */
+    public static long lastId = 0;
     
+    /**
+     * This function generates a new id to be assigned to a new Idea being created. 
+     * This id is generated in a serialized format, being the first one with value 0 
+     * and incrementally increased by one for each new created Idea. The value of the 
+     * last id created so far is stored in the <i>lastId</i> static variable. 
+     * @return the generated new id
+     */
     public static long genId() {
         return(lastId++);
     }
-    
+    /**
+     * This is the simpler constructor for an Idea. Basically, it finds a new id and creates an empty Idea. 
+     */
     public Idea() {
         id = genId();
     }
     
+    /**
+     * This construction initializes the Idea just with a name (and an id). 
+     * @param name The name to be assigned to the Idea
+     */
     public Idea(String name) {
         this.name = name;
         id = genId();
     }
     
+    /**
+     * This constructor initializes the Idea with a name, a value and a type. 
+     * The value can be any Java object. The type is an integer number, which
+     * describes the kind of Idea. Even though the type can be used for any purpose,
+     * the following reference for Idea types is used as a reference:
+     * 0 - AbstractObject
+     * 1 - Property
+     * 2 - Link or Reference to another Idea
+     * 3 - QualityDimension
+     * 4 - Episode
+     * 5 - Composite
+     * 6 - Aggregate
+     * 7 - Configuration
+     * 8 - TimeStep
+     * 9 - PropertyCategory
+     * 10 - ObjectCategory
+     * 11 - EpisodeCategory
+     * 
+     * @param name The name assigned to the Idea.
+     * @param value The value to be assigned to the Idea (can be an empty String, or null). If the value is given a null value, it is substituted by the String "null". 
+     * @param type The type assigned to the Idea
+     */
     public Idea(String name, Object value, int type) {
         this.name = name;
         if (value != null) this.value = value;
@@ -62,6 +111,11 @@ public class Idea {
         id = genId();
     }
     
+    /**
+     * This constructor is a wrapper for an Idea with type 1. If the value is a String, it is parsed in order to create a numeric value with a proper type. Up to now, the constructor recognizes Integers and Doubles.  
+     * @param name The name assigned to the Idea
+     * @param value The value assigned to the Idea. If this value is a String, it is parsed to check if this String describes an Integer or a Double and converts the number to a prpper type (an int or a double). 
+     */
     public Idea(String name, Object value) {
         type = 1;
         this.name = name;
@@ -83,6 +137,46 @@ public class Idea {
         else this.value = value;
     }
     
+    /**
+     * This constructor initializes the Idea with a name, a value, a type, a category and a scope. 
+     * @param name The name assigned to the Idea
+     * @param value The value to be assigned to the Idea (can be an empty String, or null). If the value is given a null value, it is substituted by the String "null". 
+     * @param type The type assigned to the Idea
+     * @param category The category assigned to the Idea
+     * @param scope The scope assigned to the Idea (0: possibility, 1: existence, 2: law)
+     */
+    public Idea(String name, Object value, int type, String category, int scope) {
+        this(name,value,type);
+        this.category = category;
+        this.scope = scope;
+    }
+    
+    /**
+     * This constructor initializes the Idea with a name, a value, a category and a scope. 
+     * The Idea type is guessed, based on its category
+     * @param name The name assigned to the Idea
+     * @param value The value to be assigned to the Idea (can be an empty String, or null). If the value is given a null value, it is substituted by the String "null". 
+     * @param category The category assigned to the Idea
+     * @param scope The scope assigned to the Idea (0: possibility, 1: existence, 2: law)
+     */
+    public Idea(String name, Object value, String category, int scope) {
+        this(name,value,guessType(category,scope));
+        this.category = category;
+        this.scope = scope;
+    }
+    
+    /**
+     * The createIdea method is used as a static Idea factory, which tries to reuse Ideas with the same name. 
+     * It can be used, for example, in cases where Ideas are created in a periodic way, being disposed in the sequence. 
+     * The use of this method allows for a better use of memory, avoiding an excessive use of garbage collection mechanism. 
+     * An Idea created with this method will not create a new Idea if given a name already used in the past. In this case, 
+     * it will return a reference to this already created Idea. Ideas with the same name, with a different type will be
+     * treated as different Ideas. 
+     * @param name The name associated to the created Idea
+     * @param value The value assigned to the Idea
+     * @param type The type assigned to the Idea
+     * @return The newly created Idea
+     */
     public synchronized static Idea createIdea(String name, Object value, int type) {
         Idea ret = repo.get(name+"."+type);
         if (ret == null) {
@@ -98,51 +192,162 @@ public class Idea {
         }    
         return(ret);
     }
+    
+    public static int guessType(String category, int scope) {
+        int guess = 0;
+        if (category != null) {
+            if (category.equalsIgnoreCase("AbstractObject") && scope == 1) {
+                guess = 0;
+            }
+            if (category.equalsIgnoreCase("Property") && scope == 1) {
+                guess = 1;
+            }
+            else if (category.equalsIgnoreCase("Link")) {
+                guess = 2;
+            }
+            else if (category.equalsIgnoreCase("QualityDimension")) {
+                guess = 3;
+            }
+            else if (category.equalsIgnoreCase("Episode") && scope == 1) {
+                guess = 4;
+            }
+            else if (category.equalsIgnoreCase("Composite")) {
+                guess = 5;
+            }
+            else if (category.equalsIgnoreCase("Aggregate")) {
+                guess = 6;
+            }
+            else if (category.equalsIgnoreCase("Configuration")) {
+                guess = 7;
+            }
+            else if (category.equalsIgnoreCase("TimeStep")) {
+                guess = 8;
+            }
+            else if (category.equalsIgnoreCase("Property") && scope == 2) {
+                guess = 9;
+            }
+            else if (category.equalsIgnoreCase("AbstractObject") && scope == 2) {
+                guess = 10;
+            }
+            else if (category.equalsIgnoreCase("Episode") && scope == 2) {
+                guess = 11;
+            }
+            else if (category.equalsIgnoreCase("Property") && scope == 0) {
+                guess = 12;
+            }
+            else if (category.equalsIgnoreCase("AbstractObject") && scope == 0) {
+                guess = 13;
+            }
+            else if (category.equalsIgnoreCase("Episode") && scope == 0) {
+                guess = 14;
+            }
+        }
+        return(guess);
+    }
 
+    /**
+     * This method returns the simple name of the given Idea.
+     * This method returns what is called the "Simple" name of an Idea. 
+     * An Idea with a registered name "workingMemory.PhonologicLoop.VowelA" 
+     * will return just "VowelA". If you need the full name assigned to the Idea, 
+     * use the getFullName() method instead. 
+     * @return The "simple name" of the given Idea
+     */
     public String getName() {
         return ToString.getSimpleName(name);
     }
     
+    /**
+     * This method returns the full name of the given Idea.
+     * If the Idea name is a structured one, like e.g. "workingMemory.PhonologicLoop.VowelA",
+     * this method will return the full registered name. If you want just the simple name
+     * (in the example "VowelA", use getName() instead. 
+     * @return The full name registered for the Idea. 
+     */
     public String getFullName() {
         return(name);
     }
-
+    
+    
+    /**
+     * Sets a new name for the Idea
+     * @param name The new name to be assigned to the Idea
+     */
     public void setName(String name) {
         this.name = name;
     }
 
+    /** This method returns the list of child Ideas associated to the current Idea. 
+     * 
+     * @return The list of Ideas associated with the current Idea
+     */
     public List<Idea> getL() {
         return l;
     }
 
+    /**
+     * This method sets a new list of associated or child Ideas, to the current Idea. 
+     * @param l The list of Ideas to substitute the old list of associated Ideas. 
+     */
     public void setL(List<Idea> l) {
         this.l = l;
     }
+    
+    /**
+     * This method returns the id associated to the current Idea
+     * @return the id of the current Idea
+     */
+    public long getId() {
+        return(id);
+    }
 
+    /**
+     * This method associates another Idea to the current Idea
+     * @param node the Idea to be associated as a child Idea
+     * @return the add method also returns the associated Idea, for nesting the association of Ideas with a single call. This return can be safely ignored. 
+     */
     public Idea add(Idea node) {
         l.add(node);
         sort();
         return(node);
     }
     
+    /**
+     * This static method is used to reset the list of known names used by the createIdea factory
+     */
     public static void reset() {
         listtoavoidloops = new CopyOnWriteArrayList<>();
     }
     
+    /**
+     * This method returns a String short version of the Idea
+     * @return the name of the Idea, used as a short version of the Idea
+     */
     public String toString() {
         return(name);
     }
     
+    /**
+     * This method returns an extended String version of the Idea. 
+     * In the case the Idea has multiple child Ideas, this method returns a multi-line String 
+     * @return a String with a multi-line version of the Idea
+     */
     public String toStringFull() {
         return(toStringFull(false));
     }
     
+    /**
+     * This method is equivalent to the toStringFull() method, with an additional "withid" flag, to indicate if the 
+     * Idea id should be included in the String version of the Idea
+     * @param withid a boolean flag to indicate if the id should be included (use withid = true to include the id)
+     * @return a String with a multi-line version of the Idea, including the Idea id. 
+     */
     public String toStringFull(boolean withid) {
         reset();
         return(toStringFull(1,withid));
     }
     
-    public String toStringPlus(boolean withid) {
+    private String toStringPlus(boolean withid) {
         String appendix = "";
         String out;
         switch(getType()) {
@@ -163,7 +368,7 @@ public class Idea {
                     
     }
     
-    public String toStringFull(int level, boolean withid) {
+    private String toStringFull(int level, boolean withid) {
         String out; 
         if (isType(1)) {
            out = toStringPlus(withid)+"\n";
@@ -184,6 +389,14 @@ public class Idea {
         }
     }
     
+    /**
+     * This method is used to search for an Idea, which is registered as a child Idea, of the current Idea.
+     * If this Idea is named "a", and Idea "b" is associated to it, and further Idea "c" is associated to "b", 
+     * we can use this method, passing the argument "b.c" as a parameter, to receive back the "c" Idea.
+     * In this case, we can do a.get("b.c") to receive back the "c" Idea. 
+     * @param path The path to localize the associated Idea. 
+     * @return The localized Idea, if it exists. Otherwise, it returns null. 
+     */
     public Idea get(String path) {
         String[] spath = path.split("\\.");
         if (spath.length == 1) {
@@ -206,27 +419,107 @@ public class Idea {
         }
     }  
     
+    /**
+     * This method returns the value of the current Idea
+     * @return the value of the current Idea
+     */
     public Object getValue() {
         return value;
     }
 
+    /**
+     * This method sets a new value to the current Idea
+     * @param value the new value of the Idea
+     */
     public void setValue(Object value) {
         this.value = value;
         type = 1;
     }
     
+    /**
+     * This method returns the type of the current Idea. 
+     * Even though the type can be used for any purpose,
+     * the following reference for Idea types is used as a reference:
+     * 0 - AbstractObject (Existent)
+     * 1 - Property (Existent)
+     * 2 - Link or Reference to another Idea
+     * 3 - QualityDimension
+     * 4 - Episode (Existent)
+     * 5 - Composite
+     * 6 - Aggregate
+     * 7 - Configuration
+     * 8 - TimeStep
+     * 9 - Property (Law)
+     * 10 - AbstractObject (Law)
+     * 11 - Episode (Law)
+     * 12 - Property (Possibility)
+     * 13 - AbstractObject (Possibility)
+     * 14 - Episode (Possibility)
+     * @return an integer indicating the type of the Idea
+     */
     public int getType() {
         return type;
     }
     
+    /** 
+     * This method is used to set a new type for the Idea
+     * @param type the new type assigned to the Idea
+     */
     public void setType(int type) {
         this.type = type;
     }
     
+    /**
+     * This method is used to get the category for the Idea
+     * @return a String with the name of the Idea category
+     */
+    public String getCategory() {
+        return category;
+    }
+    
+    /**
+     * This method is used to set the category for the Idea
+     * @param category a String with the name of the Idea category
+     */
+    public void setCategory(String category) {
+        this.category = category;
+    }
+    
+    /**
+     * This method is used to set the scope of the Idea
+     * The scope indicates if this idea is to be interpreted as
+     * a possibility (scope = 0), an existent (scope = 1) or a law
+     * (scope = 2)
+     * @return the Idea scope
+     */
+    public int getScope() {
+        return scope;
+    }
+    
+    /**
+     * This method is used to return the Idea's scope
+     * The scope indicates if this idea is to be interpreted as
+     * a possibility (scope = 0), an existent (scope = 1) or a law
+     * (scope = 2)
+     * @param scope the Idea's scope (0: possibility, 1: existent, 2:law)
+     */
+    public void setScope(int scope) {
+        this.scope = scope;
+    }
+    
+    /**
+     * This convenience method is used to test if an Idea is of a given type
+     * @param type the type to be tested
+     * @return a boolean indicating if the test succeeded or not. 
+     */
     public boolean isType(int type) {
         return(this.type==type);
     }
     
+    /**
+     * This convenience method is used to test if the value of the current Idea is a double. 
+     * @return a boolean indicating if the value of the current Idea is a double number. 
+     */
     public boolean isDouble() {
         String objectClassName = value.getClass().getName();
         if (objectClassName.equals("java.lang.Double"))
@@ -234,20 +527,32 @@ public class Idea {
         return(false);   
     }
     
+    /**
+     * This convenience method is used to test if the value of the current Idea is a float. 
+     * @return a boolean indicating if the value of the current Idea is a float number. 
+     */
     public boolean isFloat() {
         String objectClassName = value.getClass().getName();
-        if (objectClassName.equals("java.lang.Double"))
+        if (objectClassName.equals("java.lang.Float"))
             return(true);
         return(false);   
     }
     
+    /**
+     * This convenience method is used to test if the value of the current Idea is an int. 
+     * @return a boolean indicating if the value of the current Idea is an integer number. 
+     */
     public boolean isInteger() {
         String objectClassName = value.getClass().getName();
-        if (objectClassName.equals("java.lang.Long"))
+        if (objectClassName.equals("java.lang.Integer"))
             return(true);
         return(false);   
     }
     
+    /**
+     * This convenience method is used to test if the value of the current Idea is a long. 
+     * @return a boolean indicating if the value of the current Idea is a long number. 
+     */
     public boolean isLong() {
         String objectClassName = value.getClass().getName();
         if (objectClassName.equals("java.lang.Long"))
@@ -255,6 +560,11 @@ public class Idea {
         return(false);   
     }
     
+    /**
+     * This convenience method is used to test if the value of the current Idea is a number.
+     * It tests if the value is a float, a double, an int or a long. 
+     * @return a boolean indicating if the value of the current Idea is a number. 
+     */
     public boolean isNumber() {
         String objectClassName = value.getClass().getName();
         if (objectClassName.equals("java.lang.Float") || objectClassName.equals("java.lang.Double") || objectClassName.equals("java.lang.Integer") || objectClassName.equals("java.lang.Long"))
@@ -262,6 +572,10 @@ public class Idea {
         return(false);
     }
 
+    /**
+     * This convenience method is used to test if the value of the current Idea is a HashMap. 
+     * @return a boolean indicating if the value of the current Idea is a HashMap. 
+     */
     public boolean isHashMap(){
         String objectClassName = value.getClass().getName();
         if (objectClassName.equals("java.util.HashMap"))
@@ -269,6 +583,10 @@ public class Idea {
         return(false);
     }
     
+    /**
+     * This convenience method is used to test if the value of the current Idea is a String. 
+     * @return a boolean indicating if the value of the current Idea is a String. 
+     */
     public boolean isString() {
         String objectClassName = value.getClass().getName();
         if (objectClassName.equals("java.lang.String"))
@@ -276,6 +594,10 @@ public class Idea {
         return(false);
     }
     
+    /**
+     * This convenience method is used to test if the value of the current Idea is a boolean. 
+     * @return a boolean indicating if the value of the current Idea is a boolean. 
+     */
     public boolean isBoolean() {
         String objectClassName = value.getClass().getName();
         if (objectClassName.equals("java.lang.Boolean"))
@@ -353,13 +675,26 @@ public class Idea {
         return returnValue;
     }
 
+    /**
+     * This method creates a clone of the current Idea.
+     * In an Idea with associated Ideas, a full clone of all associated Ideas is created. 
+     * @return a cloned version of this Idea
+     */
     public Idea clone() {
         Idea newnode;
            newnode = new Idea(getName(), getValue(), getType());
-           newnode.l = new CopyOnWriteArrayList(newnode.l);
+           newnode.l = new ArrayList();
+           for (Idea i : getL()) {
+            Idea ni = i.clone();
+            newnode.add(ni);
+        }
         return newnode;
     }
     
+    /**
+     * This method returns a resumed value of this Idea value, in a String format. 
+     * @return A String with a resumed value of this Idea value. 
+     */
     public String getResumedValue() {
         String result; 
         if (isFloat() || isDouble()) {
@@ -382,7 +717,11 @@ public class Idea {
         return(result);
     }
     
-    
+    /**
+     * This convenience method returns true if the parameter Object is a primitive Object
+     * @param o The Object to be tested
+     * @return true if the Object is a primitive or false if not. 
+     */
     public boolean isPrimitive(Object o) {
         if (o == null) return(true);
         if (o.getClass().isPrimitive()) return(true);
@@ -396,6 +735,12 @@ public class Idea {
         return(false);
     }
     
+    /**
+     * This method checks if an Idea with the Object passed as a parameter was already created. 
+     * It is used to avoid infinite loops while converting a Java Object to an Idea. 
+     * @param o The Object to be tested 
+     * @return true if there is already an Idea using this Object as a value. 
+     */
     public boolean already_exists(Object o) {
         if (o == null || isPrimitive(o)) return false;
         for (Object oo : listtoavoidloops)
@@ -403,10 +748,18 @@ public class Idea {
         return false;
     }
     
+    /**
+     * This method sorts the internal list of associated Ideas, using their name as a reference. 
+     */
     public void sort() {
         Collections.sort(l, ideaComparator);
     }
     
+    /**
+     * This convenience method creates an Object of a given class, using the parameter class name, passed as a String
+     * @param classname the full name of the class for the object to be created. 
+     * @return the created Object
+     */
     public Object createJavaObject(String classname) {
         if (classname.equals("java.lang.Double")) {
             return new Double(0.0);
@@ -443,7 +796,7 @@ public class Idea {
         return (javaObject);
     }
     
-    public Object convertObject(Object origin, String className) {
+    private Object convertObject(Object origin, String className) {
         if (origin == null) return(null);
         if (origin.getClass().getCanonicalName().equals("java.lang.String") && ((String)origin).equalsIgnoreCase("null")) return(null);
         String objectClass = origin.getClass().getName();
@@ -519,7 +872,7 @@ public class Idea {
         } else return (origin);
     }
     
-    public Object mountArray(Idea o, String classname) {
+    private Object mountArray(Idea o, String classname) {
         if (classname.equals("int[]")) {
             int[] out = new int[o.getL().size()];
             int j=0;
@@ -597,12 +950,19 @@ public class Idea {
         }                    
     }
     
-    public boolean isArray(String classname) {
+    private boolean isArray(String classname) {
         String sname[] = classname.split("\\[");
         if (sname.length == 2) return true;
         else return false;
     }
     
+    /**
+     * This method tries to get an internal Idea and convert it to a Java Object of the indicated class
+     * 
+     * @param name The name of the internal Idea to be get
+     * @param classname The name of the Java Class to be used for conversion
+     * @return a new Java Object reflecting the desired Idea
+     */
     public Object getObject(String name, String classname) {
         if (classname.equals("java.lang.Double") ||
             classname.equals("java.lang.Float") ||
@@ -679,7 +1039,10 @@ public class Idea {
                                 if (!field.isAccessible()) field.setAccessible(true);
                                 field.set(ret,out);
                             } catch(Exception e2) {
-                                System.out.println(">> Field "+field.getName()+" should be of type "+field.getType().getCanonicalName()+" but I received "+value.toString()+": "+value.getClass().getCanonicalName()+"");
+                                if (value != null)
+                                   System.out.println(">> Field "+field.getName()+" should be of type "+field.getType().getCanonicalName()+" but I received "+value.toString()+": "+value.getClass().getCanonicalName());
+                                else
+                                   System.out.println(">> Field "+field.getName()+" should be of type "+field.getType().getCanonicalName()+" but I received <null>");
                             }
                             
                         }
@@ -693,10 +1056,24 @@ public class Idea {
         return(ret);
     }
     
+    /**
+     * This method uses a Java Object as template, creating an Idea with a similar structure.
+     * This new Idea is added to the current Idea
+     * @param obj The Java Object to be used as a template
+     * @param fullname the full name to be assigned to added Idea
+     */
     public synchronized void addObject(Object obj, String fullname) {
         addObject(obj,fullname,true);
     }
     
+    /**
+     * This method uses a Java Object as template, creating an Idea with a similar structure. 
+     * This new Idea is added to the current Idea. This version allows the global list of names
+     * to be reset
+     * @param obj The Java Object to be used as a template.
+     * @param fullname The full name to be assigned to the added Idea.
+     * @param reset a boolean flag indicating if the global list of names should be reset. 
+     */
     public synchronized void addObject(Object obj, String fullname, boolean reset) {
         if (reset) reset();
         if (obj == null) {
