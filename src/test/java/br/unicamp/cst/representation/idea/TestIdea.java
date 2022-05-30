@@ -122,6 +122,9 @@ public class TestIdea {
         System.out.println("Recovered object: "+returned.toString());
         System.out.println("Returned: "+returned.testdate);
         System.out.println("ttt: "+ttt.testdate);
+        System.out.println("ttt: "+ttt);
+        System.out.println("returned: "+returned);
+        System.out.println("returned.equals(ttt): "+returned.equals(ttt));
         assertEquals(returned.equals(ttt),0);
         double[] nt = new double[3];
         nt[0] = 1.2;
