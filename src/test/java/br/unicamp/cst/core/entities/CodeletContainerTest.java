@@ -687,6 +687,46 @@ public class CodeletContainerTest {
 	}
 	
 	@Test
+	public void setOutputsTest() throws InterruptedException {
+		Codelet codeletOne = new CodeletToTestOne("Codelet 1");
+		Codelet codeletTwo = new CodeletToTestTwo("Codelet 2");
+		Codelet codeletThree = new CodeletToTestThree("Codelet 3");
+		
+		Mind mind = new Mind();
+		MemoryObject memory1 = mind.createMemoryObject("MEMORY1", 0.12);
+		MemoryObject memory2 = mind.createMemoryObject("MEMORY2", 0.32);
+		MemoryObject memory3 = mind.createMemoryObject("MEMORY3", 0.32);
+		MemoryObject memory4 = mind.createMemoryObject("MEMORY4", 0.32);
+		
+		codeletOne.addInput(memory1);
+		codeletOne.addBroadcast(memory2);
+		
+		codeletTwo.addBroadcast(memory3);
+		
+		codeletThree.addInput(memory4);
+		
+		ArrayList<Codelet> codeletContainerArray = new ArrayList<Codelet>();
+		codeletContainerArray.add(codeletOne);
+		codeletContainerArray.add(codeletTwo);
+		codeletContainerArray.add(codeletThree);
+		
+		CodeletContainer codeletContainer = new CodeletContainer(codeletContainerArray, false);
+		
+		mind.insertCodelet(codeletOne);
+		mind.insertCodelet(codeletTwo);
+		mind.insertCodelet(codeletThree);
+
+		ArrayList<Memory> newOutputs = new ArrayList<Memory>();
+		newOutputs.add(memory1);
+		codeletContainer.setOutputs(newOutputs);
+		
+	
+		
+		assertEquals(newOutputs, codeletContainer.getOutputs());
+		
+	}
+	
+	@Test
 	public void setBroadcastTest() throws InterruptedException {
 		Codelet codeletOne = new CodeletToTestOne("Codelet 1");
 		Codelet codeletTwo = new CodeletToTestTwo("Codelet 2");
