@@ -33,6 +33,16 @@ public class RESTMemory extends MemoryObject {
         this(port,pretty,"*");
     }
 
+
+    /**
+     * @param hostname the hostname of the REST server
+     * @param port the port to install the REST server
+     * @param pretty set this to true to generate pretty printing JSON in the REST server
+     */
+    public RESTMemory(String hostname, int port, boolean pretty) {
+        this(hostname, port,pretty,"*", 0L);
+    }
+
     /**
      *
      * @param port the port to install the REST server
@@ -44,7 +54,7 @@ public class RESTMemory extends MemoryObject {
     }
 
     /**
-     *
+     * @param hostname the hostname of the REST server
      * @param port the port to install the REST server
      * @param pretty set this to true to generate pretty printing JSON in the REST server
      * @param origin a pattern for users allowed to access the server - use "*" to allow everyone
