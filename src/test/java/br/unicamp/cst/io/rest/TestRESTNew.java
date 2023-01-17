@@ -98,7 +98,7 @@ public class TestRESTNew {
                 if(in == null){
                     this.in = this.getInput("M3");
                 }
-                if(in == null){
+                if(out == null){
                     this.out = this.getOutput("M4");
                 }
             }

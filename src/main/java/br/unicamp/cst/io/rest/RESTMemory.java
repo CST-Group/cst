@@ -40,7 +40,7 @@ public class RESTMemory extends MemoryObject {
      * @param origin a pattern for users allowed to access the server - use "*" to allow everyone
      */
     public RESTMemory(int port, boolean pretty, String origin) {
-        this(port,pretty,origin,0L);
+        this("localhost", port,pretty,origin,0L);
     }
 
     /**
@@ -50,9 +50,9 @@ public class RESTMemory extends MemoryObject {
      * @param origin a pattern for users allowed to access the server - use "*" to allow everyone
      * @param nrefresh the refresh period in milliseconds
      */
-    public RESTMemory(int port, boolean pretty, String origin, long nrefresh) {
+    public RESTMemory(String hostname, int port, boolean pretty, String origin, long nrefresh) {
         refresh = nrefresh;
-        Express app = new Express();
+        Express app = new Express(hostname);
         Gson gson;
         if (pretty)
             gson = new GsonBuilder().registerTypeAdapter(Memory.class, new InterfaceAdapter<MemoryObject>())

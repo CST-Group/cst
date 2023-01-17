@@ -7,7 +7,7 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 
 public class SensoryHttpCodelet extends HttpCodelet {
-    String URL;
+    public String URL;
 
     public SensoryHttpCodelet(String URL){
         super();
