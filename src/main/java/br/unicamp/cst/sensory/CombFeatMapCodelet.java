@@ -70,12 +70,11 @@ public abstract class CombFeatMapCodelet extends Codelet {
         weights = (MemoryObject) this.getInput("FM_WEIGHTS");
         comb_feature_mapMO = (MemoryObject) this.getOutput("COMB_FM");
         winnersType = (MemoryObject) this.getOutput("TYPE");
-        //winners = (MemoryObject) this.getOutput("WINNERS");
     }
 
     @Override
     public void calculateActivation() {
-        
+        // We don't use activations in this codelet
     }
     
     public abstract void calculateCombFeatMap();

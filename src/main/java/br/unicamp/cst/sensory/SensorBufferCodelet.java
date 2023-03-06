@@ -18,10 +18,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
-import java.util.ArrayList;
 import java.util.List;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 /**
  * Codelet implementation of SensorBuffers.  In order to obtain data observation
@@ -72,7 +69,7 @@ public class SensorBufferCodelet extends Codelet {
 
     @Override
     public void calculateActivation() {
-        
+        // we don't need to calculate activation here
     }
 
     @Override
@@ -91,7 +88,6 @@ public class SensorBufferCodelet extends Codelet {
         
         try {
             Thread.sleep(00);
-//            System.out.println("\u001B[31m"+"TRY CATCH");
         } catch (Exception e) {
             Thread.currentThread().interrupt();
         }
@@ -131,8 +127,6 @@ public class SensorBufferCodelet extends Codelet {
         
         buffer_list.add(cloned_data);
 
-                
-//        System.out.println("BUFFER SIZE "+buffer_list.size());
     }
         
 }
