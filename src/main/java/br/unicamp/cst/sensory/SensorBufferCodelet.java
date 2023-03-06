@@ -98,11 +98,10 @@ public class SensorBufferCodelet extends Codelet {
             buffer_list.remove(0);
         }
         
-        Object sensor_input_data = (Object) sensor_input.getI();
         MemoryObject cloned_data = null;
         
-        ObjectOutputStream oos = null;
-        ObjectInputStream ois = null;
+        ObjectOutputStream oos;
+        ObjectInputStream ois;
         try
         {
            ByteArrayOutputStream bos = 
