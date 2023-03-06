@@ -44,11 +44,11 @@ public class CodeletContainer implements Memory {
 	}
 
 
-	public CodeletContainer(ArrayList<Codelet> codelets) {
+	public CodeletContainer(ArrayList<Codelet> codelets, boolean isToStartCodelets) {
 		super();
 		this.codelets = new ArrayList<Codelet>();
 		codelets.forEach((codelet) -> {
-			this.addCodelet(codelet);
+			this.addCodelet(codelet, isToStartCodelets);
 		});
 	}
 	
@@ -119,7 +119,8 @@ public class CodeletContainer implements Memory {
 		this.broadcast = broadcast;
 	}
 
-	public void addCodelet(Codelet codelet) {
+	public void addCodelet(Codelet codelet, boolean isToStartCodelet) {
+			
 		List<Memory> addedInputs = new ArrayList<Memory>(codelet.inputs);
 		//add the inputs from added codelet to the list of inputs from container which all of its codelets share
 		inputs.addAll(addedInputs);
@@ -138,8 +139,11 @@ public class CodeletContainer implements Memory {
 		outputs.addAll(addedOutputs);
 		codelet.setOutputs(outputs);
 		mapOutputs.put(codelet.name, addedOutputs);
-		
+
 		this.codelets.add(codelet);
+		if (isToStartCodelet) {
+			codelet.start();
+		}
 
 	}
 	
@@ -322,6 +326,21 @@ public class CodeletContainer implements Memory {
 	public synchronized List<Memory> getOutputs() {
 		return outputs;
 	}
+	
+	/**
+	 * Sets the list of output memories.
+	 * 
+	 * @param outputs
+	 *            the outputs to set.
+	 */
+	public synchronized void setOutputs(List<Memory> outputs) {
+		for (Map.Entry<String, List<Memory>> set :
+			this.mapOutputs.entrySet()) {
+			set.setValue(outputs);
+		}
+		this.outputs = outputs;
+	}
+
 	
 	public List<Codelet> getAll() {
 		return codelets;
