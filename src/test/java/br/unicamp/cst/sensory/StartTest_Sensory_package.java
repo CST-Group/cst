@@ -9,6 +9,7 @@
  * K. Raizer, A. L. O. Paraense, E. M. Froes, R. R. Gudwin - initial API and implementation
  ***********************************************************************************************/
 package br.unicamp.cst.sensory;
+import org.junit.Test;
 
 /**
  *
@@ -16,7 +17,8 @@ package br.unicamp.cst.sensory;
  */
 public class StartTest_Sensory_package {
     
-    public static void main(String[] args) {
+    @Test
+    public void testSensoryCodelets() {
         SensorBufferCodelet test_sensorbuffer = new SensorBufferCodeletTest().generateSensorBufferCodelet();
         FeatMapCodelet test_featmap = new FeapMapCodeletTest().generateFeatMapCodelet();
         CombFeatMapCodelet test_cfm = new CombFeapMapCodeletTest().generateCombFeatMapCodelet();
