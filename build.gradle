@@ -51,17 +51,13 @@ jar {
     }
 }
 
-tasks.withType(JavaCompile) {
-    options.compilerArgs += ['-Xlint:unchecked']
-}
-
 task javadocJar(type: Jar) {
     classifier = 'javadoc'
     from javadoc
     from {
     	configurations.extraLibs.collect { it.isDirectory() ? it : zipTree(it) }
     }
-    javadoc.options.addStringOption('Xdoclint:none', '-quiet')
+    javadoc.options.addStringOption('Xdoclint:none', '-quiet') // this is to avoid complaints about documentation missing parameter description
 }
 task sourcesJar(type: Jar) {
     classifier = 'sources'
