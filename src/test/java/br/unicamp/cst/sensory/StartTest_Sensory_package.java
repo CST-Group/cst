@@ -20,9 +20,18 @@ public class StartTest_Sensory_package {
     @Test
     public void testSensoryCodelets() {
         SensorBufferCodelet test_sensorbuffer = new SensorBufferCodeletTest().generateSensorBufferCodelet();
+        test_sensorbuffer.accessMemoryObjects();
+        test_sensorbuffer.calculateActivation();
+        test_sensorbuffer.proc();
         FeatMapCodelet test_featmap = new FeapMapCodeletTest().generateFeatMapCodelet();
+        test_featmap.accessMemoryObjects();
+        test_featmap.calculateActivation();
+        test_featmap.proc();
         CombFeatMapCodelet test_cfm = new CombFeapMapCodeletTest().generateCombFeatMapCodelet();
-    
+        test_cfm.accessMemoryObjects();
+        test_cfm.calculateActivation();
+        test_cfm.calculateCombFeatMap();
+        test_cfm.proc();
     }
    
 }
