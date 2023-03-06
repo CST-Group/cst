@@ -51,12 +51,17 @@ jar {
     }
 }
 
+tasks.withType(JavaCompile) {
+    options.compilerArgs += ['-Xlint:unchecked']
+}
+
 task javadocJar(type: Jar) {
     classifier = 'javadoc'
     from javadoc
     from {
     	configurations.extraLibs.collect { it.isDirectory() ? it : zipTree(it) }
     }
+    javadoc.options.addStringOption('Xdoclint:none', '-quiet')
 }
 task sourcesJar(type: Jar) {
     classifier = 'sources'
