@@ -18,6 +18,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
+import java.io.Serializable;
 import java.util.List;
 
 /**
@@ -81,6 +82,7 @@ public class SensorBufferCodelet extends Codelet {
      * https://docs.oracle.com/javase/8/docs/technotes/guides/serialization/index.html
      */
     public void proc() {
+        // Ignore first run of the proc function
         if(ignore == 1){
             ignore = 0;
             return;
@@ -122,6 +124,7 @@ public class SensorBufferCodelet extends Codelet {
         catch(IOException | ClassNotFoundException e)
         {
            System.out.println("Exception in ObjectCloner = " + e);
+           e.printStackTrace();
         }
         
         buffer_list.add(cloned_data);
