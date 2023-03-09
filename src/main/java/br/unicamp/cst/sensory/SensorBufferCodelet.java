@@ -89,7 +89,7 @@ public class SensorBufferCodelet extends Codelet {
         }
         
         try {
-            Thread.sleep(00);
+            Thread.sleep(10);
         } catch (Exception e) {
             Thread.currentThread().interrupt();
         }
@@ -128,7 +128,7 @@ public class SensorBufferCodelet extends Codelet {
         }
         
         buffer_list.add(cloned_data);
-
+        buffer_output.setI(buffer_list); // This is necessary to set a new TimeStamp for the MemoryObject
     }
         
 }

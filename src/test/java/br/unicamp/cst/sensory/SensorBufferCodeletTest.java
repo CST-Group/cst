@@ -14,6 +14,7 @@ package br.unicamp.cst.sensory;
 import br.unicamp.cst.core.entities.Memory;
 import br.unicamp.cst.core.entities.MemoryObject;
 import br.unicamp.cst.core.entities.Mind;
+import br.unicamp.cst.support.TimeStamp;
 import java.util.ArrayList;
 import java.util.List;
 import org.junit.Test;
@@ -29,8 +30,8 @@ import static org.junit.Assert.assertEquals;
  */
 public class SensorBufferCodeletTest {
     
-    MemoryObject source;
-    MemoryObject destination;
+    public MemoryObject source;
+    public MemoryObject destination;
     
     public final void printList(List l) {
         for (int i=0;i<l.size();i++) {
@@ -65,7 +66,15 @@ public class SensorBufferCodeletTest {
         SensorBufferCodeletTest test = new SensorBufferCodeletTest();
         for (int i=0;i<64;i++) {
             System.out.println("Testing ... "+i);
+            long oldtimestamp = test.destination.getTimestamp();
+            System.out.println("Timestamp before: "+TimeStamp.getStringTimeStamp(oldtimestamp, "dd/MM/yyyy HH:mm:ss.SSS"));
             test.source.setI(i);
+            long newtimestamp = test.destination.getTimestamp();
+            while(newtimestamp == oldtimestamp) {
+                newtimestamp = test.destination.getTimestamp();
+                System.out.println("Timestamp after: "+TimeStamp.getStringTimeStamp(newtimestamp,"dd/MM/yyyy HH:mm:ss.SSS"));
+            }
+            //try{Thread.sleep(300);}catch(Exception e){e.printStackTrace();}
             System.out.println("  Input: "+test.source.getI());
             System.out.print("  Output: ");
             List fulllist = (List)test.destination.getI();

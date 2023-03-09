@@ -94,3 +94,9 @@ jacocoTestReport {
         xml.required = true
     }
 }
+
+test {
+    testLogging {
+        events "passed", "skipped", "failed", "standardOut", "standardError"
+    }
+}
