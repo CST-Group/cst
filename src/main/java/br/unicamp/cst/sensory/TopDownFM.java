@@ -39,6 +39,8 @@ public class TopDownFM extends FeatMapCodelet {
     private int step_len;
     private boolean print_to_file = false;
     private boolean debug = true; 
+    private ArrayList<Float> visionData_Array_r = new ArrayList<>(), visionData_Array_g = new ArrayList<>(), visionData_Array_b = new ArrayList<>();
+    private ArrayList<Float> data_FM_t;    
     public TopDownFM(int nsensors, ArrayList<String> sens_names, String featmapname,int timeWin, int mapDim, ArrayList<Float> goal, float saturation, int resolution, int slices, int step, boolean debug, boolean print_to_file) {
         super(nsensors, sens_names, featmapname,timeWin,mapDim);
         this.time_graph = 0;
@@ -66,30 +68,74 @@ public class TopDownFM extends FeatMapCodelet {
     }
    
     public ArrayList<Float> getFM(ArrayList<Float>  visionData_Array_r, ArrayList<Float>  visionData_Array_g, ArrayList<Float>  visionData_Array_b){
-        float MeanValue_r = 0, MeanValue_g = 0, MeanValue_b = 0;
         ArrayList<Float> vision_mean_color = new ArrayList<>();
-            float new_res = (res/slices)*(res/slices), new_res_1_2 = (res/slices);
-            for(int n = 0;n<slices;n++){
-                int ni = (int) (n*new_res_1_2), no = (int) (new_res_1_2+n*new_res_1_2);
-                for(int m = 0;m<slices;m++){    
-                    int mi = (int) (m*new_res_1_2), mo = (int) (new_res_1_2+m*new_res_1_2);
-                    for (int y = ni; y < no; y++) {
-                        for (int x = mi; x < mo; x++) {
-                            MeanValue_r += visionData_Array_r.get(y*res+x);
-                            MeanValue_g += visionData_Array_g.get(y*res+x);
-                            MeanValue_b += visionData_Array_b.get(y*res+x);}}
-                    float correct_mean_r = MeanValue_r/new_res, correct_mean_g = MeanValue_g/new_res, correct_mean_b = MeanValue_b/new_res;
-                    if(Math.abs(correct_mean_r-goal.get(0))/mr<0.2 && Math.abs(correct_mean_g-goal.get(1))/mr<0.2 && Math.abs(correct_mean_b-goal.get(2))/mr<0.2) vision_mean_color.add((float)1);
-                    else if(Math.abs(correct_mean_r-goal.get(0))/mr<0.4 && Math.abs(correct_mean_g-goal.get(1))/mr<0.4 && Math.abs(correct_mean_b-goal.get(2))/mr<0.4) vision_mean_color.add((float)0.75);
-                    else if(Math.abs(correct_mean_r-goal.get(0))/mr<0.6 && Math.abs(correct_mean_g-goal.get(1))/mr<0.6 && Math.abs(correct_mean_b-goal.get(2))/mr<0.6) vision_mean_color.add((float) 0.5);
-                    else if(Math.abs(correct_mean_r-goal.get(0))/mr<0.8 && Math.abs(correct_mean_g-goal.get(1))/mr<0.8 && Math.abs(correct_mean_b-goal.get(2))/mr<0.8) vision_mean_color.add((float)0.25);
-                    else vision_mean_color.add((float)0);     
-                    if(debug) System.out.println("\n correct_mean_r: "+Math.abs(correct_mean_r-goal.get(0))/mr+" correct_mean_g: "+Math.abs(correct_mean_g-goal.get(1))+" correct_mean_b: "+Math.abs(correct_mean_b-goal.get(2)));
-                    MeanValue_r = 0;
-                    MeanValue_g = 0;
-                    MeanValue_b = 0; }}
-            return vision_mean_color; }
+        float new_res = (res/slices)*(res/slices), new_res_1_2 = (res/slices);
+        for(int n = 0;n<slices;n++){
+            int ni = (int) (n*new_res_1_2), no = (int) (new_res_1_2+n*new_res_1_2);
+            for(int m = 0;m<slices;m++){    
+                int mi = (int) (m*new_res_1_2), mo = (int) (new_res_1_2+m*new_res_1_2);
+                float[] meanValues = getMeanValues(ni, no, mi, mo, visionData_Array_r, visionData_Array_g, visionData_Array_b);
+                float correct_mean_r = meanValues[0], correct_mean_g = meanValues[1], correct_mean_b = meanValues[2];
+                float vision_color_value = getVisionColorValue(correct_mean_r, correct_mean_g, correct_mean_b);
+                vision_mean_color.add(vision_color_value);
+            }
+        }
+        return vision_mean_color;
+    }
+
+    private float[] getMeanValues(int ni, int no, int mi, int mo, ArrayList<Float>  visionData_Array_r, ArrayList<Float>  visionData_Array_g, ArrayList<Float>  visionData_Array_b) {
+        float MeanValue_r = 0, MeanValue_g = 0, MeanValue_b = 0;
+        for (int y = ni; y < no; y++) {
+            for (int x = mi; x < mo; x++) {
+                MeanValue_r += visionData_Array_r.get(y*res+x);
+                MeanValue_g += visionData_Array_g.get(y*res+x);
+                MeanValue_b += visionData_Array_b.get(y*res+x);
+            }
+        }
+        float new_res = (res/slices)*(res/slices);
+        float correct_mean_r = MeanValue_r/new_res;
+        float correct_mean_g = MeanValue_g/new_res;
+        float correct_mean_b = MeanValue_b/new_res;
+        return new float[] {correct_mean_r, correct_mean_g, correct_mean_b};
+    }
+
+    private float getVisionColorValue(float correct_mean_r, float correct_mean_g, float correct_mean_b) {
+        if(Math.abs(correct_mean_r-goal.get(0))/mr<0.2 && Math.abs(correct_mean_g-goal.get(1))/mr<0.2 && Math.abs(correct_mean_b-goal.get(2))/mr<0.2) {
+            return (float)1;
+        } else if(Math.abs(correct_mean_r-goal.get(0))/mr<0.4 && Math.abs(correct_mean_g-goal.get(1))/mr<0.4 && Math.abs(correct_mean_b-goal.get(2))/mr<0.4) {
+            return (float)0.75;
+        } else if(Math.abs(correct_mean_r-goal.get(0))/mr<0.6 && Math.abs(correct_mean_g-goal.get(1))/mr<0.6 && Math.abs(correct_mean_b-goal.get(2))/mr<0.6) {
+            return (float) 0.5;
+        } else if(Math.abs(correct_mean_r-goal.get(0))/mr<0.8 && Math.abs(correct_mean_g-goal.get(1))/mr<0.8 && Math.abs(correct_mean_b-goal.get(2))/mr<0.8) return (float) 0.25;
+          else return (float)0;     
+    }
     
+    private void inicializeMeanValues(){
+        for (int j = 0; j < res*res; j++) {
+            visionData_Array_r.add((float)0);
+            visionData_Array_g.add((float)0);
+            visionData_Array_b.add((float)0);
+        }
+    }
+    
+    private void calcMeanValues(List listData){
+        int count_3 = 0;
+        for (int j = 0; j+step_len < listData.size(); j+= step_len) {
+                visionData_Array_r.set(count_3, (Float) listData.get(j));        //red data
+                visionData_Array_g.set(count_3, (Float) listData.get(j+1));        //green data
+                visionData_Array_b.set(count_3, (Float) listData.get(j+2));        //blue data
+                count_3 += 1; }
+    }
+    
+    private void getMeanValues(ArrayList<Float> vision_mean_color){
+        for (int j = 0; j < vision_mean_color.size(); j++) { 
+            data_FM_t.set(j, vision_mean_color.get(j));
+        }
+    }
+    
+    private void printFileIfAllowed(){
+        if(print_to_file) printToFile(data_FM_t);
+    }
     @Override
     public void proc() {
         try { Thread.sleep(50);} catch (Exception e) {Thread.currentThread().interrupt();}        
@@ -97,26 +143,18 @@ public class TopDownFM extends FeatMapCodelet {
         List data_buffer = (List) data_bufferMO.getI(), data_FM = (List) featureMap.getI();        
         if(data_FM.size() == timeWindow) data_FM.remove(0);
         data_FM.add(new ArrayList<>());
-        ArrayList<Float> data_FM_t = (ArrayList<Float>) data_FM.get(data_FM.size()-1);
+        data_FM_t = (ArrayList<Float>) data_FM.get(data_FM.size()-1);
         for (int j = 0; j < mapDimension; j++) data_FM_t.add((float)0);
         if(data_buffer == null) return;
         if(data_buffer.size() < 1) return;
         MemoryObject dataMO = (MemoryObject)data_buffer.get(data_buffer.size()-1);
         List listData = (List) dataMO.getI();
-        ArrayList<Float> visionData_Array_r = new ArrayList<>(), visionData_Array_g = new ArrayList<>(), visionData_Array_b = new ArrayList<>();
-        for (int j = 0; j < res*res; j++) {
-            visionData_Array_r.add((float)0);
-            visionData_Array_g.add((float)0);
-            visionData_Array_b.add((float)0);}
-        int count_3 = 0;
-        for (int j = 0; j+step_len < listData.size(); j+= step_len) {
-                visionData_Array_r.set(count_3, (Float) listData.get(j));        //red data
-                visionData_Array_g.set(count_3, (Float) listData.get(j+1));        //green data
-                visionData_Array_b.set(count_3, (Float) listData.get(j+2));        //blue data
-                count_3 += 1; }
+        inicializeMeanValues();
+        calcMeanValues(listData);
         ArrayList<Float> vision_mean_color = getFM(visionData_Array_r, visionData_Array_g, visionData_Array_b);
-        for (int j = 0; j < vision_mean_color.size(); j++) { data_FM_t.set(j, vision_mean_color.get(j));}   
-        if(print_to_file) printToFile(data_FM_t); }
+        getMeanValues(vision_mean_color);
+        printFileIfAllowed();
+    }
     
     private void printToFile(ArrayList<Float> arr){
 

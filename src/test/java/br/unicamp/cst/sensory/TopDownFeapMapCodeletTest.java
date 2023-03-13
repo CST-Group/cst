@@ -91,7 +91,6 @@ public class TopDownFeapMapCodeletTest {
                 System.out.println("          sizef: "+((List)(test.destination.getI())).size()+"\n");
                 List first = (List)fulllist.get(0);
                 System.out.print("  first 1: "+ first);
-                
                 List last = (List)fulllist.get(fulllist.size()-1);
                 System.out.print("\n  last 1: "+ last);
                 
@@ -112,8 +111,13 @@ public class TopDownFeapMapCodeletTest {
             for (int i = 0; i < 3; i++) {
                 ass_arrList.add((float) 0.25);
             }
-            ass_arrList.add((float) 0.5);
-            for (int i = 0; i < 12; i++) {
+            for (int i = 0; i < 2; i++) {
+                ass_arrList.add((float) 0.5);
+            }
+            for (int i = 0; i < 3; i++) {
+                ass_arrList.add((float) 0.25);
+            }
+            for (int i = 0; i < 8; i++) {
                 ass_arrList.add((float) 0.0);
             }
             
@@ -133,7 +137,6 @@ public class TopDownFeapMapCodeletTest {
                 List first = (List)fulllist.get(0);
                 
                
-                
                 System.out.print("\n   first 2: "+ first);
                 
                 List last = (List)fulllist.get(fulllist.size()-1);
@@ -158,13 +161,11 @@ public class TopDownFeapMapCodeletTest {
             for (int i = 0; i < 3; i++) {
                 ass_arrList.add((float) 0.25);
             }
-            for (int i = 0; i < 2; i++) {
+            for (int i = 0; i < 1; i++) {
                 ass_arrList.add((float) 0.5);
             }
-            for (int i = 0; i < 3; i++) {
-                ass_arrList.add((float) 0.25);
-            }
-            for (int i = 0; i < 8; i++) {
+            
+            for (int i = 0; i < 12; i++) {
                 ass_arrList.add((float) 0);
             }
                     
@@ -186,6 +187,7 @@ public class TopDownFeapMapCodeletTest {
                 
                 List last = (List)fulllist.get(fulllist.size()-1);
                 System.out.print("\n  last  3: "+ last);
+                
                 
                 assertEquals(last.size(),16);
                 assertEquals(last,ass_arrList);
