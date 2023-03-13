@@ -34,7 +34,7 @@ public class CFM extends CombFeatMapCodelet {
 
     private boolean print_to_file = false, debug=false;
     private String path = "results/txt_last_exp/";
-    
+    private List CFMrow, winners_row;
     public CFM(int numfeatmaps, ArrayList<String> featmapsnames, int timeWin, int CFMdim, boolean debug, boolean print_to_file) {
         super(numfeatmaps, featmapsnames,timeWin,CFMdim);
         this.time_graph = 0;
@@ -44,33 +44,58 @@ public class CFM extends CombFeatMapCodelet {
     }
 
      
+    private void initializeCFMrowAndWinnersRow() {
+    for (int j = 0; j < CFMdimension; j++) {
+        this.CFMrow.add((float) 0);
+        this.winners_row.add(0);
+        }
+    }
+    
+    private void calculateCFMandWinners() {
+        List weight_values = (List) weights.getI();
+        for (int j = 0; j < CFMrow.size(); j++) { 
+                float ctj= 0, sum_top=0, sum_bottom=0;
+                for (int k = 0; k < num_feat_maps; k++) { 
+                    MemoryObject FMkMO = (MemoryObject) feature_maps.get(k);
+                    List FMk = (List) FMkMO.getI();
+                    if(FMk == null || weight_values == null) return;
+                    if(FMk.size() < 1) return;
+                    List FMk_t = (List) FMk.get(FMk.size()-1);
+                    Float fmkt_val = (Float) FMk_t.get(j), weight_val = (Float) weight_values.get(k);
+                    ctj += weight_val*fmkt_val;
+                    if(k>=4) sum_top += weight_val*fmkt_val;
+                    else sum_bottom += weight_val*fmkt_val; 
+                }   
+                CFMrow.set(j, ctj);
+                if(sum_top > sum_bottom) winners_row.set(j, TOP_DOWN);
+                else winners_row.set(j, BOTTOM_UP); 
+            }
+    }
+    
     @Override
     public void calculateCombFeatMap() {
-        try { Thread.sleep(50); } catch (Exception e) { Thread.currentThread().interrupt(); }
-        List CFMrow, winners_row, weight_values = (List) weights.getI(), combinedFM = (List) comb_feature_mapMO.getI(), winnersTypeList = (List) winnersType.getI();
+        try { 
+            Thread.sleep(50); 
+        } catch (Exception e) { 
+            Thread.currentThread().interrupt(); 
+        }
+        List combinedFM = (List) comb_feature_mapMO.getI(), winnersTypeList = (List) winnersType.getI();
         if(combinedFM.size() == timeWindow) combinedFM.remove(0);
         if(winnersTypeList.size() == timeWindow) winnersTypeList.remove(0);
         combinedFM.add(new ArrayList<>());
         winnersTypeList.add(new ArrayList<>());
         CFMrow = (List) combinedFM.get(combinedFM.size()-1);
         winners_row = (List) winnersTypeList.get(combinedFM.size()-1);
-        for(int j = 0; j < CFMdimension; j++){ CFMrow.add((float)0);
-            winners_row.add(0); }
-        for (int j = 0; j < CFMrow.size(); j++) { float ctj= 0, sum_top=0, sum_bottom=0;
-            for (int k = 0; k < num_feat_maps; k++) { MemoryObject FMkMO = (MemoryObject) feature_maps.get(k);
-                List FMk = (List) FMkMO.getI();
-                if(FMk == null || weight_values == null) return;
-                if(FMk.size() < 1) return;
-                List FMk_t = (List) FMk.get(FMk.size()-1);
-                Float fmkt_val = (Float) FMk_t.get(j), weight_val = (Float) weight_values.get(k);
-                ctj += weight_val*fmkt_val;
-                if(k>=4) sum_top += weight_val*fmkt_val;
-                else sum_bottom += weight_val*fmkt_val; }   
-            CFMrow.set(j, ctj);
-            if(sum_top > sum_bottom) winners_row.set(j, TOP_DOWN);
-            else winners_row.set(j, BOTTOM_UP); }
-        if(print_to_file) { printToFile((ArrayList<Float>) CFMrow, "CFM.txt");
-            printToFile((ArrayList<Integer>) winners_row, "winnerType.txt"); }}
+        
+        initializeCFMrowAndWinnersRow();
+        
+        calculateCFMandWinners();
+        
+        if(print_to_file){
+            printToFile((ArrayList<Float>) CFMrow, "CFM.txt");
+            printToFile((ArrayList<Integer>) winners_row, "winnerType.txt"); 
+        }
+    }
     
       
     private void printToFile(Object object,String filename){
