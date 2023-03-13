@@ -64,7 +64,7 @@ public class FeapMapCodeletTest {
         FMnames.add("SOURCE");
         FMnames.add("SOURCE2");
         FMnames.add("SOURCE3");
-        BottomUpFM testFeapMapCodelet = new BottomUpFM(3, FMnames, "DESTINATION", 100, 16, 1, 100, 16, 4, 3, 2, false);
+        BottomUpFM testFeapMapCodelet = new BottomUpFM(3, FMnames, "DESTINATION", 100, 16, 1, 16, 4, 3, 2, false);
         testMind.insertCodelet(testFeapMapCodelet);
         testFeapMapCodelet.addInput(source);
         testFeapMapCodelet.addOutput(destination);

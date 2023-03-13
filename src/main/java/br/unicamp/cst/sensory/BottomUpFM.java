@@ -28,7 +28,6 @@ import java.time.format.DateTimeFormatter;
  */
 public class BottomUpFM extends FeatMapCodelet {
     private float mr;                     //Max Value for VisionSensor
-    private int max_time_graph;
     private int res;                      //Resolution of VisionSensor
     private int time_graph;
     private int slices;                    //Slices in each coordinate (x & y) 
@@ -36,11 +35,10 @@ public class BottomUpFM extends FeatMapCodelet {
     private int i_position;
     private boolean print_to_file = false;
     private boolean debug = true;
-    public BottomUpFM(int nsensors, ArrayList<String> sens_names, String featmapname,int timeWin, int mapDim, float saturation, int max_time_graph, int resolution, int slices, int step, int i_position, boolean debug) {
+    public BottomUpFM(int nsensors, ArrayList<String> sens_names, String featmapname,int timeWin, int mapDim, float saturation, int resolution, int slices, int step, int i_position, boolean debug) {
         super(nsensors, sens_names, featmapname,timeWin,mapDim);
         this.time_graph = 0;
         this.mr = saturation; // 255
-        this.max_time_graph = max_time_graph; // 100
         this.res = resolution; // 256
         this.slices = slices; // 16
         this.step_len = step; // 3
@@ -50,7 +48,7 @@ public class BottomUpFM extends FeatMapCodelet {
 
     @Override
     public void calculateActivation() {
-        
+         // Method calculateActivation isnt used here
     }
 
     @Override
@@ -79,7 +77,7 @@ public class BottomUpFM extends FeatMapCodelet {
         ArrayList<Float> data_FM_t = (ArrayList<Float>) data_FM.get(t);
         
         for (int j = 0; j < mapDimension; j++) {
-            data_FM_t.add(new Float(0));
+            data_FM_t.add((float)0);
         }
         
         MemoryObject dataMO;
