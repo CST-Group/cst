@@ -38,7 +38,6 @@ public class TopDownFM extends FeatMapCodelet {
     private ArrayList<Float> goal;  
     private int step_len;
     private boolean print_to_file = false;
-    private boolean debug = true; 
     private ArrayList<Float> visionData_Array_r = new ArrayList<>(), visionData_Array_g = new ArrayList<>(), visionData_Array_b = new ArrayList<>();
     private ArrayList<Float> data_FM_t;    
     public TopDownFM(int nsensors, ArrayList<String> sens_names, String featmapname,int timeWin, int mapDim, ArrayList<Float> goal, float saturation, int resolution, int slices, int step, boolean debug, boolean print_to_file) {
@@ -49,7 +48,6 @@ public class TopDownFM extends FeatMapCodelet {
         this.res = resolution; // 256
         this.slices = slices; // 16
         this.step_len = step; // 3
-        this.debug = debug;
         this.print_to_file = print_to_file;
 
     }
@@ -69,7 +67,7 @@ public class TopDownFM extends FeatMapCodelet {
    
     public ArrayList<Float> getFM(ArrayList<Float>  visionData_Array_r, ArrayList<Float>  visionData_Array_g, ArrayList<Float>  visionData_Array_b){
         ArrayList<Float> vision_mean_color = new ArrayList<>();
-        float new_res = (res/slices)*(res/slices), new_res_1_2 = (res/slices);
+        float new_res_1_2 = res/slices;
         for(int n = 0;n<slices;n++){
             int ni = (int) (n*new_res_1_2), no = (int) (new_res_1_2+n*new_res_1_2);
             for(int m = 0;m<slices;m++){    
@@ -100,14 +98,16 @@ public class TopDownFM extends FeatMapCodelet {
     }
 
     private float getVisionColorValue(float correct_mean_r, float correct_mean_g, float correct_mean_b) {
+        float value;
         if(Math.abs(correct_mean_r-goal.get(0))/mr<0.2 && Math.abs(correct_mean_g-goal.get(1))/mr<0.2 && Math.abs(correct_mean_b-goal.get(2))/mr<0.2) {
-            return (float)1;
+            value = (float)1;
         } else if(Math.abs(correct_mean_r-goal.get(0))/mr<0.4 && Math.abs(correct_mean_g-goal.get(1))/mr<0.4 && Math.abs(correct_mean_b-goal.get(2))/mr<0.4) {
-            return (float)0.75;
+            value = (float)0.75;
         } else if(Math.abs(correct_mean_r-goal.get(0))/mr<0.6 && Math.abs(correct_mean_g-goal.get(1))/mr<0.6 && Math.abs(correct_mean_b-goal.get(2))/mr<0.6) {
-            return (float) 0.5;
-        } else if(Math.abs(correct_mean_r-goal.get(0))/mr<0.8 && Math.abs(correct_mean_g-goal.get(1))/mr<0.8 && Math.abs(correct_mean_b-goal.get(2))/mr<0.8) return (float) 0.25;
-          else return (float)0;     
+            value = (float) 0.5;
+        } else if(Math.abs(correct_mean_r-goal.get(0))/mr<0.8 && Math.abs(correct_mean_g-goal.get(1))/mr<0.8 && Math.abs(correct_mean_b-goal.get(2))/mr<0.8) value = (float) 0.25;
+          else value =(float)0;     
+        return value;
     }
     
     private void inicializeMeanValues(){
