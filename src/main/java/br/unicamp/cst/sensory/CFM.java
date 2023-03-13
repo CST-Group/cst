@@ -46,101 +46,32 @@ public class CFM extends CombFeatMapCodelet {
      
     @Override
     public void calculateCombFeatMap() {
-       
-        for (int i = 0; i < num_feat_maps; i++) {
-            MemoryObject mo = (MemoryObject)feature_maps.get(i);
-            List fm = (List) mo.getI();
-        }
-        
-       
-        try {
-            Thread.sleep(50);
-        } catch (Exception e) {
-            Thread.currentThread().interrupt();
-        }
-        
-        List weight_values = (List) weights.getI();
-        
-        List combinedFM = (List) comb_feature_mapMO.getI();
-        List winnersTypeList = (List) winnersType.getI();
-        
-        if(combinedFM.size() == timeWindow){
-            combinedFM.remove(0);
-        }
-        if(winnersTypeList.size() == timeWindow){
-            winnersTypeList.remove(0);
-        }
-        
+        try { Thread.sleep(50); } catch (Exception e) { Thread.currentThread().interrupt(); }
+        List CFMrow, winners_row, weight_values = (List) weights.getI(), combinedFM = (List) comb_feature_mapMO.getI(), winnersTypeList = (List) winnersType.getI();
+        if(combinedFM.size() == timeWindow) combinedFM.remove(0);
+        if(winnersTypeList.size() == timeWindow) winnersTypeList.remove(0);
         combinedFM.add(new ArrayList<>());
         winnersTypeList.add(new ArrayList<>());
-        
-        int t = combinedFM.size()-1;
-
-        List CFMrow, winners_row;
-        CFMrow = (List) combinedFM.get(t);
-        winners_row = (List) winnersTypeList.get(t);
-        
-        for(int j = 0; j < CFMdimension; j++){
-            CFMrow.add((float)0);
-            winners_row.add(0);
-        }
-        
-        
-        for (int j = 0; j < CFMrow.size(); j++) {
-            float ctj;
-            float sum_top=0, sum_bottom=0;
-            ctj = 0;
-            
-            for (int k = 0; k < num_feat_maps; k++) {
-                MemoryObject FMkMO;
-                FMkMO = (MemoryObject) feature_maps.get(k);
-
-                List FMk;
-                FMk = (List) FMkMO.getI();
-                
-                
-                if(FMk == null){
-                    return;
-                }
-                
-                if(FMk.size() < 1){
-                    return;
-                }
-                
-                List FMk_t;
-                FMk_t = (List) FMk.get(FMk.size()-1);
-                
-                Float weight_val, fmkt_val;
-                
-                fmkt_val = (Float) FMk_t.get(j); 
-                
-                if(weight_values == null){
-                    return;
-                }
-                
-                if(debug) System.out.print("  weight_values: "+ weight_values + " k:"+k);                
-                weight_val = (Float) weight_values.get(k);
+        CFMrow = (List) combinedFM.get(combinedFM.size()-1);
+        winners_row = (List) winnersTypeList.get(combinedFM.size()-1);
+        for(int j = 0; j < CFMdimension; j++){ CFMrow.add((float)0);
+            winners_row.add(0); }
+        for (int j = 0; j < CFMrow.size(); j++) { float ctj= 0, sum_top=0, sum_bottom=0;
+            for (int k = 0; k < num_feat_maps; k++) { MemoryObject FMkMO = (MemoryObject) feature_maps.get(k);
+                List FMk = (List) FMkMO.getI();
+                if(FMk == null) return;
+                if(FMk.size() < 1) return;
+                if(weight_values == null) return;
+                List FMk_t = (List) FMk.get(FMk.size()-1);
+                Float fmkt_val = (Float) FMk_t.get(j), weight_val = (Float) weight_values.get(k);
                 ctj += weight_val*fmkt_val;
-                
-                
                 if(k>=4) sum_top += weight_val*fmkt_val;
-                else sum_bottom += weight_val*fmkt_val;
-                   
-                
-            }   
-            
+                else sum_bottom += weight_val*fmkt_val; }   
             CFMrow.set(j, ctj);
-            
             if(sum_top > sum_bottom) winners_row.set(j, TOP_DOWN);
-            else winners_row.set(j, BOTTOM_UP);
-            
-        }
-        
-        if(print_to_file) {
-            printToFile((ArrayList<Float>) CFMrow, "CFM.txt");
-            printToFile((ArrayList<Integer>) winners_row, "winnerType.txt");
-        }
-}
+            else winners_row.set(j, BOTTOM_UP); }
+        if(print_to_file) { printToFile((ArrayList<Float>) CFMrow, "CFM.txt");
+            printToFile((ArrayList<Integer>) winners_row, "winnerType.txt"); }}
     
       
     private void printToFile(Object object,String filename){
