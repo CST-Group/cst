@@ -13,15 +13,12 @@
 package br.unicamp.cst.sensory;
 
 import br.unicamp.cst.core.entities.MemoryObject;
-//import codelets.motor.Lock;
-
 import java.io.BufferedWriter;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.List;
-//import static java.lang.Math.abs;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 
@@ -39,7 +36,6 @@ public class BottomUpFM extends FeatMapCodelet {
     private int i_position;
     private boolean print_to_file = false;
     private boolean debug = true;
-    //private float max_value = 0;
     public BottomUpFM(int nsensors, ArrayList<String> sens_names, String featmapname,int timeWin, int mapDim, float saturation, int max_time_graph, int resolution, int slices, int step, int i_position, boolean debug) {
         super(nsensors, sens_names, featmapname,timeWin,mapDim);
         this.time_graph = 0;
@@ -149,8 +145,8 @@ public class BottomUpFM extends FeatMapCodelet {
                 }
                 float correct_mean = MeanValue/new_res - mean_all;
                 
-                if(correct_mean/mr>1) data_mean.add(new Float(1));
-                else if(correct_mean/mr<0.001) data_mean.add(new Float(0));
+                if(correct_mean/mr>1) data_mean.add((float)1);
+                else if(correct_mean/mr<0.001) data_mean.add((float)0);
                 else data_mean.add(correct_mean/mr);   
                 
                 MeanValue = 0;
@@ -167,7 +163,6 @@ public class BottomUpFM extends FeatMapCodelet {
         if(print_to_file) printToFile(data_FM_t);
     }
     private void printToFile(ArrayList<Float> arr){
-        //if(time_graph%2 == 0 ){
         DateTimeFormatter dtf = DateTimeFormatter.ofPattern("yyyy_MM_dd_HH_mm_ss");  
         LocalDateTime now = LocalDateTime.now(); 
         try(FileWriter fw = new FileWriter("results/txt_last_exp/vision_blue_FM.txt", true);
@@ -181,7 +176,6 @@ public class BottomUpFM extends FeatMapCodelet {
             e.printStackTrace();
         }
         
-       // }else time_graph++; 
     }
 }
     

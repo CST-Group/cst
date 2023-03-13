@@ -14,7 +14,6 @@ package br.unicamp.cst.sensory;
 
 
 import br.unicamp.cst.core.entities.MemoryObject;
-//import codelets.motor.Lock;
 
 import java.io.BufferedWriter;
 import java.io.FileWriter;
@@ -22,7 +21,6 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.List;
-//import static java.lang.Math.abs;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 
@@ -32,19 +30,16 @@ import java.time.format.DateTimeFormatter;
  * @author L. L. Rossi (leolellisr)
  */
 public class TopDownFM extends FeatMapCodelet {
-    private List winnersList;
     private float mr = 255;                     //Max Value for VisionSensor
     private int max_time_graph=100;
     private int res = 256;                     //Resolution of VisionSensor
     private  int time_graph;
     private int slices = 16;                    //Slices in each coordinate (x & y) 
-    private int stage;
     private String path = "results/txt_last_exp/vision_top_color_FM.txt";
     private ArrayList<Float> goal;  
     private int step_len;
     private boolean print_to_file = false;
     private boolean debug = true; 
-    //private float max_value = 0;
     public TopDownFM(int nsensors, ArrayList<String> sens_names, String featmapname,int timeWin, int mapDim, ArrayList<Float> goal, float saturation, int max_time_graph, int resolution, int slices, int step, boolean debug) {
         super(nsensors, sens_names, featmapname,timeWin,mapDim);
         this.time_graph = 0;
@@ -68,7 +63,7 @@ public class TopDownFM extends FeatMapCodelet {
     
     @Override
     public void calculateActivation() {
-        
+        // Method calculateActivation isnt used here
     }
    
     
@@ -93,7 +88,7 @@ public class TopDownFM extends FeatMapCodelet {
         int t = data_FM.size()-1;
         ArrayList<Float> data_FM_t = (ArrayList<Float>) data_FM.get(t);
         for (int j = 0; j < mapDimension; j++) {
-            data_FM_t.add(new Float(0));
+            data_FM_t.add((float)0);
         }
         
         
@@ -121,13 +116,12 @@ public class TopDownFM extends FeatMapCodelet {
             ArrayList<Float> visionData_Array_g = new ArrayList<>();
             ArrayList<Float> visionData_Array_b = new ArrayList<>();
             for (int j = 0; j < res*res; j++) {
-                visionData_Array_r.add(new Float(0));
-                visionData_Array_g.add(new Float(0));
-                visionData_Array_b.add(new Float(0));
+                visionData_Array_r.add((float)0);
+                visionData_Array_g.add((float)0);
+                visionData_Array_b.add((float)0);
             }
             
             int count_3 = 0;
-            //System.out.println("Vision data r size:"+visionData.size());
             for (int j = 0; j+step_len < listData.size(); j+= step_len) {
 
                 Fvalue_r = (Float) listData.get(j);               //Gets values 
@@ -164,11 +158,11 @@ public class TopDownFM extends FeatMapCodelet {
                     float correct_mean_g = MeanValue_g/new_res;
                     float correct_mean_b = MeanValue_b/new_res;
 
-                    if(Math.abs(correct_mean_r-goal.get(0))/mr<0.2 && Math.abs(correct_mean_g-goal.get(1))/mr<0.2 && Math.abs(correct_mean_b-goal.get(2))/mr<0.2) vision_mean_color.add(new Float(1));
-                    else if(Math.abs(correct_mean_r-goal.get(0))/mr<0.4 && Math.abs(correct_mean_g-goal.get(1))/mr<0.4 && Math.abs(correct_mean_b-goal.get(2))/mr<0.4) vision_mean_color.add(new Float(0.75));
-                    else if(Math.abs(correct_mean_r-goal.get(0))/mr<0.6 && Math.abs(correct_mean_g-goal.get(1))/mr<0.6 && Math.abs(correct_mean_b-goal.get(2))/mr<0.6) vision_mean_color.add(new Float(0.5));
-                    else if(Math.abs(correct_mean_r-goal.get(0))/mr<0.8 && Math.abs(correct_mean_g-goal.get(1))/mr<0.8 && Math.abs(correct_mean_b-goal.get(2))/mr<0.8) vision_mean_color.add(new Float(0.25));
-                    else vision_mean_color.add(new Float(0));     
+                    if(Math.abs(correct_mean_r-goal.get(0))/mr<0.2 && Math.abs(correct_mean_g-goal.get(1))/mr<0.2 && Math.abs(correct_mean_b-goal.get(2))/mr<0.2) vision_mean_color.add((float)1);
+                    else if(Math.abs(correct_mean_r-goal.get(0))/mr<0.4 && Math.abs(correct_mean_g-goal.get(1))/mr<0.4 && Math.abs(correct_mean_b-goal.get(2))/mr<0.4) vision_mean_color.add((float)0.75);
+                    else if(Math.abs(correct_mean_r-goal.get(0))/mr<0.6 && Math.abs(correct_mean_g-goal.get(1))/mr<0.6 && Math.abs(correct_mean_b-goal.get(2))/mr<0.6) vision_mean_color.add((float) 0.5);
+                    else if(Math.abs(correct_mean_r-goal.get(0))/mr<0.8 && Math.abs(correct_mean_g-goal.get(1))/mr<0.8 && Math.abs(correct_mean_b-goal.get(2))/mr<0.8) vision_mean_color.add((float)0.25);
+                    else vision_mean_color.add((float)0);     
                     if(debug) System.out.println("\n correct_mean_r: "+Math.abs(correct_mean_r-goal.get(0))/mr+" correct_mean_g: "+Math.abs(correct_mean_g-goal.get(1))+" correct_mean_b: "+Math.abs(correct_mean_b-goal.get(2)));
                     MeanValue_r = 0;
                     MeanValue_g = 0;

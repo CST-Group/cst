@@ -13,7 +13,6 @@
 package br.unicamp.cst.sensory;
 
 import br.unicamp.cst.core.entities.MemoryObject;
-//import cst_attmod_app.AgentMind;
 import java.io.BufferedWriter;
 import java.io.FileWriter;
 import java.io.IOException;
@@ -21,7 +20,6 @@ import java.io.PrintWriter;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
-//import java.util.Collections;
 import java.util.List;
 
 
@@ -34,7 +32,6 @@ public class CFM extends CombFeatMapCodelet {
     private static final int TOP_DOWN = 1;
     private  int time_graph;
 
-    //private  int max_time_graph = 100;
     private boolean print_to_file = false;
     private boolean debug = false;
     private String path = "results/txt_last_exp/";
@@ -49,13 +46,10 @@ public class CFM extends CombFeatMapCodelet {
      
     @Override
     public void calculateCombFeatMap() {
-//        ArrayList<Integer> sizes = new ArrayList<>();
-        
+       
         for (int i = 0; i < num_feat_maps; i++) {
             MemoryObject mo = (MemoryObject)feature_maps.get(i);
-            //System.out.println("CFM"+i);
             List fm = (List) mo.getI();
-            //sizes.add(fm.size());
         }
         
        
@@ -87,7 +81,7 @@ public class CFM extends CombFeatMapCodelet {
         winners_row = (List) winnersTypeList.get(t);
         
         for(int j = 0; j < CFMdimension; j++){
-            CFMrow.add(new Float(0));
+            CFMrow.add((float)0);
             winners_row.add(0);
         }
         
@@ -132,11 +126,7 @@ public class CFM extends CombFeatMapCodelet {
                 if(k>=4) sum_top += weight_val*fmkt_val;
                 else sum_bottom += weight_val*fmkt_val;
                    
-                // TODO: Somar mapas bu e tp pra selecionar winner
-               //System.out.println("sum_top: "+sum_top);
-        //System.out.println("sum_bottom: "+sum_bottom);
-        //System.out.println("sum_top/3: "+sum_top/3);
-        //System.out.println("sum_bottom/4: "+sum_bottom/4); 
+                
             }   
             
             CFMrow.set(j, ctj);
@@ -145,7 +135,6 @@ public class CFM extends CombFeatMapCodelet {
             else winners_row.set(j, BOTTOM_UP);
             
         }
-        //if(sum_top > sum_bottom) this.winner = TOP_DOWN;
         
         if(print_to_file) {
             printToFile((ArrayList<Float>) CFMrow, "CFM.txt");
@@ -157,19 +146,16 @@ public class CFM extends CombFeatMapCodelet {
     private void printToFile(Object object,String filename){
         DateTimeFormatter dtf = DateTimeFormatter.ofPattern("yyyy_MM_dd_HH_mm_ss");  
         LocalDateTime now = LocalDateTime.now();
-        //if(time_graph%2 == 0 ){
             try(FileWriter fw = new FileWriter(path+filename,true);
                 BufferedWriter bw = new BufferedWriter(fw);
                 PrintWriter out = new PrintWriter(bw))
             {
                 out.println(dtf.format(now)+"_"+"_"+time_graph+" "+ object);
-                //if(time_graph == max_time_graph-1) System.out.println(filename+": "+time_graph);          
                 time_graph++;
                 out.close();
             } catch (IOException e) {
                 e.printStackTrace();
             }
-        //}else time_graph++;  
     
     }
 }
