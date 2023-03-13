@@ -32,14 +32,14 @@ public class CFM extends CombFeatMapCodelet {
     private static final int TOP_DOWN = 1;
     private  int time_graph;
 
-    private boolean print_to_file = false;
-    private boolean debug = false;
+    private boolean print_to_file = false, debug=false;
     private String path = "results/txt_last_exp/";
     
-    public CFM(int numfeatmaps, ArrayList<String> featmapsnames, int timeWin, int CFMdim) {
+    public CFM(int numfeatmaps, ArrayList<String> featmapsnames, int timeWin, int CFMdim, boolean debug, boolean print_to_file) {
         super(numfeatmaps, featmapsnames,timeWin,CFMdim);
         this.time_graph = 0;
-        
+        this.debug = debug;
+        this.print_to_file = print_to_file;
         
     }
 
@@ -59,9 +59,8 @@ public class CFM extends CombFeatMapCodelet {
         for (int j = 0; j < CFMrow.size(); j++) { float ctj= 0, sum_top=0, sum_bottom=0;
             for (int k = 0; k < num_feat_maps; k++) { MemoryObject FMkMO = (MemoryObject) feature_maps.get(k);
                 List FMk = (List) FMkMO.getI();
-                if(FMk == null) return;
+                if(FMk == null || weight_values == null) return;
                 if(FMk.size() < 1) return;
-                if(weight_values == null) return;
                 List FMk_t = (List) FMk.get(FMk.size()-1);
                 Float fmkt_val = (Float) FMk_t.get(j), weight_val = (Float) weight_values.get(k);
                 ctj += weight_val*fmkt_val;

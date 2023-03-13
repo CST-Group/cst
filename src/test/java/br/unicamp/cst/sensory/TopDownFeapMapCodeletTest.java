@@ -42,7 +42,7 @@ public class TopDownFeapMapCodeletTest {
         goal.add((float) 255);
         goal.add((float) 0);
         goal.add((float) 0);
-        TopDownFM testFeapMapCodelet = new TopDownFM(3, FMnames, "DESTINATION", 100, 16, goal, 255, 16, 4, 3, false);
+        TopDownFM testFeapMapCodelet = new TopDownFM(3, FMnames, "DESTINATION", 100, 16, goal, 255, 16, 4, 3, false, false);
         testMind.insertCodelet(testFeapMapCodelet);
         testFeapMapCodelet.addInput(source);
         testFeapMapCodelet.addOutput(destination);

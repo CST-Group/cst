@@ -56,7 +56,7 @@ public class CombFeapMapCodeletTest {
         FMnames.add("SOURCE");
         FMnames.add("SOURCE2");
         FMnames.add("SOURCE3");
-        CFM testFeapMapCodelet = new CFM(3, FMnames, 100, 16);
+        CFM testFeapMapCodelet = new CFM(3, FMnames, 100, 16, false, false);
         testMind.insertCodelet(testFeapMapCodelet);
         testFeapMapCodelet.addInput(source);
         testFeapMapCodelet.addInput(source2);

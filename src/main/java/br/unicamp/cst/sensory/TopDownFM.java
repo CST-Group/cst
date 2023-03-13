@@ -39,7 +39,7 @@ public class TopDownFM extends FeatMapCodelet {
     private int step_len;
     private boolean print_to_file = false;
     private boolean debug = true; 
-    public TopDownFM(int nsensors, ArrayList<String> sens_names, String featmapname,int timeWin, int mapDim, ArrayList<Float> goal, float saturation, int resolution, int slices, int step, boolean debug) {
+    public TopDownFM(int nsensors, ArrayList<String> sens_names, String featmapname,int timeWin, int mapDim, ArrayList<Float> goal, float saturation, int resolution, int slices, int step, boolean debug, boolean print_to_file) {
         super(nsensors, sens_names, featmapname,timeWin,mapDim);
         this.time_graph = 0;
         this.goal = goal;
@@ -48,6 +48,7 @@ public class TopDownFM extends FeatMapCodelet {
         this.slices = slices; // 16
         this.step_len = step; // 3
         this.debug = debug;
+        this.print_to_file = print_to_file;
 
     }
 

@@ -35,7 +35,7 @@ public class BottomUpFM extends FeatMapCodelet {
     private int i_position;
     private boolean print_to_file = false;
     private boolean debug = true;
-    public BottomUpFM(int nsensors, ArrayList<String> sens_names, String featmapname,int timeWin, int mapDim, float saturation, int resolution, int slices, int step, int i_position, boolean debug) {
+    public BottomUpFM(int nsensors, ArrayList<String> sens_names, String featmapname,int timeWin, int mapDim, float saturation, int resolution, int slices, int step, int i_position, boolean debug, boolean print_to_file) {
         super(nsensors, sens_names, featmapname,timeWin,mapDim);
         this.time_graph = 0;
         this.mr = saturation; // 255
@@ -44,6 +44,7 @@ public class BottomUpFM extends FeatMapCodelet {
         this.step_len = step; // 3
         this.i_position = i_position; // 2
         this.debug = debug;
+        this.print_to_file = print_to_file;
     }
 
     @Override
