@@ -65,14 +65,14 @@ public class TopDownFM extends FeatMapCodelet {
         // Method calculateActivation isnt used here
     }
    
-    public ArrayList<Float> getFM(ArrayList<Float>  visionData_Array_r, ArrayList<Float>  visionData_Array_g, ArrayList<Float>  visionData_Array_b){
+    public ArrayList<Float> getFM(){
         ArrayList<Float> vision_mean_color = new ArrayList<>();
         float new_res_1_2 = res/slices;
         for(int n = 0;n<slices;n++){
             int ni = (int) (n*new_res_1_2), no = (int) (new_res_1_2+n*new_res_1_2);
             for(int m = 0;m<slices;m++){    
                 int mi = (int) (m*new_res_1_2), mo = (int) (new_res_1_2+m*new_res_1_2);
-                float[] meanValues = getMeanValues(ni, no, mi, mo, visionData_Array_r, visionData_Array_g, visionData_Array_b);
+                float[] meanValues = getMeanValues(ni, no, mi, mo);
                 float correct_mean_r = meanValues[0], correct_mean_g = meanValues[1], correct_mean_b = meanValues[2];
                 float vision_color_value = getVisionColorValue(correct_mean_r, correct_mean_g, correct_mean_b);
                 vision_mean_color.add(vision_color_value);
@@ -81,7 +81,7 @@ public class TopDownFM extends FeatMapCodelet {
         return vision_mean_color;
     }
 
-    private float[] getMeanValues(int ni, int no, int mi, int mo, ArrayList<Float>  visionData_Array_r, ArrayList<Float>  visionData_Array_g, ArrayList<Float>  visionData_Array_b) {
+    private float[] getMeanValues(int ni, int no, int mi, int mo) {
         float MeanValue_r = 0, MeanValue_g = 0, MeanValue_b = 0;
         for (int y = ni; y < no; y++) {
             for (int x = mi; x < mo; x++) {
@@ -97,16 +97,20 @@ public class TopDownFM extends FeatMapCodelet {
         return new float[] {correct_mean_r, correct_mean_g, correct_mean_b};
     }
 
+    private boolean compare(float red_diff, float green_diff, float blue_diff, float comp){
+        return red_diff<comp && green_diff<comp && blue_diff < comp;
+    }
+    
     private float getVisionColorValue(float correct_mean_r, float correct_mean_g, float correct_mean_b) {
         float value;
-        if(Math.abs(correct_mean_r-goal.get(0))/mr<0.2 && Math.abs(correct_mean_g-goal.get(1))/mr<0.2 && Math.abs(correct_mean_b-goal.get(2))/mr<0.2) {
-            value = (float)1;
-        } else if(Math.abs(correct_mean_r-goal.get(0))/mr<0.4 && Math.abs(correct_mean_g-goal.get(1))/mr<0.4 && Math.abs(correct_mean_b-goal.get(2))/mr<0.4) {
-            value = (float)0.75;
-        } else if(Math.abs(correct_mean_r-goal.get(0))/mr<0.6 && Math.abs(correct_mean_g-goal.get(1))/mr<0.6 && Math.abs(correct_mean_b-goal.get(2))/mr<0.6) {
-            value = (float) 0.5;
-        } else if(Math.abs(correct_mean_r-goal.get(0))/mr<0.8 && Math.abs(correct_mean_g-goal.get(1))/mr<0.8 && Math.abs(correct_mean_b-goal.get(2))/mr<0.8) value = (float) 0.25;
-          else value =(float)0;     
+        float red_diff = Math.abs(correct_mean_r-goal.get(0))/mr;
+        float green_diff = Math.abs(correct_mean_g-goal.get(1))/mr;
+        float blue_diff = Math.abs(correct_mean_b-goal.get(2))/mr;
+        if(compare(red_diff, green_diff, blue_diff, (float) 0.2)) value = (float)1;
+        else if(compare(red_diff, green_diff, blue_diff, (float) 0.4)) value = (float)0.75;
+        else if(compare(red_diff, green_diff, blue_diff, (float) 0.6)) value = (float) 0.5;
+        else if(compare(red_diff, green_diff, blue_diff, (float) 0.8)) value = (float) 0.25;
+        else value =(float)0;     
         return value;
     }
     
@@ -151,7 +155,7 @@ public class TopDownFM extends FeatMapCodelet {
         List listData = (List) dataMO.getI();
         inicializeMeanValues();
         calcMeanValues(listData);
-        ArrayList<Float> vision_mean_color = getFM(visionData_Array_r, visionData_Array_g, visionData_Array_b);
+        ArrayList<Float> vision_mean_color = getFM();
         getMeanValues(vision_mean_color);
         featureMap.setI(data_FM_t);
         printFileIfAllowed();
