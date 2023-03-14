@@ -57,7 +57,7 @@ public class TopDownFeapMapCodeletTest {
     }
     
     @Test
-    public void testFeapMapCodelet() {
+    public void testTopDownFeapMapCodelet() {
         TopDownFeapMapCodeletTest test = new TopDownFeapMapCodeletTest();
         //for (int i=0;i<64;i++) {
             System.out.println("Testing ... ");
