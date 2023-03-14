@@ -40,7 +40,7 @@ public class TopDownFM extends FeatMapCodelet {
     private boolean print_to_file = false;
     private ArrayList<Float> visionData_Array_r = new ArrayList<>(), visionData_Array_g = new ArrayList<>(), visionData_Array_b = new ArrayList<>();
     private ArrayList<Float> data_FM_t;    
-    public TopDownFM(int nsensors, ArrayList<String> sens_names, String featmapname,int timeWin, int mapDim, ArrayList<Float> goal, float saturation, int resolution, int slices, int step, boolean debug, boolean print_to_file) {
+    public TopDownFM(int nsensors, ArrayList<String> sens_names, String featmapname,int timeWin, int mapDim, ArrayList<Float> goal, float saturation, int resolution, int slices, int step, boolean print_to_file) {
         super(nsensors, sens_names, featmapname,timeWin,mapDim);
         this.time_graph = 0;
         this.goal = goal;
@@ -153,6 +153,7 @@ public class TopDownFM extends FeatMapCodelet {
         calcMeanValues(listData);
         ArrayList<Float> vision_mean_color = getFM(visionData_Array_r, visionData_Array_g, visionData_Array_b);
         getMeanValues(vision_mean_color);
+        featureMap.setI(data_FM_t);
         printFileIfAllowed();
     }
     

@@ -64,7 +64,7 @@ public class FeapMapCodeletTest {
         FMnames.add("SOURCE");
         FMnames.add("SOURCE2");
         FMnames.add("SOURCE3");
-        BottomUpFM testFeapMapCodelet = new BottomUpFM(3, FMnames, "DESTINATION", 100, 16, 1, 16, 4, 3, 2, false, false);
+        BottomUpFM testFeapMapCodelet = new BottomUpFM(3, FMnames, "DESTINATION", 100, 16, 1, 16, 4, 3, 2, false);
         testMind.insertCodelet(testFeapMapCodelet);
         testFeapMapCodelet.addInput(source);
         testFeapMapCodelet.addOutput(destination);
@@ -104,6 +104,12 @@ public class FeapMapCodeletTest {
             mo_arrList.add(source_arrList);
             test.source.setI(mo_arrList);
             
+            long newtimestamp = test.destination.getTimestamp();
+            while(newtimestamp == oldtimestamp) {
+                newtimestamp = test.destination.getTimestamp();
+                System.out.println("Timestamp after: "+TimeStamp.getStringTimeStamp(newtimestamp,"dd/MM/yyyy HH:mm:ss.SSS"));
+            }
+            
             System.out.println("\n   Input 1: "+test.source.getI());
             
             
@@ -112,18 +118,17 @@ public class FeapMapCodeletTest {
             if (fulllist != null && fulllist.size() > 0) {
                 //printList(fulllist);
                 System.out.println("          sizef: "+((List)(test.destination.getI())).size()+"\n");
-                List first = (List)fulllist.get(0);
-                System.out.print("  first 1: "+ first);
                 
-                List last = (List)fulllist.get(fulllist.size()-1);
-                System.out.print("\n  last 1: "+ last);
                 
-                assertEquals(first.size(),16);
-                assertEquals(first,ass_arrList);
+                assertEquals(fulllist.size(),16);
+                assertEquals(fulllist,ass_arrList);
                 
             }
             
             // Test 2
+            oldtimestamp = test.destination.getTimestamp();
+            System.out.println("Timestamp before: "+TimeStamp.getStringTimeStamp(oldtimestamp, "dd/MM/yyyy HH:mm:ss.SSS"));
+            
             int_arrList = new ArrayList<Float>(256);
             for (int i = 0; i < 256; i++) {
                 int_arrList.add((float)(i % 3) + 1);
@@ -142,6 +147,12 @@ public class FeapMapCodeletTest {
             mo_arrList.add(source_arrList);
             test.source.setI(mo_arrList);
             
+            newtimestamp = test.destination.getTimestamp();
+            while(newtimestamp == oldtimestamp) {
+                newtimestamp = test.destination.getTimestamp();
+                System.out.println("Timestamp after: "+TimeStamp.getStringTimeStamp(newtimestamp,"dd/MM/yyyy HH:mm:ss.SSS"));
+            }
+            
             System.out.println("\n \n   Input 2: "+test.source.getI());
             
             
@@ -150,18 +161,17 @@ public class FeapMapCodeletTest {
             if (fulllist != null && fulllist.size() > 0) {
                 //printList(fulllist);
                 System.out.println("          sizef: "+((List)(test.destination.getI())).size()+"\n");
-                List first = (List)fulllist.get(0);
-                System.out.print("  first 2: "+ first);
                 
-                List last = (List)fulllist.get(fulllist.size()-1);
-                System.out.print("\n  last  2: "+ last);
                 
-                assertEquals(last.size(),16);
-                assertEquals(last,ass_arrList);
+                assertEquals(fulllist.size(),16);
+                assertEquals(fulllist,ass_arrList);
                 
             }
             
             // Test 3
+            oldtimestamp = test.destination.getTimestamp();
+            System.out.println("Timestamp before: "+TimeStamp.getStringTimeStamp(oldtimestamp, "dd/MM/yyyy HH:mm:ss.SSS"));
+            
             int_arrList = new ArrayList<Float>(256);
             for (int i = 0; i < 256; i++) {
                 int_arrList.add((float) 0);
@@ -177,6 +187,11 @@ public class FeapMapCodeletTest {
             mo_arrList.add(source_arrList);
             test.source.setI(mo_arrList);
             
+            newtimestamp = test.destination.getTimestamp();
+            while(newtimestamp == oldtimestamp) {
+                newtimestamp = test.destination.getTimestamp();
+                System.out.println("Timestamp after: "+TimeStamp.getStringTimeStamp(newtimestamp,"dd/MM/yyyy HH:mm:ss.SSS"));
+            }
             System.out.println("\n \n   Input 3: "+test.source.getI());
             
             
@@ -184,15 +199,11 @@ public class FeapMapCodeletTest {
             fulllist = (List) test.destination.getI();
             if (fulllist != null && fulllist.size() > 0) {
                 //printList(fulllist);
-                System.out.println("          sizef: "+((List)(test.destination.getI())).size()+"\n");
-                List first = (List)fulllist.get(0);
-                System.out.print("  first 3: "+ first);
+                System.out.println("          sizef: "+fulllist.size()+"\n");
                 
-                List last = (List)fulllist.get(fulllist.size()-1);
-                System.out.print("\n  last  3: "+ last);
                 
-                assertEquals(last.size(),16);
-                assertEquals(last,ass_arrList);
+                assertEquals(fulllist.size(),16);
+                assertEquals(fulllist,ass_arrList);
                 
             }
         //}

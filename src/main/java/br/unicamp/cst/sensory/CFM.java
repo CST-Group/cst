@@ -32,13 +32,12 @@ public class CFM extends CombFeatMapCodelet {
     private static final int TOP_DOWN = 1;
     private  int time_graph;
 
-    private boolean print_to_file = false, debug=false;
+    private boolean print_to_file = false;
     private String path = "results/txt_last_exp/";
     private List CFMrow, winners_row;
-    public CFM(int numfeatmaps, ArrayList<String> featmapsnames, int timeWin, int CFMdim, boolean debug, boolean print_to_file) {
+    public CFM(int numfeatmaps, ArrayList<String> featmapsnames, int timeWin, int CFMdim, boolean print_to_file) {
         super(numfeatmaps, featmapsnames,timeWin,CFMdim);
         this.time_graph = 0;
-        this.debug = debug;
         this.print_to_file = print_to_file;
         
     }
@@ -85,12 +84,12 @@ public class CFM extends CombFeatMapCodelet {
         combinedFM.add(new ArrayList<>());
         winnersTypeList.add(new ArrayList<>());
         CFMrow = (List) combinedFM.get(combinedFM.size()-1);
-        winners_row = (List) winnersTypeList.get(combinedFM.size()-1);
+        winners_row = (List) winnersTypeList.get(winnersTypeList.size()-1);
         
         initializeCFMrowAndWinnersRow();
         
         calculateCFMandWinners();
-        
+        comb_feature_mapMO.setI(CFMrow);
         if(print_to_file){
             printToFile((ArrayList<Float>) CFMrow, "CFM.txt");
             printToFile((ArrayList<Integer>) winners_row, "winnerType.txt"); 

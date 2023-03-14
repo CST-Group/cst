@@ -56,7 +56,7 @@ public class CombFeapMapCodeletTest {
         FMnames.add("SOURCE");
         FMnames.add("SOURCE2");
         FMnames.add("SOURCE3");
-        CFM testFeapMapCodelet = new CFM(3, FMnames, 100, 16, false, false);
+        CFM testFeapMapCodelet = new CFM(3, FMnames, 100, 16, false);
         testMind.insertCodelet(testFeapMapCodelet);
         testFeapMapCodelet.addInput(source);
         testFeapMapCodelet.addInput(source2);
@@ -107,6 +107,12 @@ public class CombFeapMapCodeletTest {
             test.source2.setI(mo_arrList);
             test.source3.setI(mo_arrList);
             
+            long newtimestamp = test.destination.getTimestamp();
+            while(newtimestamp == oldtimestamp) {
+                newtimestamp = test.destination.getTimestamp();
+                System.out.println("Timestamp after: "+TimeStamp.getStringTimeStamp(newtimestamp,"dd/MM/yyyy HH:mm:ss.SSS"));
+            }
+            
             ArrayList<Float> weig_arrList = new ArrayList<Float>(3);
             for (int i = 0; i < 3; i++) {
                 weig_arrList.add((float) 1.0);
@@ -119,19 +125,22 @@ public class CombFeapMapCodeletTest {
             List fulllist = (List) test.destination.getI();
             if (fulllist != null && fulllist.size() > 0) {
                 //printList(fulllist);
-                System.out.println("          sizef: "+((List)(test.destination.getI())).size()+"\n");
-                List first = (List)fulllist.get(0);
-                System.out.print("\n  first 1: "+ first);
+                System.out.println("          sizef: "+fulllist.size()+"\n");
+                //List first = (List)fulllist.get(0);
+                //System.out.print("\n  first 1: "+ first);
                 
-                List last = (List)fulllist.get(fulllist.size()-1);
-                System.out.print("\n  last 1: "+ last);
+                //List last = (List)fulllist.get(fulllist.size()-1);
+                //System.out.print("\n  last 1: "+ last);
                 
-                assertEquals(last.size(),16);
-                assertEquals(last,ass_arrList);
+                assertEquals(((List)(test.destination.getI())).size(),16);
+                assertEquals(((List)(test.destination.getI())),ass_arrList);
                 
             }  
             
             // Test 2
+            oldtimestamp = test.destination.getTimestamp();
+            System.out.println("Timestamp before: "+TimeStamp.getStringTimeStamp(oldtimestamp, "dd/MM/yyyy HH:mm:ss.SSS"));
+            
             int_arrList = new ArrayList<Float>(256);
             for (int i = 0; i < 256; i++) {
                 int_arrList.add((float) 1);
@@ -148,6 +157,12 @@ public class CombFeapMapCodeletTest {
             test.source2.setI(mo_arrList);
             test.source3.setI(mo_arrList);
             
+            newtimestamp = test.destination.getTimestamp();
+            while(newtimestamp == oldtimestamp) {
+                newtimestamp = test.destination.getTimestamp();
+                System.out.println("Timestamp after: "+TimeStamp.getStringTimeStamp(newtimestamp,"dd/MM/yyyy HH:mm:ss.SSS"));
+            }
+            
             weig_arrList = new ArrayList<Float>(3);
             for (int i = 0; i < 3; i++) {
                 weig_arrList.add((float) 1.0);
@@ -161,18 +176,21 @@ public class CombFeapMapCodeletTest {
             if (fulllist != null && fulllist.size() > 0) {
                 //printList(fulllist);
                 System.out.println("          sizef: "+((List)(test.destination.getI())).size()+"\n");
-                List first = (List)fulllist.get(0);
-                System.out.print("\n  first 2: "+ first);
+                //List first = (List)fulllist.get(0);
+                //System.out.print("\n  first 2: "+ first);
                 
-                List last = (List)fulllist.get(fulllist.size()-1);
-                System.out.print("\n  last 2: "+ last);
+                //List last = (List)fulllist.get(fulllist.size()-1);
+                //System.out.print("\n  last 2: "+ last);
                 
-                assertEquals(last.size(),16);
-                assertEquals(last,ass_arrList);
+                assertEquals(fulllist.size(),16);
+                assertEquals(fulllist,ass_arrList);
                 
             } 
             
             // Test 3
+            oldtimestamp = test.destination.getTimestamp();
+            System.out.println("Timestamp before: "+TimeStamp.getStringTimeStamp(oldtimestamp, "dd/MM/yyyy HH:mm:ss.SSS"));
+            
             int_arrList = new ArrayList<Float>(256);
             for (int i = 0; i < 256; i++) {
                 int_arrList.add((float) 1);
@@ -189,6 +207,11 @@ public class CombFeapMapCodeletTest {
             test.source2.setI(mo_arrList);
             test.source3.setI(mo_arrList);
             
+            newtimestamp = test.destination.getTimestamp();
+            while(newtimestamp == oldtimestamp) {
+                newtimestamp = test.destination.getTimestamp();
+                System.out.println("Timestamp after: "+TimeStamp.getStringTimeStamp(newtimestamp,"dd/MM/yyyy HH:mm:ss.SSS"));
+            }
             weig_arrList = new ArrayList<Float>(3);
             for (int i = 1; i < 4; i++) {
                 weig_arrList.add((float) i);
@@ -201,15 +224,15 @@ public class CombFeapMapCodeletTest {
             fulllist = (List) test.destination.getI();
             if (fulllist != null && fulllist.size() > 0) {
                 //printList(fulllist);
-                System.out.println("          sizef: "+((List)(test.destination.getI())).size()+"\n");
-                List first = (List)fulllist.get(0);
-                System.out.print("\n  first 3: "+ first);
+                System.out.println("          sizef: "+fulllist.size()+"\n");
+                //List first = (List)fulllist.get(0);
+                //System.out.print("\n  first 3: "+ first);
                 
-                List last = (List)fulllist.get(fulllist.size()-1);
-                System.out.print("\n  last 3: "+ last);
+                //List last = (List)fulllist.get(fulllist.size()-1);
+                //System.out.print("\n  last 3: "+ last);
                 
-                assertEquals(last.size(),16);
-                assertEquals(last,ass_arrList);
+                assertEquals(fulllist.size(),16);
+                assertEquals(fulllist,ass_arrList);
                 
             }
         //}

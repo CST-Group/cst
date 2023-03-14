@@ -34,8 +34,8 @@ public class BottomUpFM extends FeatMapCodelet {
     private int step_len;
     private int i_position;
     private boolean print_to_file = false;
-    private boolean debug = true;
-    public BottomUpFM(int nsensors, ArrayList<String> sens_names, String featmapname,int timeWin, int mapDim, float saturation, int resolution, int slices, int step, int i_position, boolean debug, boolean print_to_file) {
+    private ArrayList<Float> data_FM_t;
+    public BottomUpFM(int nsensors, ArrayList<String> sens_names, String featmapname,int timeWin, int mapDim, float saturation, int resolution, int slices, int step, int i_position, boolean print_to_file) {
         super(nsensors, sens_names, featmapname,timeWin,mapDim);
         this.time_graph = 0;
         this.mr = saturation; // 255
@@ -43,7 +43,6 @@ public class BottomUpFM extends FeatMapCodelet {
         this.slices = slices; // 16
         this.step_len = step; // 3
         this.i_position = i_position; // 2
-        this.debug = debug;
         this.print_to_file = print_to_file;
     }
 
@@ -56,7 +55,6 @@ public class BottomUpFM extends FeatMapCodelet {
         float sum = 0;
         for (float value : data_Array) sum += value;
         float mean_all = sum / data_Array.size();
-        if(debug) System.out.println("mean all:"+mean_all);
         ArrayList<Float> data_mean = new ArrayList<>();
         float new_res = (res/slices)*(res/slices);
         float new_res_1_2 = (res/slices);
@@ -70,7 +68,6 @@ public class BottomUpFM extends FeatMapCodelet {
                 data_mean.add(calculateDataMean(correct_mean));
             }
         }
-        if(debug) System.out.println("data_mean:"+data_mean+" size: "+data_mean.size());
         return data_mean;
     }
 
@@ -120,7 +117,7 @@ public class BottomUpFM extends FeatMapCodelet {
 
     private void updateDataFM(List data_FM, ArrayList<Float> data_Array) {
         ArrayList<Float> data_mean = getFM(data_Array);
-        ArrayList<Float> data_FM_t = (ArrayList<Float>) data_FM.get(data_FM.size()-1);
+        data_FM_t = (ArrayList<Float>) data_FM.get(data_FM.size()-1);
         for (int j = 0; j < data_mean.size(); j++) {
             data_FM_t.set(j, data_mean.get(j));
         }
@@ -143,6 +140,7 @@ public class BottomUpFM extends FeatMapCodelet {
         List list_data = (List) dataMO.getI();
         ArrayList<Float> data_Array = getDataArray(list_data);
         updateDataFM(data_FM, data_Array);
+        featureMap.setI(data_FM_t);
         if(print_to_file) {
             printToFile((ArrayList<Float>) data_FM.get(data_FM.size()-1));
         }
