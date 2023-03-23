@@ -150,13 +150,14 @@ public class CombFeapMapCodeletTest {
                 
             }
                     
+            newtimestamp = test.destination.getTimestamp();
             source_arrList.setI(int_arrList);
             mo_arrList.add(int_arrList);
             test.source.setI(mo_arrList);
             test.source2.setI(mo_arrList);
             test.source3.setI(mo_arrList);
             
-            newtimestamp = test.destination.getTimestamp();
+            
             while(newtimestamp == oldtimestamp) {
                 newtimestamp = test.destination.getTimestamp();
                 System.out.println("Timestamp after: "+TimeStamp.getStringTimeStamp(newtimestamp,"dd/MM/yyyy HH:mm:ss.SSS"));
@@ -199,14 +200,14 @@ public class CombFeapMapCodeletTest {
                 ass_arrList.add((float) 6.0);
                 
             }
-                    
+            
+            newtimestamp = test.destination.getTimestamp();
             source_arrList.setI(int_arrList);
             mo_arrList.add(int_arrList);
             test.source.setI(mo_arrList);
             test.source2.setI(mo_arrList);
             test.source3.setI(mo_arrList);
             
-            newtimestamp = test.destination.getTimestamp();
             while(newtimestamp == oldtimestamp) {
                 newtimestamp = test.destination.getTimestamp();
                 System.out.println("Timestamp after: "+TimeStamp.getStringTimeStamp(newtimestamp,"dd/MM/yyyy HH:mm:ss.SSS"));
