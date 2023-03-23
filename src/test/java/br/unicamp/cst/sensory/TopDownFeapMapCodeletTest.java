@@ -78,11 +78,12 @@ public class TopDownFeapMapCodeletTest {
             for (int i = 0; i < 16; i++) {
                 ass_arrList.add((float) 0);
             }
-                    
+            
+            long newtimestamp = test.destination.getTimestamp();
             source_arrList.setI(int_arrList);
             mo_arrList.add(source_arrList);
             test.source.setI(mo_arrList);
-            long newtimestamp = test.destination.getTimestamp();
+            
             while(newtimestamp == oldtimestamp) {
                 newtimestamp = test.destination.getTimestamp();
                 System.out.println("Timestamp after: "+TimeStamp.getStringTimeStamp(newtimestamp,"dd/MM/yyyy HH:mm:ss.SSS"));
@@ -130,9 +131,8 @@ public class TopDownFeapMapCodeletTest {
                     
             source_arrList.setI(int_arrList);
             mo_arrList.add(source_arrList);
-            test.source.setI(mo_arrList);
-            
             newtimestamp = test.destination.getTimestamp();
+            test.source.setI(mo_arrList);
             while(newtimestamp == oldtimestamp) {
                 newtimestamp = test.destination.getTimestamp();
                 System.out.println("Timestamp after: "+TimeStamp.getStringTimeStamp(newtimestamp,"dd/MM/yyyy HH:mm:ss.SSS"));
@@ -177,11 +177,12 @@ public class TopDownFeapMapCodeletTest {
             for (int i = 0; i < 12; i++) {
                 ass_arrList.add((float) 0);
             }
-                    
+            
+            newtimestamp = test.destination.getTimestamp();
             source_arrList.setI(int_arrList);
             mo_arrList.add(source_arrList);
             test.source.setI(mo_arrList);
-            newtimestamp = test.destination.getTimestamp();
+            
             while(newtimestamp == oldtimestamp) {
                 newtimestamp = test.destination.getTimestamp();
                 System.out.println("Timestamp after: "+TimeStamp.getStringTimeStamp(newtimestamp,"dd/MM/yyyy HH:mm:ss.SSS"));

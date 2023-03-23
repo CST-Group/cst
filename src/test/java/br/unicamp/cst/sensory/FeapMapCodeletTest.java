@@ -180,9 +180,8 @@ public class FeapMapCodeletTest {
                     
             source_arrList.setI(int_arrList);
             mo_arrList.add(source_arrList);
-            test.source.setI(mo_arrList);
-            
             newtimestamp = test.destination.getTimestamp();
+            test.source.setI(mo_arrList);
             while(newtimestamp == oldtimestamp) {
                 newtimestamp = test.destination.getTimestamp();
                 System.out.println("Timestamp after: "+TimeStamp.getStringTimeStamp(newtimestamp,"dd/MM/yyyy HH:mm:ss.SSS"));

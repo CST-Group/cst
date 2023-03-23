@@ -103,11 +103,10 @@ public class CombFeapMapCodeletTest {
                     
             source_arrList.setI(int_arrList);
             mo_arrList.add(int_arrList);
+            long newtimestamp = test.destination.getTimestamp();
             test.source.setI(mo_arrList);
             test.source2.setI(mo_arrList);
             test.source3.setI(mo_arrList);
-            
-            long newtimestamp = test.destination.getTimestamp();
             while(newtimestamp == oldtimestamp) {
                 newtimestamp = test.destination.getTimestamp();
                 System.out.println("Timestamp after: "+TimeStamp.getStringTimeStamp(newtimestamp,"dd/MM/yyyy HH:mm:ss.SSS"));
