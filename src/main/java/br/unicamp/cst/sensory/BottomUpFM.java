@@ -17,10 +17,10 @@ import java.io.BufferedWriter;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.PrintWriter;
-import java.util.ArrayList;
 import java.util.List;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 /**
  * @author L. M. Berto
@@ -34,8 +34,8 @@ public class BottomUpFM extends FeatMapCodelet {
     private int step_len;
     private int i_position;
     private boolean print_to_file = false;
-    private ArrayList<Float> data_FM_t;
-    public BottomUpFM(int nsensors, ArrayList<String> sens_names, String featmapname,int timeWin, int mapDim, float saturation, int resolution, int slices, int step, int i_position, boolean print_to_file) {
+    private CopyOnWriteArrayList<Float> data_FM_t;
+    public BottomUpFM(int nsensors, CopyOnWriteArrayList<String> sens_names, String featmapname,int timeWin, int mapDim, float saturation, int resolution, int slices, int step, int i_position, boolean print_to_file) {
         super(nsensors, sens_names, featmapname,timeWin,mapDim);
         this.time_graph = 0;
         this.mr = saturation; // 255
@@ -51,11 +51,11 @@ public class BottomUpFM extends FeatMapCodelet {
          // Method calculateActivation isnt used here
     }
     
-    public ArrayList<Float> getFM(ArrayList<Float> data_Array){
+    public CopyOnWriteArrayList<Float> getFM(CopyOnWriteArrayList<Float> data_Array){
         float sum = 0;
         for (float value : data_Array) sum += value;
         float mean_all = sum / data_Array.size();
-        ArrayList<Float> data_mean = new ArrayList<>();
+        CopyOnWriteArrayList<Float> data_mean = new CopyOnWriteArrayList<>();
         float new_res = (res/slices)*(res/slices);
         float new_res_1_2 = (res/slices);
         for(int n = 0;n<slices;n++){
@@ -71,7 +71,7 @@ public class BottomUpFM extends FeatMapCodelet {
         return data_mean;
     }
 
-    private float calculateCorrectMean(ArrayList<Float> data_Array, float mean_all, float new_res, int ni, int no, int mi, int mo) {
+    private float calculateCorrectMean(CopyOnWriteArrayList<Float> data_Array, float mean_all, float new_res, int ni, int no, int mi, int mo) {
         float meanValue = 0;
         for (int y = ni; y < no; y++) {
             for (int x = mi; x < mo; x++) {
@@ -95,15 +95,15 @@ public class BottomUpFM extends FeatMapCodelet {
         if(data_FM.size() == timeWindow) {
             data_FM.remove(0);
         }
-        data_FM.add(new ArrayList<>());
-        ArrayList<Float> data_FM_t = (ArrayList<Float>) data_FM.get(data_FM.size()-1);
+        data_FM.add(new CopyOnWriteArrayList<>());
+        CopyOnWriteArrayList<Float> data_FM_t = (CopyOnWriteArrayList<Float>) data_FM.get(data_FM.size()-1);
         for (int j = 0; j < mapDimension; j++) {
             data_FM_t.add((float)0);
         }
     }
 
-    private ArrayList<Float> getDataArray(List list_data) {
-        ArrayList<Float> data_Array = new ArrayList<>();
+    private CopyOnWriteArrayList<Float> getDataArray(List list_data) {
+        CopyOnWriteArrayList<Float> data_Array = new CopyOnWriteArrayList<>();
         for (int j = 0; j < res*res; j++) {
             data_Array.add((float)0);
         }
@@ -115,9 +115,9 @@ public class BottomUpFM extends FeatMapCodelet {
         return data_Array;
     }
 
-    private void updateDataFM(List data_FM, ArrayList<Float> data_Array) {
-        ArrayList<Float> data_mean = getFM(data_Array);
-        data_FM_t = (ArrayList<Float>) data_FM.get(data_FM.size()-1);
+    private void updateDataFM(List data_FM, CopyOnWriteArrayList<Float> data_Array) {
+        CopyOnWriteArrayList<Float> data_mean = getFM(data_Array);
+        data_FM_t = (CopyOnWriteArrayList<Float>) data_FM.get(data_FM.size()-1);
         for (int j = 0; j < data_mean.size(); j++) {
             data_FM_t.set(j, data_mean.get(j));
         }
@@ -138,18 +138,18 @@ public class BottomUpFM extends FeatMapCodelet {
         }
         MemoryObject dataMO = (MemoryObject)data_buffer.get(data_buffer.size()-1);
         List list_data = (List) dataMO.getI();
-        ArrayList<Float> data_Array = getDataArray(list_data);
+        CopyOnWriteArrayList<Float> data_Array = getDataArray(list_data);
         updateDataFM(data_FM, data_Array);
         featureMap.setI(data_FM_t);
         if(print_to_file) {
-            printToFile((ArrayList<Float>) data_FM.get(data_FM.size()-1));
+            printToFile((CopyOnWriteArrayList<Float>) data_FM.get(data_FM.size()-1));
         }
     }
 
 
 
     
-    private void printToFile(ArrayList<Float> arr){
+    private void printToFile(CopyOnWriteArrayList<Float> arr){
         DateTimeFormatter dtf = DateTimeFormatter.ofPattern("yyyy_MM_dd_HH_mm_ss");  
         LocalDateTime now = LocalDateTime.now(); 
         try(FileWriter fw = new FileWriter("results/txt_last_exp/vision_blue_FM.txt", true);

@@ -19,8 +19,8 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 
 /**
@@ -35,7 +35,7 @@ public class CFM extends CombFeatMapCodelet {
     private boolean print_to_file = false;
     private String path = "results/txt_last_exp/";
     private List CFMrow, winners_row;
-    public CFM(int numfeatmaps, ArrayList<String> featmapsnames, int timeWin, int CFMdim, boolean print_to_file) {
+    public CFM(int numfeatmaps, CopyOnWriteArrayList<String> featmapsnames, int timeWin, int CFMdim, boolean print_to_file) {
         super(numfeatmaps, featmapsnames,timeWin,CFMdim);
         this.time_graph = 0;
         this.print_to_file = print_to_file;
@@ -81,8 +81,8 @@ public class CFM extends CombFeatMapCodelet {
         List combinedFM = (List) comb_feature_mapMO.getI(), winnersTypeList = (List) winnersType.getI();
         if(combinedFM.size() == timeWindow) combinedFM.remove(0);
         if(winnersTypeList.size() == timeWindow) winnersTypeList.remove(0);
-        combinedFM.add(new ArrayList<>());
-        winnersTypeList.add(new ArrayList<>());
+        combinedFM.add(new CopyOnWriteArrayList<>());
+        winnersTypeList.add(new CopyOnWriteArrayList<>());
         CFMrow = (List) combinedFM.get(combinedFM.size()-1);
         winners_row = (List) winnersTypeList.get(winnersTypeList.size()-1);
         
@@ -91,8 +91,8 @@ public class CFM extends CombFeatMapCodelet {
         calculateCFMandWinners();
         comb_feature_mapMO.setI(CFMrow);
         if(print_to_file){
-            printToFile((ArrayList<Float>) CFMrow, "CFM.txt");
-            printToFile((ArrayList<Integer>) winners_row, "winnerType.txt"); 
+            printToFile((CopyOnWriteArrayList<Float>) CFMrow, "CFM.txt");
+            printToFile((CopyOnWriteArrayList<Integer>) winners_row, "winnerType.txt"); 
         }
     }
     

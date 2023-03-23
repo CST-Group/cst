@@ -19,10 +19,10 @@ import java.io.BufferedWriter;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.PrintWriter;
-import java.util.ArrayList;
 import java.util.List;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 /**
  *
@@ -35,12 +35,12 @@ public class TopDownFM extends FeatMapCodelet {
     private  int time_graph;
     private int slices = 16;                    //Slices in each coordinate (x & y) 
     private String path = "results/txt_last_exp/vision_top_color_FM.txt";
-    private ArrayList<Float> goal;  
+    private CopyOnWriteArrayList<Float> goal;  
     private int step_len;
     private boolean print_to_file = false;
-    private ArrayList<Float> visionData_Array_r = new ArrayList<>(), visionData_Array_g = new ArrayList<>(), visionData_Array_b = new ArrayList<>();
-    private ArrayList<Float> data_FM_t;    
-    public TopDownFM(int nsensors, ArrayList<String> sens_names, String featmapname,int timeWin, int mapDim, ArrayList<Float> goal, float saturation, int resolution, int slices, int step, boolean print_to_file) {
+    private CopyOnWriteArrayList<Float> visionData_Array_r = new CopyOnWriteArrayList<>(), visionData_Array_g = new CopyOnWriteArrayList<>(), visionData_Array_b = new CopyOnWriteArrayList<>();
+    private CopyOnWriteArrayList<Float> data_FM_t;    
+    public TopDownFM(int nsensors, CopyOnWriteArrayList<String> sens_names, String featmapname,int timeWin, int mapDim, CopyOnWriteArrayList<Float> goal, float saturation, int resolution, int slices, int step, boolean print_to_file) {
         super(nsensors, sens_names, featmapname,timeWin,mapDim);
         this.time_graph = 0;
         this.goal = goal;
@@ -52,11 +52,11 @@ public class TopDownFM extends FeatMapCodelet {
 
     }
 
-    public ArrayList<Float> getGoal(){
+    public CopyOnWriteArrayList<Float> getGoal(){
         return this.goal;
     }
     
-    public void setGoal(ArrayList<Float> new_goal){
+    public void setGoal(CopyOnWriteArrayList<Float> new_goal){
         this.goal = new_goal;
     }
     
@@ -65,8 +65,8 @@ public class TopDownFM extends FeatMapCodelet {
         // Method calculateActivation isnt used here
     }
    
-    public ArrayList<Float> getFM(){
-        ArrayList<Float> vision_mean_color = new ArrayList<>();
+    public CopyOnWriteArrayList<Float> getFM(){
+        CopyOnWriteArrayList<Float> vision_mean_color = new CopyOnWriteArrayList<>();
         float new_res_1_2 = res/slices;
         for(int n = 0;n<slices;n++){
             int ni = (int) (n*new_res_1_2), no = (int) (new_res_1_2+n*new_res_1_2);
@@ -131,7 +131,7 @@ public class TopDownFM extends FeatMapCodelet {
                 count_3 += 1; }
     }
     
-    private void getMeanValues(ArrayList<Float> vision_mean_color){
+    private void getMeanValues(CopyOnWriteArrayList<Float> vision_mean_color){
         for (int j = 0; j < vision_mean_color.size(); j++) { 
             data_FM_t.set(j, vision_mean_color.get(j));
         }
@@ -146,8 +146,8 @@ public class TopDownFM extends FeatMapCodelet {
         MemoryObject data_bufferMO = (MemoryObject) sensor_buffers.get(0);        //Gets  Data from buffer 0
         List data_buffer = (List) data_bufferMO.getI(), data_FM = (List) featureMap.getI();        
         if(data_FM.size() == timeWindow) data_FM.remove(0);
-        data_FM.add(new ArrayList<>());
-        data_FM_t = (ArrayList<Float>) data_FM.get(data_FM.size()-1);
+        data_FM.add(new CopyOnWriteArrayList<>());
+        data_FM_t = (CopyOnWriteArrayList<Float>) data_FM.get(data_FM.size()-1);
         for (int j = 0; j < mapDimension; j++) data_FM_t.add((float)0);
         if(data_buffer == null) return;
         if(data_buffer.size() < 1) return;
@@ -155,13 +155,13 @@ public class TopDownFM extends FeatMapCodelet {
         List listData = (List) dataMO.getI();
         inicializeMeanValues();
         calcMeanValues(listData);
-        ArrayList<Float> vision_mean_color = getFM();
+        CopyOnWriteArrayList<Float> vision_mean_color = getFM();
         getMeanValues(vision_mean_color);
         featureMap.setI(data_FM_t);
         printFileIfAllowed();
     }
     
-    private void printToFile(ArrayList<Float> arr){
+    private void printToFile(CopyOnWriteArrayList<Float> arr){
 
         DateTimeFormatter dtf = DateTimeFormatter.ofPattern("yyyy_MM_dd_HH_mm_ss");  
         LocalDateTime now = LocalDateTime.now(); 

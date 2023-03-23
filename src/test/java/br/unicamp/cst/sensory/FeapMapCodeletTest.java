@@ -12,18 +12,13 @@
 package br.unicamp.cst.sensory;
 
 import br.unicamp.cst.core.entities.Codelet;
-import br.unicamp.cst.core.entities.Memory;
 import br.unicamp.cst.core.entities.MemoryObject;
 import br.unicamp.cst.core.entities.Mind;
 
-import br.unicamp.cst.core.exceptions.CodeletActivationBoundsException;
-import br.unicamp.cst.core.exceptions.CodeletThresholdBoundsException;
 import br.unicamp.cst.support.TimeStamp;
-import java.util.Arrays;
 import java.util.List;
-import java.io.ByteArrayOutputStream;
-import java.io.PrintStream;
 import java.util.ArrayList;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 import org.junit.Test;
 import static org.junit.Assert.*;
@@ -60,7 +55,7 @@ public class FeapMapCodeletTest {
         //source.setI(0);
         destination = testMind.createMemoryObject("DESTINATION");
         destination.setI(new ArrayList<Float>());
-        ArrayList<String> FMnames = new ArrayList<>();
+        CopyOnWriteArrayList<String> FMnames = new CopyOnWriteArrayList<>();
         FMnames.add("SOURCE");
         FMnames.add("SOURCE2");
         FMnames.add("SOURCE3");

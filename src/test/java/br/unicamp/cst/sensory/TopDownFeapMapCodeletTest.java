@@ -14,6 +14,7 @@ import br.unicamp.cst.core.entities.Mind;
 import br.unicamp.cst.support.TimeStamp;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.CopyOnWriteArrayList;
 import static org.junit.Assert.assertEquals;
 import org.junit.Test;
 
@@ -33,12 +34,12 @@ public class TopDownFeapMapCodeletTest {
         source = testMind.createMemoryObject("SOURCE");
         //source.setI(0);
         destination = testMind.createMemoryObject("DESTINATION");
-        destination.setI(new ArrayList<Float>());
-        ArrayList<String> FMnames = new ArrayList<>();
+        destination.setI(new CopyOnWriteArrayList<Float>());
+        CopyOnWriteArrayList<String> FMnames = new CopyOnWriteArrayList<>();
         FMnames.add("SOURCE");
         FMnames.add("SOURCE2");
         FMnames.add("SOURCE3");
-        ArrayList<Float> goal = new ArrayList<>();
+        CopyOnWriteArrayList<Float> goal = new CopyOnWriteArrayList<>();
         goal.add((float) 255);
         goal.add((float) 0);
         goal.add((float) 0);

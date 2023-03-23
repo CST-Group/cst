@@ -16,8 +16,8 @@ import br.unicamp.cst.core.entities.Codelet;
 import br.unicamp.cst.core.entities.MemoryObject;
 import br.unicamp.cst.core.entities.Mind;
 import br.unicamp.cst.support.TimeStamp;
-import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.CopyOnWriteArrayList;
 import static org.junit.Assert.assertEquals;
 import org.junit.Test;
 
@@ -49,10 +49,10 @@ public class CombFeapMapCodeletTest {
         source3 = testMind.createMemoryObject("SOURCE3");
         //source.setI(0);
         destination_type = testMind.createMemoryObject("TYPE");
-        destination_type.setI(new ArrayList<Float>());
+        destination_type.setI(new CopyOnWriteArrayList<Float>());
         destination = testMind.createMemoryObject("COMB_FM");
-        destination.setI(new ArrayList<Float>());
-        ArrayList<String> FMnames = new ArrayList<>();
+        destination.setI(new CopyOnWriteArrayList<Float>());
+        CopyOnWriteArrayList<String> FMnames = new CopyOnWriteArrayList<>();
         FMnames.add("SOURCE");
         FMnames.add("SOURCE2");
         FMnames.add("SOURCE3");
@@ -85,15 +85,15 @@ public class CombFeapMapCodeletTest {
             long oldtimestamp = test.destination.getTimestamp();
             System.out.println("Timestamp before: "+TimeStamp.getStringTimeStamp(oldtimestamp, "dd/MM/yyyy HH:mm:ss.SSS"));
             
-            ArrayList<ArrayList<Float>> mo_arrList = new ArrayList<ArrayList<Float>>();
+            CopyOnWriteArrayList<CopyOnWriteArrayList<Float>> mo_arrList = new CopyOnWriteArrayList<CopyOnWriteArrayList<Float>>();
             MemoryObject source_arrList = new MemoryObject();
             
             // Test 1
-            ArrayList<Float> int_arrList = new ArrayList<Float>(256);
+            CopyOnWriteArrayList<Float> int_arrList = new CopyOnWriteArrayList<Float>();
             for (int i = 0; i < 256*3; i++) {
                 int_arrList.add((float)(i % 3) + 1);
             }
-            ArrayList<Float> ass_arrList = new ArrayList<Float>(16);
+            CopyOnWriteArrayList<Float> ass_arrList = new CopyOnWriteArrayList<Float>();
             for (int i = 0; i < 5; i++) {
                 ass_arrList.add((float) 3.0);
                 ass_arrList.add((float) 6.0);
@@ -113,7 +113,7 @@ public class CombFeapMapCodeletTest {
                 System.out.println("Timestamp after: "+TimeStamp.getStringTimeStamp(newtimestamp,"dd/MM/yyyy HH:mm:ss.SSS"));
             }
             
-            ArrayList<Float> weig_arrList = new ArrayList<Float>(3);
+            CopyOnWriteArrayList<Float> weig_arrList = new CopyOnWriteArrayList<Float>();
             for (int i = 0; i < 3; i++) {
                 weig_arrList.add((float) 1.0);
             }
@@ -141,11 +141,11 @@ public class CombFeapMapCodeletTest {
             oldtimestamp = test.destination.getTimestamp();
             System.out.println("Timestamp before: "+TimeStamp.getStringTimeStamp(oldtimestamp, "dd/MM/yyyy HH:mm:ss.SSS"));
             
-            int_arrList = new ArrayList<Float>(256);
+            int_arrList = new CopyOnWriteArrayList<Float>();
             for (int i = 0; i < 256; i++) {
                 int_arrList.add((float) 1);
             }
-            ass_arrList = new ArrayList<Float>(16);
+            ass_arrList = new CopyOnWriteArrayList<Float>();
             for (int i = 0; i < 16; i++) {
                 ass_arrList.add((float) 3.0);
                 
@@ -163,7 +163,7 @@ public class CombFeapMapCodeletTest {
                 System.out.println("Timestamp after: "+TimeStamp.getStringTimeStamp(newtimestamp,"dd/MM/yyyy HH:mm:ss.SSS"));
             }
             
-            weig_arrList = new ArrayList<Float>(3);
+            weig_arrList = new CopyOnWriteArrayList<Float>();
             for (int i = 0; i < 3; i++) {
                 weig_arrList.add((float) 1.0);
             }
@@ -191,11 +191,11 @@ public class CombFeapMapCodeletTest {
             oldtimestamp = test.destination.getTimestamp();
             System.out.println("Timestamp before: "+TimeStamp.getStringTimeStamp(oldtimestamp, "dd/MM/yyyy HH:mm:ss.SSS"));
             
-            int_arrList = new ArrayList<Float>(256);
+            int_arrList = new CopyOnWriteArrayList<Float>();
             for (int i = 0; i < 256; i++) {
                 int_arrList.add((float) 1);
             }
-            ass_arrList = new ArrayList<Float>(16);
+            ass_arrList = new CopyOnWriteArrayList<Float>();
             for (int i = 0; i < 16; i++) {
                 ass_arrList.add((float) 6.0);
                 
@@ -212,7 +212,7 @@ public class CombFeapMapCodeletTest {
                 newtimestamp = test.destination.getTimestamp();
                 System.out.println("Timestamp after: "+TimeStamp.getStringTimeStamp(newtimestamp,"dd/MM/yyyy HH:mm:ss.SSS"));
             }
-            weig_arrList = new ArrayList<Float>(3);
+            weig_arrList = new CopyOnWriteArrayList<Float>();
             for (int i = 1; i < 4; i++) {
                 weig_arrList.add((float) i);
             }
@@ -242,7 +242,7 @@ public class CombFeapMapCodeletTest {
     // This method is used to generate a new Codelet
     /*CombFeatMapCodelet generateCombFeatMapCodelet() {
                 //Buffers list
-        ArrayList<String> sensor_names_vision = new ArrayList<>();
+        CopyOnWriteArrayList<String> sensor_names_vision = new CopyOnWriteArrayList<>();
         sensor_names_vision.add("TEST");
         CombFeatMapCodelet testCombFeatMapCodelet = new CombFeatMapCodelet(1, sensor_names_vision, 10, 32) {
 
