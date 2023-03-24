@@ -31,6 +31,7 @@ public class CFM extends CombFeatMapCodelet {
     private static final int BOTTOM_UP = 0;
     private static final int TOP_DOWN = 1;
     private  int time_graph;
+    public int steps;
 
     private boolean print_to_file = false;
     private String path = "results/txt_last_exp/";
@@ -39,7 +40,7 @@ public class CFM extends CombFeatMapCodelet {
         super(numfeatmaps, featmapsnames,timeWin,CFMdim);
         this.time_graph = 0;
         this.print_to_file = print_to_file;
-        
+        this.steps = 0;
     }
 
      
@@ -94,6 +95,7 @@ public class CFM extends CombFeatMapCodelet {
             printToFile((CopyOnWriteArrayList<Float>) CFMrow, "CFM.txt");
             printToFile((CopyOnWriteArrayList<Integer>) winners_row, "winnerType.txt"); 
         }
+        steps++;
     }
     
       
