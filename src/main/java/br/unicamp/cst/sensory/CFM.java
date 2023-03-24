@@ -73,10 +73,10 @@ public class CFM extends CombFeatMapCodelet {
     
     @Override
     public void calculateCombFeatMap() {
-        try { 
-            Thread.sleep(50); 
-        } catch (Exception e) { 
-            Thread.currentThread().interrupt(); 
+        try {
+            Thread.sleep(300);
+        } catch (Exception e) {
+            Thread.currentThread().interrupt();
         }
         List combinedFM = (List) comb_feature_mapMO.getI(), winnersTypeList = (List) winnersType.getI();
         if(combinedFM.size() == timeWindow) combinedFM.remove(0);

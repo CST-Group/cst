@@ -142,7 +142,11 @@ public class TopDownFM extends FeatMapCodelet {
     }
     @Override
     public void proc() {
-        try { Thread.sleep(50);} catch (Exception e) {Thread.currentThread().interrupt();}        
+        try {
+            Thread.sleep(300);
+        } catch (Exception e) {
+            Thread.currentThread().interrupt();
+        }        
         MemoryObject data_bufferMO = (MemoryObject) sensor_buffers.get(0);        //Gets  Data from buffer 0
         List data_buffer = (List) data_bufferMO.getI(), data_FM = (List) featureMap.getI();        
         if(data_FM.size() == timeWindow) data_FM.remove(0);
