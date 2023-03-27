@@ -11,12 +11,13 @@
 package br.unicamp.cst.core.entities;
 
 import br.unicamp.cst.core.exceptions.CodeletActivationBoundsException;
-import org.junit.Test;
 
 import java.util.Arrays;
 import java.util.List;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import org.junit.jupiter.api.Test;
 
-import static org.junit.Assert.*;
 
 /**
  * @author wander

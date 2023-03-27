@@ -860,8 +860,8 @@ public abstract class Codelet implements Runnable, MemoryObserver {
     			enable_count = 0;
 
     		} catch (Exception e) {
-
-    			e.printStackTrace();
+                        System.out.println(e.toString());
+    			//e.printStackTrace();
 
     		} finally {
 
@@ -917,16 +917,15 @@ public abstract class Codelet implements Runnable, MemoryObserver {
 					if (activation >= threshold)
 						proc();
 				} else {
-                                     
                                     raiseException();
-                                   
 				}
 
 				enable_count = 0;
 
 			} catch (Exception e) {
-
-				e.printStackTrace();
+                                //System.err.println("Aha2 !!");
+                                System.out.println(e.toString());
+				//e.printStackTrace();
 
 			} finally {
 

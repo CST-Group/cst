@@ -12,17 +12,19 @@ package br.unicamp.cst.sensory;
 import br.unicamp.cst.core.entities.MemoryObject;
 import br.unicamp.cst.core.entities.Mind;
 import br.unicamp.cst.support.TimeStamp;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
-import static org.junit.Assert.assertEquals;
-import org.junit.Test;
+import static org.junit.jupiter.api.Assertions.*;
+import org.junit.jupiter.api.Test;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  *
   * @author L. L. Rossi (leolellisr)
  */
 public class TopDownFeapMapCodeletTest {
+    private static Logger log = LoggerFactory.getLogger(TopDownFeapMapCodeletTest.class);
 
     // This class contains tests covering some core Codelet methods
     
@@ -62,20 +64,21 @@ public class TopDownFeapMapCodeletTest {
     public void testTopDownFeapMapCodelet() {
         TopDownFeapMapCodeletTest test = new TopDownFeapMapCodeletTest();
         //for (int i=0;i<64;i++) {
-            System.out.println("Testing ... ");
+            System.err.println("Testing ... ");
+            log.info("Testing ...");
             long oldtimestamp = test.destination.getTimestamp();
             System.out.println("Timestamp before: "+TimeStamp.getStringTimeStamp(oldtimestamp, "dd/MM/yyyy HH:mm:ss.SSS"));
             
             
-            ArrayList<MemoryObject> mo_arrList = new ArrayList<MemoryObject>();
+            CopyOnWriteArrayList<MemoryObject> mo_arrList = new CopyOnWriteArrayList<MemoryObject>();
             MemoryObject source_arrList = new MemoryObject();
             
             // Test 1
-            ArrayList<Float> int_arrList = new ArrayList<Float>(256);
+            CopyOnWriteArrayList<Float> int_arrList = new CopyOnWriteArrayList<Float>();
             for (int i = 0; i < 256*3; i++) {
                 int_arrList.add((float) 255);
             }
-            ArrayList<Float> ass_arrList = new ArrayList<Float>(16);
+            CopyOnWriteArrayList<Float> ass_arrList = new CopyOnWriteArrayList<Float>();
             for (int i = 0; i < 16; i++) {
                 ass_arrList.add((float) 0);
             }
@@ -107,14 +110,14 @@ public class TopDownFeapMapCodeletTest {
             oldtimestamp = test.destination.getTimestamp();
             System.out.println("Timestamp before: "+TimeStamp.getStringTimeStamp(oldtimestamp, "dd/MM/yyyy HH:mm:ss.SSS"));
             
-            int_arrList = new ArrayList<Float>(256);
+            int_arrList = new CopyOnWriteArrayList<Float>();
             for (int i = 0; i < (int)256/2; i++) {
                 int_arrList.add((float) 255);
             }
             for (int i = (int)256/2; i < 256; i++) {
                 int_arrList.add((float)0);
             }
-            ass_arrList = new ArrayList<Float>(16);
+            ass_arrList = new CopyOnWriteArrayList<Float>();
             for (int i = 0; i < 3; i++) {
                 ass_arrList.add((float) 0.25);
             }
@@ -152,14 +155,14 @@ public class TopDownFeapMapCodeletTest {
             System.out.println("Timestamp before: "+TimeStamp.getStringTimeStamp(oldtimestamp, "dd/MM/yyyy HH:mm:ss.SSS"));
             
             // Test 3
-            int_arrList = new ArrayList<Float>(256);
+            int_arrList = new CopyOnWriteArrayList<Float>();
             for (int i = 0; i < (int)256/2; i++) {
                 int_arrList.add((float) 0);
             }
             for (int i = (int)256/2; i < 256; i++) {
                 int_arrList.add((float) 255);
             }
-            ass_arrList = new ArrayList<Float>(16);
+            ass_arrList = new CopyOnWriteArrayList<Float>();
             for (int i = 0; i < 3; i++) {
                 ass_arrList.add((float) 0.25);
             }

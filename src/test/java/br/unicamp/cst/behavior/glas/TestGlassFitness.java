@@ -11,14 +11,9 @@
 
 package br.unicamp.cst.behavior.glas;
 
-import static org.junit.Assert.*;
 
-
-import org.junit.Test;
-
-import br.unicamp.cst.behavior.glas.GlasEvent;
-import br.unicamp.cst.behavior.glas.Individual;
-import br.unicamp.cst.behavior.glas.GlasSequence;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import org.junit.jupiter.api.Test;
 
 public class TestGlassFitness {
 	static int nNodes = 7;

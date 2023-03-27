@@ -18,9 +18,9 @@ import br.unicamp.cst.core.entities.Mind;
 import br.unicamp.cst.support.TimeStamp;
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import org.junit.jupiter.api.Test;
 
-import org.junit.Test;
-import static org.junit.Assert.*;
 
 
 /**

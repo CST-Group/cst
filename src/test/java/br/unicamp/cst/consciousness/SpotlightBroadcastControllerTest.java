@@ -10,15 +10,14 @@
  ***********************************************************************************************/
 package br.unicamp.cst.consciousness;
 
-import static org.junit.Assert.assertEquals;
-
-import org.junit.AfterClass;
-import org.junit.BeforeClass;
-import org.junit.Test;
 
 import br.unicamp.cst.core.entities.Memory;
 import br.unicamp.cst.core.entities.MemoryObject;
 import br.unicamp.cst.core.entities.Mind;
+import org.junit.jupiter.api.AfterAll;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
 
 /**
  * @author andre
@@ -26,13 +25,13 @@ import br.unicamp.cst.core.entities.Mind;
  */
 public class SpotlightBroadcastControllerTest {
 	
-	@BeforeClass
+    @BeforeAll
     public static void beforeAllTestMethods() {
 		
 
     }
 
-	@AfterClass
+    @AfterAll
     public static void afterAllTestMethods() {
 		
     }

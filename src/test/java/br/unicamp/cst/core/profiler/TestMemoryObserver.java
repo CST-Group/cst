@@ -10,17 +10,16 @@
  ***********************************************************************************************/
 package br.unicamp.cst.core.profiler;
 
-import static org.junit.Assert.*;
 
 import java.util.ArrayList;
-
-import org.junit.Test;
-
 import br.unicamp.cst.core.entities.Codelet;
 import br.unicamp.cst.core.entities.Memory;
 import br.unicamp.cst.core.entities.MemoryContainer;
 import br.unicamp.cst.core.entities.MemoryObject;
 import br.unicamp.cst.core.entities.Mind;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import org.junit.jupiter.api.Test;
 
 class CodeletToTest extends Codelet {
 
