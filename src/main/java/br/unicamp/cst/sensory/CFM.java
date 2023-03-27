@@ -72,6 +72,10 @@ public class CFM extends CombFeatMapCodelet {
             }
     }
     
+    public void resetTriggers() {
+        steps = 0;
+    }
+    
     @Override
     public void calculateCombFeatMap() {
         try {

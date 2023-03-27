@@ -26,8 +26,9 @@ public class TopDownFeapMapCodeletTest {
 
     // This class contains tests covering some core Codelet methods
     
-     public MemoryObject source;
+    public MemoryObject source;
     public MemoryObject destination;
+    public TopDownFM testFeapMapCodelet;
     
     public TopDownFeapMapCodeletTest() {
         Mind testMind = new Mind();
@@ -43,7 +44,7 @@ public class TopDownFeapMapCodeletTest {
         goal.add((float) 255);
         goal.add((float) 0);
         goal.add((float) 0);
-        TopDownFM testFeapMapCodelet = new TopDownFM(3, FMnames, "DESTINATION", 100, 16, goal, 255, 16, 4, 3, false);
+        testFeapMapCodelet = new TopDownFM(3, FMnames, "DESTINATION", 100, 16, goal, 255, 16, 4, 3, false);
         testMind.insertCodelet(testFeapMapCodelet);
         testFeapMapCodelet.addInput(source);
         testFeapMapCodelet.addOutput(destination);
@@ -80,18 +81,17 @@ public class TopDownFeapMapCodeletTest {
             }
             
             long newtimestamp = test.destination.getTimestamp();
+            test.testFeapMapCodelet.resetTriggers();
             source_arrList.setI(int_arrList);
             mo_arrList.add(source_arrList);
             test.source.setI(mo_arrList);
             
-            while(newtimestamp == oldtimestamp) {
+            while(test.testFeapMapCodelet.steps < 1) {
                 newtimestamp = test.destination.getTimestamp();
-                System.out.println("Timestamp after: "+TimeStamp.getStringTimeStamp(newtimestamp,"dd/MM/yyyy HH:mm:ss.SSS"));
+                System.out.println("steps: "+test.testFeapMapCodelet.steps+" Timestamp after: "+TimeStamp.getStringTimeStamp(newtimestamp,"dd/MM/yyyy HH:mm:ss.SSS"));
             }
-            System.out.println("\n   Input 1: "+test.source.getI());
-            
-            
-            System.out.print("\n   Output 1: "+ test.destination.getI());
+            System.out.println("   Input 1: "+test.source.getI());
+            System.out.print("   Output 1: "+ test.destination.getI());
             List fulllist = (List) test.destination.getI();
             if (fulllist != null && fulllist.size() > 0) {
                 //printList(fulllist);
@@ -132,27 +132,20 @@ public class TopDownFeapMapCodeletTest {
             source_arrList.setI(int_arrList);
             mo_arrList.add(source_arrList);
             newtimestamp = test.destination.getTimestamp();
+            test.testFeapMapCodelet.resetTriggers();
             test.source.setI(mo_arrList);
-            while(newtimestamp == oldtimestamp) {
+            while(test.testFeapMapCodelet.steps < 1) {
                 newtimestamp = test.destination.getTimestamp();
                 System.out.println("Timestamp after: "+TimeStamp.getStringTimeStamp(newtimestamp,"dd/MM/yyyy HH:mm:ss.SSS"));
             }
-            
             System.out.println("\n \n   Input 2: "+test.source.getI());
-            
-            
             System.out.print("\n   Output 2: "+ test.destination.getI());
             fulllist = (List) test.destination.getI();
             if (fulllist != null && fulllist.size() > 0) {
                 //printList(fulllist);
                 System.out.println("          sizef: "+((List)(test.destination.getI())).size()+"\n");
-                
-                
-                
-                
                 assertEquals(fulllist.size(),16);
                 assertEquals(fulllist,ass_arrList);
-                
             }
             
             oldtimestamp = test.destination.getTimestamp();
@@ -179,11 +172,12 @@ public class TopDownFeapMapCodeletTest {
             }
             
             newtimestamp = test.destination.getTimestamp();
+            test.testFeapMapCodelet.resetTriggers();
             source_arrList.setI(int_arrList);
             mo_arrList.add(source_arrList);
             test.source.setI(mo_arrList);
             
-            while(newtimestamp == oldtimestamp) {
+            while(test.testFeapMapCodelet.steps < 1) {
                 newtimestamp = test.destination.getTimestamp();
                 System.out.println("Timestamp after: "+TimeStamp.getStringTimeStamp(newtimestamp,"dd/MM/yyyy HH:mm:ss.SSS"));
             }
@@ -195,12 +189,8 @@ public class TopDownFeapMapCodeletTest {
             if (fulllist != null && fulllist.size() > 0) {
                 //printList(fulllist);
                 System.out.println("          sizef: "+((List)(test.destination.getI())).size()+"\n");
-                
-                
-                
                 assertEquals(fulllist.size(),16);
                 assertEquals(fulllist,ass_arrList);
-                
             }
         //}
     }

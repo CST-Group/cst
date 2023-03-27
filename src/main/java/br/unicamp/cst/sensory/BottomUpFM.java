@@ -144,6 +144,7 @@ public class BottomUpFM extends FeatMapCodelet {
         if(print_to_file) {
             printToFile((CopyOnWriteArrayList<Float>) data_FM.get(data_FM.size()-1));
         }
+        steps++;
     }
 
 

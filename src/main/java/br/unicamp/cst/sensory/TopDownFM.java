@@ -163,6 +163,7 @@ public class TopDownFM extends FeatMapCodelet {
         getMeanValues(vision_mean_color);
         featureMap.setI(data_FM_t);
         printFileIfAllowed();
+        steps++;
     }
     
     private void printToFile(CopyOnWriteArrayList<Float> arr){

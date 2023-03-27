@@ -47,6 +47,7 @@ public abstract class FeatMapCodelet extends Codelet{
     protected int timeWindow;
     protected int mapDimension;
     protected MemoryObject winners;
+    public int steps;
     
     /**
      * init FeatMapCodelet
@@ -68,6 +69,11 @@ public abstract class FeatMapCodelet extends Codelet{
         feat_map_name = featmapname;
         timeWindow = timeWin;
         mapDimension = mapDim;
+        steps = 0;
+    }
+    
+    public void resetTriggers() {
+        steps = 0;
     }
     
 
