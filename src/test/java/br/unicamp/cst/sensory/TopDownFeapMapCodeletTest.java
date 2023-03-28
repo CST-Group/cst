@@ -40,13 +40,11 @@ public class TopDownFeapMapCodeletTest {
         destination.setI(new CopyOnWriteArrayList<Float>());
         CopyOnWriteArrayList<String> FMnames = new CopyOnWriteArrayList<>();
         FMnames.add("SOURCE");
-        //FMnames.add("SOURCE2");
-        //FMnames.add("SOURCE3");
         CopyOnWriteArrayList<Float> goal = new CopyOnWriteArrayList<>();
         goal.add((float) 255);
         goal.add((float) 0);
         goal.add((float) 0);
-        testFeapMapCodelet = new TopDownFM(1, FMnames, "DESTINATION", 100, 16, goal, 255, 16, 4, 3, false);
+        testFeapMapCodelet = new TopDownFM(1, 0, FMnames, "DESTINATION", 100, 16, goal, 255, 16, 4, 3, false);
         testMind.insertCodelet(testFeapMapCodelet);
         testFeapMapCodelet.addInput(source);
         testFeapMapCodelet.addOutput(destination);

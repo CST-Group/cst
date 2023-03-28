@@ -57,9 +57,7 @@ public class FeapMapCodeletTest {
         destination.setI(new CopyOnWriteArrayList<Float>());
         CopyOnWriteArrayList<String> FMnames = new CopyOnWriteArrayList<>();
         FMnames.add("SOURCE");
-        FMnames.add("SOURCE2");
-        FMnames.add("SOURCE3");
-        testFeapMapCodelet = new BottomUpFM(3, FMnames, "DESTINATION", 100, 16, 1, 16, 4, 3, 2, false);
+        testFeapMapCodelet = new BottomUpFM(1, 0, FMnames, "DESTINATION", 100, 16, 1, 16, 4, 3, 2, false);
         testMind.insertCodelet(testFeapMapCodelet);
         testFeapMapCodelet.addInput(source);
         testFeapMapCodelet.addOutput(destination);

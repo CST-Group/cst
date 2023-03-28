@@ -31,11 +31,11 @@ public class BottomUpFM extends FeatMapCodelet {
     private int res;                      //Resolution of VisionSensor
     private int time_graph;
     private int slices;                    //Slices in each coordinate (x & y) 
-    private int step_len;
+    private int step_len, get_sens;
     private int i_position;
     private boolean print_to_file = false;
     private CopyOnWriteArrayList<Float> data_FM_t;
-    public BottomUpFM(int nsensors, CopyOnWriteArrayList<String> sens_names, String featmapname,int timeWin, int mapDim, float saturation, int resolution, int slices, int step, int i_position, boolean print_to_file) {
+    public BottomUpFM(int nsensors, int get_sens, CopyOnWriteArrayList<String> sens_names, String featmapname,int timeWin, int mapDim, float saturation, int resolution, int slices, int step, int i_position, boolean print_to_file) {
         super(nsensors, sens_names, featmapname,timeWin,mapDim);
         this.time_graph = 0;
         this.mr = saturation; // 255
@@ -44,6 +44,7 @@ public class BottomUpFM extends FeatMapCodelet {
         this.step_len = step; // 3
         this.i_position = i_position; // 2
         this.print_to_file = print_to_file;
+        this.get_sens = get_sens;
     }
 
     @Override
@@ -130,7 +131,7 @@ public class BottomUpFM extends FeatMapCodelet {
         } catch (Exception e) {
             Thread.currentThread().interrupt();
         }
-        MemoryObject data_bufferMO = (MemoryObject) sensor_buffers.get(0);
+        MemoryObject data_bufferMO = (MemoryObject) sensor_buffers.get(get_sens);
         List data_buffer = (List) data_bufferMO.getI(), data_FM = (List) featureMap.getI();
         updateFeatureMap(data_FM);
         if(data_buffer == null || data_buffer.isEmpty()) {

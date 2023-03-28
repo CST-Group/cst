@@ -36,11 +36,11 @@ public class TopDownFM extends FeatMapCodelet {
     private int slices = 16;                    //Slices in each coordinate (x & y) 
     private String path = "results/txt_last_exp/vision_top_color_FM.txt";
     private CopyOnWriteArrayList<Float> goal;  
-    private int step_len;
+    private int step_len, get_sens;
     private boolean print_to_file = false;
     private CopyOnWriteArrayList<Float> visionData_Array_r = new CopyOnWriteArrayList<>(), visionData_Array_g = new CopyOnWriteArrayList<>(), visionData_Array_b = new CopyOnWriteArrayList<>();
     private CopyOnWriteArrayList<Float> data_FM_t;    
-    public TopDownFM(int nsensors, CopyOnWriteArrayList<String> sens_names, String featmapname,int timeWin, int mapDim, CopyOnWriteArrayList<Float> goal, float saturation, int resolution, int slices, int step, boolean print_to_file) {
+    public TopDownFM(int nsensors, int get_sens, CopyOnWriteArrayList<String> sens_names, String featmapname,int timeWin, int mapDim, CopyOnWriteArrayList<Float> goal, float saturation, int resolution, int slices, int step, boolean print_to_file) {
         super(nsensors, sens_names, featmapname,timeWin,mapDim);
         this.time_graph = 0;
         this.goal = goal;
@@ -49,6 +49,7 @@ public class TopDownFM extends FeatMapCodelet {
         this.slices = slices; // 16
         this.step_len = step; // 3
         this.print_to_file = print_to_file;
+        this.get_sens = get_sens;
 
     }
 
@@ -147,7 +148,7 @@ public class TopDownFM extends FeatMapCodelet {
         } catch (Exception e) {
             Thread.currentThread().interrupt();
         }        
-        MemoryObject data_bufferMO = (MemoryObject) sensor_buffers.get(0);        //Gets  Data from buffer 0
+        MemoryObject data_bufferMO = (MemoryObject) sensor_buffers.get(get_sens);        //Gets  Data from buffer get_sens
         List data_buffer = (List) data_bufferMO.getI(), data_FM = (List) featureMap.getI();        
         if(data_FM.size() == timeWindow) data_FM.remove(0);
         data_FM.add(new CopyOnWriteArrayList<>());
