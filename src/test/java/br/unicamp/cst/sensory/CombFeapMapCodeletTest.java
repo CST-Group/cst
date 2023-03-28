@@ -65,7 +65,7 @@ public class CombFeapMapCodeletTest {
         testFeapMapCodelet.addInput(weights);
         testFeapMapCodelet.addOutput(destination);
         testFeapMapCodelet.addOutput(destination_type);
-        testFeapMapCodelet.setIsMemoryObserver(true);
+        //testFeapMapCodelet.setIsMemoryObserver(true);
 	source.addMemoryObserver(testFeapMapCodelet);
         source2.addMemoryObserver(testFeapMapCodelet);
         source3.addMemoryObserver(testFeapMapCodelet);
