@@ -48,7 +48,7 @@ public class TopDownFeapMapCodeletTest {
         testMind.insertCodelet(testFeapMapCodelet);
         testFeapMapCodelet.addInput(source);
         testFeapMapCodelet.addOutput(destination);
-        //testFeapMapCodelet.setIsMemoryObserver(true);
+        testFeapMapCodelet.setIsMemoryObserver(true);
 	source.addMemoryObserver(testFeapMapCodelet);
         testMind.start();
         
@@ -91,7 +91,7 @@ public class TopDownFeapMapCodeletTest {
             test.source.setI(mo_arrList);
             System.out.println("steps: "+test.testFeapMapCodelet.steps+" Timestamp before: "+TimeStamp.getStringTimeStamp(oldtimestamp, "dd/MM/yyyy HH:mm:ss.SSS"));
             
-            while(test.testFeapMapCodelet.steps < 2) {
+            while(test.testFeapMapCodelet.steps < 1) {
                 newtimestamp = test.destination.getTimestamp();
                 System.out.println("steps: "+test.testFeapMapCodelet.steps+" Timestamp during: "+TimeStamp.getStringTimeStamp(newtimestamp,"dd/MM/yyyy HH:mm:ss.SSS"));
             }

@@ -61,7 +61,7 @@ public class FeapMapCodeletTest {
         testMind.insertCodelet(testFeapMapCodelet);
         testFeapMapCodelet.addInput(source);
         testFeapMapCodelet.addOutput(destination);
-        //testFeapMapCodelet.setIsMemoryObserver(true);
+        testFeapMapCodelet.setIsMemoryObserver(true);
 	source.addMemoryObserver(testFeapMapCodelet);
         testMind.start();
         

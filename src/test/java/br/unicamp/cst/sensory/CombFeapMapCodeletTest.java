@@ -65,7 +65,7 @@ public class CombFeapMapCodeletTest {
         testFeapMapCodelet.addInput(weights);
         testFeapMapCodelet.addOutput(destination);
         testFeapMapCodelet.addOutput(destination_type);
-        //testFeapMapCodelet.setIsMemoryObserver(true);
+        testFeapMapCodelet.setIsMemoryObserver(true);
 	source.addMemoryObserver(testFeapMapCodelet);
         source2.addMemoryObserver(testFeapMapCodelet);
         source3.addMemoryObserver(testFeapMapCodelet);
@@ -119,7 +119,7 @@ public class CombFeapMapCodeletTest {
             System.out.println("source3: "+"steps: "+test.testFeapMapCodelet.steps+" Timestamp after: "+TimeStamp.getStringTimeStamp(test.source3.getTimestamp(),"dd/MM/yyyy HH:mm:ss.SSS"));
             test.weights.setI(weig_arrList);
             System.out.println("source: "+"steps: "+test.testFeapMapCodelet.steps+" Timestamp after: "+TimeStamp.getStringTimeStamp(test.weights.getTimestamp(),"dd/MM/yyyy HH:mm:ss.SSS"));
-            while(test.testFeapMapCodelet.steps < 5) {
+            while(test.testFeapMapCodelet.steps < 4) {
                 newtimestamp = test.destination.getTimestamp();
                 System.out.println("steps: "+test.testFeapMapCodelet.steps+" Timestamp while waiting: "+TimeStamp.getStringTimeStamp(newtimestamp,"dd/MM/yyyy HH:mm:ss.SSS"));
             }

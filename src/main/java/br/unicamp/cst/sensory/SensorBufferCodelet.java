@@ -40,7 +40,7 @@ public class SensorBufferCodelet extends Codelet {
     private String sensorName;
     private String bufferName;
     private int maxcapacity;
-    private int ignore;
+    //private int ignore;
     /**
      * init SensorBufferCodelet
      * @param sensorName
@@ -55,7 +55,7 @@ public class SensorBufferCodelet extends Codelet {
         this.bufferName = bufferName;
         this.sensorName = sensorName;
         maxcapacity = maxcpcty;
-        ignore = 1;
+        //ignore = 1;
     }
 
     @Override
@@ -83,10 +83,10 @@ public class SensorBufferCodelet extends Codelet {
      */
     public void proc() {
         // Ignore first run of the proc function
-        if(ignore == 1){
-            ignore = 0;
-            return;
-        }
+//        if(ignore == 1){
+//            ignore = 0;
+//            return;
+//        }
         
         try {
             Thread.sleep(10);

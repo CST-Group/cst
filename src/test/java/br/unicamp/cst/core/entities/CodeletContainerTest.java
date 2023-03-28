@@ -837,7 +837,7 @@ public class CodeletContainerTest {
 		
 	
 		CodeletToTestOne codeletToTestOne = (CodeletToTestOne) codeletContainer.getCodelet("Codelet 1");
-		assertEquals(7, codeletToTestOne.getCounter());
+		assertEquals(6, codeletToTestOne.getCounter());
 	}
 	
 	@Test
