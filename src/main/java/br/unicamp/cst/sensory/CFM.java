@@ -13,6 +13,7 @@
 package br.unicamp.cst.sensory;
 
 import br.unicamp.cst.core.entities.MemoryObject;
+import br.unicamp.cst.support.TimeStamp;
 import java.io.BufferedWriter;
 import java.io.FileWriter;
 import java.io.IOException;
@@ -94,7 +95,16 @@ public class CFM extends CombFeatMapCodelet {
         initializeCFMrowAndWinnersRow();
         
         calculateCFMandWinners();
+        System.out.println("I received "+num_feat_maps+" maps as inputs");
+        for (int i = 0; i < num_feat_maps; i++) {
+            MemoryObject inp = (MemoryObject)feature_maps.get(i);
+            System.out.println(i+" "+feat_maps_names.get(i)+":"+" steps: "+this.steps+" Timestamp after: "+TimeStamp.getStringTimeStamp(inp.getTimestamp(),"dd/MM/yyyy HH:mm:ss.SSS"));
+        }
+        
         comb_feature_mapMO.setI(CFMrow);
+        
+        
+        System.out.println("CFM:"+" steps: "+this.steps+" Timestamp after: "+TimeStamp.getStringTimeStamp(comb_feature_mapMO.getTimestamp(),"dd/MM/yyyy HH:mm:ss.SSS"));
         if(print_to_file){
             printToFile((CopyOnWriteArrayList<Float>) CFMrow, "CFM.txt");
             printToFile((CopyOnWriteArrayList<Integer>) winners_row, "winnerType.txt"); 
