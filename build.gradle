@@ -109,7 +109,7 @@ test {
 
 testlogger {
     // pick a theme - mocha, standard, plain, mocha-parallel, standard-parallel or plain-parallel
-    theme 'standard'
+    theme 'mocha-parallel'
 
     // set to false to disable detailed failure logs
     showExceptions true
