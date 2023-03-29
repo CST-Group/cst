@@ -33,6 +33,8 @@ import org.junit.jupiter.api.Test;
  * @see Codelet
  * @see MemoryObject
  * @see FeatMapCodelet
+ * @see CombFeatMapCodelet
+ * @see CFM
  */
 public class CombFeapMapCodeletTest {
 
@@ -42,10 +44,18 @@ public class CombFeapMapCodeletTest {
     public MemoryObject destination,destination_type;
     public CFM testFeapMapCodelet;
     
+    /**
+     * Test class initialization for the Combined Feature Map. Creates a test 
+     * mind, with 4 inputs (3 sources and 1 weight) and 2 outputs. The codelet 
+     * to be tested is initialized as a CFM and inserted into the created mind. 
+     * Inputs and outputs are added to the codelet and it is set to 
+     * publish-subscribe. The mind is then initiated.
+     * 
+     */
     public CombFeapMapCodeletTest() {
         Mind testMind = new Mind();
         weights = testMind.createMemoryObject("FM_WEIGHTS");
-        source = testMind.createMemoryObject("SOURCE");
+        source = testMind.createMemoryObject( "SOURCE");
         source2 = testMind.createMemoryObject("SOURCE2");
         source3 = testMind.createMemoryObject("SOURCE3");
         //source.setI(0);
@@ -78,31 +88,43 @@ public class CombFeapMapCodeletTest {
         
     }
     
+    /**
+    * Test 1. Inputs have sequential elements from 1 to 4. The weight vector is 
+    * initialized with 1s only. Thus, the output element will be the sum of the 
+    * elements of the same position [3, 6, 9, 12 ...].
+    * 
+    * Test 2: Inputs have elements equal to 1. The weight vector is initialized 
+    * with 1s only. Thus, the output element will be the sum of elements of the 
+    * same position [3, 3, 3, 3 ...].
+    * 
+    * Test 3: Inputs have elements equal to 1. The weight vector is initialized 
+    * with sequential elements from 1 to 3. Thus, the output element will be the 
+    * sum of elements in the same position [1*1+1*2+1* 3=6, 6, 6, 6...]
+    * 
+    */
     @Test
     public void testCombFeapMapCodelet() {
-        CombFeapMapCodeletTest test = new CombFeapMapCodeletTest();
-        //for (int i=0;i<64;i++) {
+            CombFeapMapCodeletTest test = new CombFeapMapCodeletTest();
+
             System.out.println("Testing ... ");
             long oldtimestamp = test.destination.getTimestamp();
             System.out.println("steps: "+test.testFeapMapCodelet.steps+" Timestamp before: "+TimeStamp.getStringTimeStamp(oldtimestamp, "dd/MM/yyyy HH:mm:ss.SSS"));
             
             CopyOnWriteArrayList<CopyOnWriteArrayList<Float>> arrList_test = new CopyOnWriteArrayList<CopyOnWriteArrayList<Float>>();
-            //MemoryObject source_arrList = new MemoryObject();
             
             // Test 1
             CopyOnWriteArrayList<Float> arrList_i = new CopyOnWriteArrayList<Float>();
-            for (int i = 0; i < 256*3; i++) {
-                arrList_i.add((float)(i % 3) + 1);
+            for (int i = 0; i < 4*4; i++) {
+                arrList_i.add((float)(i % 4) + 1);
             }
             CopyOnWriteArrayList<Float> arrList_goal = new CopyOnWriteArrayList<Float>();
-            for (int i = 0; i < 5; i++) {
+            for (int i = 0; i < 4; i++) {
                 arrList_goal.add((float) 3.0);
                 arrList_goal.add((float) 6.0);
                 arrList_goal.add((float) 9.0);
+                arrList_goal.add((float) 12.0);                
             }
-            arrList_goal.add((float) 3.0);
                     
-            //source_arrList.setI(int_arrList);
             arrList_test.add(arrList_i);
             
             CopyOnWriteArrayList<Float> arrList_weig = new CopyOnWriteArrayList<Float>();
@@ -124,23 +146,18 @@ public class CombFeapMapCodeletTest {
                 System.out.println("steps: "+test.testFeapMapCodelet.steps+" Timestamp while waiting: "+TimeStamp.getStringTimeStamp(newtimestamp,"dd/MM/yyyy HH:mm:ss.SSS"));
             }
             System.out.println("steps: "+test.testFeapMapCodelet.steps+" Timestamp after: "+TimeStamp.getStringTimeStamp(newtimestamp,"dd/MM/yyyy HH:mm:ss.SSS"));
-            System.out.println("   Inputs 11: "+test.source.getI());
-            System.out.println("   Inputs 12: "+test.source2.getI());
-            System.out.println("   Inputs 13: "+test.source3.getI());
-            System.out.println("   weights 1: "+test.weights.getI());
+            System.out.println("  Inputs 11: "+((List)((List)(test.source.getI())).get(0))+"\n size: "+((List)((List)(test.source.getI())).get(0)).size());
+            System.out.println("  Inputs 12: "+((List)((List)(test.source2.getI())).get(0))+"\n size: "+((List)((List)(test.source2.getI())).get(0)).size());
+            System.out.println("  Inputs 13: "+((List)((List)(test.source3.getI())).get(0))+"\n size: "+((List)((List)(test.source3.getI())).get(0)).size());
+            System.out.println("   weights 1: "+test.weights.getI()+" size: "+((List)(test.weights.getI())).size());
             System.out.println("   Output 1: "+ test.destination.getI());
+            System.out.println("   Goal 1: "+arrList_goal);
             List fulllist = (List) test.destination.getI();
             if (fulllist != null && fulllist.size() > 0) {
-                //printList(fulllist);
                 System.out.println("          sizef: "+fulllist.size()+"\n");
-                //List first = (List)fulllist.get(0);
-                //System.out.print("\n  first 1: "+ first);
-                
-                //List last = (List)fulllist.get(fulllist.size()-1);
-                //System.out.print("\n  last 1: "+ last);
-                
                 assertEquals(((List)(test.destination.getI())).size(),16);
                 assertEquals(((List)(test.destination.getI())),arrList_goal);
+                
                 
             }  
             
@@ -149,7 +166,7 @@ public class CombFeapMapCodeletTest {
             System.out.println("steps: "+test.testFeapMapCodelet.steps+" Timestamp before: "+TimeStamp.getStringTimeStamp(oldtimestamp, "dd/MM/yyyy HH:mm:ss.SSS"));
             
             arrList_i = new CopyOnWriteArrayList<Float>();
-            for (int i = 0; i < 256; i++) {
+            for (int i = 0; i < 4*4; i++) {
                 arrList_i.add((float) 1);
             }
             arrList_goal = new CopyOnWriteArrayList<Float>();
@@ -161,7 +178,6 @@ public class CombFeapMapCodeletTest {
             newtimestamp = test.destination.getTimestamp();
             test.testFeapMapCodelet.resetTriggers();
             System.out.println("steps: "+test.testFeapMapCodelet.steps+" Timestamp before: "+TimeStamp.getStringTimeStamp(oldtimestamp, "dd/MM/yyyy HH:mm:ss.SSS"));
-            //source_arrList.setI(int_arrList);
             arrList_test.add(arrList_i);
             test.source.setI(arrList_test);
             System.out.println("source: "+"steps: "+test.testFeapMapCodelet.steps+" Timestamp after: "+TimeStamp.getStringTimeStamp(test.source.getTimestamp(),"dd/MM/yyyy HH:mm:ss.SSS"));
@@ -181,21 +197,14 @@ public class CombFeapMapCodeletTest {
             }
             System.out.println("steps: "+test.testFeapMapCodelet.steps+" Timestamp after: "+TimeStamp.getStringTimeStamp(newtimestamp,"dd/MM/yyyy HH:mm:ss.SSS"));
             
-            System.out.println("  Inputs 21: "+test.source.getI());
-            System.out.println("  Inputs 22: "+test.source2.getI());
-            System.out.println("  Inputs 23: "+test.source3.getI());
-            System.out.println("   weights 2: "+test.weights.getI());
+            System.out.println("  Inputs 21: "+((List)((List)(test.source.getI())).get(1))+"\n size: "+((List)((List)(test.source.getI())).get(1)).size());
+            System.out.println("  Inputs 22: "+((List)((List)(test.source2.getI())).get(1))+"\n size: "+((List)((List)(test.source2.getI())).get(1)).size());
+            System.out.println("  Inputs 23: "+((List)((List)(test.source3.getI())).get(1))+"\n size: "+((List)((List)(test.source3.getI())).get(1)).size());
+            System.out.println("   weights 2: "+test.weights.getI()+((List)(test.weights.getI())).size());
             System.out.print("  Output 2: "+ test.destination.getI());
             fulllist = (List) test.destination.getI();
             if (fulllist != null && fulllist.size() > 0) {
-                //printList(fulllist);
                 System.out.println("          sizef: "+((List)(test.destination.getI())).size()+"\n");
-                //List first = (List)fulllist.get(0);
-                //System.out.print("\n  first 2: "+ first);
-                
-                //List last = (List)fulllist.get(fulllist.size()-1);
-                //System.out.print("\n  last 2: "+ last);
-                
                 assertEquals(fulllist.size(),16);
                 assertEquals(fulllist,arrList_goal);
                 
@@ -206,7 +215,7 @@ public class CombFeapMapCodeletTest {
             System.out.println("steps: "+test.testFeapMapCodelet.steps+" Timestamp before: "+TimeStamp.getStringTimeStamp(oldtimestamp, "dd/MM/yyyy HH:mm:ss.SSS"));
             
             arrList_i = new CopyOnWriteArrayList<Float>();
-            for (int i = 0; i < 256; i++) {
+            for (int i = 0; i < 16; i++) {
                 arrList_i.add((float) 1);
             }
             arrList_goal = new CopyOnWriteArrayList<Float>();
@@ -218,7 +227,6 @@ public class CombFeapMapCodeletTest {
             newtimestamp = test.destination.getTimestamp();
             test.testFeapMapCodelet.resetTriggers();
             System.out.println("steps: "+test.testFeapMapCodelet.steps+" Timestamp before: "+TimeStamp.getStringTimeStamp(oldtimestamp, "dd/MM/yyyy HH:mm:ss.SSS"));
-            //source_arrList.setI(int_arrList);
             arrList_test.add(arrList_i);
             test.source.setI(arrList_test);
             test.source2.setI(arrList_test);
@@ -233,54 +241,18 @@ public class CombFeapMapCodeletTest {
                 System.out.println("steps: "+test.testFeapMapCodelet.steps+" Timestamp while waiting: "+TimeStamp.getStringTimeStamp(newtimestamp,"dd/MM/yyyy HH:mm:ss.SSS"));
             }
             System.out.println("steps: "+test.testFeapMapCodelet.steps+" Timestamp after: "+TimeStamp.getStringTimeStamp(newtimestamp,"dd/MM/yyyy HH:mm:ss.SSS"));
-            System.out.println("  Inputs 31: "+test.source.getI());
-            System.out.println("  Inputs 32: "+test.source2.getI());
-            System.out.println("  Inputs 33: "+test.source3.getI());
-            System.out.println("   weights 3: "+test.weights.getI());
+            System.out.println("  Inputs 31: "+((List)((List)(test.source.getI())).get(2))+"\n size: "+((List)((List)(test.source.getI())).get(2)).size());
+            System.out.println("  Inputs 32: "+((List)((List)(test.source2.getI())).get(2))+"\n size: "+((List)((List)(test.source2.getI())).get(2)).size());
+            System.out.println("  Inputs 33: "+((List)((List)(test.source3.getI())).get(2))+"\n size: "+((List)((List)(test.source3.getI())).get(2)).size());
+            System.out.println("   weights 3: "+test.weights.getI()+"\n size: "+((List)(test.weights.getI())).size());
             System.out.print("  Output 3: "+ test.destination.getI());
             fulllist = (List) test.destination.getI();
             if (fulllist != null && fulllist.size() > 0) {
-                //printList(fulllist);
                 System.out.println("          sizef: "+fulllist.size()+"\n");
-                //List first = (List)fulllist.get(0);
-                //System.out.print("\n  first 3: "+ first);
-                
-                //List last = (List)fulllist.get(fulllist.size()-1);
-                //System.out.print("\n  last 3: "+ last);
-                
                 assertEquals(fulllist.size(),16);
                 assertEquals(fulllist,arrList_goal);
                 
             }
-        //}
     }
-    // This class contains tests covering some core Codelet methods
-    
-    // This method is used to generate a new Codelet
-    /*CombFeatMapCodelet generateCombFeatMapCodelet() {
-                //Buffers list
-        CopyOnWriteArrayList<String> sensor_names_vision = new CopyOnWriteArrayList<>();
-        sensor_names_vision.add("TEST");
-        CombFeatMapCodelet testCombFeatMapCodelet = new CombFeatMapCodelet(1, sensor_names_vision, 10, 32) {
-
-        @Override
-        public void accessMemoryObjects() {}
-   
-        
-        
-        @Override
-        public void proc() {
-            System.out.println("proc method in CombFeapMapCodeletTest ran correctly!");
-        }
-        @Override
-        public void calculateActivation() {}
-
-            @Override
-            public void calculateCombFeatMap() {
-                System.out.println("calculateCombFeatMap method ran correctly!");
-            }
-    };
-     return(testCombFeatMapCodelet);   
-    }*/
 }
 
