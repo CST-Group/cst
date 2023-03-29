@@ -108,26 +108,35 @@ public class TopDownFeapMapCodeletTest {
             
             arrList_test = new CopyOnWriteArrayList<Float>();
             for (int i = 0; i < (int)(256/4); i++) {
-                arrList_test.add((float) 0);
+                arrList_test.add((float) 100);
+                arrList_test.add((float) 100);
+                arrList_test.add((float) 100);
             }
             for (int i = (int)(256/4); i < (int)(256/4*2); i++) {
-                arrList_test.add((float) 120);
+                arrList_test.add((float) 0);
+                arrList_test.add((float) 100);
+                arrList_test.add((float) 100);
             }
             for (int i = (int)(256/4*2); i < (int)(256/4*3); i++) {
-                arrList_test.add((float) 200);
+                arrList_test.add((float) 100);
+                arrList_test.add((float) 0);
+                arrList_test.add((float) 100);
             }
-            for (int i = (int)(256/4*3); i < 256*3; i++) {
-                arrList_test.add((float) 255);
+            for (int i = (int)(256/4*3); i < 256; i++) {
+                arrList_test.add((float) 100);
+                arrList_test.add((float) 100);
+                arrList_test.add((float) 0);
             }
             arrList_goal = new CopyOnWriteArrayList<Float>();
-            for (int i = 0; i < 2; i++) {
+            for (int i = 0; i < 4; i++) {
                 arrList_goal.add((float) 0.25);
             }
-            for (int i = 0; i < 2; i++) {
-                arrList_goal.add((float) 0.5);
-            }
-            for (int i = 0; i < 12; i++) {
+            
+            for (int i = 0; i < 4; i++) {
                 arrList_goal.add((float) 0.0);
+            }
+            for (int i = 0; i < 8; i++) {
+                arrList_goal.add((float) 0.25);
             }
             
             System.out.println("steps: "+test.testFeapMapCodelet.steps);        
@@ -165,17 +174,15 @@ public class TopDownFeapMapCodeletTest {
             for (int i = (int)(256/4*2); i < (int)(256/4*3); i++) {
                 arrList_test.add((float) 200);
             }
-            for (int i = (int)(256/4*3); i < 256*3; i++) {
+            for (int i = (int)(256/4*3); i < 256; i++) {
                 arrList_test.add((float) 255);
             }
             arrList_goal = new CopyOnWriteArrayList<Float>();
             for (int i = 0; i < 3; i++) {
                 arrList_goal.add((float) 0.5);
             }
-            arrList_goal.add((float) 0.25);
-            
-            for (int i = 0; i < 12; i++) {
-                arrList_goal.add((float) 0);
+            for (int i = 0; i < 13; i++) {
+                arrList_goal.add((float) 0.25);
             }
             
             newtimestamp = test.destination.getTimestamp();
@@ -189,6 +196,44 @@ public class TopDownFeapMapCodeletTest {
             System.out.println("   Input 3: "+test.source.getI()+" \n  size: "+((List)(test.source.getI())).size());
             System.out.println("\n   Output 3: "+ test.destination.getI());
             System.out.println("\n   Goal 3:"+arrList_goal);
+            fulllist = (List) test.destination.getI();
+            if (fulllist != null && fulllist.size() > 0) {
+                System.out.println("          sizef: "+((List)(test.destination.getI())).size()+"\n");
+                assertEquals(fulllist.size(),16);
+                assertEquals(fulllist,arrList_goal);
+            }
+            
+            // Test 4
+            oldtimestamp = test.destination.getTimestamp();
+            System.out.println("steps: "+test.testFeapMapCodelet.steps+" Timestamp before: "+TimeStamp.getStringTimeStamp(oldtimestamp, "dd/MM/yyyy HH:mm:ss.SSS"));
+            
+            arrList_test = new CopyOnWriteArrayList<Float>();
+            for (int i = 0; i < (int)(256); i++) {
+                arrList_test.add((float) 255);
+                arrList_test.add((float) 0);
+                arrList_test.add((float) 0);
+            }
+            
+            arrList_goal = new CopyOnWriteArrayList<Float>();
+            for (int i = 0; i < 16; i++) {
+                arrList_goal.add((float) 1);
+            }
+            
+            
+            System.out.println("steps: "+test.testFeapMapCodelet.steps);        
+            newtimestamp = test.destination.getTimestamp();
+            test.testFeapMapCodelet.resetTriggers();
+            System.out.println("steps: "+test.testFeapMapCodelet.steps);        
+            test.source.setI(arrList_test);
+            System.out.println("steps: "+test.testFeapMapCodelet.steps);        
+            while(test.testFeapMapCodelet.steps < 1) {
+                newtimestamp = test.destination.getTimestamp();
+                System.out.println("steps: "+test.testFeapMapCodelet.steps+" Timestamp after: "+TimeStamp.getStringTimeStamp(newtimestamp,"dd/MM/yyyy HH:mm:ss.SSS"));
+            }
+            System.out.println("steps: "+test.testFeapMapCodelet.steps);        
+            System.out.println("   Input 4: "+test.source.getI()+" \n  size: "+((List)(test.source.getI())).size());
+            System.out.print("\n   Output 4: "+ test.destination.getI());
+            System.out.println("\n   Goal 4:"+arrList_goal);
             fulllist = (List) test.destination.getI();
             if (fulllist != null && fulllist.size() > 0) {
                 System.out.println("          sizef: "+((List)(test.destination.getI())).size()+"\n");
