@@ -30,7 +30,8 @@ jobs:
       - name: Validate Gradle wrapper
         uses: gradle/wrapper-validation-action@v1.0.6
       - name:  Build with Gradle headless
-        uses: GabrielBB/xvfb-action@v1.6
+        # uses: GabrielBB/xvfb-action@v1.6
+        uses: coactions/setup-xvfb@v1.0.1
         with:
           run: ./gradlew clean build jacocoTestReport
       - name: Cleanup Gradle Cache
