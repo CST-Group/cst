@@ -23,6 +23,8 @@ jobs:
         uses: actions/setup-java@v3.11.0
         with:
           java-version: ${{ matrix.java }}
+          distribution: 'adopt'
+          cache: gradle
       - name: Before Script
         run: curl -L https://codeclimate.com/downloads/test-reporter/test-reporter-latest-linux-amd64 > ./cc-test-reporter && chmod +x ./cc-test-reporter && ./cc-test-reporter before-build
       - name: Validate Gradle wrapper
