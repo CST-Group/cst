@@ -126,6 +126,7 @@ public class CombFeapMapCodeletTest {
             }
                     
             arrList_test.add(arrList_i);
+            System.out.println("arrList_test: "+arrList_test.size()+" arrList_i: "+arrList_i.size()+" arrList_goal: "+arrList_goal.size());
             
             CopyOnWriteArrayList<Float> arrList_weig = new CopyOnWriteArrayList<Float>();
             for (int i = 0; i < 3; i++) {
@@ -178,7 +179,10 @@ public class CombFeapMapCodeletTest {
             newtimestamp = test.destination.getTimestamp();
             test.testFeapMapCodelet.resetTriggers();
             System.out.println("steps: "+test.testFeapMapCodelet.steps+" Timestamp before: "+TimeStamp.getStringTimeStamp(oldtimestamp, "dd/MM/yyyy HH:mm:ss.SSS"));
+            arrList_test = new CopyOnWriteArrayList<CopyOnWriteArrayList<Float>>();
             arrList_test.add(arrList_i);
+            //System.out.println(arrList_test);
+            System.out.println("arrList_test: "+arrList_test.size()+" arrList_i: "+arrList_i.size()+" arrList_goal: "+arrList_goal.size());
             test.source.setI(arrList_test);
             System.out.println("source: "+"steps: "+test.testFeapMapCodelet.steps+" Timestamp after: "+TimeStamp.getStringTimeStamp(test.source.getTimestamp(),"dd/MM/yyyy HH:mm:ss.SSS"));
             test.source2.setI(arrList_test);
@@ -197,9 +201,9 @@ public class CombFeapMapCodeletTest {
             }
             System.out.println("steps: "+test.testFeapMapCodelet.steps+" Timestamp after: "+TimeStamp.getStringTimeStamp(newtimestamp,"dd/MM/yyyy HH:mm:ss.SSS"));
             
-            System.out.println("  Inputs 21: "+((List)((List)(test.source.getI())).get(1))+"\n size: "+((List)((List)(test.source.getI())).get(1)).size());
-            System.out.println("  Inputs 22: "+((List)((List)(test.source2.getI())).get(1))+"\n size: "+((List)((List)(test.source2.getI())).get(1)).size());
-            System.out.println("  Inputs 23: "+((List)((List)(test.source3.getI())).get(1))+"\n size: "+((List)((List)(test.source3.getI())).get(1)).size());
+            System.out.println("  Inputs 21: "+((List)((List)(test.source.getI())).get(0))+"\n size: "+((List)((List)(test.source.getI())).get(0)).size());
+            System.out.println("  Inputs 22: "+((List)((List)(test.source2.getI())).get(0))+"\n size: "+((List)((List)(test.source2.getI())).get(0)).size());
+            System.out.println("  Inputs 23: "+((List)((List)(test.source3.getI())).get(0))+"\n size: "+((List)((List)(test.source3.getI())).get(0)).size());
             System.out.println("   weights 2: "+test.weights.getI()+((List)(test.weights.getI())).size());
             System.out.print("  Output 2: "+ test.destination.getI());
             fulllist = (List) test.destination.getI();
@@ -227,7 +231,9 @@ public class CombFeapMapCodeletTest {
             newtimestamp = test.destination.getTimestamp();
             test.testFeapMapCodelet.resetTriggers();
             System.out.println("steps: "+test.testFeapMapCodelet.steps+" Timestamp before: "+TimeStamp.getStringTimeStamp(oldtimestamp, "dd/MM/yyyy HH:mm:ss.SSS"));
+            arrList_test = new CopyOnWriteArrayList<CopyOnWriteArrayList<Float>>();
             arrList_test.add(arrList_i);
+            System.out.println("arrList_test: "+arrList_test.size()+" arrList_i: "+arrList_i.size()+" arrList_goal: "+arrList_goal.size());
             test.source.setI(arrList_test);
             test.source2.setI(arrList_test);
             test.source3.setI(arrList_test);
@@ -241,9 +247,9 @@ public class CombFeapMapCodeletTest {
                 System.out.println("steps: "+test.testFeapMapCodelet.steps+" Timestamp while waiting: "+TimeStamp.getStringTimeStamp(newtimestamp,"dd/MM/yyyy HH:mm:ss.SSS"));
             }
             System.out.println("steps: "+test.testFeapMapCodelet.steps+" Timestamp after: "+TimeStamp.getStringTimeStamp(newtimestamp,"dd/MM/yyyy HH:mm:ss.SSS"));
-            System.out.println("  Inputs 31: "+((List)((List)(test.source.getI())).get(2))+"\n size: "+((List)((List)(test.source.getI())).get(2)).size());
-            System.out.println("  Inputs 32: "+((List)((List)(test.source2.getI())).get(2))+"\n size: "+((List)((List)(test.source2.getI())).get(2)).size());
-            System.out.println("  Inputs 33: "+((List)((List)(test.source3.getI())).get(2))+"\n size: "+((List)((List)(test.source3.getI())).get(2)).size());
+            System.out.println("  Inputs 31: "+((List)((List)(test.source.getI())).get(0))+"\n size: "+((List)((List)(test.source.getI())).get(0)).size());
+            System.out.println("  Inputs 32: "+((List)((List)(test.source2.getI())).get(0))+"\n size: "+((List)((List)(test.source2.getI())).get(0)).size());
+            System.out.println("  Inputs 33: "+((List)((List)(test.source3.getI())).get(0))+"\n size: "+((List)((List)(test.source3.getI())).get(0)).size());
             System.out.println("   weights 3: "+test.weights.getI()+"\n size: "+((List)(test.weights.getI())).size());
             System.out.print("  Output 3: "+ test.destination.getI());
             fulllist = (List) test.destination.getI();
