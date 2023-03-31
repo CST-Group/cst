@@ -83,7 +83,7 @@ public abstract class FeatMapCodelet extends Codelet{
      * define output: feat_map_name
      * 
      */
-    public void accessMemoryObjects() {
+    public synchronized void accessMemoryObjects() {
         for (int i = 0; i < num_sensors; i++) {
             sensor_buffers.add((MemoryObject)this.getInput(sensorbuff_names.get(i)));
         }

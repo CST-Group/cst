@@ -910,7 +910,8 @@ public abstract class Codelet implements Runnable, MemoryObserver {
 				if (isProfiling)
 					startTime = System.currentTimeMillis();
 
-				accessMemoryObjects();// tries to connect to memory objects
+				if (!isMemoryObserver)
+                                    accessMemoryObjects();// tries to connect to memory objects
 
 				if (enable_count == 0) {
                                     if (isMemoryObserver == false) {

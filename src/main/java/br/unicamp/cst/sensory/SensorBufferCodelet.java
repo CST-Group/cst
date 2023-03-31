@@ -63,7 +63,7 @@ public class SensorBufferCodelet extends Codelet {
      * access MemoryObjects: input sensor 
      * define output: bufferName
      */
-    public void accessMemoryObjects() {
+    public synchronized void accessMemoryObjects() {
         sensor_input = (MemoryObject) this.getInput(sensorName);
         buffer_output = (MemoryObject) this.getOutput(bufferName);
     }

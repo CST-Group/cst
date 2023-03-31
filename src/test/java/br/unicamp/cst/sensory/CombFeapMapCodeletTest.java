@@ -135,16 +135,16 @@ public class CombFeapMapCodeletTest {
             long newtimestamp = test.destination.getTimestamp();
             test.testFeapMapCodelet.resetTriggers();
             test.source.setI(arrList_test);
-            sleep(10);
+            //sleep(10);
             System.out.println("source: "+"steps: "+test.testFeapMapCodelet.steps+" Timestamp after: "+TimeStamp.getStringTimeStamp(test.source.getTimestamp(),"dd/MM/yyyy HH:mm:ss.SSS"));
             test.source2.setI(arrList_test);
-            sleep(10);
+            //sleep(10);
             System.out.println("source2: "+"steps: "+test.testFeapMapCodelet.steps+" Timestamp after: "+TimeStamp.getStringTimeStamp(test.source2.getTimestamp(),"dd/MM/yyyy HH:mm:ss.SSS"));
             test.source3.setI(arrList_test);
-            sleep(10);
+            //sleep(10);
             System.out.println("source3: "+"steps: "+test.testFeapMapCodelet.steps+" Timestamp after: "+TimeStamp.getStringTimeStamp(test.source3.getTimestamp(),"dd/MM/yyyy HH:mm:ss.SSS"));
             test.weights.setI(arrList_weig);
-            sleep(10);
+            //sleep(10);
             System.out.println("source: "+"steps: "+test.testFeapMapCodelet.steps+" Timestamp after: "+TimeStamp.getStringTimeStamp(test.weights.getTimestamp(),"dd/MM/yyyy HH:mm:ss.SSS"));
             while(test.testFeapMapCodelet.steps < 4) {
                 newtimestamp = test.destination.getTimestamp();
