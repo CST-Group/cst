@@ -35,7 +35,7 @@ public class UDPServer {
 	} 
 	/**
 	 * Receives information from server as a String
-	 * @return
+	 * @return a string with the information from server
 	 */
 	public synchronized String receive(){
 //		System.out.println("inside receive");
@@ -57,7 +57,7 @@ public class UDPServer {
 
 	/**
 	 * Receives information from server as an array of bytes
-	 * @return
+	 * @return information from server as an array of bytes
 	 */
 	public synchronized byte[] receiveByteArray(){
 		byte[] receiveData = new byte[bufferSize];  //TODO Must be dynamic

@@ -61,7 +61,7 @@ public class Pruner {
 	 *  Returns a new tree, which is a pruned version of the original one.
 	 *  
 	 * @param nodes_to_be_pruned List of nodes that should be pruned from the original tree
-	 * @return
+	 * @return the pruned solution
 	 */
 	public int[] pruneNodes(Set<Integer> nodes_to_be_pruned){
 		//TODO check if the list of nodes to be pruned is valid

@@ -40,7 +40,7 @@ public class SensorBufferCodelet extends Codelet {
     private String sensorName;
     private String bufferName;
     private int maxcapacity;
-    //private int ignore;
+    
     /**
      * init SensorBufferCodelet
      * @param sensorName
@@ -55,7 +55,6 @@ public class SensorBufferCodelet extends Codelet {
         this.bufferName = bufferName;
         this.sensorName = sensorName;
         maxcapacity = maxcpcty;
-        //ignore = 1;
     }
 
     @Override
@@ -63,7 +62,7 @@ public class SensorBufferCodelet extends Codelet {
      * access MemoryObjects: input sensor 
      * define output: bufferName
      */
-    public synchronized void accessMemoryObjects() {
+    public void accessMemoryObjects() {
         sensor_input = (MemoryObject) this.getInput(sensorName);
         buffer_output = (MemoryObject) this.getOutput(bufferName);
     }
@@ -82,12 +81,6 @@ public class SensorBufferCodelet extends Codelet {
      * https://docs.oracle.com/javase/8/docs/technotes/guides/serialization/index.html
      */
     public void proc() {
-        // Ignore first run of the proc function
-//        if(ignore == 1){
-//            ignore = 0;
-//            return;
-//        }
-        
         try {
             Thread.sleep(10);
         } catch (Exception e) {

@@ -70,7 +70,7 @@ private String behaviorPropositionString;
         
         /**
          * This method set action list.
-	 * @param actionList.
+	 * @param actionList the actionList to be set
 	 */
 	public void setActionList(ArrayList<String> actionList) {
 		this.actionList = actionList;

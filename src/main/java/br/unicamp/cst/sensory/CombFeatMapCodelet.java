@@ -64,7 +64,7 @@ public abstract class CombFeatMapCodelet extends Codelet {
      * define outputs: comb_feature_map and winnersType
      * 
      */
-    public synchronized void accessMemoryObjects() {
+    public void accessMemoryObjects() {
         for (int i = 0; i < num_feat_maps; i++) {
             feature_maps.add((MemoryObject)this.getInput(feat_maps_names.get(i)));
         }

@@ -12,6 +12,7 @@
  
 package br.unicamp.cst.sensory;
 
+import br.unicamp.cst.core.entities.Codelet;
 import br.unicamp.cst.core.entities.MemoryObject;
 import br.unicamp.cst.support.TimeStamp;
 import java.io.BufferedWriter;

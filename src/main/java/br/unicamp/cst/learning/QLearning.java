@@ -103,7 +103,7 @@ public class QLearning {
         * Returns the utility value Q related to the given state/action pair
         * @param state
         * @param action
-        * @return
+        * @return the Q utility value related to the given state/action pair
         */
 	public double getQ(String state,String action){
 		double dQ=0;
@@ -325,7 +325,7 @@ public class QLearning {
         
         /**
          * Gets alpha value.
-         * @return 
+         * @return alpha value
          */
 	public double getAlpha() {
 		return alpha;
@@ -343,7 +343,7 @@ public class QLearning {
             
         /**
          * Gets gamma value.
-         * @return 
+         * @return the gamma value
          */
 	public double getGamma() {
 		return gamma;
@@ -642,7 +642,7 @@ public class QLearning {
         
         /**
          * Gets all Q values.
-         * @return 
+         * @return the Q value
          */
 	public HashMap getAllQ() {
 

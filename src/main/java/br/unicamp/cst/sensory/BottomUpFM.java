@@ -97,7 +97,7 @@ public class BottomUpFM extends FeatMapCodelet {
             data_FM.remove(0);
         }
         data_FM.add(new CopyOnWriteArrayList<>());
-        CopyOnWriteArrayList<Float> data_FM_t = (CopyOnWriteArrayList<Float>) data_FM.get(data_FM.size()-1);
+        data_FM_t = (CopyOnWriteArrayList<Float>) data_FM.get(data_FM.size()-1);
         for (int j = 0; j < mapDimension; j++) {
             data_FM_t.add((float)0);
         }
