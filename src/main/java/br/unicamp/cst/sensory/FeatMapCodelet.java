@@ -72,6 +72,9 @@ public abstract class FeatMapCodelet extends Codelet{
         steps = 0;
     }
     
+    /**
+     * Reset triggers.
+     */
     public void resetTriggers() {
         steps = 0;
     }

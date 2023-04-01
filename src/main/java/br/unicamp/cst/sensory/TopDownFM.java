@@ -33,8 +33,21 @@ import java.util.concurrent.CopyOnWriteArrayList;
  * deliberative enhancing a region in the attentional map or by adjusting the 
  * weights that define the contribution of each feature dimension.
  * 
+ * Top-down Feature Maps allow the agent to target its attention to desired 
+ * elements deliberately. The maps were computed using an average pool over the 
+ * observation of each map at time t, and then the difference between each 
+ * region mean and the image mean. It's computed the necessary size of the 
+ * kernel and stride to reduce the feature map to a final size. 
+ * Each value is compared to a particular goal to build these maps. The closer 
+ * these elements are to the target values according to predefined percentage 
+ * ranges, the higher the map activation in that region. 
+ * 
  * @author L. M. Berto
  * @author L. L. Rossi (leolellisr)
+ * 
+ * @see Codelet
+ * @see MemoryObject
+ * @see FeatMapCodelet
  */
 public class TopDownFM extends FeatMapCodelet {
     private float mr = 255;                     //Max Value for VisionSensor
@@ -47,7 +60,38 @@ public class TopDownFM extends FeatMapCodelet {
     private boolean print_to_file = false;
     private CopyOnWriteArrayList<Float> visionData_Array_r = new CopyOnWriteArrayList<>(), visionData_Array_g = new CopyOnWriteArrayList<>(), visionData_Array_b = new CopyOnWriteArrayList<>();
     private CopyOnWriteArrayList<Float> data_FM_t;    
-    public TopDownFM(int nsensors, int get_sens, CopyOnWriteArrayList<String> sens_names, String featmapname,int timeWin, int mapDim, CopyOnWriteArrayList<Float> goal, float saturation, int resolution, int slices, int step, boolean print_to_file) {
+    
+    
+    /**
+     * init TopDownFM class
+     * @param nsensors
+     *          input sensors number
+     * @param get_sens
+     *          input sensor index
+     * @param sens_names
+     *          input sensor names
+     * @param featmapname
+     *          output feature map name
+     * @param timeWin
+     *          analysed time window,   Buffer size
+     * @param mapDim 
+     *          output feature map dimension
+     * @param goal 
+     *          top down feature map goal
+     * @param saturation 
+     *          top down feature map saturation
+     * @param resolution 
+     *          top down feature map input resolution
+     * @param slices 
+     *          slices number that will reduce the input resolution
+     * @param step 
+     *          step to scan input sensors
+     * @param print_to_file
+     *          boolean that defines if should print to file
+     */
+    public TopDownFM(int nsensors, int get_sens, CopyOnWriteArrayList<String> sens_names, 
+            String featmapname,int timeWin, int mapDim, CopyOnWriteArrayList<Float> goal, 
+            float saturation, int resolution, int slices, int step, boolean print_to_file) {
         super(nsensors, sens_names, featmapname,timeWin,mapDim);
         this.time_graph = 0;
         this.goal = goal;
@@ -60,10 +104,19 @@ public class TopDownFM extends FeatMapCodelet {
 
     }
 
+    /**
+     * getGoal. Get the Top Down feature map goal.
+     * @return goal
+     * */
     public CopyOnWriteArrayList<Float> getGoal(){
         return this.goal;
     }
     
+    /**
+     * setGoal. set the Top Down feature map goal.
+     * @param new_goal
+     *        new goal to set
+     * */
     public void setGoal(CopyOnWriteArrayList<Float> new_goal){
         this.goal = new_goal;
     }
@@ -73,6 +126,10 @@ public class TopDownFM extends FeatMapCodelet {
         // Method calculateActivation isnt used here
     }
    
+    /**
+     * getFM. Calculates the Top Down feature map.
+     * @return top down feature map
+     * */
     public CopyOnWriteArrayList<Float> getFM(){
         CopyOnWriteArrayList<Float> vision_mean_color = new CopyOnWriteArrayList<>();
         float new_res_1_2 = res/slices;
@@ -80,16 +137,29 @@ public class TopDownFM extends FeatMapCodelet {
             int ni = (int) (n*new_res_1_2), no = (int) (new_res_1_2+n*new_res_1_2);
             for(int m = 0;m<slices;m++){    
                 int mi = (int) (m*new_res_1_2), mo = (int) (new_res_1_2+m*new_res_1_2);
-                float[] meanValues = getMeanValues(ni, no, mi, mo);
+                float[] meanValues = getPixelValues(ni, no, mi, mo);
                 float correct_mean_r = meanValues[0], correct_mean_g = meanValues[1], correct_mean_b = meanValues[2];
-                float vision_color_value = getVisionColorValue(correct_mean_r, correct_mean_g, correct_mean_b);
+                float vision_color_value = getValue(correct_mean_r, correct_mean_g, correct_mean_b);
                 vision_mean_color.add(vision_color_value);
             }
         }
         return vision_mean_color;
     }
 
-    private float[] getMeanValues(int ni, int no, int mi, int mo) {
+    /**
+     * getPixelValues. Calculates the average pool values with the pixel values 
+     * for the Top Down feature map.
+     * @param ni
+     *        Start value for y-axis scan of predefined region
+     * @param no
+     *        Final value for y-axis scan of predefined region
+     * @param mi
+     *        Start value for x-axis scan of predefined region
+     * @param mo
+     *        Final value for x-axis scan of predefined region
+     * @return average pool values for the pixel values
+     * */
+    private float[] getPixelValues(int ni, int no, int mi, int mo) {
         float MeanValue_r = 0, MeanValue_g = 0, MeanValue_b = 0;
         for (int y = ni; y < no; y++) {
             for (int x = mi; x < mo; x++) {
@@ -105,11 +175,37 @@ public class TopDownFM extends FeatMapCodelet {
         return new float[] {correct_mean_r, correct_mean_g, correct_mean_b};
     }
 
+    /**
+     * compare. It compares the differences between the values obtained for the 
+     * defined regions and a pre-established value.  
+     * 
+     * @param red_diff
+     *        first value to compare
+     * @param green_diff
+     *        second value to compare
+     * @param blue_diff
+     *        third value to compare
+     * @param comp
+     *        pre-established value to compare
+     * @return boolean that classifies the comparison of values as true or false
+     */
     private boolean compare(float red_diff, float green_diff, float blue_diff, float comp){
         return red_diff<comp && green_diff<comp && blue_diff < comp;
     }
     
-    private float getVisionColorValue(float correct_mean_r, float correct_mean_g, float correct_mean_b) {
+    /**
+     * getValue. Returns the value to be adopted for the region considering the 
+     * difference between the average pool obtained and the goal value.
+     * @param correct_mean_r
+     *        mean values of first channel
+     * @param correct_mean_g
+     *        mean values of second channel
+     * @param correct_mean_b
+     *        mean values of third channel
+     * @return value
+     *        final value of the region
+     **/
+    private float getValue(float correct_mean_r, float correct_mean_g, float correct_mean_b) {
         float value;
         float red_diff = Math.abs(correct_mean_r-goal.get(0))/mr;
         float green_diff = Math.abs(correct_mean_g-goal.get(1))/mr;
@@ -122,6 +218,10 @@ public class TopDownFM extends FeatMapCodelet {
         return value;
     }
     
+    /**
+     * inicializeMeanValues. Initializes the arrays used to calculate the
+     * average pool with zeros
+     **/
     private void inicializeMeanValues(){
         for (int j = 0; j < res*res; j++) {
             visionData_Array_r.add((float)0);
@@ -130,7 +230,12 @@ public class TopDownFM extends FeatMapCodelet {
         }
     }
     
-    private void calcMeanValues(List listData){
+    /**
+     * separateValues. separates the sensor values between the channels used.
+     * @param listData
+     *        array with sensor values
+     */
+    private void separateValues(List listData){
         int count_3 = 0;
         for (int j = 0; j+step_len < listData.size(); j+= step_len) {
                 visionData_Array_r.set(count_3, (Float) listData.get(j));        //red data
@@ -139,15 +244,29 @@ public class TopDownFM extends FeatMapCodelet {
                 count_3 += 1; }
     }
     
+    
+    /**
+     * getMeanValues. Set the feature map values
+     * @param vision_mean_color 
+     *        array with average pool values
+     */
     private void getMeanValues(CopyOnWriteArrayList<Float> vision_mean_color){
         for (int j = 0; j < vision_mean_color.size(); j++) { 
             data_FM_t.set(j, vision_mean_color.get(j));
         }
     }
     
+    /**
+     * printFileIfAllowed. Function to print calculated map
+     **/
     private void printFileIfAllowed(){
         if(print_to_file) printToFile(data_FM_t);
     }
+    
+    /**
+     * proc: codelet logical process. Collects sensor values, initializes and 
+     * calculates top down feature map
+    */
     @Override
     public void proc() {
         try {
@@ -167,7 +286,7 @@ public class TopDownFM extends FeatMapCodelet {
         //MemoryObject dataMO = (MemoryObject)data_buffer.get(data_buffer.size()-1);
         //List listData = (List) dataMO.getI();
         inicializeMeanValues();
-        calcMeanValues(data_buffer);
+        separateValues(data_buffer);
         CopyOnWriteArrayList<Float> vision_mean_color = getFM();
         getMeanValues(vision_mean_color);
         featureMap.setI(data_FM_t);
@@ -175,6 +294,11 @@ public class TopDownFM extends FeatMapCodelet {
         steps++;
     }
     
+    /**
+     * printToFile. Function to print calculated map.
+     * @param arr
+     *        map to print
+     **/
     private void printToFile(CopyOnWriteArrayList<Float> arr){
 
         DateTimeFormatter dtf = DateTimeFormatter.ofPattern("yyyy_MM_dd_HH_mm_ss");  

@@ -93,11 +93,11 @@ public class CombFeapMapCodeletTest {
     * initialized with 1s only. Thus, the output element will be the sum of the 
     * elements of the same position [3, 6, 9, 12 ...].
     * 
-    * Test 2: Inputs have elements equal to 1. The weight vector is initialized 
+    * Test 2. Inputs have elements equal to 1. The weight vector is initialized 
     * with 1s only. Thus, the output element will be the sum of elements of the 
     * same position [3, 3, 3, 3 ...].
     * 
-    * Test 3: Inputs have elements equal to 1. The weight vector is initialized 
+    * Test 3. Inputs have elements equal to 1. The weight vector is initialized 
     * with sequential elements from 1 to 3. Thus, the output element will be the 
     * sum of elements in the same position [1*1+1*2+1* 3=6, 6, 6, 6...]
     * 
