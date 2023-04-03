@@ -188,20 +188,20 @@ public class CombFeapMapCodeletTest {
             //System.out.println(arrList_test);
             System.out.println("arrList_test: "+arrList_test.size()+" arrList_i: "+arrList_i.size()+" arrList_goal: "+arrList_goal.size());
             test.source.setI(arrList_test);
-            sleep(10);
+            //sleep(10);
             System.out.println("source: "+"steps: "+test.testFeapMapCodelet.steps+" Timestamp after: "+TimeStamp.getStringTimeStamp(test.source.getTimestamp(),"dd/MM/yyyy HH:mm:ss.SSS"));
             test.source2.setI(arrList_test);
-            sleep(10);
+            //sleep(10);
             System.out.println("source2: "+"steps: "+test.testFeapMapCodelet.steps+" Timestamp after: "+TimeStamp.getStringTimeStamp(test.source2.getTimestamp(),"dd/MM/yyyy HH:mm:ss.SSS"));
             test.source3.setI(arrList_test);
-            sleep(10);
+            //sleep(10);
             System.out.println("source3: "+"steps: "+test.testFeapMapCodelet.steps+" Timestamp after: "+TimeStamp.getStringTimeStamp(test.source3.getTimestamp(),"dd/MM/yyyy HH:mm:ss.SSS"));
             arrList_weig = new CopyOnWriteArrayList<Float>();
             for (int i = 0; i < 3; i++) {
                 arrList_weig.add((float) 1.0);
             }
             test.weights.setI(arrList_weig);
-            sleep(10);
+            //sleep(10);
             System.out.println("source: "+"steps: "+test.testFeapMapCodelet.steps+" Timestamp after: "+TimeStamp.getStringTimeStamp(test.weights.getTimestamp(),"dd/MM/yyyy HH:mm:ss.SSS"));
             while(test.testFeapMapCodelet.steps < 4) {
                 newtimestamp = test.destination.getTimestamp();
@@ -243,11 +243,11 @@ public class CombFeapMapCodeletTest {
             arrList_test.add(arrList_i);
             System.out.println("arrList_test: "+arrList_test.size()+" arrList_i: "+arrList_i.size()+" arrList_goal: "+arrList_goal.size());
             test.source.setI(arrList_test);
-            sleep(10);
+            //sleep(10);
             test.source2.setI(arrList_test);
-            sleep(10);
+            //sleep(10);
             test.source3.setI(arrList_test);
-            sleep(10);
+            //sleep(10);
             arrList_weig = new CopyOnWriteArrayList<Float>();
             for (int i = 1; i < 4; i++) {
                 arrList_weig.add((float) i);

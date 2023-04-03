@@ -23,6 +23,8 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 
 /**
@@ -148,15 +150,16 @@ public class CFM extends CombFeatMapCodelet {
         
         calculateCFMandWinners();
         if(debug){
-            System.out.println("I received "+num_feat_maps+" maps as inputs");
+            Logger.getAnonymousLogger().log(Level.INFO, "I received {0} maps as inputs", num_feat_maps);
             for (int i = 0; i < num_feat_maps; i++) {
                 MemoryObject inp = (MemoryObject)feature_maps.get(i);
-                System.out.println(i+" "+feat_maps_names.get(i)+":"+" steps: "+this.steps+" Timestamp after: "+TimeStamp.getStringTimeStamp(inp.getTimestamp(),"dd/MM/yyyy HH:mm:ss.SSS"));
+                Logger.getAnonymousLogger().log(Level.INFO, "{0} {1} : steps: {2} Timestamp after: {3}",  new Object[]{i, feat_maps_names.get(i), this.steps, TimeStamp.getStringTimeStamp(inp.getTimestamp(),"dd/MM/yyyy HH:mm:ss.SSS")});
             }
         }
         comb_feature_mapMO.setI(CFMrow);
         
-        if(debug) System.out.println("CFM:"+" steps: "+this.steps+" Timestamp after: "+TimeStamp.getStringTimeStamp(comb_feature_mapMO.getTimestamp(),"dd/MM/yyyy HH:mm:ss.SSS"));
+        if(debug) Logger.getAnonymousLogger().log(Level.INFO, "CFM: steps: {0} Timestamp after: {1}",  new Object[]{this.steps, TimeStamp.getStringTimeStamp(comb_feature_mapMO.getTimestamp(),"dd/MM/yyyy HH:mm:ss.SSS")}); 
+            
         if(print_to_file){
             printToFile((CopyOnWriteArrayList<Float>) CFMrow, "CFM.txt");
             printToFile((CopyOnWriteArrayList<Integer>) winners_row, "winnerType.txt"); 

@@ -283,8 +283,7 @@ public class TopDownFM extends FeatMapCodelet {
         for (int j = 0; j < mapDimension; j++) data_FM_t.add((float)0);
         if(data_buffer == null) return;
         if(data_buffer.size() < 1) return;
-        //MemoryObject dataMO = (MemoryObject)data_buffer.get(data_buffer.size()-1);
-        //List listData = (List) dataMO.getI();
+
         inicializeMeanValues();
         separateValues(data_buffer);
         CopyOnWriteArrayList<Float> vision_mean_color = getFM();
