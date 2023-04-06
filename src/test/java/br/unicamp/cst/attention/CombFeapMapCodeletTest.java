@@ -9,7 +9,7 @@
  * Contributors:
  * K. Raizer, A. L. O. Paraense, E. M. Froes, R. R. Gudwin - initial API and implementation
  ***********************************************************************************************/
-package br.unicamp.cst.sensory;
+package br.unicamp.cst.attention;
 
 import br.unicamp.cst.core.entities.Codelet;
 
@@ -42,7 +42,7 @@ public class CombFeapMapCodeletTest {
     
     public MemoryObject source,source2,source3,weights;
     public MemoryObject destination,destination_type;
-    public CFM testFeapMapCodelet;
+    public CFM testFeapMapCodelet, testFeapMapCodelet2;
     
     /**
      * Test class initialization for the Combined Feature Map. Creates a test 
@@ -80,6 +80,21 @@ public class CombFeapMapCodeletTest {
         source2.addMemoryObserver(testFeapMapCodelet);
         source3.addMemoryObserver(testFeapMapCodelet);
         weights.addMemoryObserver(testFeapMapCodelet);
+        
+        testFeapMapCodelet2 = new CFM(3, FMnames, 100, 16, true, false);
+        testMind.insertCodelet(testFeapMapCodelet2);
+        testFeapMapCodelet2.addInput(source);
+        testFeapMapCodelet2.addInput(source2);
+        testFeapMapCodelet2.addInput(source3);
+        testFeapMapCodelet2.addInput(weights);
+        testFeapMapCodelet2.addOutput(destination);
+        testFeapMapCodelet2.addOutput(destination_type);
+        testFeapMapCodelet2.setIsMemoryObserver(true);
+	source.addMemoryObserver(testFeapMapCodelet2);
+        source2.addMemoryObserver(testFeapMapCodelet2);
+        source3.addMemoryObserver(testFeapMapCodelet2);
+        weights.addMemoryObserver(testFeapMapCodelet2);
+        
         testMind.start();
         
         

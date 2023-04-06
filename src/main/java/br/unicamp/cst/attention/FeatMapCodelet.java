@@ -10,7 +10,7 @@
  *     K. Raizer, A. L. O. Paraense, R. R. Gudwin - initial API and implementation
  *****************************************************************************
  */
-package br.unicamp.cst.sensory;
+package br.unicamp.cst.attention;
 
 import br.unicamp.cst.core.entities.Codelet;
 import br.unicamp.cst.core.entities.MemoryObject;
@@ -38,8 +38,6 @@ import java.util.concurrent.CopyOnWriteArrayList;
  */
 public abstract class FeatMapCodelet extends Codelet{
     
-    protected List sensor_buffers;
-    protected CopyOnWriteArrayList<String> sensorbuff_names;
     protected MemoryObject featureMap;
     protected String feat_map_name;
     protected double dt = 0.05;
@@ -51,10 +49,7 @@ public abstract class FeatMapCodelet extends Codelet{
     
     /**
      * init FeatMapCodelet
-     * @param nsensors
-     *          input SensorBuffers number 
-     * @param sensbuff_names
-     *          input SensorBuffers names
+
      * @param featmapname
      *          output feature map name
      * @param timeWin
@@ -62,10 +57,8 @@ public abstract class FeatMapCodelet extends Codelet{
      * @param mapDim 
      *          output feature map dimension
      */
-    public FeatMapCodelet(int nsensors, CopyOnWriteArrayList<String> sensbuff_names, String featmapname,int timeWin, int mapDim){
-        sensor_buffers = new CopyOnWriteArrayList<MemoryObject>();
-        num_sensors = nsensors;
-        sensorbuff_names = sensbuff_names;
+    public FeatMapCodelet(String featmapname,int timeWin, int mapDim){
+     
         feat_map_name = featmapname;
         timeWindow = timeWin;
         mapDimension = mapDim;
@@ -86,12 +79,5 @@ public abstract class FeatMapCodelet extends Codelet{
      * define output: feat_map_name
      * 
      */
-    public void accessMemoryObjects() {
-        for (int i = 0; i < num_sensors; i++) {
-            sensor_buffers.add((MemoryObject)this.getInput(sensorbuff_names.get(i)));
-        }
-        featureMap = (MemoryObject) this.getOutput(feat_map_name);
-        winners = (MemoryObject) this.getInput("WINNERS");
-        
-    }    
+    public abstract void accessMemoryObjects(); 
 }

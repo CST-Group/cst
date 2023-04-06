@@ -10,7 +10,7 @@
  *     K. Raizer, A. L. O. Paraense, R. R. Gudwin - initial API and implementation
  *****************************************************************************
  */
-package br.unicamp.cst.sensory;
+package br.unicamp.cst.attention;
 
 import br.unicamp.cst.core.entities.Codelet;
 import br.unicamp.cst.core.entities.MemoryObject;

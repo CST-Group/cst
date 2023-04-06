@@ -10,12 +10,13 @@
  *  *     K. Raizer, A. L. O. Paraense, R. R. Gudwin - initial API and implementation
  *  ******************************************************************************/
  
-package br.unicamp.cst.sensory;
+package br.unicamp.cst.attention;
 
 import br.unicamp.cst.core.entities.Codelet;
 import br.unicamp.cst.core.entities.MemoryObject;
 import br.unicamp.cst.support.TimeStamp;
 import java.io.BufferedWriter;
+import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.PrintWriter;
@@ -56,7 +57,6 @@ public class CFM extends CombFeatMapCodelet {
     private  int time_graph;
     public int steps;
     private boolean print_to_file = false, debug;
-    private String path = "results/txt_last_exp/";
     private List CFMrow, winners_row;
     
     /**
@@ -169,9 +169,16 @@ public class CFM extends CombFeatMapCodelet {
     
       
     private void printToFile(Object object,String filename){
+        String user_dir = System.getProperty("user.dir");
+        File dir = new File(user_dir);
+        if (!dir.exists()) {
+            dir.mkdir();
+            if(debug) Logger.getAnonymousLogger().log(Level.INFO, "dir created: {0}",  new Object[]{dir});
+
+        }
         DateTimeFormatter dtf = DateTimeFormatter.ofPattern("yyyy_MM_dd_HH_mm_ss");  
         LocalDateTime now = LocalDateTime.now();
-            try(FileWriter fw = new FileWriter(path+filename,true);
+            try(FileWriter fw = new FileWriter(user_dir+filename,true);
                 BufferedWriter bw = new BufferedWriter(fw);
                 PrintWriter out = new PrintWriter(bw))
             {

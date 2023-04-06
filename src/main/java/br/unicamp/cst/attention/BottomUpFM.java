@@ -10,11 +10,12 @@
  *  *     K. Raizer, A. L. O. Paraense, R. R. Gudwin - initial API and implementation
  *  ******************************************************************************/
  
-package br.unicamp.cst.sensory;
+package br.unicamp.cst.attention;
 
 import br.unicamp.cst.core.entities.MemoryObject;
 import br.unicamp.cst.support.TimeStamp;
 import java.io.BufferedWriter;
+import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.PrintWriter;
@@ -54,15 +55,15 @@ public class BottomUpFM extends FeatMapCodelet {
     private int i_position;
     private boolean print_to_file = false, debug;
     private CopyOnWriteArrayList<Float> data_FM_t;
+    private String path = "results/txt_last_exp/", file = "bottomUpFM.txt";
+   
     
     /**
      * init BottomUpFM class
-     * @param nsensors
-     *          input sensors number
+    
      * @param get_sens
      *          input sensor index
-     * @param sens_names
-     *          input sensor names
+     
      * @param featmapname
      *          output feature map name
      * @param timeWin
@@ -82,11 +83,10 @@ public class BottomUpFM extends FeatMapCodelet {
      * @param print_to_file
      *          boolean that defines if should print to file
      */
-    public BottomUpFM(int nsensors, int get_sens, CopyOnWriteArrayList<String> sens_names, 
-            String featmapname,int timeWin, int mapDim, float saturation, 
+    public BottomUpFM(int get_sens, String featmapname,int timeWin, int mapDim, float saturation, 
             int resolution, int slices, int step, int i_position, boolean print_to_file,
             boolean debug) {
-        super(nsensors, sens_names, featmapname,timeWin,mapDim);
+        super(featmapname,timeWin,mapDim);
         this.time_graph = 0;
         this.mr = saturation; // 255
         this.res = resolution; // 256
@@ -98,6 +98,17 @@ public class BottomUpFM extends FeatMapCodelet {
         this.debug = debug;
     }
 
+    @Override
+    /**
+     * access MemoryObjects: inputs 
+     * define output: feat_map_name
+     * 
+     */
+    public void accessMemoryObjects() {
+        featureMap = (MemoryObject) this.getOutput(feat_map_name);
+        
+    }
+    
     @Override
     public void calculateActivation() {
          // Method calculateActivation isnt used here
@@ -246,7 +257,7 @@ public class BottomUpFM extends FeatMapCodelet {
         } catch (Exception e) {
             Thread.currentThread().interrupt();
         }
-        MemoryObject data_bufferMO = (MemoryObject) sensor_buffers.get(get_sens);
+        MemoryObject data_bufferMO = (MemoryObject) inputs.get(get_sens);
         List data_buffer = (List) data_bufferMO.getI(), data_FM = (List) featureMap.getI();
         inicializeFeatureMap(data_FM);
         if(data_buffer == null || data_buffer.isEmpty()) {
@@ -276,9 +287,16 @@ public class BottomUpFM extends FeatMapCodelet {
      *        map to print
      **/
     private void printToFile(CopyOnWriteArrayList<Float> arr){
+        String user_dir = System.getProperty("user.dir");
+        File dir = new File(user_dir);
+        if (!dir.exists()) {
+            dir.mkdir();
+            if(debug) Logger.getAnonymousLogger().log(Level.INFO, "dir created: {0}",  new Object[]{dir});
+
+        }
         DateTimeFormatter dtf = DateTimeFormatter.ofPattern("yyyy_MM_dd_HH_mm_ss");  
         LocalDateTime now = LocalDateTime.now(); 
-        try(FileWriter fw = new FileWriter("results/txt_last_exp/vision_blue_FM.txt", true);
+        try(FileWriter fw = new FileWriter(user_dir + File.separator +file, true);
             BufferedWriter bw = new BufferedWriter(fw);
             PrintWriter out = new PrintWriter(bw))
         {

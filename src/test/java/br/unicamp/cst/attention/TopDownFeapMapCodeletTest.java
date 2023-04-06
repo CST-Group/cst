@@ -8,7 +8,7 @@
  * Contributors:
  * K. Raizer, A. L. O. Paraense, E. M. Froes, R. R. Gudwin - initial API and implementation
  ***********************************************************************************************/
-package br.unicamp.cst.sensory;
+package br.unicamp.cst.attention;
 import br.unicamp.cst.core.entities.MemoryObject;
 import br.unicamp.cst.core.entities.Mind;
 import br.unicamp.cst.support.TimeStamp;
@@ -32,7 +32,7 @@ public class TopDownFeapMapCodeletTest {
     private static Logger log = LoggerFactory.getLogger(TopDownFeapMapCodeletTest.class);    
     public MemoryObject source;
     public MemoryObject destination;
-    public TopDownFM testFeapMapCodelet;
+    public TopDownFM testFeapMapCodelet, testFeapMapCodelet2;
     
     /**
      * Test class initialization for the Top-Down Feature Map. Creates a test 
@@ -48,18 +48,24 @@ public class TopDownFeapMapCodeletTest {
         source = testMind.createMemoryObject("SOURCE");
         destination = testMind.createMemoryObject("DESTINATION");
         destination.setI(new CopyOnWriteArrayList<Float>());
-        CopyOnWriteArrayList<String> FMnames = new CopyOnWriteArrayList<>();
-        FMnames.add("SOURCE");
         CopyOnWriteArrayList<Float> goal = new CopyOnWriteArrayList<>();
         goal.add((float) 255);
         goal.add((float) 0);
         goal.add((float) 0);
-        testFeapMapCodelet = new TopDownFM(1, 0, FMnames, "DESTINATION", 100, 16, goal, 255, 16, 4, 3, false);
+        testFeapMapCodelet = new TopDownFM(0, "DESTINATION", 100, 16, goal, 255, 16, 4, 3, false);
         testMind.insertCodelet(testFeapMapCodelet);
         testFeapMapCodelet.addInput(source);
         testFeapMapCodelet.addOutput(destination);
         testFeapMapCodelet.setIsMemoryObserver(true);
 	source.addMemoryObserver(testFeapMapCodelet);
+        
+        testFeapMapCodelet2 = new TopDownFM(0, "DESTINATION", 100, 16, goal, 255, 16, 4, 3, true);
+        testMind.insertCodelet(testFeapMapCodelet2);
+        testFeapMapCodelet2.addInput(source);
+        testFeapMapCodelet2.addOutput(destination);
+        testFeapMapCodelet2.setIsMemoryObserver(true);
+	source.addMemoryObserver(testFeapMapCodelet2);
+        
         testMind.start();        
     }
     

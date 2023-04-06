@@ -9,7 +9,7 @@
  * Contributors:
  * K. Raizer, A. L. O. Paraense, E. M. Froes, R. R. Gudwin - initial API and implementation
  ***********************************************************************************************/
-package br.unicamp.cst.sensory;
+package br.unicamp.cst.attention;
 
 import br.unicamp.cst.core.entities.Codelet;
 import br.unicamp.cst.core.entities.MemoryObject;
@@ -41,7 +41,7 @@ import org.junit.jupiter.api.Test;
  * @see MemoryObject
  * @see SensorBufferCodelet
  */
-public class FeapMapCodeletTest {
+public class BottomUpFeapMapCodeletTest {
 
     /**
      * Test class initialization for the Bottom-Up Feature Map. Creates a test 
@@ -53,24 +53,31 @@ public class FeapMapCodeletTest {
      */
     public MemoryObject source;
     public MemoryObject destination;
-    BottomUpFM testFeapMapCodelet;
+    BottomUpFM testFeapMapCodelet, testFeapMapCodelet2;
     
-    public FeapMapCodeletTest() {
+    public BottomUpFeapMapCodeletTest() {
         Mind testMind = new Mind();
         source = testMind.createMemoryObject("SOURCE");
         //source.setI(0);
         destination = testMind.createMemoryObject("DESTINATION");
         destination.setI(new CopyOnWriteArrayList<Float>());
-        CopyOnWriteArrayList<String> FMnames = new CopyOnWriteArrayList<>();
-        FMnames.add("SOURCE");
-        testFeapMapCodelet = new BottomUpFM(1, 0, FMnames,
-                "DESTINATION", 100, 16, 255, 
+        
+        testFeapMapCodelet = new BottomUpFM(0, "DESTINATION", 100, 16, 255, 
                 4, 4, 3, 0, false, true);
         testMind.insertCodelet(testFeapMapCodelet);
         testFeapMapCodelet.addInput(source);
         testFeapMapCodelet.addOutput(destination);
         testFeapMapCodelet.setIsMemoryObserver(true);
 	source.addMemoryObserver(testFeapMapCodelet);
+        
+        testFeapMapCodelet2 = new BottomUpFM(0, "DESTINATION", 100, 16, 255, 
+                4, 4, 3, 0, true, false);
+        testMind.insertCodelet(testFeapMapCodelet2);
+        testFeapMapCodelet2.addInput(source);
+        testFeapMapCodelet2.addOutput(destination);
+        testFeapMapCodelet2.setIsMemoryObserver(true);
+	source.addMemoryObserver(testFeapMapCodelet2);
+        
         testMind.start();
         
         
@@ -109,7 +116,7 @@ public class FeapMapCodeletTest {
     */
     @Test
     public void testFeapMapCodelet() {
-        FeapMapCodeletTest test = new FeapMapCodeletTest();
+        BottomUpFeapMapCodeletTest test = new BottomUpFeapMapCodeletTest();
         //for (int i=0;i<64;i++) {
             System.out.println("Testing ... ");
             long oldtimestamp = test.destination.getTimestamp();
