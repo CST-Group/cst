@@ -282,11 +282,7 @@ public class TopDownFM extends FeatMapCodelet {
     */
     @Override
     public void proc() {
-        try {
-            Thread.sleep(300);
-        } catch (Exception e) {
-            Thread.currentThread().interrupt();
-        }        
+        try { Thread.sleep(300); } catch (Exception e) { Thread.currentThread().interrupt(); }        
         MemoryObject data_bufferMO = (MemoryObject) inputs.get(get_sens);        //Gets  Data from buffer get_sens
         List data_buffer = (List) data_bufferMO.getI();
         List data_FM = (List) featureMap.getI();        
@@ -296,7 +292,6 @@ public class TopDownFM extends FeatMapCodelet {
         for (int j = 0; j < mapDimension; j++) data_FM_t.add((float)0);
         if(data_buffer == null) return;
         if(data_buffer.size() < 1) return;
-
         inicializeMeanValues();
         separateValues(data_buffer);
         CopyOnWriteArrayList<Float> vision_mean_color = getFM();
@@ -317,7 +312,6 @@ public class TopDownFM extends FeatMapCodelet {
         if (!dir.exists()) {
             dir.mkdir();
             Logger.getAnonymousLogger().log(Level.INFO, "dir created: {0}",  new Object[]{dir});
-
         }
         DateTimeFormatter dtf = DateTimeFormatter.ofPattern("yyyy_MM_dd_HH_mm_ss");  
         LocalDateTime now = LocalDateTime.now(); 
@@ -328,10 +322,7 @@ public class TopDownFM extends FeatMapCodelet {
             out.println(dtf.format(now)+"_"+time_graph+" "+ arr);
             time_graph++;
             out.close();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        
+        } catch (IOException e) { e.printStackTrace(); }        
     }
 }
     

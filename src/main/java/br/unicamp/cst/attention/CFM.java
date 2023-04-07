@@ -176,8 +176,6 @@ public class CFM extends CombFeatMapCodelet {
                 out.println(dtf.format(now)+"_"+"_"+time_graph+" "+ object);
                 time_graph++;
                 out.close();
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
+            } catch (IOException e) { e.printStackTrace(); }
     }
 }

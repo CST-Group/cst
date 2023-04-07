@@ -81,47 +81,25 @@ public class SensorBufferCodelet extends Codelet {
      * https://docs.oracle.com/javase/8/docs/technotes/guides/serialization/index.html
      */
     public void proc() {
-        try {
-            Thread.sleep(10);
-        } catch (Exception e) {
-            Thread.currentThread().interrupt();
-        }
-                
+        try { Thread.sleep(10); } catch (Exception e) { Thread.currentThread().interrupt(); }  
         List buffer_list = (List) buffer_output.getI();
-        
-        if(buffer_list.size() == maxcapacity){
-            buffer_list.remove(0);
-        }
-        
+        if(buffer_list.size() == maxcapacity){ buffer_list.remove(0); }
         MemoryObject cloned_data = null;
-        
         ObjectOutputStream oos;
         ObjectInputStream ois;
-        try
-        {
-           ByteArrayOutputStream bos = 
-                 new ByteArrayOutputStream(); // A
-           oos = new ObjectOutputStream(bos); // B
-           // serialize and pass the object
+        try { ByteArrayOutputStream bos = new ByteArrayOutputStream(); // A
+           oos = new ObjectOutputStream(bos); // B - serialize and pass the object
            oos.writeObject(sensor_input);   // C
            oos.flush();               // D
-           ByteArrayInputStream bin = 
-              new ByteArrayInputStream(bos.toByteArray()); // E
-           ois = new ObjectInputStream(bin);                  // F
-           // return the new object
+           ByteArrayInputStream bin =  new ByteArrayInputStream(bos.toByteArray()); // E
+           ois = new ObjectInputStream(bin);                  // F - return the new object
            cloned_data = (MemoryObject) ois.readObject(); // G
-           
            oos.close();
-           ois.close();
-        }
-        catch(IOException | ClassNotFoundException e)
-        {
-           System.out.println("Exception in ObjectCloner = " + e);
+           ois.close(); }
+        catch(IOException | ClassNotFoundException e) { System.out.println("Exception in ObjectCloner = " + e);
            e.printStackTrace();
         }
-        
         buffer_list.add(cloned_data);
         buffer_output.setI(buffer_list); // This is necessary to set a new TimeStamp for the MemoryObject
-    }
-        
+    }        
 }

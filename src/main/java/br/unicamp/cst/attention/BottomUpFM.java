@@ -127,7 +127,10 @@ public class BottomUpFM extends FeatMapCodelet {
         float mean_all = sum / data_Array.size();
         CopyOnWriteArrayList<Float> data_mean = new CopyOnWriteArrayList<>();
         CopyOnWriteArrayList<Integer> limits = new CopyOnWriteArrayList<>();
-        for (int i=0; i<4;i++) limits.add(0);
+        limits.add(0);
+        limits.add(0);
+        limits.add(0);
+        limits.add(0);
         float new_res = (res/slices)*(res/slices);
         float new_res_1_2 = (res/slices);
         for(int n = 0;n<slices;n++){
@@ -140,12 +143,7 @@ public class BottomUpFM extends FeatMapCodelet {
                 data_mean.add(calculateDataMean(correct_mean));
             }
         }
-         if(debug){
-
-            Logger.getAnonymousLogger().log(Level.INFO, "data_mean: {0} size: {1}",  new Object[]{data_mean, data_mean.size()});
-             
-         }
-         
+        if(debug) Logger.getAnonymousLogger().log(Level.INFO, "data_mean: {0} size: {1}",  new Object[]{data_mean, data_mean.size()});
         return data_mean;
     }
 
@@ -218,10 +216,7 @@ public class BottomUpFM extends FeatMapCodelet {
      */
     private CopyOnWriteArrayList<Float> getDataArray(List list_data) {
         CopyOnWriteArrayList<Float> data_Array = new CopyOnWriteArrayList<>();
-        if(debug){
-            Logger.getAnonymousLogger().log(Level.INFO, "list_data: {0} size: {1}",  new Object[]{list_data, list_data.size()});
-
-        }
+        if(debug) Logger.getAnonymousLogger().log(Level.INFO, "list_data: {0} size: {1}",  new Object[]{list_data, list_data.size()});
         for (int j = 0; j < res*res; j++) {
             data_Array.add((float)0);
         }
@@ -254,30 +249,22 @@ public class BottomUpFM extends FeatMapCodelet {
     */
     @Override
     public void proc() {
-        try {
-            Thread.sleep(50);
-        } catch (Exception e) {
-            Thread.currentThread().interrupt();
-        }
+        try { Thread.sleep(50); } catch (Exception e) { Thread.currentThread().interrupt(); }
         MemoryObject data_bufferMO = (MemoryObject) inputs.get(get_sens);
         List data_buffer = (List) data_bufferMO.getI(), data_FM = (List) featureMap.getI();
         inicializeFeatureMap(data_FM);
         if(data_buffer == null || data_buffer.isEmpty()) {
             return;
         }
-        CopyOnWriteArrayList<Float> data_Array = getDataArray(data_buffer);
-        
+        CopyOnWriteArrayList<Float> data_Array = getDataArray(data_buffer);        
         updateDataFM(data_FM, data_Array);
         if(debug){
             Logger.getAnonymousLogger().log(Level.INFO, "data_buffer: {0} size: {1}",  new Object[]{data_buffer, data_buffer.size()});
             Logger.getAnonymousLogger().log(Level.INFO, "data_Array: {0} size: {1}",  new Object[]{data_Array, data_Array.size()});
             Logger.getAnonymousLogger().log(Level.INFO, "data_FM: {0} size: {1}",  new Object[]{data_FM, data_FM.size()});
         }
-        
         featureMap.setI(data_FM_t);
-        if(print_to_file) {
-            printToFile((CopyOnWriteArrayList<Float>) data_FM.get(data_FM.size()-1));
-        }
+        if(print_to_file) printToFile((CopyOnWriteArrayList<Float>) data_FM.get(data_FM.size()-1));
         steps++;
     }
 
@@ -294,7 +281,6 @@ public class BottomUpFM extends FeatMapCodelet {
         if (!dir.exists()) {
             dir.mkdir();
             if(debug) Logger.getAnonymousLogger().log(Level.INFO, "dir created: {0}",  new Object[]{dir});
-
         }
         DateTimeFormatter dtf = DateTimeFormatter.ofPattern("yyyy_MM_dd_HH_mm_ss");  
         LocalDateTime now = LocalDateTime.now(); 
@@ -305,10 +291,7 @@ public class BottomUpFM extends FeatMapCodelet {
             out.println(dtf.format(now)+"_"+"_"+time_graph+" "+ arr);
             time_graph++;
             out.close();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        
+        } catch (IOException e) { e.printStackTrace(); }        
     }
 }
     
