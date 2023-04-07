@@ -126,15 +126,17 @@ public class BottomUpFM extends FeatMapCodelet {
         for (float value : data_Array) sum += value;
         float mean_all = sum / data_Array.size();
         CopyOnWriteArrayList<Float> data_mean = new CopyOnWriteArrayList<>();
+        CopyOnWriteArrayList<Integer> limits = new CopyOnWriteArrayList<>();
+        for (int i=0; i<4;i++) limits.add(0);
         float new_res = (res/slices)*(res/slices);
         float new_res_1_2 = (res/slices);
         for(int n = 0;n<slices;n++){
-            int ni = (int) (n*new_res_1_2);
-            int no = (int) (new_res_1_2+n*new_res_1_2);
+            limits.set(0, (int) (n*new_res_1_2));
+            limits.set(1,  (int) (new_res_1_2+n*new_res_1_2));
             for(int m = 0;m<slices;m++){    
-                int mi = (int) (m*new_res_1_2);
-                int mo = (int) (new_res_1_2+m*new_res_1_2);
-                float correct_mean = calculateCorrectMean(data_Array, mean_all, new_res, ni, no, mi, mo);
+                limits.set(2, (int) (m*new_res_1_2));
+                limits.set(3, (int) (new_res_1_2+m*new_res_1_2));
+                float correct_mean = calculateCorrectMean(data_Array, mean_all, new_res, limits);
                 data_mean.add(calculateDataMean(correct_mean));
             }
         }
@@ -167,10 +169,10 @@ public class BottomUpFM extends FeatMapCodelet {
      *        Final value for x-axis scan of predefined region
      * @return average pool values for the pixel values
      **/
-    private float calculateCorrectMean(CopyOnWriteArrayList<Float> data_Array, float mean_all, float new_res, int ni, int no, int mi, int mo) {
+    private float calculateCorrectMean(CopyOnWriteArrayList<Float> data_Array, float mean_all, float new_res, CopyOnWriteArrayList<Integer> limits) {
         float meanValue = 0;
-        for (int y = ni; y < no; y++) {
-            for (int x = mi; x < mo; x++) {
+        for (int y = limits.get(0); y < limits.get(1); y++) {
+            for (int x = limits.get(2); x < limits.get(3); x++) {
                 meanValue += data_Array.get(y*res+x);
             }
         }

@@ -145,11 +145,15 @@ public class TopDownFM extends FeatMapCodelet {
     public CopyOnWriteArrayList<Float> getFM(){
         CopyOnWriteArrayList<Float> vision_mean_color = new CopyOnWriteArrayList<>();
         float new_res_1_2 = res/slices;
+        CopyOnWriteArrayList<Integer> limits = new CopyOnWriteArrayList<>();
+        for (int i=0; i<4;i++) limits.add(0);
         for(int n = 0;n<slices;n++){
-            int ni = (int) (n*new_res_1_2), no = (int) (new_res_1_2+n*new_res_1_2);
+            limits.set(0, (int) (n*new_res_1_2));
+            limits.set(1, (int) (new_res_1_2+n*new_res_1_2));
             for(int m = 0;m<slices;m++){    
-                int mi = (int) (m*new_res_1_2), mo = (int) (new_res_1_2+m*new_res_1_2);
-                float[] meanValues = getPixelValues(ni, no, mi, mo);
+                limits.set(2, (int) (m*new_res_1_2));
+                limits.set(3, (int) (new_res_1_2+m*new_res_1_2));
+                float[] meanValues = getPixelValues(limits);
                 float vision_color_value = getValue(meanValues[0], meanValues[1], meanValues[2]);
                 vision_mean_color.add(vision_color_value);
             }
@@ -170,10 +174,10 @@ public class TopDownFM extends FeatMapCodelet {
      *        Final value for x-axis scan of predefined region
      * @return average pool values for the pixel values
      * */
-    private float[] getPixelValues(int ni, int no, int mi, int mo) {
+    private float[] getPixelValues(CopyOnWriteArrayList<Integer> limits) {
         float MeanValue_r = 0, MeanValue_g = 0, MeanValue_b = 0;
-        for (int y = ni; y < no; y++) {
-            for (int x = mi; x < mo; x++) {
+        for (int y = limits.get(0); y < limits.get(1); y++) {
+            for (int x = limits.get(2); x < limits.get(3); x++) {
                 MeanValue_r += visionData_Array_r.get(y*res+x);
                 MeanValue_g += visionData_Array_g.get(y*res+x);
                 MeanValue_b += visionData_Array_b.get(y*res+x);

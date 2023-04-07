@@ -133,11 +133,7 @@ public class CFM extends CombFeatMapCodelet {
      */
     @Override
     public void calculateCombFeatMap() {
-        try {
-            Thread.sleep(300);
-        } catch (Exception e) {
-            Thread.currentThread().interrupt();
-        }
+        try { Thread.sleep(300); } catch (Exception e) { Thread.currentThread().interrupt();}
         List combinedFM = (List) comb_feature_mapMO.getI(), winnersTypeList = (List) winnersType.getI();
         if(combinedFM.size() == timeWindow) combinedFM.remove(0);
         if(winnersTypeList.size() == timeWindow) winnersTypeList.remove(0);
@@ -145,9 +141,7 @@ public class CFM extends CombFeatMapCodelet {
         winnersTypeList.add(new CopyOnWriteArrayList<>());
         CFMrow = (List) combinedFM.get(combinedFM.size()-1);
         winners_row = (List) winnersTypeList.get(winnersTypeList.size()-1);
-        
-        initializeCFMrowAndWinnersRow();
-        
+        initializeCFMrowAndWinnersRow();        
         calculateCFMandWinners();
         if(debug){
             Logger.getAnonymousLogger().log(Level.INFO, "I received {0} maps as inputs", num_feat_maps);
@@ -157,9 +151,7 @@ public class CFM extends CombFeatMapCodelet {
             }
         }
         comb_feature_mapMO.setI(CFMrow);
-        
-        if(debug) Logger.getAnonymousLogger().log(Level.INFO, "CFM: steps: {0} Timestamp after: {1}",  new Object[]{this.steps, TimeStamp.getStringTimeStamp(comb_feature_mapMO.getTimestamp(),"dd/MM/yyyy HH:mm:ss.SSS")}); 
-            
+        if(debug) Logger.getAnonymousLogger().log(Level.INFO, "CFM: steps: {0} Timestamp after: {1}",  new Object[]{this.steps, TimeStamp.getStringTimeStamp(comb_feature_mapMO.getTimestamp(),"dd/MM/yyyy HH:mm:ss.SSS")});
         if(print_to_file){
             printToFile((CopyOnWriteArrayList<Float>) CFMrow, "CFM.txt");
             printToFile((CopyOnWriteArrayList<Integer>) winners_row, "winnerType.txt"); 
@@ -174,11 +166,10 @@ public class CFM extends CombFeatMapCodelet {
         if (!dir.exists()) {
             dir.mkdir();
             if(debug) Logger.getAnonymousLogger().log(Level.INFO, "dir created: {0}",  new Object[]{dir});
-
         }
         DateTimeFormatter dtf = DateTimeFormatter.ofPattern("yyyy_MM_dd_HH_mm_ss");  
         LocalDateTime now = LocalDateTime.now();
-            try(FileWriter fw = new FileWriter(user_dir+filename,true);
+            try(FileWriter fw = new FileWriter(user_dir+ File.separator+filename,true);
                 BufferedWriter bw = new BufferedWriter(fw);
                 PrintWriter out = new PrintWriter(bw))
             {
@@ -188,6 +179,5 @@ public class CFM extends CombFeatMapCodelet {
             } catch (IOException e) {
                 e.printStackTrace();
             }
-    
     }
 }
