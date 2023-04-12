@@ -32,7 +32,7 @@ import java.util.concurrent.CopyOnWriteArrayList;
  */
 public abstract class CombFeatMapCodelet extends Codelet {
     protected MemoryObject comb_feature_mapMO;        
-    protected List feature_maps;
+    protected List<MemoryObject> feature_maps;
     protected CopyOnWriteArrayList<String> feat_maps_names;
     protected Memory weights;
     protected int timeWindow;
@@ -49,7 +49,7 @@ public abstract class CombFeatMapCodelet extends Codelet {
      */
     
     protected CombFeatMapCodelet(CopyOnWriteArrayList<String> featmapsnames,int timeWin, int CFMdim){
-        feature_maps = new CopyOnWriteArrayList<MemoryObject>();
+        feature_maps = new CopyOnWriteArrayList<>();
         feat_maps_names = featmapsnames;
         timeWindow = timeWin;
         CFMdimension = CFMdim;
@@ -64,7 +64,7 @@ public abstract class CombFeatMapCodelet extends Codelet {
      */
     public void accessMemoryObjects() {
         for (int i = 0; i < feat_maps_names.size(); i++) {
-            feature_maps.add(inputs.get(i));
+            feature_maps.add((MemoryObject) inputs.get(i));
         }
         weights = inputs.get(inputs.size()-1);
         comb_feature_mapMO = (MemoryObject) this.getOutput("COMB_FM");

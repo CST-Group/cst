@@ -136,8 +136,7 @@ public class CFM extends CombFeatMapCodelet {
         winners_row = (List<Integer>) winnersTypeList.get(winnersTypeList.size()-1);
         initializeCFMrowAndWinnersRow();        
         calculateCFMandWinners();
-        if(debug){
-            Logger.getAnonymousLogger().log(Level.INFO, "I received {0} maps as inputs", feat_maps_names.size());
+        if(debug){ Logger.getAnonymousLogger().log(Level.INFO, "I received {0} maps as inputs", feat_maps_names.size());
             for (int i = 0; i < feat_maps_names.size(); i++) {
                 MemoryObject inp = (MemoryObject)feature_maps.get(i);
                 Logger.getAnonymousLogger().log(Level.INFO, "{0} {1} : steps: {2} Timestamp after: {3}",  new Object[]{i, feat_maps_names.get(i), this.steps, TimeStamp.getStringTimeStamp(inp.getTimestamp(),"dd/MM/yyyy HH:mm:ss.SSS")});
@@ -145,14 +144,11 @@ public class CFM extends CombFeatMapCodelet {
         }
         comb_feature_mapMO.setI(CFMrow);
         if(debug) Logger.getAnonymousLogger().log(Level.INFO, "CFM: steps: {0} Timestamp after: {1}",  new Object[]{this.steps, TimeStamp.getStringTimeStamp(comb_feature_mapMO.getTimestamp(),"dd/MM/yyyy HH:mm:ss.SSS")});
-        if(print_to_file){
-            ToTxt.printToFile((CopyOnWriteArrayList<Float>) CFMrow, "CFM.txt", debug, time_graph);
+        if(print_to_file){ ToTxt.printToFile((CopyOnWriteArrayList<Float>) CFMrow, "CFM.txt", debug, time_graph);
             ToTxt.printToFile((CopyOnWriteArrayList<Integer>) winners_row, "winnerType.txt", debug, time_graph);
             time_graph++;
         }
         steps++;
     }
-    
-      
     
 }
