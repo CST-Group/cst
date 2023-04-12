@@ -67,7 +67,7 @@ public class CombFeapMapCodeletTest {
         FMnames.add("SOURCE");
         FMnames.add("SOURCE2");
         FMnames.add("SOURCE3");
-        testFeapMapCodelet = new CFM(3, FMnames, 100, 16, false, true);
+        testFeapMapCodelet = new CFM(FMnames, 100, 16, false, true);
         testMind.insertCodelet(testFeapMapCodelet);
         testFeapMapCodelet.addInput(source);
         testFeapMapCodelet.addInput(source2);
@@ -81,7 +81,7 @@ public class CombFeapMapCodeletTest {
         source3.addMemoryObserver(testFeapMapCodelet);
         weights.addMemoryObserver(testFeapMapCodelet);
         
-        testFeapMapCodelet2 = new CFM(3, FMnames, 100, 16, true, false);
+        testFeapMapCodelet2 = new CFM(FMnames, 100, 16, true, false);
         testMind.insertCodelet(testFeapMapCodelet2);
         testFeapMapCodelet2.addInput(source);
         testFeapMapCodelet2.addInput(source2);

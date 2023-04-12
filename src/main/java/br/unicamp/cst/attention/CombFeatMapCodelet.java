@@ -13,6 +13,7 @@
 package br.unicamp.cst.attention;
 
 import br.unicamp.cst.core.entities.Codelet;
+import br.unicamp.cst.core.entities.Memory;
 import br.unicamp.cst.core.entities.MemoryObject;
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
@@ -33,15 +34,12 @@ public abstract class CombFeatMapCodelet extends Codelet {
     protected MemoryObject comb_feature_mapMO;        
     protected List feature_maps;
     protected CopyOnWriteArrayList<String> feat_maps_names;
-    protected int num_feat_maps;
-    protected MemoryObject weights;
+    protected Memory weights;
     protected int timeWindow;
     protected int CFMdimension;
     protected MemoryObject winnersType;
     /**
      * init CombFeatMapCodelet
-     * @param numfeatmaps
-     *          input feature maps number
      * @param featmapsnames
      *          input feature maps names
      * @param timeWin
@@ -50,9 +48,8 @@ public abstract class CombFeatMapCodelet extends Codelet {
      *          output combined feature map dimension
      */
     
-    public CombFeatMapCodelet(int numfeatmaps, CopyOnWriteArrayList<String> featmapsnames,int timeWin, int CFMdim){
+    protected CombFeatMapCodelet(CopyOnWriteArrayList<String> featmapsnames,int timeWin, int CFMdim){
         feature_maps = new CopyOnWriteArrayList<MemoryObject>();
-        num_feat_maps = numfeatmaps;
         feat_maps_names = featmapsnames;
         timeWindow = timeWin;
         CFMdimension = CFMdim;
@@ -61,14 +58,15 @@ public abstract class CombFeatMapCodelet extends Codelet {
     @Override
     /**
      * access MemoryObjects: feature_maps and weights
+     * feature_maps must be the first inputs and weights must be the last input
      * define outputs: comb_feature_map and winnersType
      * 
      */
     public void accessMemoryObjects() {
-        for (int i = 0; i < num_feat_maps; i++) {
-            feature_maps.add((MemoryObject)this.getInput(feat_maps_names.get(i)));
+        for (int i = 0; i < feat_maps_names.size(); i++) {
+            feature_maps.add(inputs.get(i));
         }
-        weights = (MemoryObject) this.getInput("FM_WEIGHTS");
+        weights = inputs.get(inputs.size()-1);
         comb_feature_mapMO = (MemoryObject) this.getOutput("COMB_FM");
         winnersType = (MemoryObject) this.getOutput("TYPE");
     }

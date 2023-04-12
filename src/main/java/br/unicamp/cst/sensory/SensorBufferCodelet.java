@@ -20,6 +20,8 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.io.Serializable;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  * Codelet implementation of SensorBuffers.  In order to obtain data observation
@@ -96,7 +98,8 @@ public class SensorBufferCodelet extends Codelet {
            cloned_data = (MemoryObject) ois.readObject(); // G
            oos.close();
            ois.close(); }
-        catch(IOException | ClassNotFoundException e) { System.out.println("Exception in ObjectCloner = " + e);
+        catch(IOException | ClassNotFoundException e) { 
+            Logger.getAnonymousLogger().log(Level.INFO, "Exception in ObjectCloner = {0}", e);
            e.printStackTrace();
         }
         buffer_list.add(cloned_data);

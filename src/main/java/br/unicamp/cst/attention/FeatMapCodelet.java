@@ -57,7 +57,7 @@ public abstract class FeatMapCodelet extends Codelet{
      * @param mapDim 
      *          output feature map dimension
      */
-    public FeatMapCodelet(String featmapname,int timeWin, int mapDim){
+    protected FeatMapCodelet(String featmapname,int timeWin, int mapDim){
      
         feat_map_name = featmapname;
         timeWindow = timeWin;

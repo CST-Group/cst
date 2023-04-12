@@ -15,18 +15,11 @@ package br.unicamp.cst.attention;
 import br.unicamp.cst.core.entities.Codelet;
 import br.unicamp.cst.core.entities.MemoryObject;
 import br.unicamp.cst.support.TimeStamp;
-import java.io.BufferedWriter;
-import java.io.File;
-import java.io.FileWriter;
-import java.io.IOException;
-import java.io.PrintWriter;
-import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-
+import br.unicamp.cst.support.ToTxt;
 
 /**
  * Codelet implementation of a Combined Feature Map (CFM). The CFM is a signal 
@@ -57,12 +50,11 @@ public class CFM extends CombFeatMapCodelet {
     private  int time_graph;
     public int steps;
     private boolean print_to_file = false, debug;
-    private List CFMrow, winners_row;
+    private List<Float> CFMrow;
+    private List<Integer>  winners_row;
     
     /**
      * init CFM class
-     * @param numfeatmaps
-     *          input feature maps number
      * @param featmapsnames
      *          input feature maps names
      * @param timeWin
@@ -74,8 +66,8 @@ public class CFM extends CombFeatMapCodelet {
      * @param debug
      *          boolean that defines if should print debug logs
      */
-    public CFM(int numfeatmaps, CopyOnWriteArrayList<String> featmapsnames, int timeWin, int CFMdim, boolean print_to_file, boolean debug) {
-        super(numfeatmaps, featmapsnames,timeWin,CFMdim);
+    public CFM(CopyOnWriteArrayList<String> featmapsnames, int timeWin, int CFMdim, boolean print_to_file, boolean debug) {
+        super(featmapsnames,timeWin,CFMdim);
         this.time_graph = 0;
         this.print_to_file = print_to_file;
         this.steps = 0;
@@ -100,16 +92,16 @@ public class CFM extends CombFeatMapCodelet {
      * winning characteristic (bottom-up or top-down)
      */
     private void calculateCFMandWinners() {
-        List weight_values = (List) weights.getI();
+        List<Float> weight_values = (List<Float>) weights.getI();
         for (int j = 0; j < CFMrow.size(); j++) { 
                 float ctj= 0, sum_top=0, sum_bottom=0;
-                for (int k = 0; k < num_feat_maps; k++) { 
+                for (int k = 0; k < feat_maps_names.size(); k++) { 
                     MemoryObject FMkMO = (MemoryObject) feature_maps.get(k);
-                    List FMk = (List) FMkMO.getI();
+                    List<List<Float>> FMk = (List<List<Float>>) FMkMO.getI();
                     if(FMk == null || weight_values == null) return;
                     if(FMk.size() < 1) return;
-                    List FMk_t = (List) FMk.get(FMk.size()-1);
-                    Float fmkt_val = (Float) FMk_t.get(j), weight_val = (Float) weight_values.get(k);
+                    List<Float> FMk_t = (List<Float>) FMk.get(FMk.size()-1);
+                    Float fmkt_val = FMk_t.get(j), weight_val = weight_values.get(k);
                     ctj += weight_val*fmkt_val;
                     if(k>=4) sum_top += weight_val*fmkt_val;
                     else sum_bottom += weight_val*fmkt_val; 
@@ -134,18 +126,19 @@ public class CFM extends CombFeatMapCodelet {
     @Override
     public void calculateCombFeatMap() {
         try { Thread.sleep(300); } catch (Exception e) { Thread.currentThread().interrupt();}
-        List combinedFM = (List) comb_feature_mapMO.getI(), winnersTypeList = (List) winnersType.getI();
+        List<List<Float>> combinedFM = (List<List<Float>>) comb_feature_mapMO.getI();
+        List<List<Integer>> winnersTypeList = (List<List<Integer>>) winnersType.getI();
         if(combinedFM.size() == timeWindow) combinedFM.remove(0);
         if(winnersTypeList.size() == timeWindow) winnersTypeList.remove(0);
         combinedFM.add(new CopyOnWriteArrayList<>());
         winnersTypeList.add(new CopyOnWriteArrayList<>());
-        CFMrow = (List) combinedFM.get(combinedFM.size()-1);
-        winners_row = (List) winnersTypeList.get(winnersTypeList.size()-1);
+        CFMrow = (List<Float>) combinedFM.get(combinedFM.size()-1);
+        winners_row = (List<Integer>) winnersTypeList.get(winnersTypeList.size()-1);
         initializeCFMrowAndWinnersRow();        
         calculateCFMandWinners();
         if(debug){
-            Logger.getAnonymousLogger().log(Level.INFO, "I received {0} maps as inputs", num_feat_maps);
-            for (int i = 0; i < num_feat_maps; i++) {
+            Logger.getAnonymousLogger().log(Level.INFO, "I received {0} maps as inputs", feat_maps_names.size());
+            for (int i = 0; i < feat_maps_names.size(); i++) {
                 MemoryObject inp = (MemoryObject)feature_maps.get(i);
                 Logger.getAnonymousLogger().log(Level.INFO, "{0} {1} : steps: {2} Timestamp after: {3}",  new Object[]{i, feat_maps_names.get(i), this.steps, TimeStamp.getStringTimeStamp(inp.getTimestamp(),"dd/MM/yyyy HH:mm:ss.SSS")});
             }
@@ -153,29 +146,13 @@ public class CFM extends CombFeatMapCodelet {
         comb_feature_mapMO.setI(CFMrow);
         if(debug) Logger.getAnonymousLogger().log(Level.INFO, "CFM: steps: {0} Timestamp after: {1}",  new Object[]{this.steps, TimeStamp.getStringTimeStamp(comb_feature_mapMO.getTimestamp(),"dd/MM/yyyy HH:mm:ss.SSS")});
         if(print_to_file){
-            printToFile((CopyOnWriteArrayList<Float>) CFMrow, "CFM.txt");
-            printToFile((CopyOnWriteArrayList<Integer>) winners_row, "winnerType.txt"); 
+            ToTxt.printToFile((CopyOnWriteArrayList<Float>) CFMrow, "CFM.txt", debug, time_graph);
+            ToTxt.printToFile((CopyOnWriteArrayList<Integer>) winners_row, "winnerType.txt", debug, time_graph);
+            time_graph++;
         }
         steps++;
     }
     
       
-    private void printToFile(Object object,String filename){
-        String user_dir = System.getProperty("user.dir");
-        File dir = new File(user_dir);
-        if (!dir.exists()) {
-            dir.mkdir();
-            if(debug) Logger.getAnonymousLogger().log(Level.INFO, "dir created: {0}",  new Object[]{dir});
-        }
-        DateTimeFormatter dtf = DateTimeFormatter.ofPattern("yyyy_MM_dd_HH_mm_ss");  
-        LocalDateTime now = LocalDateTime.now();
-            try(FileWriter fw = new FileWriter(user_dir+ File.separator+filename,true);
-                BufferedWriter bw = new BufferedWriter(fw);
-                PrintWriter out = new PrintWriter(bw))
-            {
-                out.println(dtf.format(now)+"_"+"_"+time_graph+" "+ object);
-                time_graph++;
-                out.close();
-            } catch (IOException e) { e.printStackTrace(); }
-    }
+    
 }
