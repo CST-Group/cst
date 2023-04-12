@@ -278,7 +278,7 @@ public class TopDownFM extends FeatMapCodelet {
      **/
     private void printFileIfAllowed(){
         if(print_to_file){
-            ToTxt.printToFile(data_FM_t, file, time_graph);
+            ToTxt.printToFile(data_FM_t, file, false, time_graph);
             time_graph++;
         }
     }

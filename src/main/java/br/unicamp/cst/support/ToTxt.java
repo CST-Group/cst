@@ -58,21 +58,6 @@ public class ToTxt {
             } catch (IOException e) { e.printStackTrace(); }
     }
     
-    public static void printToFile(Object object,String filename, int time_graph){
-        String user_dir = System.getProperty("user.dir");
-        File dir = new File(user_dir);
-        if (!dir.exists()) {
-            dir.mkdir();
-        }
-        DateTimeFormatter dtf = DateTimeFormatter.ofPattern("yyyy_MM_dd_HH_mm_ss");  
-        LocalDateTime now = LocalDateTime.now();
-            try(FileWriter fw = new FileWriter(user_dir+ File.separator+filename,true);
-                BufferedWriter bw = new BufferedWriter(fw);
-                PrintWriter out = new PrintWriter(bw))
-            {
-                out.println(dtf.format(now)+"_"+"_"+time_graph+" "+ object);
-                out.close();
-            } catch (IOException e) { e.printStackTrace(); }
-    }
+   
     
 }
