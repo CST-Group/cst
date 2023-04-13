@@ -12,11 +12,8 @@
 package br.unicamp.cst.behavior.glas;
 
 
-import org.junit.Test;
-
-import br.unicamp.cst.behavior.glas.GlasEvent;
-import br.unicamp.cst.behavior.glas.GlasSequence;
 import br.unicamp.cst.learning.glas.GlasLearner;
+import org.junit.jupiter.api.Test;
 
 public class TestLearner_Convergence {
 

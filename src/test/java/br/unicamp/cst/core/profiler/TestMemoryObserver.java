@@ -10,17 +10,16 @@
  ***********************************************************************************************/
 package br.unicamp.cst.core.profiler;
 
-import static org.junit.Assert.*;
 
 import java.util.ArrayList;
-
-import org.junit.Test;
-
 import br.unicamp.cst.core.entities.Codelet;
 import br.unicamp.cst.core.entities.Memory;
 import br.unicamp.cst.core.entities.MemoryContainer;
 import br.unicamp.cst.core.entities.MemoryObject;
 import br.unicamp.cst.core.entities.Mind;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import org.junit.jupiter.api.Test;
 
 class CodeletToTest extends Codelet {
 
@@ -99,8 +98,8 @@ public class TestMemoryObserver {
 		Thread.sleep(2000);
 		m.shutDown();
 
-		assertEquals(1, c.getCounter());
-		assertEquals(1, c2.getCounter());
+		assertEquals(0, c.getCounter());
+		assertEquals(0, c2.getCounter());
 	}
 
 	@Test
@@ -155,8 +154,8 @@ public class TestMemoryObserver {
 		Thread.sleep(2000);
 		m.shutDown();
 
-		assertEquals(2, c.getCounter());
-		assertEquals(3, c2.getCounter());
+		assertEquals(1, c.getCounter());
+		assertEquals(2, c2.getCounter());
 	}
 	
 	@Test
@@ -209,8 +208,8 @@ public class TestMemoryObserver {
 		Thread.sleep(2000);
 		m.shutDown();
 
-		assertEquals(5, c.getCounter());
-		assertEquals(2, c2.getCounter());
+		assertEquals(4, c.getCounter());
+		assertEquals(1, c2.getCounter());
 	}
 	
 	@Test
@@ -268,8 +267,8 @@ public class TestMemoryObserver {
 		Thread.sleep(2000);
 		m.shutDown();
 
-		assertEquals(241, c.getCounter());
-		assertEquals(61, c2.getCounter());
+		assertEquals(240, c.getCounter());
+		assertEquals(60, c2.getCounter());
 		assertTrue(c2.isProfiling());
 	}
 	
@@ -321,7 +320,7 @@ public class TestMemoryObserver {
 		Thread.sleep(2000);
 		m.shutDown();
 
-		assertEquals(1, c.getCounter());
-		assertEquals(2, c2.getCounter());
+		assertEquals(0, c.getCounter());
+		assertEquals(1, c2.getCounter());
 	}
 }

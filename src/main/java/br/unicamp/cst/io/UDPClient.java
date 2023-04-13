@@ -66,7 +66,7 @@ public class UDPClient {
 	}
 	/**
 	 * Receives information from server as an array of bytes
-	 * @return
+	 * @return array with received bytes
 	 */
 	public synchronized byte[] receiveByteArray(){
 
@@ -86,7 +86,7 @@ public class UDPClient {
 	}
 	/**
 	 * Receives information from client as a String
-	 * @return
+	 * @return string with the information from client
 	 */
 	public synchronized String receive(){
 

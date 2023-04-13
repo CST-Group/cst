@@ -11,12 +11,8 @@
 
 package br.unicamp.cst.behavior.glas;
 
-
-import static org.junit.Assert.*;
-
-import org.junit.Test;
-
-import br.unicamp.cst.behavior.glas.GlasActionSelection;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import org.junit.jupiter.api.Test;
 
 /**
  * @author Klaus Raizer

@@ -10,9 +10,8 @@
  ***********************************************************************************************/
 package br.unicamp.cst.core.entities;
 
-import static org.junit.Assert.assertEquals;
+import org.junit.jupiter.api.Test;
 
-import org.junit.Test;
 
 /**
  * @author andre

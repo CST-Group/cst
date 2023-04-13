@@ -21,8 +21,8 @@ import javax.swing.tree.DefaultMutableTreeNode;
 
 
 import br.unicamp.cst.core.profiler.TestComplexMemoryObjectInfo;
-import static org.junit.Assert.assertEquals;
-import org.junit.Test;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import org.junit.jupiter.api.Test;
 
 
 public class TestIdea {
@@ -122,6 +122,9 @@ public class TestIdea {
         System.out.println("Recovered object: "+returned.toString());
         System.out.println("Returned: "+returned.testdate);
         System.out.println("ttt: "+ttt.testdate);
+        System.out.println("ttt: "+ttt);
+        System.out.println("returned: "+returned);
+        System.out.println("returned.equals(ttt): "+returned.equals(ttt));
         assertEquals(returned.equals(ttt),0);
         double[] nt = new double[3];
         nt[0] = 1.2;

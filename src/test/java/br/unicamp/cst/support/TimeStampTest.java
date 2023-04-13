@@ -10,7 +10,8 @@
  * **********************************************************************************************/
 package br.unicamp.cst.support;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
+
 
 /**
  * @author gudwin

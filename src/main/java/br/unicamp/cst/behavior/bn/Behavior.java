@@ -1543,7 +1543,7 @@ public abstract class Behavior extends Codelet
 	/**
 	 *  Returns the moving average of the last n activations. 
 	 *  n must be previously defined, otherwise it will return the current activation (n=1)
-	 * @return
+	 * @return the moving average of the last n activations
 	 */
 	public synchronized double getActivationMA(){
 		return activationMA;

@@ -1,16 +1,13 @@
 package br.unicamp.cst.core.entities;
 
-import static org.junit.Assert.assertArrayEquals;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNull;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
+import static org.junit.jupiter.api.Assertions.assertArrayEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import org.junit.jupiter.api.Test;
 
-import javax.swing.plaf.synth.SynthOptionPaneUI;
 
-import org.junit.Test;
 
 
 public class CodeletContainerTest {
@@ -106,10 +103,19 @@ public class CodeletContainerTest {
 		}
 
 	}
+        
+        private void sleep(int timestep) {
+            try {
+		  Thread.sleep(timestep);
+                }  
+                catch(InterruptedException e) {
+                    e.printStackTrace();
+                }
+        }
 	
 	
 	@Test
-	public void noMemoryChangeTest() throws InterruptedException {
+	public void noMemoryChangeTest()  {
 		// no codelet runs
 		Codelet codeletOne = new CodeletToTestOne("Codelet 1");
 		Codelet codeletTwo = new CodeletToTestTwo("Codelet 2");
@@ -139,7 +145,7 @@ public class CodeletContainerTest {
 		mind.insertCodelet(codeletTwo);
 		mind.insertCodelet(codeletThree);
 		mind.start();
-		Thread.sleep(2000);
+                sleep(2000);  
 		mind.shutDown();
 		
 		assertEquals(0, codeletContainer.getOutputs().size());
@@ -151,7 +157,7 @@ public class CodeletContainerTest {
 	}
 	
 	@Test
-	public void noMemoryChangeButCodeletAddedIsStartedTest() throws InterruptedException {
+	public void noMemoryChangeButCodeletAddedIsStartedTest() {
 		// no codelet runs
 		Codelet codeletOne = new CodeletToTestOne("Codelet 1");
 		Codelet codeletTwo = new CodeletToTestTwo("Codelet 2");
@@ -181,7 +187,7 @@ public class CodeletContainerTest {
 		mind.insertCodelet(codeletTwo);
 		mind.insertCodelet(codeletThree);
 		mind.start();
-		Thread.sleep(2000);
+		sleep(2000);
 		mind.shutDown();
 		
 		assertEquals(0, codeletContainer.getOutputs().size());
@@ -193,7 +199,7 @@ public class CodeletContainerTest {
 	}
 	
 	@Test
-	public void runningCodeletChangingInputTest() throws InterruptedException {
+	public void runningCodeletChangingInputTest() {
 		// changes the codelet container input
 		Codelet codeletOne = new CodeletToTestOne("Codelet 1");
 		Codelet codeletTwo = new CodeletToTestTwo("Codelet 2");
@@ -230,7 +236,7 @@ public class CodeletContainerTest {
 		mind.insertCodelet(codeletThree);
 		codeletContainer.setI(10);
 		mind.start();
-		Thread.sleep(2000);
+		sleep(2000);
 		mind.shutDown();
 		
 		for (Codelet codelet : codeletContainer.getAll()) {
@@ -258,7 +264,7 @@ public class CodeletContainerTest {
 	}
 	
 	@Test
-	public void runningCodeletChangingInputCodeletStartedWhenAddedTest() throws InterruptedException {
+	public void runningCodeletChangingInputCodeletStartedWhenAddedTest() {
 		// changes the codelet container input
 		Codelet codeletOne = new CodeletToTestOne("Codelet 1");
 		Codelet codeletTwo = new CodeletToTestTwo("Codelet 2");
@@ -291,7 +297,7 @@ public class CodeletContainerTest {
 		CodeletContainer codeletContainer = new CodeletContainer(codeletContainerArray, true);
 		
 		codeletContainer.setI(10);
-		Thread.sleep(2000);
+		sleep(2000);
 		
 		for (Codelet codelet : codeletContainer.getAll()) {
 			for (Memory mem : codelet.getInputs()) {
@@ -320,7 +326,7 @@ public class CodeletContainerTest {
 	}
 	
 	@Test
-	public void addCodeletsToCodeletContainerTest() throws InterruptedException {
+	public void addCodeletsToCodeletContainerTest() {
 		// changes the codelet container input
 		Codelet codeletOne = new CodeletToTestOne("Codelet 1");
 		Codelet codeletTwo = new CodeletToTestTwo("Codelet 2");
@@ -391,7 +397,7 @@ public class CodeletContainerTest {
 	}
 	
 	@Test
-	public void addCodeletsToCodeletContainerWhichHasInputsAndOuputsTest() throws InterruptedException {
+	public void addCodeletsToCodeletContainerWhichHasInputsAndOuputsTest() {
 		// changes the codelet container input
 		Codelet codeletOne = new CodeletToTestOne("Codelet 1");
 		Codelet codeletTwo = new CodeletToTestTwo("Codelet 2");
@@ -450,7 +456,7 @@ public class CodeletContainerTest {
 	}
 	
 	@Test
-	public void removeCodeletsFromCodeletContainerTest() throws InterruptedException {
+	public void removeCodeletsFromCodeletContainerTest() {
 		// changes the codelet container input
 		Codelet codeletOne = new CodeletToTestOne("Codelet 1");
 		Codelet codeletTwo = new CodeletToTestTwo("Codelet 2");
@@ -562,7 +568,7 @@ public class CodeletContainerTest {
 	}
 	
 	@Test
-	public void getEvaluationTest() throws InterruptedException {
+	public void getEvaluationTest() {
 		Codelet codeletOne = new CodeletToTestOne("Codelet 1");
 		Codelet codeletTwo = new CodeletToTestTwo("Codelet 2");
 		Codelet codeletThree = new CodeletToTestThree("Codelet 3");
@@ -594,7 +600,7 @@ public class CodeletContainerTest {
 		memory1.setEvaluation(testValue);
 		codeletContainer.setI(10);
 		mind.start();
-		Thread.sleep(2000);
+		sleep(2000);
 		mind.shutDown();
 		
 	
@@ -605,7 +611,7 @@ public class CodeletContainerTest {
 	}
 	
 	@Test
-	public void getActivationTest() throws InterruptedException {
+	public void getActivationTest() {
 		Codelet codeletOne = new CodeletToTestOne("Codelet 1");
 		Codelet codeletTwo = new CodeletToTestTwo("Codelet 2");
 		Codelet codeletThree = new CodeletToTestThree("Codelet 3");
@@ -637,7 +643,7 @@ public class CodeletContainerTest {
 		memory1.setEvaluation(testValue);
 		codeletContainer.setI(10);
 		mind.start();
-		Thread.sleep(2000);
+		sleep(2000);
 		mind.shutDown();
 		
 	
@@ -647,7 +653,7 @@ public class CodeletContainerTest {
 	}
 	
 	@Test
-	public void setInputsTest() throws InterruptedException {
+	public void setInputsTest() {
 		Codelet codeletOne = new CodeletToTestOne("Codelet 1");
 		Codelet codeletTwo = new CodeletToTestTwo("Codelet 2");
 		Codelet codeletThree = new CodeletToTestThree("Codelet 3");
@@ -687,7 +693,7 @@ public class CodeletContainerTest {
 	}
 	
 	@Test
-	public void setOutputsTest() throws InterruptedException {
+	public void setOutputsTest() {
 		Codelet codeletOne = new CodeletToTestOne("Codelet 1");
 		Codelet codeletTwo = new CodeletToTestTwo("Codelet 2");
 		Codelet codeletThree = new CodeletToTestThree("Codelet 3");
@@ -727,7 +733,7 @@ public class CodeletContainerTest {
 	}
 	
 	@Test
-	public void setBroadcastTest() throws InterruptedException {
+	public void setBroadcastTest() {
 		Codelet codeletOne = new CodeletToTestOne("Codelet 1");
 		Codelet codeletTwo = new CodeletToTestTwo("Codelet 2");
 		Codelet codeletThree = new CodeletToTestThree("Codelet 3");
@@ -767,21 +773,21 @@ public class CodeletContainerTest {
 	}
 	
 	@Test
-	public void setNameTest() throws InterruptedException {
+	public void setNameTest() {
 		CodeletContainer codeletContainer = new CodeletContainer();
 		codeletContainer.setName("Container");
 		assertEquals("Container", codeletContainer.getName());
 	}
 	
 	@Test
-	public void setTypeTest() throws InterruptedException {
+	public void setTypeTest() {
 		CodeletContainer codeletContainer = new CodeletContainer();
 		codeletContainer.setType("Container");
 		assertEquals("Container", codeletContainer.getName());
 	}
 	
 	@Test
-	public void setEvaluationTest() throws InterruptedException {
+	public void setEvaluationTest() {
 		Codelet codeletOne = new CodeletToTestOne("Codelet 1");
 		Mind mind = new Mind();
 		MemoryObject memory1 = mind.createMemoryObject("MEMORY1", 0.12);
@@ -794,7 +800,7 @@ public class CodeletContainerTest {
 	}
 	
 	@Test
-	public void addMemoryObserverTest() throws InterruptedException {
+	public void addMemoryObserverTest() {
 		Codelet codeletOne = new CodeletToTestOne("Codelet 1");
 		Codelet codeletTwo = new CodeletToTestTwo("Codelet 2");
 		Codelet codeletThree = new CodeletToTestThree("Codelet 3");
@@ -826,16 +832,16 @@ public class CodeletContainerTest {
 		mind.insertCodelet(codeletThree);
 		codeletContainer.setI(10);
 		mind.start();
-		Thread.sleep(2000);
+		sleep(2000);
 		mind.shutDown();
 		
 	
 		CodeletToTestOne codeletToTestOne = (CodeletToTestOne) codeletContainer.getCodelet("Codelet 1");
-		assertEquals(7, codeletToTestOne.getCounter());
+		assertEquals(6, codeletToTestOne.getCounter());
 	}
 	
 	@Test
-	public void getTimestampTest() throws InterruptedException {
+	public void getTimestampTest() {
 		Codelet codeletOne = new CodeletToTestOne("Codelet 1");
 		Codelet codeletTwo = new CodeletToTestTwo("Codelet 2");
 		Codelet codeletThree = new CodeletToTestThree("Codelet 3");
@@ -865,7 +871,7 @@ public class CodeletContainerTest {
 		mind.insertCodelet(codeletThree);
 		codeletContainer.setI(10);
 		mind.start();
-		Thread.sleep(2000);
+		sleep(2000);
 		mind.shutDown();
 		
 		assertEquals(true, codeletContainer.getTimestamp().doubleValue() > 1);

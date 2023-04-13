@@ -72,7 +72,7 @@ public class SocketCom {
 	 * Beware that calling this method with nothing in the buffer will 
 	 * make the object wait for a new line to come about, most likelly
 	 *  locking the thread.
-	 * @return
+	 * @return the last line in the buffer
 	 */
 	public String receiveMessage(){
 		String textReceived="";
