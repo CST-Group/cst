@@ -48,7 +48,7 @@ public class BottomUpFM extends FeatMapCodelet {
     private int qd;
     private boolean print_to_file = false, debug;
     private CopyOnWriteArrayList<Float> data_FM_t;
-    private String file = "bottomUpFM.txt";
+    private String file = "tests/bottomUpFM.txt";
    
     
     /**

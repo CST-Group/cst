@@ -50,7 +50,7 @@ public class TopDownFM extends FeatMapCodelet {
     private int old_resolution = 256;                     //Resolution of VisionSensor
     private  int time_graph=0;
     private int convolution_ratio = 16;                    //Slices in each coordinate (x & y) 
-    private String file="topDownFM.txt";
+    private String file="tests/topDownFM.txt";
     private CopyOnWriteArrayList<Float> goal;  
     private int qdn, get_sens;
     private boolean print_to_file = false;
