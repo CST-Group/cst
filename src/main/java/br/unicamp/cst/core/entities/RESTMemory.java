@@ -11,7 +11,7 @@ import express.middleware.Middleware;
 import java.util.HashSet;
 import java.util.Set;
 
-public class RESTMemory implements Memory {//extends MemoryObject { //implements
+public class RESTMemory implements Memory {
     long refresh = 0; // A refresh of 0 means that every call will generate a new probe in mind
     long lastaccess = 0;
     String lastmessage = "";
@@ -45,7 +45,7 @@ public class RESTMemory implements Memory {//extends MemoryObject { //implements
      */
 
     /**
-     * List of codetlets that observes memory
+     * List of codelets that observes memory
      */
     private Set<MemoryObserver> memoryObservers;
 

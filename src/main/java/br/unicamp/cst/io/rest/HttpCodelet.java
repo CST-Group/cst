@@ -46,7 +46,7 @@ public abstract class HttpCodelet extends Codelet {
             in.close();
 
             // print result
-            System.out.println(response.toString());
+            System.out.println(response);
         } else {
             System.out.println("POST request did not work.");
         }

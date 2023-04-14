@@ -16,11 +16,7 @@ public class TestRESTMemory {
     Mind m1;
     Mind m2;
 
-    public Mind prepareMind(int portOut, int portIn, int partnerPortOut, int partnerPortIn, double outI, double toGetI) {
-        //String baseIP = "192.xxx.xxx.x";
-        //String baseIP = "172.xx.x.x";
-        //String baseIP = "127.0.0.1";
-        String baseIP = "localhost";
+    public Mind prepareMind(int portOut, int portIn, int partnerPortOut, int partnerPortIn, double outI, double toGetI, String baseIP) {
         String baseURL = "http://" + baseIP + ":";
 
         String partnerURLOut = baseURL + partnerPortOut+"/";
@@ -122,15 +118,32 @@ public class TestRESTMemory {
 
 
         Mind m = new Mind();
-        RESTMemory m1 = m.createRESTMemory("M1", baseIP, portIn);
+        //RESTMemory m1 = m.createRESTMemory("M1", baseIP, portIn);
+        //m1.setI(1);
+
+        RESTMemory m1;
+        if (baseIP.equals("localhost")){
+            m1 = m.createRESTMemory("M1", portIn);
+        }
+        else{
+            m1 = m.createRESTMemory("M1", baseIP, portIn);
+        }
         m1.setI(1);
+
 
         MemoryObject m2 = m.createMemoryObject("M2", 2.0);
         MemoryObject m3 = m.createMemoryObject("M3", null);
         MemoryObject m4 = m.createMemoryObject("M4", null);
 
-        RESTMemory m5 = m.createRESTMemory("M5", baseIP, portOut);
+        RESTMemory m5;
+        if (baseIP.equals("localhost")){
+            m5 = m.createRESTMemory("M5", portOut);
+        }
+        else{
+            m5 = m.createRESTMemory("M5", baseIP, portOut);
+        }
         m5.setI(toGetI);
+
 
         MemoryContainer m6 = m.createMemoryContainer("C1");
         MemoryContainer m7 = m.createMemoryContainer("C2");
@@ -139,6 +152,12 @@ public class TestRESTMemory {
         m6.setI(6.33, 0.22);
         m6.setI(6.12, 0.13);
         m6.add(m7);
+
+        //dummy
+        RESTMemory m8 = new RESTMemory(portOut);
+        m8.setIdmemoryobject(1l);
+        m8.setName("M8");
+        m.getRawMemory().addMemory(m8);
 
         //REST Sensory that will use GET on another agent motor memory
         restSensoryTestCodelet.addInput(m1);
@@ -168,7 +187,12 @@ public class TestRESTMemory {
 
 
     @Test
-    public void testRest1() throws IOException {
+    public void testRestHostname() throws IOException {
+        //String baseIP = "192.xxx.xxx.x";
+        //String baseIP = "172.xx.x.x";
+        String baseIP = "127.0.0.1";
+        //String baseIP = "localhost";
+
         Random r = new Random();
         // Finding a random port higher than 5000
         int portIn1 = 5000 + r.nextInt(50000);
@@ -182,8 +206,8 @@ public class TestRESTMemory {
         double outI2 = (5 + r.nextInt(500));
         double toGetI2 =(5 + r.nextInt(500));
 
-        tr.m1 = prepareMind(portOut1, portIn1, portOut2, portIn2, outI1, toGetI1);
-        tr.m2 = prepareMind(portOut2, portIn2, portOut1, portIn1, outI2, toGetI2);
+        tr.m1 = prepareMind(portOut1, portIn1, portOut2, portIn2, outI1, toGetI1, baseIP);
+        tr.m2 = prepareMind(portOut2, portIn2, portOut1, portIn1, outI2, toGetI2, baseIP);
 
         tr.m1.start();
         tr.m2.start();
@@ -196,6 +220,45 @@ public class TestRESTMemory {
 
         assertEquals(tr.m2.getRawMemory().getAllOfType("M5").get(0).getI(), toGetI2);
         assertEquals(Double.parseDouble((String) tr.m1.getRawMemory().getAllOfType("M1").get(0).getI()), outI2, 0.0);
+    }
+
+    @Test
+    public void testRestLocalhost() throws IOException {
+        String baseIP = "localhost";
+
+        Random r = new Random();
+        // Finding a random port higher than 5000
+        int portIn1 = 5000 + r.nextInt(50000);
+        int portIn2 = 5000 + r.nextInt(50000);
+        int portOut1 = 5000 + r.nextInt(50000);
+        int portOut2 = 5000 + r.nextInt(50000);
+
+        TestRESTMemory tr = new TestRESTMemory();
+        double outI1 = (5 + r.nextInt(500));
+        double toGetI1 = (5 + r.nextInt(500));
+        double outI2 = (5 + r.nextInt(500));
+        double toGetI2 =(5 + r.nextInt(500));
+
+        tr.m1 = prepareMind(portOut1, portIn1, portOut2, portIn2, outI1, toGetI1, "localhost");
+        tr.m2 = prepareMind(portOut2, portIn2, portOut1, portIn1, outI2, toGetI2, "localhost");
+
+        tr.m1.start();
+        tr.m2.start();
+
+        MemoryObject m = new MemoryObject();
+        MemoryContainerJson memoryContainerJson = new MemoryContainerJson(m, "group");
+
+        try{Thread.sleep(2000);
+        }catch (Exception e){e.printStackTrace();}
+
+        assertEquals(tr.m1.getRawMemory().getAllOfType("M5").get(0).getI(), toGetI1);
+        assertEquals(Double.parseDouble((String) tr.m2.getRawMemory().getAllOfType("M1").get(0).getI()), outI1, 0.0);
+
+        assertEquals(tr.m2.getRawMemory().getAllOfType("M5").get(0).getI(), toGetI2);
+        assertEquals(Double.parseDouble((String) tr.m1.getRawMemory().getAllOfType("M1").get(0).getI()), outI2, 0.0);
+
+        RESTMemory m8 = (RESTMemory) tr.m2.getRawMemory().getAllOfType("M8").get(0);
+        assertEquals(m8.getIdmemoryobject(), 1l);
     }
 
 }
