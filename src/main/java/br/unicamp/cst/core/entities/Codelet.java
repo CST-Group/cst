@@ -25,6 +25,8 @@ import br.unicamp.cst.support.CodeletsProfiler;
 import br.unicamp.cst.support.CodeletsProfiler.FileFormat;
 import br.unicamp.cst.support.ExecutionTimeWriter;
 import br.unicamp.cst.support.ProfileInfo;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  * The <b><i>Codelet</i></b> class, together with the <b><i>MemoryObject</i></b>
@@ -841,28 +843,19 @@ public abstract class Codelet implements Runnable, MemoryObserver {
     		long duration = 0l;
 
     		try {
-
     			if (isProfiling)
     				startTime = System.currentTimeMillis();
-
     			accessMemoryObjects();// tries to connect to memory objects
-
     			if (enable_count == 0) {
     				calculateActivation();
     				if (activation >= threshold)
     					proc();
     			} else {
-                                     
                                     raiseException();
-                                   
     			}
-
     			enable_count = 0;
-
-    		} catch (Exception e) {
-
-    			e.printStackTrace();
-
+                } catch (MemoryObjectNotFoundException ex) {
+                        Logger.getLogger(Codelet.class.getName()).log(Level.SEVERE, ex.getMessage());
     		} finally {
 
     			if (Codelet.this.codeletProfiler != null) {
@@ -886,14 +879,9 @@ public abstract class Codelet implements Runnable, MemoryObserver {
     					thread.start();
 
     					profileInfo = new ArrayList<>();
-
     				}
-
     			}
-                                
-
     		}
-    		
     	}
 
 	private class CodeletTimerTask extends TimerTask {
@@ -910,25 +898,24 @@ public abstract class Codelet implements Runnable, MemoryObserver {
 				if (isProfiling)
 					startTime = System.currentTimeMillis();
 
-				accessMemoryObjects();// tries to connect to memory objects
+				if (!isMemoryObserver)
+                                    accessMemoryObjects();// tries to connect to memory objects
 
 				if (enable_count == 0) {
+                                    if (isMemoryObserver == false) {
 					calculateActivation();
 					if (activation >= threshold)
 						proc();
+                                    }    
 				} else {
-                                     
                                     raiseException();
-                                   
 				}
 
 				enable_count = 0;
 
-			} catch (Exception e) {
-
-				e.printStackTrace();
-
-			} finally {
+                    } catch (MemoryObjectNotFoundException ex) {
+                        Logger.getLogger(Codelet.class.getName()).log(Level.SEVERE, ex.getMessage());
+                    } finally {
 
 				if (!isMemoryObserver && shouldLoop()) 
 					timer.schedule(new CodeletTimerTask(), timeStep);
@@ -936,7 +923,7 @@ public abstract class Codelet implements Runnable, MemoryObserver {
 					Codelet.this.codeletProfiler.profile(Codelet.this);
 				}
 				if (isProfiling) {
-                    endTime = System.currentTimeMillis();
+                                        endTime = System.currentTimeMillis();
 					duration = (endTime - startTime);
 					ProfileInfo pi = new ProfileInfo(duration, startTime, laststarttime);
 					profileInfo.add(pi);
@@ -953,15 +940,9 @@ public abstract class Codelet implements Runnable, MemoryObserver {
 						thread.start();
 
 						profileInfo = new ArrayList<>();
-
 					}
-
 				}
-                                
-
 			}
-
 		}
-
 	}
 }

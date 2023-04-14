@@ -682,7 +682,7 @@ public class Idea {
      */
     public Idea clone() {
         Idea newnode;
-           newnode = new Idea(getName(), getValue(), getType());
+           newnode = new Idea(getName(), getValue(), getType(), getCategory(), getScope());
            newnode.l = new ArrayList();
            for (Idea i : getL()) {
             Idea ni = i.clone();
@@ -762,33 +762,33 @@ public class Idea {
      */
     public Object createJavaObject(String classname) {
         if (classname.equals("java.lang.Double")) {
-            return new Double(0.0);
+            return Double.valueOf(0.0);
         }
         else if (classname.equals("java.lang.Float")) {
-            return new Float(0.0);
+            return Float.valueOf(0.0f);
         }
         else if (classname.equals("java.lang.Integer")) {
-            return new Integer(0);
+            return Integer.valueOf(0);
         }
         else if (classname.equals("java.lang.Long")) {
-            return new Long(0);
+            return Long.valueOf(0L);
         }
         else if (classname.equals("java.lang.Short")) {
             short ret = 0;
-            return new Short(ret);
+            return Short.valueOf(ret);
         }
         else if (classname.equals("java.lang.Byte")) {
             byte ret = 0;
-            return new Byte(ret);
+            return Byte.valueOf(ret);
         }
         else if (classname.equals("java.lang.Boolean")) {
-            return new Boolean(false);
+            return Boolean.valueOf(false);
         }
         Class type = null;
         Object javaObject = null;
         try {
             type = Class.forName(classname);
-            javaObject = type.newInstance();
+            javaObject = type.getDeclaredConstructor().newInstance();
             type.cast(javaObject);
         } catch (Exception e) {
             e.printStackTrace();
@@ -999,7 +999,7 @@ public class Idea {
                     if (field.getType().isArray()) {
                           Object out = mountArray(o,field.getType().getCanonicalName());
                           try {
-                                if (!field.isAccessible()) field.setAccessible(true);
+                                field.setAccessible(true);
                                 field.set(ret,out);
                             }
                             catch(Exception e) {
@@ -1015,7 +1015,7 @@ public class Idea {
                             out.add(i.getObject(i.getName(), stype));
                         }
                         try {
-                            if (!field.isAccessible()) field.setAccessible(true);
+                            field.setAccessible(true);
                             field.set(ret,out);
                         }
                         catch(Exception e) {
@@ -1027,7 +1027,7 @@ public class Idea {
                         if (value == null) System.out.println("Warning: value of "+field.getName()+" is null");
                         value = convertObject(value,field.getType().getCanonicalName());
                         try {
-                            if (!field.isAccessible()) field.setAccessible(true);
+                            field.setAccessible(true);
                             field.set(ret,value);
                         }
                         catch(Exception e) {
@@ -1036,7 +1036,7 @@ public class Idea {
                             if (o.getL().size() > 0) out = o.getObject(field.getName(),field.getType().getCanonicalName());
                             else out = null;
                             try {
-                                if (!field.isAccessible()) field.setAccessible(true);
+                                field.setAccessible(true);
                                 field.set(ret,out);
                             } catch(Exception e2) {
                                 if (value != null)
@@ -1157,7 +1157,7 @@ public class Idea {
             for (Field field : fields) {
                 String fname = field.getName();
                 try {
-                   if (!field.isAccessible()) field.setAccessible(true);
+                   field.setAccessible(true);
                    Object fo=null;
                     try {
                         fo = field.get(obj);

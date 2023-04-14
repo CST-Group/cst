@@ -11,14 +11,12 @@
 
 package br.unicamp.cst.behavior.glas;
 
-import static org.junit.Assert.*;
 
 import java.util.ArrayList;
 
-import org.junit.Test;
 
-import br.unicamp.cst.behavior.glas.GlasEvent;
-import br.unicamp.cst.behavior.glas.GlasSequence;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import org.junit.jupiter.api.Test;
 
 /**
  * @author Klaus Raizer

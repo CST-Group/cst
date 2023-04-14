@@ -2,6 +2,7 @@ plugins {
 	id 'java-library-distribution'
   	id 'jacoco'
   	id 'maven-publish'
+        id 'com.adarshr.test-logger' version "3.2.0"
 }
 
 group = 'com.github.CST-Group'
@@ -10,7 +11,7 @@ description = "CST"
 
 sourceCompatibility = 1.8
 targetCompatibility = 1.8
-version = '1.2.0'
+version = '1.3.0'
 
 repositories {
     mavenCentral()
@@ -35,8 +36,12 @@ dependencies {
    api group: 'org.opt4j', name: 'opt4j-satdecoding', version: '3.1'
    api group: 'org.opt4j', name: 'opt4j-tutorial', version: '3.1'
    api 'org.antlr:antlr4-runtime:4.5.3' // Used in OwrlBaseListener
-   api 'com.github.masecla22:java-express:0.2.2'   
-   testImplementation group: 'junit', name: 'junit', version: '4.13.1'
+   api 'com.github.masecla22:java-express:0.2.2'
+   implementation 'ch.qos.logback:logback-classic:1.3.6' 
+   //testImplementation group: 'junit', name: 'junit', version: '4.13.2'
+   testImplementation 'org.junit.jupiter:junit-jupiter-api:5.9.2'
+   testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.9.2'
+
 }
 
 jar {
@@ -57,6 +62,7 @@ task javadocJar(type: Jar) {
     from {
     	configurations.extraLibs.collect { it.isDirectory() ? it : zipTree(it) }
     }
+    javadoc.options.addStringOption('Xdoclint:none', '-quiet') // this is to avoid complaints about documentation missing parameter description
 }
 task sourcesJar(type: Jar) {
     classifier = 'sources'
@@ -92,4 +98,59 @@ jacocoTestReport {
     reports {
         xml.required = true
     }
+}
+
+
+test {
+    testLogging {
+        testLogging.showStandardStreams = true
+    }
+    useJUnitPlatform()
+}
+
+testlogger {
+    // pick a theme - mocha, standard, plain, mocha-parallel, standard-parallel or plain-parallel
+    theme 'mocha-parallel'
+
+    // set to false to disable detailed failure logs
+    showExceptions true
+
+    // set to false to hide stack traces
+    showStackTraces true
+
+    // set to true to remove any filtering applied to stack traces
+    showFullStackTraces true
+
+    // set to false to hide exception causes
+    showCauses true
+
+    // set threshold in milliseconds to highlight slow tests
+    slowThreshold 2000
+
+    // displays a breakdown of passes, failures and skips along with total duration
+    showSummary true
+
+    // set to true to see simple class names
+    showSimpleNames false
+
+    // set to false to hide passed tests
+    showPassed true
+
+    // set to false to hide skipped tests
+    showSkipped true
+
+    // set to false to hide failed tests
+    showFailed true
+
+    // enable to see standard out and error streams inline with the test results
+    showStandardStreams true
+
+    // set to false to hide passed standard out and error streams
+    showPassedStandardStreams true
+
+    // set to false to hide skipped standard out and error streams
+    showSkippedStandardStreams true
+
+    // set to false to hide failed standard out and error streams
+    showFailedStandardStreams true
 }

@@ -10,7 +10,8 @@
  ***********************************************************************************************/
 package br.unicamp.cst.language;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
+
 
 /**
  * @author suelen

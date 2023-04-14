@@ -16,9 +16,13 @@ import java.util.Arrays;
 import java.util.List;
 import java.io.ByteArrayOutputStream;
 import java.io.PrintStream;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import org.junit.jupiter.api.Test;
 
-import org.junit.Test;
-import static org.junit.Assert.*;
 
 /**
  * @author wander
@@ -28,7 +32,7 @@ public class CodeletTest {
     // This class contains tests covering some core Codelet methods
     
     // This method is used to generate a new Codelet
-    Codelet generateCodelet() {
+    private Codelet generateCodelet() {
         Codelet testCodelet = new Codelet() {
 
         @Override
@@ -37,7 +41,7 @@ public class CodeletTest {
         public void proc() {
             //ByteArrayOutputStream outputStreamCaptor = new ByteArrayOutputStream();
             //System.setOut(new PrintStream(outputStreamCaptor));
-            System.out.println("proc method ran correctly!");
+            System.out.println("running the proc() method!");
         }
         @Override
         public void calculateActivation() {}
@@ -48,6 +52,8 @@ public class CodeletTest {
 
     @Test
     public void testExceptionOnRun() {
+        Codelet testCodelet = generateCodelet();
+        System.out.println("testando");
     }
 
 
@@ -190,25 +196,29 @@ public class CodeletTest {
 
     @Test
     public void getOutputEnableFalseTest(){
-        Codelet testCodelet = generateCodelet();
+        boolean exceptionThrown = false;
+        Codelet testCodelet = null;
+        try {
+        testCodelet = generateCodelet();
         testCodelet.setName("thisCodeletWillFail");
         List<Memory> dummyOutputs = Arrays.asList(new MemoryObject(), new MemoryObject());
         testCodelet.setOutputs(dummyOutputs);
-        boolean exceptionThrown = false;
-        try {
+        
+        
             testCodelet.getOutput("testType", 3); // This line will raise an exception
 
             Mind mind = new Mind();
             mind.insertCodelet(testCodelet);
             mind.start();
-            try {
+            //
                 Thread.sleep(1000);
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
+//            } catch (Exception e) {
+//                e.printStackTrace();
+//            }
             mind.shutDown();
         } catch (Exception e) {
             // why this exception is not being thrown ? 
+            System.out.println("Passei aqui");
             exceptionThrown = true;
         }
         //assertTrue(exceptionThrown);   If I uncomment this line, the test fails ... for some reason the exception is not being caught

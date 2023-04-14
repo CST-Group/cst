@@ -158,7 +158,7 @@ public class GlobalVariables
 	/**
 	 * amount of energy that is naturally lost by the behavior at each iteration
 	 * 
-	 * @return
+	 * @return the decay
 	 */
 	public double getDecay() {
 		return this.decay;
@@ -173,7 +173,7 @@ public class GlobalVariables
 	}
 	/**
 	 * Fraction of decrease suffered by theta coming from each behavior codelet
-	 * @return
+	 * @return the decrease rate
 	 */
 	public synchronized double getThetaTempDecreaseRate() {
 		return this.decreaseRate;

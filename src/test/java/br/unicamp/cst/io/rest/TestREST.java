@@ -20,15 +20,14 @@ import br.unicamp.cst.support.TimeStamp;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import java.io.BufferedReader;
-import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.Random;
 import java.util.Timer;
 import java.util.TimerTask;
-import static org.junit.Assert.assertEquals;
-import org.junit.Test;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import org.junit.jupiter.api.Test;
 
 /**
  *
@@ -227,22 +226,19 @@ public class TestREST {
     private String GET_URL;
     private static int port;
     
-    private String sendGET() throws IOException {
+    private String sendGET() {
                 String message = "";
-                
-		URL obj = new URL(GET_URL);
-		HttpURLConnection con = (HttpURLConnection) obj.openConnection();
-		con.setRequestMethod("GET");
-		//con.setRequestProperty("User-Agent", USER_AGENT);
                 int responseCode=0;
+                HttpURLConnection con=null;
                 try {
+                    URL obj = new URL(GET_URL);
+                    con = (HttpURLConnection) obj.openConnection();
+                    con.setRequestMethod("GET");
+                    //con.setRequestProperty("User-Agent", USER_AGENT);
                     responseCode = con.getResponseCode();
-                } catch (java.net.ConnectException e) {
-                    e.printStackTrace();
-                }    
-                if (responseCode != 200)
-                    System.out.println("GET Response Code :: " + responseCode);
-		if (responseCode == HttpURLConnection.HTTP_OK) { // success
+                    if (responseCode != 200)
+                        System.out.println("GET Response Code :: " + responseCode);
+                    if (responseCode == HttpURLConnection.HTTP_OK) { // success
 			BufferedReader in = new BufferedReader(new InputStreamReader(
 					con.getInputStream()));
 			String inputLine;
@@ -252,13 +248,18 @@ public class TestREST {
 			}
 			in.close();
                         message = response.toString();
-		} else {
+                    } else {
 			System.out.println("GET request not worked");
-		}
+                    }
+                } catch (java.net.ConnectException e) {
+                    System.out.println("Connection refused");
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
           return(message);
 	}
     
-    private void processTest() throws IOException {
+    private void processTest() {
         String mes;
         for (int i=0;i<10;i++) {
             mes = sendGET();
@@ -285,7 +286,7 @@ public class TestREST {
         }
     }
     
-    private void processTestWithoutGroups() throws IOException {
+    private void processTestWithoutGroups() {
         String mes;
         for (int i=0;i<10;i++) {
             mes = sendGET();
@@ -313,7 +314,7 @@ public class TestREST {
     }
     
     @Test 
-    public void testRest1() throws IOException {
+    public void testRest1() {
         Random r = new Random();
         // Finding a random port higher than 5000
         port = 5000 + r.nextInt(50000);
@@ -327,7 +328,7 @@ public class TestREST {
     }
     
     @Test 
-    public void testRest2() throws IOException {
+    public void testRest2() {
         Random r = new Random();
         // Finding a random port higher than 5000
         port = 5000 + r.nextInt(50000);
@@ -341,7 +342,7 @@ public class TestREST {
     }
     
     @Test 
-    public void testRest3() throws IOException {
+    public void testRest3() {
         Random r = new Random();
         // Finding a random port higher than 5000
         port = 5000 + r.nextInt(50000);
@@ -355,7 +356,7 @@ public class TestREST {
     }
     
     @Test 
-    public void testRest4() throws IOException {
+    public void testRest4() {
         Random r = new Random();
         // Finding a random port higher than 5000
         port = 5000 + r.nextInt(50000);
@@ -369,7 +370,7 @@ public class TestREST {
     }
     
     @Test 
-    public void testRest5() throws IOException {
+    public void testRest5() {
         Random r = new Random();
         // Finding a random port higher than 5000
         port = 5000 + r.nextInt(50000);
@@ -383,7 +384,7 @@ public class TestREST {
     }
     
     @Test 
-    public void testRest6() throws IOException {
+    public void testRest6() {
         Random r = new Random();
         // Finding a random port higher than 5000
         port = 5000 + r.nextInt(50000);
@@ -397,7 +398,7 @@ public class TestREST {
     }
     
     @Test 
-    public void testRest7() throws IOException {
+    public void testRest7() {
         Random r = new Random();
         // Finding a random port higher than 5000
         port = 5000 + r.nextInt(50000);
@@ -411,7 +412,7 @@ public class TestREST {
     }
     
     @Test 
-    public void testRest8() throws IOException {
+    public void testRest8() {
         Random r = new Random();
         // Finding a random port higher than 5000
         port = 5000 + r.nextInt(50000);

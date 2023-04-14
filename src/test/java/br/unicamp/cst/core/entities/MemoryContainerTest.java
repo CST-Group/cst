@@ -10,13 +10,14 @@
  ***********************************************************************************************/
 package br.unicamp.cst.core.entities;
 
-import org.junit.Test;
-
 import java.util.function.BinaryOperator;
 import java.util.function.Predicate;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import org.junit.jupiter.api.Test;
 
-import static org.junit.Assert.*;
-import static org.junit.Assert.assertTrue;
 
 /**
  * @author andre

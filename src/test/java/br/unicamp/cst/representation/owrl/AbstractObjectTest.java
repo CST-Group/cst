@@ -10,9 +10,7 @@
  ***********************************************************************************************/
 package br.unicamp.cst.representation.owrl;
 
-import org.junit.Test;
-
-import java.util.Arrays;
+import org.junit.jupiter.api.Test;
 
 /**
  * Created by du on 30/05/17.

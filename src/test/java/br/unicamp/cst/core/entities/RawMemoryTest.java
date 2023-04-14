@@ -10,13 +10,14 @@
  ***********************************************************************************************/
 package br.unicamp.cst.core.entities;
 
-import org.junit.Test;
-import static org.junit.Assert.*;
 
 import java.io.ByteArrayOutputStream;
 import java.io.PrintStream;
 import java.util.Arrays;
 import java.util.List;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import org.junit.jupiter.api.Test;
 
 public class RawMemoryTest {
 

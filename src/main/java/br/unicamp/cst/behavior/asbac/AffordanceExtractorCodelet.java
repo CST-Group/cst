@@ -254,7 +254,7 @@ public class AffordanceExtractorCodelet extends Codelet {
      * for percept's category of affordance, get all percepts in perceptsSource with this category that is relevant to aff.
      * @param aff
      * @param perceptsOfCategory
-     * @return 
+     * @return a list of Percepts
      */
     public List<Percept> searchRelevantPercepts(AffordanceType aff, List<Percept> perceptsOfCategory){ //find relevant concepts with properties to affordance. 
         
@@ -275,7 +275,7 @@ public class AffordanceExtractorCodelet extends Codelet {
      * Preprocess and init the computation of the cartesian product.
      * @param aff
      * @param relevantPercepts
-     * @return 
+     * @return a list of map<String,Percept>
      */
     public List<Map<String, Percept>> getPerceptsCombinations(AffordanceType aff, Map<String, List<Percept>> relevantPercepts){
         

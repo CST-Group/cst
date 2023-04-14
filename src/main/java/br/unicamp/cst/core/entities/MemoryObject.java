@@ -67,7 +67,7 @@ public class MemoryObject implements Memory, Serializable {
 	/**
 	 * List of codetlets that observes memory
 	 */
-	private Set<MemoryObserver> memoryObservers;
+	private transient Set<MemoryObserver> memoryObservers;
 
 	/**
 	 * Creates a MemoryObject.

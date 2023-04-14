@@ -10,17 +10,16 @@
  ***********************************************************************************************/
 package br.unicamp.cst.core.profiler;
 
-import static org.junit.Assert.*;
 
 import java.util.ArrayList;
-
-import org.junit.Test;
-
 import br.unicamp.cst.core.entities.Codelet;
 import br.unicamp.cst.core.entities.Memory;
 import br.unicamp.cst.core.entities.MemoryContainer;
 import br.unicamp.cst.core.entities.MemoryObject;
 import br.unicamp.cst.core.entities.Mind;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import org.junit.jupiter.api.Test;
 
 class CodeletToTest extends Codelet {
 
@@ -99,8 +98,8 @@ public class TestMemoryObserver {
 		Thread.sleep(2000);
 		m.shutDown();
 
-		assertEquals(1, c.getCounter());
-		assertEquals(1, c2.getCounter());
+		assertEquals(0, c.getCounter());
+		assertEquals(0, c2.getCounter());
 	}
 
 	@Test
@@ -155,8 +154,8 @@ public class TestMemoryObserver {
 		Thread.sleep(2000);
 		m.shutDown();
 
-		assertEquals(2, c.getCounter());
-		assertEquals(3, c2.getCounter());
+		assertEquals(1, c.getCounter());
+		assertEquals(2, c2.getCounter());
 	}
 	
 	@Test
@@ -209,8 +208,8 @@ public class TestMemoryObserver {
 		Thread.sleep(2000);
 		m.shutDown();
 
-		assertEquals(5, c.getCounter());
-		assertEquals(2, c2.getCounter());
+		assertEquals(4, c.getCounter());
+		assertEquals(1, c2.getCounter());
 	}
 	
 	@Test
@@ -268,8 +267,60 @@ public class TestMemoryObserver {
 		Thread.sleep(2000);
 		m.shutDown();
 
-		assertEquals(241, c.getCounter());
-		assertEquals(61, c2.getCounter());
+		assertEquals(240, c.getCounter());
+		assertEquals(60, c2.getCounter());
 		assertTrue(c2.isProfiling());
+	}
+	
+	@Test
+	public void usualRunWithMemoryContainerTest() throws InterruptedException {
+		// Using a Memory Container to use setI and notify codelets
+			
+		Mind m = new Mind();
+		MemoryObject m1 = m.createMemoryObject("M1", 0.12);
+		MemoryObject m2 = m.createMemoryObject("M2", 0.32);
+		MemoryObject m3 = m.createMemoryObject("M3", 0.44);
+		MemoryObject m4 = m.createMemoryObject("M4", 0.52);
+		MemoryObject m5 = m.createMemoryObject("M5", 0.12);
+		MemoryContainer m7 = m.createMemoryContainer("C2");
+		MemoryContainer m8 = m.createMemoryContainer("C3");
+		m7.add(m4);
+		m8.add(m7);
+		TestComplexMemoryObjectInfo mComplex = new TestComplexMemoryObjectInfo();
+		mComplex.complextest = new TestComplexMemoryObjectInfo();
+		for (int i = 0; i < 3; i++)
+			mComplex.complextestarray[i] = new TestComplexMemoryObjectInfo();
+		MemoryObject mo = new MemoryObject();
+		mo.setType("TestObject");
+		mo.setI(mComplex);
+		CodeletToTest c = new CodeletToTest("Codelet 1");
+		c.setIsMemoryObserver(true);
+		c.addInput(m1);
+		c.addInput(m2);
+		c.addOutput(m3);
+		c.addOutput(m4);
+		c.addBroadcast(m5);
+		c.addBroadcast(mo);
+		mo.addMemoryObserver(c);
+		m.insertCodelet(c);
+		CodeletToTest c2 = new CodeletToTest("Codelet 2");
+		c2.setIsMemoryObserver(true);
+		c2.addInput(m4);
+		c2.addInput(m7);
+		c2.addInput(m5);
+		c2.addOutput(m3);
+		c2.addBroadcast(m5);
+		mo.addMemoryObserver(c2);
+		m8.addMemoryObserver(c2);
+		m.insertCodelet(c2);
+		m.start();
+		//setI in Memory Container and verify if Codelet was notified
+		m8.setI(100, 0);
+		m7.setI(0.55, 0.23);
+		Thread.sleep(2000);
+		m.shutDown();
+
+		assertEquals(0, c.getCounter());
+		assertEquals(1, c2.getCounter());
 	}
 }

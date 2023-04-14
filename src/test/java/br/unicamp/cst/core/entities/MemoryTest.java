@@ -10,11 +10,11 @@
  ***********************************************************************************************/
 package br.unicamp.cst.core.entities;
 
-import static org.junit.Assert.*;
-import org.junit.Test;
-
 import java.util.Arrays;
 import java.util.List;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import org.junit.jupiter.api.Test;
 
 /**
  * @author wander
