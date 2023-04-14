@@ -18,8 +18,8 @@ public class TestRESTMemory {
     public Mind prepareMind(int portOut, int portIn, int partnerPortOut, int partnerPortIn, double outI, double toGetI) {
         //String baseIP = "192.xxx.xxx.x";
         //String baseIP = "172.xx.x.x";
-        String baseIP = "127.0.0.1";
-        //String baseIP = "localhost";
+        //String baseIP = "127.0.0.1";
+        String baseIP = "localhost";
         String baseURL = "http://" + baseIP + ":";
 
         String partnerURLOut = baseURL + partnerPortOut+"/";
