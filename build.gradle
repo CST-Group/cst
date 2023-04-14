@@ -24,7 +24,7 @@ configurations {
 dependencies {
    configurations.implementation.extendsFrom(configurations.extraLibs)
    
-   api 'com.google.code.gson:gson:2.8.6'
+   api 'com.google.code.gson:gson:2.8.9'
    api 'net.openhft:compiler:2.3.0'  // Used by representation/owrl/CodeBuilder.java
    api group: 'org.json', name: 'json', version: '20160212'
    api group: 'org.opt4j', name: 'opt4j-core', version: '3.1'  // Used in GLAS
@@ -36,7 +36,7 @@ dependencies {
    api group: 'org.opt4j', name: 'opt4j-tutorial', version: '3.1'
    api 'org.antlr:antlr4-runtime:4.5.3' // Used in OwrlBaseListener
    api 'com.github.masecla22:java-express:0.2.2'   
-   testImplementation group: 'junit', name: 'junit', version: '4.13'
+   testImplementation group: 'junit', name: 'junit', version: '4.13.1'
 }
 
 jar {
