@@ -16,12 +16,14 @@ public class TestRESTMemory {
     Mind m2;
 
     public Mind prepareMind(int portOut, int portIn, int partnerPortOut, int partnerPortIn, double outI, double toGetI) {
-        //String URLOut = "http://localhost:"+portOut+"/";
-        //String URLIn = "http://localhost:"+portIn+"/";
-        //String partnerURLOut = "http://localhost:"+partnerPortOut+"/";
-        String partnerURLOut = "http://127.0.0.1:"+partnerPortOut+"/";
-        //String partnerURLIn = "http://localhost:"+partnerPortIn+"/";
-        String partnerURLIn = "http://127.0.0.1:"+partnerPortIn+"/";
+        //String baseIP = "192.xxx.xxx.x";
+        //String baseIP = "172.xx.x.x";
+        String baseIP = "127.0.0.1";
+        //String baseIP = "localhost";
+        String baseURL = "http://" + baseIP + ":";
+
+        String partnerURLOut = baseURL + partnerPortOut+"/";
+        String partnerURLIn = baseURL + partnerPortIn+"/";
 
         HttpCodelet restSensoryTestCodelet = new HttpCodelet() {
             //Memory
@@ -119,23 +121,14 @@ public class TestRESTMemory {
 
 
         Mind m = new Mind();
-
-
-        //RESTMemory m1 = new RESTMemory("127.0.0.1", portIn);
-        //m1.setI(1);
-        //m1.setName("M1");
-        //m.getRawMemory().addMemory(m1); //add manually to rawMemory
-        RESTMemory m1 = m.createRESTMemory("M1", "127.0.0.1", portIn);
+        RESTMemory m1 = m.createRESTMemory("M1", baseIP, portIn);
         m1.setI(1);
 
         MemoryObject m2 = m.createMemoryObject("M2", 2.0);
         MemoryObject m3 = m.createMemoryObject("M3", null);
         MemoryObject m4 = m.createMemoryObject("M4", null);
-        //RESTMemory m5 = new RESTMemory("127.0.0.1", portOut);
-        //m5.setI(toGetI);
-        //m5.setName("M5");
-        //m.getRawMemory().addMemory(m5);
-        RESTMemory m5 = m.createRESTMemory("M5", "127.0.0.1", portOut);
+
+        RESTMemory m5 = m.createRESTMemory("M5", baseIP, portOut);
         m5.setI(toGetI);
 
         MemoryContainer m6 = m.createMemoryContainer("C1");
