@@ -1,7 +1,7 @@
 package br.unicamp.cst.io.rest;
 
 import br.unicamp.cst.core.entities.*;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
@@ -9,7 +9,8 @@ import java.net.URLEncoder;
 import java.util.HashMap;
 import java.util.Random;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
 
 public class TestRESTMemory {
     Mind m1;
