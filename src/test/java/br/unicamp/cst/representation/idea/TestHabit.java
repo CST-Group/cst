@@ -1,9 +1,18 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
- */
+/***********************************************************************************************
+ * Copyright (c) 2012  DCA-FEEC-UNICAMP
+ * All rights reserved. This program and the accompanying materials
+ * are made available under the terms of the GNU Lesser Public License v3
+ * which accompanies this distribution, and is available at
+ * http://www.gnu.org/licenses/lgpl.html
+ * <p>
+ * Contributors:
+ * K. Raizer, A. L. O. Paraense, E. M. Froes, R. R. Gudwin - initial API and implementation
+ ***********************************************************************************************/
 package br.unicamp.cst.representation.idea;
 
+import br.unicamp.cst.core.entities.Codelet;
+import br.unicamp.cst.core.entities.MemoryObject;
+import br.unicamp.cst.core.entities.Mind;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
@@ -70,7 +79,7 @@ public class TestHabit {
             int tt = (int) newnumber.getValue();
             assertEquals(modnumber.getValue(),tt+1);
         }
-        System.out.println("\nCreating and testing decrement ...");
+        System.out.println("\nCreating and testing decrement habits ...");
         for (int i=0;i<100;i++) {
             Idea newnumber = new Idea("number",new Random().nextInt());
             Idea modnumber = decrement.op(newnumber).get(0);
@@ -79,6 +88,112 @@ public class TestHabit {
             assertEquals(modnumber.getValue(),tt-1);
         }
         System.out.println("\nfinished !");
+    }
+    
+    @Test 
+    public void testHabitIdeasDirect() {
+        // Creating a category for even numbers
+        TestHabit tc = new TestHabit();
+        System.out.println("Creating and testing increment habits from idea ...");
+        for (int i=0;i<100;i++) {
+            int rnumber = new Random().nextInt();
+            Idea newnumber = new Idea("number",rnumber);
+            Idea modnumber = tc.incrementIdea.op(newnumber).get(0);
+            System.out.print(" "+newnumber.getValue()+"->"+modnumber.getValue());
+            int tt = (int) newnumber.getValue();
+            assertEquals(modnumber.getValue(),tt+1);
+        }
+        System.out.println("\nCreating and testing decrement habits from idea...");
+        for (int i=0;i<100;i++) {
+            Idea newnumber = new Idea("number",new Random().nextInt());
+            Idea modnumber = tc.decrementIdea.op(newnumber).get(0);
+            System.out.print(" "+newnumber.getValue()+"->"+modnumber.getValue());
+            int tt = (int) newnumber.getValue();
+            assertEquals(modnumber.getValue(),tt-1);
+        }
+        System.out.println("\nfinished !");
+    }
+    
+    @Test 
+    public void testHabitIdeasDirectWithOp0() {
+        // Creating a category for even numbers
+        TestHabit tc = new TestHabit();
+        System.out.println("Creating and testing increment habits using mind...");
+        for (int i=0;i<100;i++) {
+            int rnumber = new Random().nextInt();
+            Idea orignumber = new Idea("number",rnumber);
+            Idea modnumber = tc.incrementIdea.op0(orignumber);
+            System.out.print(" "+orignumber.getValue()+"->"+modnumber.getValue());
+            int tt = (int) orignumber.getValue();
+            assertEquals(modnumber.getValue(),tt+1);
+        }
+        System.out.println("\nCreating and testing decrement habits using mind...");
+        for (int i=0;i<100;i++) {
+            Idea newnumber = new Idea("number",new Random().nextInt());
+            Idea modnumber = tc.decrementIdea.op(newnumber).get(0);
+            System.out.print(" "+newnumber.getValue()+"->"+modnumber.getValue());
+            int tt = (int) newnumber.getValue();
+            assertEquals(modnumber.getValue(),tt-1);
+        }
+        System.out.println("\nfinished !");
+    }
+    
+    private Idea getRandomNumberIdea() {
+        int rnumber = new Random().nextInt();
+        Idea orignumber = new Idea("number",rnumber);
+        return(orignumber);
+    }
+    
+    @Test
+    public void testHabitExecutionerCodelet() {
+        TestHabit tc = new TestHabit();
+        Mind testMind = new Mind();
+        MemoryObject input_number = testMind.createMemoryObject("INPUT_NUMBER");
+        MemoryObject input_habit = testMind.createMemoryObject("INPUT_HABIT",tc.incrementIdea);
+        MemoryObject output = testMind.createMemoryObject("OUTPUT_NUMBER");
+        Codelet c = new Codelet() {
+            Idea input_number;
+            Idea habit;
+            MemoryObject output_mo;
+            @Override
+            public void accessMemoryObjects() {
+                MemoryObject input1 = (MemoryObject) this.getInput("INPUT_NUMBER");
+                input_number = (Idea) input1.getI();
+                MemoryObject input2 = (MemoryObject) this.getInput("INPUT_HABIT");
+                habit = (Idea) input2.getI();
+                output_mo = (MemoryObject) this.getOutput("OUTPUT_NUMBER");
+            }
+
+            @Override
+            public void calculateActivation() {
+                // not used
+            }
+
+            @Override
+            public void proc() {
+                Idea result = habit.op0(input_number);
+                output_mo.setI(result);
+            }
+        };
+        c.addInput(input_number);
+        c.addInput(input_habit);
+        c.addOutput(output);
+        c.setIsMemoryObserver(true);
+        input_number.setI(getRandomNumberIdea());
+	input_number.addMemoryObserver(c);
+        input_habit.addMemoryObserver(c);
+        testMind.start();
+        for (int i=0;i<200;i++) {
+            Idea orignumber = getRandomNumberIdea();
+            int rnumber = (int) orignumber.getValue();
+            input_number.setI(orignumber);
+            int result = rnumber;
+            while (result == rnumber) {
+                Idea iresult = (Idea) output.getI();
+                result = (int) iresult.getValue();
+            }
+            assertEquals(result,rnumber+1);
+        }
     }
     
 }

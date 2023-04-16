@@ -1,9 +1,16 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
- */
+/***********************************************************************************************
+ * Copyright (c) 2012  DCA-FEEC-UNICAMP
+ * All rights reserved. This program and the accompanying materials
+ * are made available under the terms of the GNU Lesser Public License v3
+ * which accompanies this distribution, and is available at
+ * http://www.gnu.org/licenses/lgpl.html
+ * <p>
+ * Contributors:
+ * K. Raizer, A. L. O. Paraense, E. M. Froes, R. R. Gudwin - initial API and implementation
+ ***********************************************************************************************/
 package br.unicamp.cst.representation.idea;
 
+import java.util.Arrays;
 import java.util.List;
 import java.util.Random;
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -18,8 +25,7 @@ public class TestCategory {
     Idea evenIdea;
     Idea oddIdea;
     
-    
-    public TestCategory() {
+    private Category createEvenNumber() {
         Category even = new Category() { 
         @Override 
         public double membership(Idea idea) { 
@@ -38,9 +44,11 @@ public class TestCategory {
              return(evenNumber);
         }
         };
-        // Creating a concept for even numbers
-        evenIdea = new Idea("evenIdea",even,"Property",2);
-        // Creating a category for odd numbers
+        
+        return(even);
+    }
+    
+    private Category createOddNumber() {
         Category odd = new Category() {
         @Override 
         public double membership(Idea idea) { 
@@ -59,26 +67,32 @@ public class TestCategory {
              return(oddNumber);
         }
         };
+        return(odd);
+    }
+    
+    public TestCategory() {
+        // Creating a concept for even numbers
+        evenIdea = new Idea("evenIdea",createEvenNumber(),"Property",2);
         // Creating a concept for odd numbers
-        oddIdea = new Idea("oddIdea",odd,"Property",2);
+        oddIdea = new Idea("oddIdea",createOddNumber(),"Property",2);
     }
     
     @Test 
-    public void testCategoryIdeas() {
-        // Creating a category for even numbers
+    public void testRawCategoryIdeas() {
         TestCategory tc = new TestCategory();
+        // Getting the category for even numbers
         Category even = (Category) tc.evenIdea.getValue();
+        // Getting the category for odd numbers
         Category odd = (Category) tc.oddIdea.getValue();
-        System.out.println("Creating and testing even numbers ...");
+        System.out.println("Testing the instantiation of 'even numbers' from raw Category ...");
         for (int i=0;i<100;i++) {
             Idea newevennumber = even.instantiation(null);
             System.out.print(" "+newevennumber.getValue());
             assertEquals(even.membership(newevennumber),1.0);
             assertEquals(odd.membership(newevennumber),0.0);
         }
-        System.out.println("\nCreating and testing odd numbers ...");
+        System.out.println("\nTesting the instantiation of 'odd numbers' from raw Category ...");
         for (int i=0;i<100;i++) {
-            //System.out.println("what ?");
             Idea newoddnumber = odd.instantiation(null);
             System.out.print(" "+newoddnumber.getValue());
             assertEquals(even.membership(newoddnumber),0.0);
@@ -87,6 +101,98 @@ public class TestCategory {
         System.out.println("\nfinished !");
     }
     
+    @Test 
+    public void testCategoryIdeasDirect() {
+        // Creating a category for even numbers
+        TestCategory tc = new TestCategory();
+        System.out.println("Testing the instantiation of 'even numbers' from a category idea ...");
+        for (int i=0;i<100;i++) {
+            Idea newevennumber = tc.evenIdea.instantiation(null);
+            System.out.print(" "+newevennumber.getValue());
+            assertEquals(tc.evenIdea.membership(newevennumber),1.0);
+            assertEquals(tc.oddIdea.membership(newevennumber),0.0);
+        }
+        System.out.println("\nTesting the instantiation of 'odd numbers' from a category idea ...");
+        for (int i=0;i<100;i++) {
+            Idea newoddnumber = tc.oddIdea.instantiation(null);
+            System.out.print(" "+newoddnumber.getValue());
+            assertEquals(tc.evenIdea.membership(newoddnumber),0.0);
+            assertEquals(tc.oddIdea.membership(newoddnumber),1.0);
+        }
+        System.out.println("\nfinished !");
+    }
+
+    private Category createInterval(int mi,int ma) {
+        Category interval = new Category() { 
+            public int min=mi;
+            public int max=ma;
+            @Override 
+            public double membership(Idea idea) { 
+                 //Check if belongs to category return membershipDegree;
+                if (idea.getValue() instanceof Integer) {
+                  int number = (int) idea.getValue();
+                  if (number >= min && number <= max) return(1.0);
+                }    
+                return(0.0);
+            }
+            @Override
+            public Idea instantiation(List<Idea> constraints) {
+                int minimum = min;
+                int maximum = max;
+                if (constraints != null) {
+                    for (Idea i : constraints) {
+                        if (i.getName().equals("min") && i.getValue() instanceof Integer && (int)i.getValue() > min) {
+                            minimum = (int) i.getValue();
+                        }
+                        if (i.getName().equals("max") && i.getValue() instanceof Integer && (int)i.getValue() < max) {
+                            maximum = (int) i.getValue();
+                        }
+                    }
+                }
+                // Create an instance of the category based on constraints
+                Idea i;
+                do {
+                    int number = new Random().nextInt(maximum-minimum+1)+minimum;             
+                    i = new Idea("number",number);
+                } while(membership(i) == 0);  
+                return(i);
+            }
+        };
+        return(interval);
+    }    
+    @Test 
+    public void testParameterizedIdeas() {
+        System.out.println("Testing the creation of interval (0,100) without constraints");
+        Category interval = createInterval(0,100);
+        for (int i=0;i<100;i++) {
+           Idea i1 = interval.instantiation(null);
+           assertEquals(interval.membership(i1),1.0);
+           System.out.print(" "+i1.getValue());
+        }
+        Idea c1 = new Idea("min",10);
+        Idea c2 = new Idea("max",20);
+        Idea[] co = {c1, c2};
+        List<Idea>  constraint = Arrays.asList(co);
+        System.out.println("\nTesting the creation of interval (0,100) with constraints (10,20)");
+        for (int i=0;i<100;i++) {
+           Idea i1 = interval.instantiation(constraint);
+           assertEquals(interval.membership(i1),1.0);
+           System.out.print(" "+i1.getValue());
+        }
+        System.out.println("\nfinished !");
+        System.out.println("Testing the creation of interval (0,100) with constraints (30,50)");
+        Idea inter = new Idea("interval",interval);
+        inter.add(c1);
+        inter.add(c2);
+        c1.setValue(30);
+        c2.setValue(50);
+        for (int i=0;i<100;i++) {
+           Idea i1 = inter.instantiation();
+           assertEquals(inter.membership(i1),1.0);
+           System.out.print(" "+i1.getValue());
+        }
+        System.out.println("\nfinished !");
+    }
         
     
 }

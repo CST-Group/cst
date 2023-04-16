@@ -1193,4 +1193,43 @@ public class Idea {
         }
     }
     
+    public List<Idea> op(Idea idea) {
+        if (getValue() instanceof Habit) {
+            Habit h = (Habit) getValue();
+            return(h.op(idea));
+        }
+        else return(null);
+    }
+    
+    public Idea op0(Idea idea) {
+        if (getValue() instanceof Habit) {
+            Habit h = (Habit) getValue();
+            List<Idea> result = h.op(idea);
+            if (!result.isEmpty())
+                return(result.get(0));
+            else return(null);
+        }
+        else return(null);
+    }
+    
+    public Idea instantiation() {
+        return instantiation(getL());
+    }
+    
+    public Idea instantiation(List<Idea> constraints ) {
+        if (getValue() instanceof Category) {
+            Category c = (Category) getValue();
+            return(c.instantiation(constraints));
+        }
+        return(null);
+    }
+    
+    public double membership(Idea idea) {
+        if (getValue() instanceof Category) {
+            Category c = (Category) getValue();
+            return(c.membership(idea));
+        }
+        return(0.0);
+    }
+    
 }
