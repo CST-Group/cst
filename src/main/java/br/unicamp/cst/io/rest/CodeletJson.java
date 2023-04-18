@@ -52,7 +52,15 @@ public class CodeletJson {
         return outputs;
     }
 
+    public List<MemoryJson> getBroadcast() {
+        return broadcast;
+    }
+
     public String getGroup() {
         return group;
+    }
+
+    public String getName() {
+        return name;
     }
 }

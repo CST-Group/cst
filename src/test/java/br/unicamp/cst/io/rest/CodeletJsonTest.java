@@ -38,13 +38,16 @@ public class CodeletJsonTest {
 
             interCodelet.addInput(m3);
             interCodelet.addOutput(m4);
+            interCodelet.addBroadcast(m4);
+            interCodelet.setName("name");
 
             CodeletJson codeletJson = new CodeletJson(interCodelet, "testGroup");
 
             assertEquals(m3.getName(), codeletJson.getInputs().get(0).name);
             assertEquals(m4.getName(), codeletJson.getOutputs().get(0).name);
+            assertEquals(m4.getName(), codeletJson.getBroadcast().get(0).name);
             assertEquals(codeletJson.getGroup(), "testGroup");
-
+            assertEquals(interCodelet.getName(), codeletJson.getName());
         }
     };
 
