@@ -10,6 +10,7 @@ import java.util.HashMap;
 import java.util.Random;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 
 public class TestRESTMemory {
@@ -264,6 +265,23 @@ public class TestRESTMemory {
         assertEquals(m8.getIdmemoryobject(), 1l);
 
         assertEquals(memoryContainerJson.memories.get(0).name, m.getName());
+
+    }
+
+    @Test
+    public void testMemoryObserver(){
+        MemoryObserver memoryObserver = new MemoryObserver() {
+            String name = "memoryObserver";
+            @Override
+            public void notifyCodelet() {
+
+            }
+        };
+
+        RESTMemory restMemory = new RESTMemory(5050);
+        restMemory.addMemoryObserver(memoryObserver);
+
+        assertTrue(restMemory.getMemoryObservers().contains(memoryObserver));
 
     }
 

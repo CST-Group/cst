@@ -207,6 +207,17 @@ public class RESTMemory implements Memory {
     }
 
     /**
+     * Add a memory observer to its list
+     *
+     * @return a set of memoryObservers
+     */
+
+    public Set<MemoryObserver> getMemoryObservers() {
+        return this.memoryObservers;
+    }
+
+
+    /**
      * Sets the timestamp of this Memory Object.
      *
      * @param timestamp
