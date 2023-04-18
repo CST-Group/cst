@@ -39,18 +39,20 @@ public class CodeletJson {
     }
 
     public CodeletJson(Codelet cod, String group) {
-        this.activation = cod.getActivation();
-        this.timestamp = System.currentTimeMillis();
-        this.name = cod.getName();
+        this(cod);
         this.group = group;
-        for (int i = 0; i < cod.getBroadcast().size(); i++) {
-            this.broadcast.add(new MemoryJson(cod.getBroadcast().get(i)));
-        }
-        for (int i = 0; i < cod.getInputs().size(); i++) {
-            this.inputs.add(new MemoryJson(cod.getInputs().get(i)));
-        }
-        for (int i = 0; i < cod.getOutputs().size(); i++) {
-            this.outputs.add(new MemoryJson(cod.getOutputs().get(i)));
-        }
+
+    }
+
+    public List<MemoryJson> getInputs() {
+        return inputs;
+    }
+
+    public List<MemoryJson> getOutputs() {
+        return outputs;
+    }
+
+    public String getGroup() {
+        return group;
     }
 }

@@ -40,18 +40,9 @@ public class MemoryContainerJson {
     }
 
     public MemoryContainerJson(Memory memo, String group) {
-        timestamp = memo.getTimestamp();
-        evaluation = memo.getEvaluation();
-        I = memo.getI();
-        name = memo.getName();
+        this(memo);
         this.group = group;
-        if (memo instanceof MemoryContainer) {
-            MemoryContainer memoAux = (MemoryContainer) memo;
-            List<Memory> memoList = memoAux.getAllMemories();
-            for (int i = 0; i < memoList.size(); i++) {
-                this.memories.add(new MemoryContainerJson(memoList.get(i)));
-            }
-        }
+
 
     }
 }

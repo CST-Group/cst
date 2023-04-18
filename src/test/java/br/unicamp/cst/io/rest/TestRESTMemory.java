@@ -246,7 +246,10 @@ public class TestRESTMemory {
         tr.m2.start();
 
         MemoryObject m = new MemoryObject();
-        MemoryContainerJson memoryContainerJson = new MemoryContainerJson(m, "group");
+        m.setName("testName");
+        MemoryContainer memoryContainer = new MemoryContainer();
+        memoryContainer.add(m);
+        MemoryContainerJson memoryContainerJson = new MemoryContainerJson(memoryContainer, "group");
 
         try{Thread.sleep(2000);
         }catch (Exception e){e.printStackTrace();}
@@ -259,6 +262,9 @@ public class TestRESTMemory {
 
         RESTMemory m8 = (RESTMemory) tr.m2.getRawMemory().getAllOfType("M8").get(0);
         assertEquals(m8.getIdmemoryobject(), 1l);
+
+        assertEquals(memoryContainerJson.memories.get(0).name, m.getName());
+
     }
 
 }
