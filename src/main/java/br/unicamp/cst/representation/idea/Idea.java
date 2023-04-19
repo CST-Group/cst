@@ -1193,18 +1193,18 @@ public class Idea {
         }
     }
     
-    public List<Idea> op(Idea idea) {
+    public List<Idea> exec(Idea idea) {
         if (getValue() instanceof Habit) {
             Habit h = (Habit) getValue();
-            return(h.op(idea));
+            return(h.exec(idea));
         }
         else return(null);
     }
     
-    public Idea op0(Idea idea) {
+    public Idea exec0(Idea idea) {
         if (getValue() instanceof Habit) {
             Habit h = (Habit) getValue();
-            List<Idea> result = h.op(idea);
+            List<Idea> result = h.exec(idea);
             if (!result.isEmpty())
                 return(result.get(0));
             else return(null);
@@ -1219,7 +1219,7 @@ public class Idea {
     public Idea instantiation(List<Idea> constraints ) {
         if (getValue() instanceof Category) {
             Category c = (Category) getValue();
-            return(c.instantiation(constraints));
+            return(c.getInstance(constraints));
         }
         return(null);
     }

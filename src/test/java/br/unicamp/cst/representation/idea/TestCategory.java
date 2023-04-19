@@ -37,7 +37,7 @@ public class TestCategory {
              return(0.0);
         }
         @Override
-        public Idea instantiation(List<Idea> constraints) {
+        public Idea getInstance(List<Idea> constraints) {
              // Create an instance of the category based on constraints
              int number = new Random().nextInt();             
              Idea evenNumber = new Idea("even_number",number*2);
@@ -60,7 +60,7 @@ public class TestCategory {
              return(0.0);
         }
         @Override
-        public Idea instantiation(List<Idea> constraints) {
+        public Idea getInstance(List<Idea> constraints) {
              // Create an instance of the category based on constraints
              int number = new Random().nextInt();             
              Idea oddNumber = new Idea("odd_number",number*2+1);
@@ -86,14 +86,14 @@ public class TestCategory {
         Category odd = (Category) tc.oddIdea.getValue();
         System.out.println("Testing the instantiation of 'even numbers' from raw Category ...");
         for (int i=0;i<100;i++) {
-            Idea newevennumber = even.instantiation(null);
+            Idea newevennumber = even.getInstance(null);
             System.out.print(" "+newevennumber.getValue());
             assertEquals(even.membership(newevennumber),1.0);
             assertEquals(odd.membership(newevennumber),0.0);
         }
         System.out.println("\nTesting the instantiation of 'odd numbers' from raw Category ...");
         for (int i=0;i<100;i++) {
-            Idea newoddnumber = odd.instantiation(null);
+            Idea newoddnumber = odd.getInstance(null);
             System.out.print(" "+newoddnumber.getValue());
             assertEquals(even.membership(newoddnumber),0.0);
             assertEquals(odd.membership(newoddnumber),1.0);
@@ -136,7 +136,7 @@ public class TestCategory {
                 return(0.0);
             }
             @Override
-            public Idea instantiation(List<Idea> constraints) {
+            public Idea getInstance(List<Idea> constraints) {
                 int minimum = min;
                 int maximum = max;
                 if (constraints != null) {
@@ -165,7 +165,7 @@ public class TestCategory {
         System.out.println("Testing the creation of interval (0,100) without constraints");
         Category interval = createInterval(0,100);
         for (int i=0;i<100;i++) {
-           Idea i1 = interval.instantiation(null);
+           Idea i1 = interval.getInstance(null);
            assertEquals(interval.membership(i1),1.0);
            System.out.print(" "+i1.getValue());
         }
@@ -175,7 +175,7 @@ public class TestCategory {
         List<Idea>  constraint = Arrays.asList(co);
         System.out.println("\nTesting the creation of interval (0,100) with constraints (10,20)");
         for (int i=0;i<100;i++) {
-           Idea i1 = interval.instantiation(constraint);
+           Idea i1 = interval.getInstance(constraint);
            assertEquals(interval.membership(i1),1.0);
            System.out.print(" "+i1.getValue());
         }

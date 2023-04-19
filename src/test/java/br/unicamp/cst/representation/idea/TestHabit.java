@@ -31,7 +31,7 @@ public class TestHabit {
     public TestHabit() {
         Habit increment = new Habit() { 
         @Override 
-        public List<Idea> op(Idea idea) { 
+        public List<Idea> exec(Idea idea) { 
              //Check if belongs to category return membershipDegree;
              if (idea.getValue() instanceof Integer) {
                   int number = (int) idea.getValue();
@@ -48,7 +48,7 @@ public class TestHabit {
         // Creating a category for odd numbers
         Habit decrement = new Habit() { 
         @Override 
-        public List<Idea> op(Idea idea) { 
+        public List<Idea> exec(Idea idea) { 
              //Check if belongs to category return membershipDegree;
              if (idea.getValue() instanceof Integer) {
                   int number = (int) idea.getValue();
@@ -74,7 +74,7 @@ public class TestHabit {
         for (int i=0;i<100;i++) {
             int rnumber = new Random().nextInt();
             Idea newnumber = new Idea("number",rnumber);
-            Idea modnumber = increment.op(newnumber).get(0);
+            Idea modnumber = increment.exec(newnumber).get(0);
             System.out.print(" "+newnumber.getValue()+"->"+modnumber.getValue());
             int tt = (int) newnumber.getValue();
             assertEquals(modnumber.getValue(),tt+1);
@@ -82,7 +82,7 @@ public class TestHabit {
         System.out.println("\nCreating and testing decrement habits ...");
         for (int i=0;i<100;i++) {
             Idea newnumber = new Idea("number",new Random().nextInt());
-            Idea modnumber = decrement.op(newnumber).get(0);
+            Idea modnumber = decrement.exec(newnumber).get(0);
             System.out.print(" "+newnumber.getValue()+"->"+modnumber.getValue());
             int tt = (int) newnumber.getValue();
             assertEquals(modnumber.getValue(),tt-1);
@@ -98,7 +98,7 @@ public class TestHabit {
         for (int i=0;i<100;i++) {
             int rnumber = new Random().nextInt();
             Idea newnumber = new Idea("number",rnumber);
-            Idea modnumber = tc.incrementIdea.op(newnumber).get(0);
+            Idea modnumber = tc.incrementIdea.exec(newnumber).get(0);
             System.out.print(" "+newnumber.getValue()+"->"+modnumber.getValue());
             int tt = (int) newnumber.getValue();
             assertEquals(modnumber.getValue(),tt+1);
@@ -106,7 +106,7 @@ public class TestHabit {
         System.out.println("\nCreating and testing decrement habits from idea...");
         for (int i=0;i<100;i++) {
             Idea newnumber = new Idea("number",new Random().nextInt());
-            Idea modnumber = tc.decrementIdea.op(newnumber).get(0);
+            Idea modnumber = tc.decrementIdea.exec(newnumber).get(0);
             System.out.print(" "+newnumber.getValue()+"->"+modnumber.getValue());
             int tt = (int) newnumber.getValue();
             assertEquals(modnumber.getValue(),tt-1);
@@ -122,7 +122,7 @@ public class TestHabit {
         for (int i=0;i<100;i++) {
             int rnumber = new Random().nextInt();
             Idea orignumber = new Idea("number",rnumber);
-            Idea modnumber = tc.incrementIdea.op0(orignumber);
+            Idea modnumber = tc.incrementIdea.exec0(orignumber);
             System.out.print(" "+orignumber.getValue()+"->"+modnumber.getValue());
             int tt = (int) orignumber.getValue();
             assertEquals(modnumber.getValue(),tt+1);
@@ -130,7 +130,7 @@ public class TestHabit {
         System.out.println("\nCreating and testing decrement habits using mind...");
         for (int i=0;i<100;i++) {
             Idea newnumber = new Idea("number",new Random().nextInt());
-            Idea modnumber = tc.decrementIdea.op(newnumber).get(0);
+            Idea modnumber = tc.decrementIdea.exec(newnumber).get(0);
             System.out.print(" "+newnumber.getValue()+"->"+modnumber.getValue());
             int tt = (int) newnumber.getValue();
             assertEquals(modnumber.getValue(),tt-1);
@@ -171,7 +171,7 @@ public class TestHabit {
 
             @Override
             public void proc() {
-                Idea result = habit.op0(input_number);
+                Idea result = habit.exec0(input_number);
                 output_mo.setI(result);
             }
         };

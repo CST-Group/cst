@@ -20,12 +20,12 @@ import java.util.List;
  */
 public interface Category {
     /**
-     * The method instantiation provides a random instance of this category, subject to
-     * a list of constraints, when available
+     * The method getInstance provides a random instance of this category, subject to
+ a list of constraints, when available
      * @param constraints a list of constraints for the new instance, in the form of Ideas
      * @return the new Idea that was generated
      */
-    public Idea instantiation(List<Idea> constraints );
+    public Idea getInstance(List<Idea> constraints );
     /**
      * This method tests if a provided Idea is a member of this category. 
      * @param idea the idea under consideration for membership
