@@ -2,12 +2,11 @@ package br.unicamp.cst.io.rest;
 
 import br.unicamp.cst.core.entities.Codelet;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.io.OutputStream;
+import java.io.*;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.net.URLEncoder;
+import java.util.HashMap;
 
 public abstract class HttpCodelet extends Codelet {
     /*public String URL;
@@ -18,7 +17,7 @@ public abstract class HttpCodelet extends Codelet {
     }*/
 
 
-    public void sendPOST(String POST_URL, String POST_PARAMS) throws IOException {
+    public String sendPOST(String POST_URL, String POST_PARAMS) throws IOException {
         URL obj = new URL(POST_URL);
         HttpURLConnection con = (HttpURLConnection) obj.openConnection();
         con.setRequestMethod("POST");
@@ -46,10 +45,13 @@ public abstract class HttpCodelet extends Codelet {
             in.close();
 
             // print result
-            System.out.println(response);
+            //System.out.println(response);
+            return response.toString();
         } else {
             System.out.println("POST request did not work.");
         }
+
+        return null;
     }
 
     public String sendGET(String GET_URL) throws IOException {
@@ -82,4 +84,25 @@ public abstract class HttpCodelet extends Codelet {
         }
         return(message);
     }
+
+    public String prepareParams(HashMap<String, String> params){
+        StringBuilder sbParams = new StringBuilder();
+
+        int i = 0;
+        for (String key : params.keySet()) {
+            try {
+                if (i != 0){
+                    sbParams.append("&");
+                }
+                sbParams.append(key).append("=")
+                        .append(URLEncoder.encode(params.get(key), "UTF-8"));
+
+            } catch (UnsupportedEncodingException e) {
+                e.printStackTrace();
+            }
+            i++;
+        }
+        return sbParams.toString();
+    }
+
 }

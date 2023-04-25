@@ -1,21 +1,93 @@
 package br.unicamp.cst.io.rest;
 
 import br.unicamp.cst.core.entities.*;
+import br.unicamp.cst.core.exceptions.CodeletActivationBoundsException;
 import org.junit.jupiter.api.Test;
 
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.io.PrintStream;
 import java.io.UnsupportedEncodingException;
+import java.net.ConnectException;
 import java.net.URLEncoder;
 import java.util.HashMap;
 import java.util.Random;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
 
 
-public class TestRESTMemory {
+public class TestHttpCodelet {
     Mind m1;
     Mind m2;
+
+    HttpCodelet restSensoryTestCodelet = new HttpCodelet() {
+        //Memory
+        @Override
+        public void accessMemoryObjects() {
+
+        }
+
+        @Override
+        public void calculateActivation() {
+
+        }
+
+        @Override
+        public void proc() {
+            try {
+                String msg = this.sendGET("http://127.0.0.1:60000");
+                System.out.println(msg);
+                System.out.println("got from: " + "http://127.0.0.1:60000");
+            }catch (Exception e){e.printStackTrace();}
+        }
+    };
+
+    HttpCodelet restMotorTestCodelet = new HttpCodelet() {
+        HashMap<String, String> params = new HashMap<>();
+        final Random r = new Random();
+        final Double I = 2.0; //(double) (5 + r.nextInt(500));
+
+        @Override
+        public void accessMemoryObjects() {
+            params.put("I", "2.0");
+            params.put("evaluation", "3.0");
+        }
+
+        @Override
+        public void calculateActivation() {
+
+        }
+
+        @Override
+        public void proc() {
+            StringBuilder sbParams = new StringBuilder();
+
+
+
+            Double eval = (double)(2 + r.nextInt(50));
+            params.replace("I", I.toString());
+            params.replace("evaluation", eval.toString());
+            int i = 0;
+            for (String key : params.keySet()) {
+                try {
+                    if (i != 0){
+                        sbParams.append("&");
+                    }
+                    sbParams.append(key).append("=")
+                            .append(URLEncoder.encode(params.get(key), "UTF-8"));
+
+                } catch (UnsupportedEncodingException e) {
+                    e.printStackTrace();
+                }
+                i++;
+            }
+            try {
+                String paramsString = sbParams.toString();
+                this.sendPOST("http://127.0.0.1:60000", paramsString);
+                System.out.println("send to: " + "http://127.0.0.1:60000");
+            }catch (Exception e){e.printStackTrace();}
+        }
+    };
 
     public Mind prepareMind(int portOut, int portIn, int partnerPortOut, int partnerPortIn, double outI, double toGetI, String baseIP) {
         String baseURL = "http://" + baseIP + ":";
@@ -38,7 +110,7 @@ public class TestRESTMemory {
             @Override
             public void proc() {
                 try {
-                    String msg = this.sendGET(partnerURLOut);
+                    String msg = this.sendGET("http://127.0.0.1:60000");
                     System.out.println(msg);
                     System.out.println("got from: " + partnerURLOut);
                 }catch (Exception e){e.printStackTrace();}
@@ -63,14 +135,30 @@ public class TestRESTMemory {
 
             @Override
             public void proc() {
+                StringBuilder sbParams = new StringBuilder();
+
+
 
                 Double eval = (double)(2 + r.nextInt(50));
                 params.replace("I", I.toString());
                 params.replace("evaluation", eval.toString());
+                int i = 0;
+                for (String key : params.keySet()) {
+                    try {
+                        if (i != 0){
+                            sbParams.append("&");
+                        }
+                        sbParams.append(key).append("=")
+                                .append(URLEncoder.encode(params.get(key), "UTF-8"));
 
-                String paramsString = prepareParams(params);
+                    } catch (UnsupportedEncodingException e) {
+                        e.printStackTrace();
+                    }
+                    i++;
+                }
                 try {
-                    this.sendPOST(partnerURLIn, paramsString);
+                    String paramsString = sbParams.toString();
+                    this.sendPOST("http://127.0.0.1:60000", paramsString);
                     System.out.println("send to: " + partnerURLIn);
                 }catch (Exception e){e.printStackTrace();}
             }
@@ -172,18 +260,14 @@ public class TestRESTMemory {
 
 
     @Test
-    public void testRestHostname() throws IOException {
-        //String baseIP = "192.xxx.xxx.x";
-        //String baseIP = "172.xx.x.x";
-        String baseIP = "127.0.0.1";
-        //String baseIP = "localhost";
+    public void testError() {
 
         Random r = new Random();
         // Finding a random port higher than 5000
-        int portIn1 = 5000 + r.nextInt(50000);
-        int portIn2 = 5000 + r.nextInt(50000);
-        int portOut1 = 5000 + r.nextInt(50000);
-        int portOut2 = 5000 + r.nextInt(50000);
+        int portIn1 = 5000 + r.nextInt(5000);
+        int portIn2 = 5000 + r.nextInt(5000);
+        int portOut1 = 5000 + r.nextInt(5000);
+        int portOut2 = 5000 + r.nextInt(5000);
 
         TestRESTMemory tr = new TestRESTMemory();
         double outI1 = (5 + r.nextInt(500));
@@ -191,82 +275,47 @@ public class TestRESTMemory {
         double outI2 = (5 + r.nextInt(500));
         double toGetI2 =(5 + r.nextInt(500));
 
-        tr.m1 = prepareMind(portOut1, portIn1, portOut2, portIn2, outI1, toGetI1, baseIP);
-        tr.m2 = prepareMind(portOut2, portIn2, portOut1, portIn1, outI2, toGetI2, baseIP);
+        //tr.m1 = prepareMind(portOut1, portIn1, portOut2, portIn2, outI1, toGetI1, "localhost");
+        //tr.m2 = prepareMind(portOut2, portIn2, portOut1, portIn1, outI2, toGetI2, "localhost");
 
-        tr.m1.start();
-        tr.m2.start();
-
-        try{Thread.sleep(2000);
-        }catch (Exception e){e.printStackTrace();}
-
-        assertEquals(tr.m1.getRawMemory().getAllOfType("M5").get(0).getI(), toGetI1);
-        assertEquals(Double.parseDouble((String) tr.m2.getRawMemory().getAllOfType("M1").get(0).getI()), outI1, 0.0);
-
-        assertEquals(tr.m2.getRawMemory().getAllOfType("M5").get(0).getI(), toGetI2);
-        assertEquals(Double.parseDouble((String) tr.m1.getRawMemory().getAllOfType("M1").get(0).getI()), outI2, 0.0);
-    }
-
-    @Test
-    public void testRestLocalhost() throws IOException {
-        String baseIP = "localhost";
-
-        Random r = new Random();
-        // Finding a random port higher than 5000
-        int portIn1 = 5000 + r.nextInt(50000);
-        int portIn2 = 5000 + r.nextInt(50000);
-        int portOut1 = 5000 + r.nextInt(50000);
-        int portOut2 = 5000 + r.nextInt(50000);
-
-        TestRESTMemory tr = new TestRESTMemory();
-        double outI1 = (5 + r.nextInt(500));
-        double toGetI1 = (5 + r.nextInt(500));
-        double outI2 = (5 + r.nextInt(500));
-        double toGetI2 =(5 + r.nextInt(500));
-
-        tr.m1 = prepareMind(portOut1, portIn1, portOut2, portIn2, outI1, toGetI1, "localhost");
-        tr.m2 = prepareMind(portOut2, portIn2, portOut1, portIn1, outI2, toGetI2, "localhost");
-
-        tr.m1.start();
-        tr.m2.start();
-
-        MemoryObject m = new MemoryObject();
-        m.setName("testName");
-        MemoryContainer memoryContainer = new MemoryContainer();
-        memoryContainer.add(m);
-        MemoryContainerJson memoryContainerJson = new MemoryContainerJson(memoryContainer, "group");
+        //tr.m1.start();
+        //tr.m2.start();
 
         try{Thread.sleep(2000);
         }catch (Exception e){e.printStackTrace();}
 
-        assertEquals(tr.m1.getRawMemory().getAllOfType("M5").get(0).getI(), toGetI1);
-        assertEquals(Double.parseDouble((String) tr.m2.getRawMemory().getAllOfType("M1").get(0).getI()), outI1, 0.0);
+        //tr.m1.shutDown();
+        //tr.m2.shutDown();
 
-        assertEquals(tr.m2.getRawMemory().getAllOfType("M5").get(0).getI(), toGetI2);
-        assertEquals(Double.parseDouble((String) tr.m1.getRawMemory().getAllOfType("M1").get(0).getI()), outI2, 0.0);
+        String expectedMessage1 = "POST request did not work.";
+        String expectedMessage2 = "GET request not worked";
 
-        RESTMemory m8 = (RESTMemory) tr.m2.getRawMemory().getAllOfType("M8").get(0);
-        assertEquals(m8.getIdmemoryobject(), 1l);
+        //ByteArrayOutputStream outputStreamCaptor = new ByteArrayOutputStream();
+        //System.setOut(new PrintStream(outputStreamCaptor));
 
-        assertEquals(memoryContainerJson.memories.get(0).name, m.getName());
+        //assertTrue(outputStreamCaptor.toString().trim().contains(expectedMessage1));
 
+        //assertTrue(outputStreamCaptor.toString().trim().contains(expectedMessage2));
+
+
+        Exception exception1 = assertThrows(ConnectException.class, () -> {
+            restMotorTestCodelet.sendPOST("http://127.0.0.1:6000", "2");
+        });
+
+        //String actualMessage1 = exception1.getMessage();
+
+        //Exception exception2 = assertThrows(IOException.class, () -> {
+        //    restSensoryTestCodelet.sendGET("http://127.0.0.1:6000");
+        //});
+
+        //String actualMessage2 = exception2.getMessage();
+
+
+        //assertTrue(actualMessage1.contains(expectedMessage1));
+        //assertTrue(actualMessage2.contains(expectedMessage2));
     }
 
-    @Test
-    public void testMemoryObserver(){
-        MemoryObserver memoryObserver = new MemoryObserver() {
-            String name = "memoryObserver";
-            @Override
-            public void notifyCodelet() {
 
-            }
-        };
 
-        RESTMemory restMemory = new RESTMemory(5050);
-        restMemory.addMemoryObserver(memoryObserver);
-
-        assertTrue(restMemory.getMemoryObservers().contains(memoryObserver));
-
-    }
 
 }
