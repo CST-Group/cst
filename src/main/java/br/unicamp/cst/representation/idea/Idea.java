@@ -1232,4 +1232,14 @@ public class Idea {
         return(0.0);
     }
     
+    public boolean isCategory() {
+        if (getValue() instanceof Category) return(true);
+        else return(false);
+    }
+    
+    public boolean isHabit() {
+        if (getValue() instanceof Habit) return(true);
+        else return(false);
+    }
+    
 }
