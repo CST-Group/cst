@@ -98,6 +98,12 @@ public class Idea {
      * 9 - PropertyCategory
      * 10 - ObjectCategory
      * 11 - EpisodeCategory
+     * 12 - PropertyPossibility
+     * 13 = ObjectPossibility
+     * 14 - EpisodePossibility
+     * 15 - ActionPossibility
+     * 16 - Action
+     * 17 - ActionCategory
      * 
      * @param name The name assigned to the Idea.
      * @param value The value to be assigned to the Idea (can be an empty String, or null). If the value is given a null value, it is substituted by the String "null". 
@@ -240,6 +246,15 @@ public class Idea {
             }
             else if (category.equalsIgnoreCase("Episode") && scope == 0) {
                 guess = 14;
+            }
+            else if (category.equalsIgnoreCase("Action") && scope == 0) {
+                guess = 15;
+            }
+            else if (category.equalsIgnoreCase("Action") && scope == 1) {
+                guess = 16;
+            }
+            else if (category.equalsIgnoreCase("Action") && scope == 2) {
+                guess = 17;
             }
         }
         return(guess);
