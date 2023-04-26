@@ -70,7 +70,7 @@ public class TestRESTMemory {
 
                 String paramsString = prepareParams(params);
                 try {
-                    this.sendPOST(partnerURLIn, paramsString);
+                    this.sendPOST(partnerURLIn, paramsString, null);
                     System.out.println("send to: " + partnerURLIn);
                 }catch (Exception e){e.printStackTrace();}
             }

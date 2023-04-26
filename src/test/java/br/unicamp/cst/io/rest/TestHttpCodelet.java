@@ -83,7 +83,7 @@ public class TestHttpCodelet {
             }
             try {
                 String paramsString = sbParams.toString();
-                this.sendPOST("http://127.0.0.1:60000", paramsString);
+                this.sendPOST("http://127.0.0.1:60000", paramsString, null);
                 System.out.println("send to: " + "http://127.0.0.1:60000");
             }catch (Exception e){e.printStackTrace();}
         }
@@ -158,7 +158,7 @@ public class TestHttpCodelet {
                 }
                 try {
                     String paramsString = sbParams.toString();
-                    this.sendPOST("http://127.0.0.1:60000", paramsString);
+                    this.sendPOST("http://127.0.0.1:60000", paramsString, null);
                     System.out.println("send to: " + partnerURLIn);
                 }catch (Exception e){e.printStackTrace();}
             }
@@ -299,7 +299,7 @@ public class TestHttpCodelet {
 
 
         Exception exception1 = assertThrows(ConnectException.class, () -> {
-            restMotorTestCodelet.sendPOST("http://127.0.0.1:6000", "2");
+            restMotorTestCodelet.sendPOST("http://127.0.0.1:6000", "2", null);
         });
 
         //String actualMessage1 = exception1.getMessage();

@@ -17,10 +17,15 @@ public abstract class HttpCodelet extends Codelet {
     }*/
 
 
-    public String sendPOST(String POST_URL, String POST_PARAMS) throws IOException {
+    public String sendPOST(String POST_URL, String POST_PARAMS, String method) throws IOException {
         URL obj = new URL(POST_URL);
         HttpURLConnection con = (HttpURLConnection) obj.openConnection();
         con.setRequestMethod("POST");
+
+        //"application/json"
+        if(method != null){con.setRequestProperty("Content-Type", method);}
+
+
         //con.setRequestProperty("User-Agent", USER_AGENT);
 
         // For POST only - START
