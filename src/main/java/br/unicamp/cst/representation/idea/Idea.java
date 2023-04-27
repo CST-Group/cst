@@ -104,6 +104,7 @@ public class Idea {
      * 15 - ActionPossibility
      * 16 - Action
      * 17 - ActionCategory
+     * 18 - Goal
      * 
      * @param name The name assigned to the Idea.
      * @param value The value to be assigned to the Idea (can be an empty String, or null). If the value is given a null value, it is substituted by the String "null". 
@@ -255,6 +256,9 @@ public class Idea {
             }
             else if (category.equalsIgnoreCase("Action") && scope == 2) {
                 guess = 17;
+            }
+            else if (category.equalsIgnoreCase("Goal")) {
+                guess = 18;
             }
         }
         return(guess);
