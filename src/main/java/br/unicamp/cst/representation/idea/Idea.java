@@ -474,6 +474,10 @@ public class Idea {
      * 12 - Property (Possibility)
      * 13 - AbstractObject (Possibility)
      * 14 - Episode (Possibility)
+     * 15 - ActionPossibility
+     * 16 - Action
+     * 17 - ActionCategory
+     * 18 - Goal
      * @return an integer indicating the type of the Idea
      */
     public int getType() {
