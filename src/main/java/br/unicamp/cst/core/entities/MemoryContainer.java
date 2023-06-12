@@ -292,7 +292,7 @@ public class MemoryContainer implements Memory {
 			if (m.getName().equals(name))
 				return (m.getI());
 		}
-                Logger.getAnonymousLogger().log(Level.INFO, "There is no Memory with the name "+name+" within the Container "+this.name);
+                Logger.getAnonymousLogger().log(Level.INFO, "There is no Memory with the name {0} within the Container {1}", new Object[]{name, this.name});
 		return (null);
 	}
 
