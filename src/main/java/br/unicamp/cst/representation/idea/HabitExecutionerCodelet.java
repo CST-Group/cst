@@ -1,7 +1,13 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
- */
+/***********************************************************************************************
+ * Copyright (c) 2012-2023  DCA-FEEC-UNICAMP
+ * All rights reserved. This program and the accompanying materials
+ * are made available under the terms of the GNU Lesser Public License v3
+ * which accompanies this distribution, and is available at
+ * http://www.gnu.org/licenses/lgpl.html
+ * 
+ * Contributors for this file:
+ * R. R. Gudwin 
+ ***********************************************************************************************/
 package br.unicamp.cst.representation.idea;
 
 import br.unicamp.cst.core.entities.Codelet;
@@ -33,7 +39,7 @@ public class HabitExecutionerCodelet extends Codelet {
                 }
             }
         }
-        if (root.getL().size() == 0) {
+        if (root.isLeaf()) {
             System.out.println("I was not able to find any valid Idea at inputs");
         }
         if (h == null) {
@@ -43,7 +49,7 @@ public class HabitExecutionerCodelet extends Codelet {
 
     @Override
     public void calculateActivation() {
-        
+        /* We are not using activation in this codelet */
     }
 
     @Override

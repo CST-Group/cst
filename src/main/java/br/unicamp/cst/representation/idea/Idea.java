@@ -31,7 +31,7 @@ import java.util.concurrent.CopyOnWriteArrayList;
  * 
  * @author rgudwin
  */
-public class Idea {
+public class Idea implements Category,Habit {
     private long id;
     private String name="";
     private Object value="";
@@ -1217,14 +1217,26 @@ public class Idea {
         }
     }
     
+    /**
+     * This method can be called from an Idea, it the Idea is a Habit. 
+     * It executes the Habit without the necessity to first recover the Habit from the Idea
+     * @param idea an Idea passed as a parameter to the Habit. Can be null if no parameter is required
+     * @return an Idea, which is the result of the Habit execution. Can be null
+     */
+    @Override
     public List<Idea> exec(Idea idea) {
-        if (getValue() instanceof Habit) {
+        if (isHabit()) {
             Habit h = (Habit) getValue();
             return(h.exec(idea));
         }
         else return(null);
     }
     
+    /**
+     * This is a convenience method for executing a Habit, if the Habit returns a single Idea
+     * @param idea an Idea passed as a parameter to the Habit. Can be null if no parameter is required 
+     * @return A single Idea, when this is the case. 
+     */
     public Idea exec0(Idea idea) {
         if (getValue() instanceof Habit) {
             Habit h = (Habit) getValue();
@@ -1236,11 +1248,12 @@ public class Idea {
         else return(null);
     }
     
-    public Idea instantiation() {
-        return instantiation(getL());
+    public Idea getInstance() {
+        return getInstance(getL());
     }
     
-    public Idea instantiation(List<Idea> constraints ) {
+    @Override
+    public Idea getInstance(List<Idea> constraints ) {
         if (getValue() instanceof Category) {
             Category c = (Category) getValue();
             return(c.getInstance(constraints));
@@ -1248,6 +1261,7 @@ public class Idea {
         return(null);
     }
     
+    @Override
     public double membership(Idea idea) {
         if (getValue() instanceof Category) {
             Category c = (Category) getValue();
@@ -1256,14 +1270,33 @@ public class Idea {
         return(0.0);
     }
     
+    /**
+     * This method returns true if the present Idea is a Category, i.e., have a Category as its value.
+     * If it is a Habit, an user can call the methods instantiation and membership from this Idea
+     * @return true if this idea is a Category or false otherwise
+     */
     public boolean isCategory() {
         if (getValue() instanceof Category) return(true);
         else return(false);
     }
     
+    /**
+     * This method returns true if the present Idea is a Habit, i.e., have a Habit as its value.
+     * If it is a Habit, an user can call the method exec (or exec0) from this Idea
+     * @return true if this idea is a Habit or false otherwise
+     */
     public boolean isHabit() {
         if (getValue() instanceof Habit) return(true);
         else return(false);
     }
+    
+    /**
+     * This method returns true if the present Idea is a Leaf, i.e., does not have any children Idea
+     * @return true if this idea is a leaf or false otherwise
+     */
+    public boolean isLeaf() {
+        return this.l.isEmpty();
+    }
+    
     
 }

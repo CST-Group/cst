@@ -51,6 +51,7 @@ public class MemoryContainer implements Memory {
         
         private Memory last;
         private int lasti=0;
+        private Random rand = new Random();
 
 	/**
 	 * Creates a MemoryContainer.
@@ -102,13 +103,13 @@ public class MemoryContainer implements Memory {
 
 		double maxEval = Double.NEGATIVE_INFINITY;
                 Memory mlast = null;
-                ArrayList<Memory> allmax = new ArrayList();
+                ArrayList<Memory> allmax = new ArrayList<>();
 		for (Memory memory : memories) {
                         double memoryEval = memory.getEvaluation();
                         if (memoryEval > maxEval) {
                                 maxEval = memoryEval;
                                 mlast = memory;
-                                allmax = new ArrayList();
+                                allmax = new ArrayList<>();
                                 allmax.add(memory);
 			}
                         else if (memoryEval == maxEval) {
@@ -116,7 +117,6 @@ public class MemoryContainer implements Memory {
                         }
 		}
                 if (allmax.size() > 1) {
-                    Random rand = new Random();
                     int i = rand.nextInt(allmax.size());
                     last = allmax.get(i);
                     return(last.getI());
@@ -137,13 +137,13 @@ public class MemoryContainer implements Memory {
 
 		double minEval = Double.MAX_VALUE;
                 Memory mlast=null;
-                ArrayList<Memory> allmin = new ArrayList();
+                ArrayList<Memory> allmin = new ArrayList<>();
 		for (Memory memory : memories) {
 			double memoryEval = memory.getEvaluation();
 			if (memoryEval < minEval) {
 				minEval = memoryEval;
                                 mlast = memory;
-                                allmin = new ArrayList();
+                                allmin = new ArrayList<>();
                                 allmin.add(memory);
 			}
                         else if (memoryEval == minEval) {
@@ -151,7 +151,6 @@ public class MemoryContainer implements Memory {
                         }
 		}
                 if (allmin.size() > 1) {
-                    Random rand = new Random();
                     int i = rand.nextInt(allmin.size());
                     last = allmin.get(i);
                     return(last.getI());
@@ -170,7 +169,6 @@ public class MemoryContainer implements Memory {
 	 */
 	private synchronized Object getIRandomFlat() {
 
-                Random rand = new Random();
                 int i = rand.nextInt(memories.size());
                 last = memories.get(i);
                 return(last.getI());
@@ -194,14 +192,10 @@ public class MemoryContainer implements Memory {
                        indexfrom[i] = indexto[i-1];
                     double interval = memory.getEvaluation();
                     indexto[i] = indexfrom[i] + interval;
-                    //System.out.format("%d: [%4.2f %4.2f] ",i,indexfrom[i],indexto[i]);
-                    //System.out.println("indexfrom["+i+"]: "+indexfrom[i]+" indexto["+i+"]: "+indexto[i]);
                     i++;
                 }
                 double llast = indexto[i-1];
-                Random rand = new Random();
                 double wheel = rand.nextDouble();
-                //System.out.format("sorteado: %4.2f\n",wheel*llast);
                 if (llast*wheel == 0) return(getIRandomFlat());
                 for (int j=0;j<=memories.size();j++)
                     if (indexfrom[j] < wheel*llast && wheel*llast < indexto[j]) {
@@ -473,8 +467,9 @@ public class MemoryContainer implements Memory {
 	 */
 	@Override
 	public synchronized Double getEvaluation() {
-                if (last != null)
+                if (last != null) {
 		   return last.getEvaluation();
+                }   
                 else return null;
 	}
         
@@ -607,8 +602,9 @@ public class MemoryContainer implements Memory {
 	 * @return the specified memory
 	 */
 	public synchronized Memory get(int i) {
-            if (i < memories.size())
+            if (i < memories.size()) {
 		return memories.get(i);
+            }    
             else return null;
 	}
 

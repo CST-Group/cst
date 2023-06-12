@@ -107,14 +107,14 @@ public class TestCategory {
         TestCategory tc = new TestCategory();
         System.out.println("Testing the instantiation of 'even numbers' from a category idea ...");
         for (int i=0;i<100;i++) {
-            Idea newevennumber = tc.evenIdea.instantiation(null);
+            Idea newevennumber = tc.evenIdea.getInstance(null);
             System.out.print(" "+newevennumber.getValue());
             assertEquals(tc.evenIdea.membership(newevennumber),1.0);
             assertEquals(tc.oddIdea.membership(newevennumber),0.0);
         }
         System.out.println("\nTesting the instantiation of 'odd numbers' from a category idea ...");
         for (int i=0;i<100;i++) {
-            Idea newoddnumber = tc.oddIdea.instantiation(null);
+            Idea newoddnumber = tc.oddIdea.getInstance(null);
             System.out.print(" "+newoddnumber.getValue());
             assertEquals(tc.evenIdea.membership(newoddnumber),0.0);
             assertEquals(tc.oddIdea.membership(newoddnumber),1.0);
@@ -187,7 +187,7 @@ public class TestCategory {
         c1.setValue(30);
         c2.setValue(50);
         for (int i=0;i<100;i++) {
-           Idea i1 = inter.instantiation();
+           Idea i1 = inter.getInstance();
            assertEquals(inter.membership(i1),1.0);
            System.out.print(" "+i1.getValue());
         }
