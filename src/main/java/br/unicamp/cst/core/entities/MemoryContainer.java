@@ -13,6 +13,7 @@ package br.unicamp.cst.core.entities;
 
 import java.util.ArrayList;
 import java.util.Optional;
+import java.util.Random;
 import java.util.function.BinaryOperator;
 import java.util.function.Predicate;
 
@@ -40,6 +41,16 @@ public class MemoryContainer implements Memory {
 	 * Type of the memory container
 	 */
 	private String name;
+        
+        public enum Policy {MAX, MIN, RANDOM_FLAT, RANDOM_PROPORTIONAL, ITERATE};
+        
+        /**
+	 * Policy used for selecting a MemoryObject at the MemoryContainer
+	 */
+	private Policy policy;
+        
+        private Memory last;
+        private int lasti=0;
 
 	/**
 	 * Creates a MemoryContainer.
@@ -47,6 +58,7 @@ public class MemoryContainer implements Memory {
 	public MemoryContainer() {
 
 		memories = new ArrayList<>();
+                policy = Policy.MAX;
 
 	}
 
@@ -58,7 +70,7 @@ public class MemoryContainer implements Memory {
 	public MemoryContainer(String type) {
 
 		memories = new ArrayList<>();
-
+                policy = Policy.MAX;
 		this.name = type;
 	}
 
@@ -86,27 +98,174 @@ public class MemoryContainer implements Memory {
 	 * 
 	 * @return the info of the memory which has the greatest evaluation.
 	 */
+	private synchronized Object getIMax() {
+
+		double maxEval = Double.NEGATIVE_INFINITY;
+                Memory mlast = null;
+                ArrayList<Memory> allmax = new ArrayList();
+		for (Memory memory : memories) {
+                        double memoryEval = memory.getEvaluation();
+                        if (memoryEval > maxEval) {
+                                maxEval = memoryEval;
+                                mlast = memory;
+                                allmax = new ArrayList();
+                                allmax.add(memory);
+			}
+                        else if (memoryEval == maxEval) {
+                            allmax.add(memory);
+                        }
+		}
+                if (allmax.size() > 1) {
+                    Random rand = new Random();
+                    int i = rand.nextInt(allmax.size());
+                    last = allmax.get(i);
+                    return(last.getI());
+                }
+                else {
+                  if (mlast == null) return null;  
+                  last = mlast;
+		  return last.getI();
+                }  
+	}
+        
+        /**
+	 * Gets the info of the memory which has the smallest evaluation.
+	 * 
+	 * @return the info of the memory which has the smallest evaluation.
+	 */
+	private synchronized Object getIMin() {
+
+		double minEval = Double.MAX_VALUE;
+                Memory mlast=null;
+                ArrayList<Memory> allmin = new ArrayList();
+		for (Memory memory : memories) {
+			double memoryEval = memory.getEvaluation();
+			if (memoryEval < minEval) {
+				minEval = memoryEval;
+                                mlast = memory;
+                                allmin = new ArrayList();
+                                allmin.add(memory);
+			}
+                        else if (memoryEval == minEval) {
+                            allmin.add(memory);
+                        }
+		}
+                if (allmin.size() > 1) {
+                    Random rand = new Random();
+                    int i = rand.nextInt(allmin.size());
+                    last = allmin.get(i);
+                    return(last.getI());
+                }
+                else {
+                  if (mlast == null) return null;    
+                  last = mlast;
+		  return last.getI();
+                }
+	}
+        
+        /**
+	 * Gets the info of a random memory from within the MemoryContainer.
+	 * 
+	 * @return the info of a random memory within the MemoryContainer
+	 */
+	private synchronized Object getIRandomFlat() {
+
+                Random rand = new Random();
+                int i = rand.nextInt(memories.size());
+                last = memories.get(i);
+                return(last.getI());
+	}
+        
+        /**
+	 * Gets the info of a random memory from within the MemoryContainer.
+	 * 
+	 * @return the info of a random memory within the MemoryContainer
+	 */
+	private synchronized Object getIRandomProportional() {
+
+                if (memories.size() == 0) return null;
+                double indexfrom[] = new double[memories.size()];
+                double indexto[] = new double[memories.size()];
+                int i = 0;
+                for (Memory memory : memories) {
+                    if (i == 0) 
+                       indexfrom[i] = 0;
+                    else
+                       indexfrom[i] = indexto[i-1];
+                    double interval = memory.getEvaluation();
+                    indexto[i] = indexfrom[i] + interval;
+                    //System.out.format("%d: [%4.2f %4.2f] ",i,indexfrom[i],indexto[i]);
+                    //System.out.println("indexfrom["+i+"]: "+indexfrom[i]+" indexto["+i+"]: "+indexto[i]);
+                    i++;
+                }
+                double llast = indexto[i-1];
+                Random rand = new Random();
+                double wheel = rand.nextDouble();
+                //System.out.format("sorteado: %4.2f\n",wheel*llast);
+                if (llast*wheel == 0) return(getIRandomFlat());
+                for (int j=0;j<=memories.size();j++)
+                    if (indexfrom[j] < wheel*llast && wheel*llast < indexto[j]) {
+                        last = memories.get(j);
+                        return(last.getI());
+                    }
+                last = memories.get(0);
+                return(last.getI());
+	}
+        
+        /**
+	 * Gets the info of a random memory from within the MemoryContainer.
+	 * 
+	 * @return the info of a random memory within the MemoryContainer
+	 */
+	private synchronized Object getIIterate() {
+            if (memories.size() > 0 && lasti < memories.size()) {
+                last = memories.get(lasti);
+                lasti++;
+                if (lasti > memories.size()-1) lasti = 0;
+                return (last.getI());
+            }
+            System.out.println("This MemoryContainer still does not have any internal Memories ...");
+            return null;
+        }
+        
+        /**
+	 * Gets the info of the memory according to the specified MemoryContainer policy
+         * Available policies:
+         *      Policy.MAX
+         *      Policy.MIN
+         *      Policy.RANDOM_FLAT
+         *      Policy.RANDOM_PROPORTIONAL
+         *      Policy.ITERATE
+	 * 
+	 * @return the info of the memory according to the specified MemoryContainer policy
+	 */
 	@Override
 	public synchronized Object getI() {
-
-		Object I = null;
-
-		double maxEval = 0.0d;
-
-		for (Memory memory : memories) {
-
-			double memoryEval = memory.getEvaluation();
-
-			if (memoryEval >= maxEval) {
-
-				maxEval = memoryEval;
-				I = memory.getI();
-			}
-
-		}
-
-		return I;
+		switch(policy) {
+                    case MAX: return getIMax();
+                    case MIN: return getIMin();
+                    case RANDOM_FLAT: return getIRandomFlat();
+                    case RANDOM_PROPORTIONAL: return getIRandomProportional();
+                    case ITERATE: return getIIterate();
+                    default: return getIMax();
+                }
 	}
+        
+        /**
+         * Gets the last info returned while a getI() was issued
+         * @return the info object last returned by a getI()
+         */
+        public synchronized Object getLastI() {
+            return last.getI();
+        }
+        
+        /**
+         * Gets the last Memory from inside the container, while a getI() was issued
+         * @return the last Memory accessed by a getI()
+         */
+        public synchronized Memory getLast() {
+            return last;
+        }
 
 	/**
 	 * Gets the info of the memory which has the index passed.
@@ -121,7 +280,7 @@ public class MemoryContainer implements Memory {
 			return (memories.get(index).getI());
 		} else {
 			System.out.println("Index for the " + getName()
-					+ ".getI(index) method greater than the number of MemoryObjects within the MemoryContainer");
+					+ ".getI(index) method greater than the number of MemoryObjects within the MemoryContainer -> "+index);
 			return (null);
 		}
 	}
@@ -138,6 +297,7 @@ public class MemoryContainer implements Memory {
 			if (m.getName().equals(name))
 				return (m.getI());
 		}
+                System.out.println("There is no Memory with the name "+name+" within the Container "+this.name);
 		return (null);
 	}
 
@@ -217,9 +377,8 @@ public class MemoryContainer implements Memory {
 		if (evaluation != -1.0)
 			mo.setEvaluation(evaluation);
 		mo.setName("");
-
+                last = mo;
 		memories.add(mo);
-
 		return memories.indexOf(mo);
 
 	}
@@ -231,13 +390,10 @@ public class MemoryContainer implements Memory {
 	 * @param index the index of the memory inside the container.
 	 */
 	public synchronized void setI(Object info, int index) {
-
 		if (memories != null && memories.size() > index) {
-
 			Memory memory = memories.get(index);
-
 			if (memory != null) {
-
+                                last = memory;
 				if (memory instanceof MemoryObject) {
 					memory.setI(info);
 				} else if (memory instanceof MemoryContainer) {
@@ -245,7 +401,6 @@ public class MemoryContainer implements Memory {
 				}
 			}
 		}
-
 	}
 
 	/**
@@ -257,13 +412,10 @@ public class MemoryContainer implements Memory {
 	 * @param evaluation the evaluation to be set.
 	 */
 	public synchronized void setI(Object info, Double evaluation, int index) {
-
 		if (memories != null && memories.size() > index) {
-
 			Memory memory = memories.get(index);
-
 			if (memory != null) {
-
+                                last = memory;
 				if (memory instanceof MemoryObject) {
 					memory.setI(info);
 					memory.setEvaluation(evaluation);
@@ -272,7 +424,6 @@ public class MemoryContainer implements Memory {
 				}
 			}
 		}
-
 	}
 
 	/**
@@ -297,6 +448,7 @@ public class MemoryContainer implements Memory {
 						memory.setEvaluation(evaluation);
 						index = i;
 						set = true;
+                                                last = memory;
 						break;
 					}
 				}
@@ -306,6 +458,7 @@ public class MemoryContainer implements Memory {
 				mo.setI(info);
 				mo.setEvaluation(evaluation);
 				mo.setName(type);
+                                last = mo;
 				memories.add(mo);
 				index = memories.indexOf(mo);
 			}
@@ -314,26 +467,31 @@ public class MemoryContainer implements Memory {
 	}
 
 	/**
-	 * Gets the greatest evaluation of the memories in the memory list.
+	 * Gets the evaluation of the last memory accessed with getI
 	 * 
-	 * @return the greatest evaluation of the memories in the memory list.
+	 * @return the evaluation of the last memory accessed with getI.
 	 */
 	@Override
 	public synchronized Double getEvaluation() {
-
-		Double maxEvaluation = 0.0d;
-
-		for (Memory memory : memories) {
-
-			double memoryEval = memory.getEvaluation();
-
-			if (memoryEval >= maxEvaluation)
-				maxEvaluation = memoryEval;
-
-		}
-
-		return maxEvaluation;
+                if (last != null)
+		   return last.getEvaluation();
+                else return null;
 	}
+        
+        /**
+	 * Gets the evaluation of a specific Memory at the MemoryContainer
+	 * 
+	 * @return the evaluation of a specific Memory at the MemoryContainer
+	 */
+	public synchronized Double getEvaluation(int index) {
+                if (memories != null && memories.size() > index) {
+			Memory memory = memories.get(index);
+			if (memory != null) {
+                            return(memory.getEvaluation());
+                        }
+                }
+                return null;
+        }        
 
 	/**
 	 * Gets the type of the memory which has the greatest evaluation.
@@ -342,46 +500,39 @@ public class MemoryContainer implements Memory {
 	 */
 	@Override
 	public synchronized String getName() {
-
 		return name;
 	}
 
+        /**
+	 * Sets the evaluation of the last memory accessed with getI or setI
+	 * 
+	 * @param eval  the evaluation to set.
+	 */
 	@Override
 	public synchronized void setEvaluation(Double eval) {
-
-		throw new UnsupportedOperationException(
-				"This method is not available for MemoryContainer. Use setEvaluation(Double eval, int index) instead");
-
+                if (last != null && last instanceof Memory) {
+                    last.setEvaluation(eval);
+                }
+                else System.out.println("This MemoryContainer still does not have any internal Memories ...");
 	}
 
 	/**
-	 * Sets the evaluation of the memory with the index passed inside this
-	 * container.
+	 * Sets the evaluation of the a specific memory from the MemoryContainer
 	 * 
 	 * @param eval  the evaluation to set.
 	 * @param index the index of the memory inside this container.
 	 */
 	public synchronized void setEvaluation(Double eval, int index) {
-
 		if (memories != null && memories.size() > index) {
-
 			Memory memory = memories.get(index);
-
 			if (memory != null) {
-
 				if (memory instanceof MemoryObject) {
-
 					memory.setEvaluation(eval);
-
 				} else if (memory instanceof MemoryContainer) {
-
 					((MemoryContainer) memory).setEvaluation(eval, index);
-
 				}
-
 			}
 		}
-
 	}
 
 	/**
@@ -391,19 +542,12 @@ public class MemoryContainer implements Memory {
          * @return the index of the added memory
 	 */
 	public synchronized int add(Memory memory) {
-
 		int index = -1;
-
 		if (memory != null) {
-
 			memories.add(memory);
-
 			index = memories.indexOf(memory);
-
 		}
-
 		return index;
-
 	}
 
 //	/**
@@ -455,6 +599,18 @@ public class MemoryContainer implements Memory {
 	public synchronized ArrayList<Memory> getAllMemories() {
 		return memories;
 	}
+        
+        /**
+	 * Gets a specific memory from inside the container.
+	 * 
+         * @param i the specific memory to be returned
+	 * @return the specified memory
+	 */
+	public synchronized Memory get(int i) {
+            if (i < memories.size())
+		return memories.get(i);
+            else return null;
+	}
 
 	/**
 	 * Gets the internal memory which has the name passed.
@@ -471,23 +627,39 @@ public class MemoryContainer implements Memory {
 	}
 
 	/**
-	 * Get the TimeStamp of the internal Memory which has the greatest evaluation.
+	 * Get the TimeStamp of the last returned Memory.
 	 * 
 	 * @return the timestamp in Long format
 	 */
 	public synchronized Long getTimestamp() {
-		double maxEval = 0.0d;
-		Long timestamp = null;
-		for (Memory memory : memories) {
-			double memoryEval = memory.getEvaluation();
-			if (memoryEval >= maxEval) {
-				maxEval = memoryEval;
-				timestamp = memory.getTimestamp();
+            if (last != null)
+		return(last.getTimestamp());
+            else {
+                System.out.println("This MemoryContainer still does not have any internal Memories ...");
+                return null;
+            }
+	}
+        
+        /**
+	 * Get the TimeStamp of a specific index inside the MemoryContainer.
+	 * 
+	 * @return the timestamp in Long format
+	 */
+        
+        public synchronized Long getTimestamp(int index) {
+		if (memories != null && memories.size() > index) {
+			Memory memory = memories.get(index);
+			if (memory != null) {
+				return(memory.getTimestamp());
 			}
 		}
-		return timestamp;
+                return(null);
 	}
 
+        /**
+         * Adds a new MemoryObserver for the current Container
+         * @param memoryObserver the observer to be added
+         */
 	@Override
 	public void addMemoryObserver(MemoryObserver memoryObserver) {
 		for (Memory memory : memories) {
@@ -495,5 +667,33 @@ public class MemoryContainer implements Memory {
 		}
 
 	}
+        
+        /**
+         * Removes a MemoryObserver from the current Container list
+         * @param memoryObserver the observer to be removed
+         */
+        @Override
+	public void removeMemoryObserver(MemoryObserver memoryObserver) {
+		for (Memory memory : memories) {
+			memory.removeMemoryObserver(memoryObserver);
+		}
+
+	}
+        
+        /**
+         * Sets a new Policy for selecting an info with getI()
+         * @param pol the new Policy to be used
+         */
+        public void setPolicy(Policy pol) {
+            policy = pol;
+        }
+        
+        /**
+         * Returns the current Policy being used for selecting an info, when a getI() is called
+         * @return the current Policy actually in use
+         */
+        public Policy getPolicy() {
+            return policy;
+        }
 
 }

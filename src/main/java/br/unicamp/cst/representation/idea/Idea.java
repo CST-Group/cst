@@ -389,7 +389,8 @@ public class Idea {
     
     private String toStringFull(int level, boolean withid) {
         String out; 
-        if (isType(1)) {
+        //if (isType(1)) {
+        if (l.size() == 0) {
            out = toStringPlus(withid)+"\n";
            return out; 
         }

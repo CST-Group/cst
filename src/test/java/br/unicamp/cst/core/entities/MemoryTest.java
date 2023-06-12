@@ -74,6 +74,12 @@ public class MemoryTest {
 			// TODO Auto-generated method stub
 			
 		}
+                
+                @Override
+		public void removeMemoryObserver(MemoryObserver memoryObserver) {
+			// TODO Auto-generated method stub
+			
+		}
     };
 
     @Test
