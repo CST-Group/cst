@@ -105,6 +105,12 @@ public class TestCategory {
     public void testCategoryIdeasDirect() {
         // Creating a category for even numbers
         TestCategory tc = new TestCategory();
+        System.out.println("Testing if indeed even and odd are categories");
+        assertEquals(tc.evenIdea.isCategory(),true);
+        assertEquals(tc.oddIdea.isCategory(),true);
+        Idea id = new Idea();
+        System.out.println("Testing if a complete new Idea is not a category");
+        assertEquals(id.isCategory(),false);
         System.out.println("Testing the instantiation of 'even numbers' from a category idea ...");
         for (int i=0;i<100;i++) {
             Idea newevennumber = tc.evenIdea.getInstance(null);

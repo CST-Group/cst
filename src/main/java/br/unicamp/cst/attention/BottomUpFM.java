@@ -13,6 +13,7 @@
 package br.unicamp.cst.attention;
 
 import br.unicamp.cst.core.entities.MemoryObject;
+import br.unicamp.cst.core.entities.Codelet;
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.logging.Level;

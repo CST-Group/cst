@@ -147,6 +147,13 @@ public class TestHabit {
     @Test
     public void testHabitExecutionerCodelet() {
         TestHabit tc = new TestHabit();
+        Idea id = new Idea();
+        assertEquals(id.isLeaf(),true);
+        id.add(new Idea("leaf"));
+        assertEquals(id.isLeaf(),false);
+        assertEquals(id.isHabit(),false);
+        assertEquals(tc.incrementIdea.isHabit(),true);
+        assertEquals(tc.decrementIdea.isHabit(),true);
         Mind testMind = new Mind();
         MemoryObject input_number = testMind.createMemoryObject("INPUT_NUMBER");
         MemoryObject input_habit = testMind.createMemoryObject("INPUT_HABIT",tc.incrementIdea);
