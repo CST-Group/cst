@@ -16,6 +16,8 @@ import java.util.Optional;
 import java.util.Random;
 import java.util.function.BinaryOperator;
 import java.util.function.Predicate;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  * This class represents a Memory Container. The Memory Container is responsible
@@ -218,7 +220,7 @@ public class MemoryContainer implements Memory {
                 if (lasti > memories.size()-1) lasti = 0;
                 return (last.getI());
             }
-            System.out.println("This MemoryContainer still does not have any internal Memories ...");
+            Logger.getAnonymousLogger().log(Level.INFO,"This MemoryContainer still does not have any internal Memories ..."); 
             return null;
         }
         
@@ -273,9 +275,8 @@ public class MemoryContainer implements Memory {
 		if (index >= 0 && index < memories.size()) {
 			return (memories.get(index).getI());
 		} else {
-			System.out.println("Index for the " + getName()
-					+ ".getI(index) method greater than the number of MemoryObjects within the MemoryContainer -> "+index);
-			return (null);
+                    Logger.getAnonymousLogger().log(Level.INFO, "Index for the {0}.getI(index) method greater than the number of MemoryObjects within the MemoryContainer -> {1}", new Object[]{getName(), index});
+	            return (null);
 		}
 	}
 
@@ -291,7 +292,7 @@ public class MemoryContainer implements Memory {
 			if (m.getName().equals(name))
 				return (m.getI());
 		}
-                System.out.println("There is no Memory with the name "+name+" within the Container "+this.name);
+                Logger.getAnonymousLogger().log(Level.INFO, "There is no Memory with the name "+name+" within the Container "+this.name);
 		return (null);
 	}
 
@@ -508,7 +509,7 @@ public class MemoryContainer implements Memory {
                 if (last != null && last instanceof Memory) {
                     last.setEvaluation(eval);
                 }
-                else System.out.println("This MemoryContainer still does not have any internal Memories ...");
+                else Logger.getAnonymousLogger().log(Level.INFO,"This MemoryContainer still does not have any internal Memories ..."); 
 	}
 
 	/**
@@ -628,10 +629,11 @@ public class MemoryContainer implements Memory {
 	 * @return the timestamp in Long format
 	 */
 	public synchronized Long getTimestamp() {
-            if (last != null)
+            if (last != null) {
 		return(last.getTimestamp());
+            }    
             else {
-                System.out.println("This MemoryContainer still does not have any internal Memories ...");
+                Logger.getAnonymousLogger().log(Level.INFO, "This MemoryContainer still does not have any internal Memories ...");
                 return null;
             }
 	}

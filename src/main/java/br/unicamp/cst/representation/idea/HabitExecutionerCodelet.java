@@ -13,6 +13,8 @@ package br.unicamp.cst.representation.idea;
 import br.unicamp.cst.core.entities.Codelet;
 import br.unicamp.cst.core.entities.Memory;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  *
@@ -40,10 +42,10 @@ public class HabitExecutionerCodelet extends Codelet {
             }
         }
         if (root.isLeaf()) {
-            System.out.println("I was not able to find any valid Idea at inputs");
+            Logger.getAnonymousLogger().log(Level.INFO, "I was not able to find any valid Idea at inputs");
         }
         if (h == null) {
-            System.out.println("I found no habit to execute");
+            Logger.getAnonymousLogger().log(Level.INFO, "I found no habit to execute");
         }
     }
 

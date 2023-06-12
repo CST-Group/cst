@@ -389,8 +389,7 @@ public class Idea implements Category,Habit {
     
     private String toStringFull(int level, boolean withid) {
         String out; 
-        //if (isType(1)) {
-        if (l.size() == 0) {
+        if (isLeaf()) {
            out = toStringPlus(withid)+"\n";
            return out; 
         }
