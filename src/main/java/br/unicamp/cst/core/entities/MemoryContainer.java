@@ -603,7 +603,7 @@ public class MemoryContainer implements Memory {
 	 * @return the specified memory
 	 */
 	public synchronized Memory get(int i) {
-            if (i < memories.size()) {
+            if (i >= 0 && i < memories.size()) {
 		return memories.get(i);
             }    
             else return null;

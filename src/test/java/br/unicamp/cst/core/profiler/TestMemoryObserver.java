@@ -329,7 +329,7 @@ public class TestMemoryObserver {
 	}
         
         @Test
-	public void changeOfRegimeTest() {
+	public void changeOfRegimeTestMemoryObject() {
                 Mind m = new Mind();
 		MemoryObject input = m.createMemoryObject("INPUT_NUMBER", 0.12);
 		MemoryObject output = m.createMemoryObject("OUTPUT_NUMBER", 0.32);
@@ -370,6 +370,65 @@ public class TestMemoryObserver {
 		while(ts == output.getTimestamp());
                 int nout = (int) output.getI();
 		System.out.println("Result: "+output.getI());
+                assertEquals(nout,1);
+		c.setPublishSubscribe(false);
+                ts = output.getTimestamp();
+                while(ts == output.getTimestamp());
+                System.out.println("Result: "+output.getI()+" "+c.getActivation());
+                m.shutDown();
+		//assertEquals(0, c.getCounter());
+        }
+        
+        @Test
+	public void changeOfRegimeTestMemoryContainer() {
+                Mind m = new Mind();
+		MemoryContainer input = m.createMemoryContainer("INPUT_NUMBER");
+		MemoryObject output = m.createMemoryObject("OUTPUT_NUMBER", 0.32);
+                Codelet c = new Codelet() {
+                    MemoryContainer input_number;
+                    MemoryObject output_number;
+                    public int counter = 0;
+                    @Override
+                    public void accessMemoryObjects() {
+                        input_number = (MemoryContainer) this.getInput("INPUT_NUMBER");
+                        output_number = (MemoryObject) this.getOutput("OUTPUT_NUMBER");
+                    }
+                    @Override
+                    public void calculateActivation() {
+                        try {
+                            double a = counter;
+                            setActivation(a/100);
+                        } catch (CodeletActivationBoundsException ex) {
+                            Logger.getLogger(TestMemoryObserver.class.getName()).log(Level.SEVERE, null, ex);
+                        }
+                        System.out.println("Calculating activation: "+getActivation());
+                    }
+                    @Override
+                    public void proc() {
+                        System.out.println("Processing");
+                        int n = (int) input_number.getI();
+                        output_number.setI(n+1);
+                        counter++;
+                        try {
+                            double a = counter;
+                            setActivation(a/100);
+                        } catch (CodeletActivationBoundsException ex) {
+                            Logger.getLogger(TestMemoryObserver.class.getName()).log(Level.SEVERE, null, ex);
+                        }
+                    }
+                };
+		c.addInput(input);
+		c.addOutput(output);
+		m.insertCodelet(c);
+                input.setI(0);
+		c.setPublishSubscribe(true);
+                m.start();
+		//setI in Memory Container and verify if Codelet was notified
+                long ts = output.getTimestamp();
+                input.setI(0,0);
+                while(ts == output.getTimestamp());
+                int nout = (int) output.getI();
+		System.out.println("Result: "+output.getI()+" "+c.getActivation());
                 assertEquals(nout,1);
 		c.setPublishSubscribe(false);
                 ts = output.getTimestamp();

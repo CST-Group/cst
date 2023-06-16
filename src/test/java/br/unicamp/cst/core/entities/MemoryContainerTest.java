@@ -356,6 +356,23 @@ public class MemoryContainerTest {
         }
         
         @Test
+        public void testRandomFlat() {
+            MemoryContainer memoryContainer = new MemoryContainer("RANDOMFLAT");
+            memoryContainer.setPolicy(Policy.RANDOM_FLAT);
+            memoryContainer.setI(1, 0.2D); // 14%
+            memoryContainer.setI(2, 0.4D); // 28%
+            memoryContainer.setI(3, 0.8D); // 57%
+            int count[] = new int[3];
+            for (int i=0;i<1000;i++) {
+                int j = (int) memoryContainer.getI();
+                count[j-1]++;
+            }
+            assertEquals(count[0]>0,true);
+            assertEquals(count[1]>0,true);
+            assertEquals(count[2]>0,true);
+        }
+        
+        @Test
         public void testIteratePolicy() {
             MemoryContainer memoryContainer = new MemoryContainer("ITERATE");
             memoryContainer.setPolicy(Policy.ITERATE);
@@ -369,6 +386,74 @@ public class MemoryContainerTest {
                 int j = (int) memoryContainer.getI();
                 assertEquals(j,i%3+1);
             }
-        }    
+        } 
+        
+        @Test
+        public void testGetEvaluation() {
+            MemoryContainer memoryContainer = new MemoryContainer("TEST");
+            assertEquals(memoryContainer.get(-1),null);
+            assertEquals(memoryContainer.get(0),null);
+            assertEquals(memoryContainer.get(10),null);
+            assertEquals(memoryContainer.getName(),"TEST");
+            memoryContainer.setName("TEST-NEW");
+            assertEquals(memoryContainer.getName(),"TEST-NEW");
+            memoryContainer.setType("TEST-NEW");
+            assertEquals(memoryContainer.getName(),"TEST-NEW");
+            // Testing the getEvaluation without any included MemoryObject
+            assertEquals(memoryContainer.getEvaluation(),null);
+            assertEquals(memoryContainer.getEvaluation(0),null);
+            assertEquals(memoryContainer.getEvaluation(1),null);
+            assertEquals(memoryContainer.getPolicy(),Policy.MAX);
+            Double res = memoryContainer.getEvaluation();
+            assertEquals(res,null);
+            memoryContainer.setI(1);
+            memoryContainer.setEvaluation(0.5);
+            assertEquals(memoryContainer.getEvaluation(),0.5);
+            assertEquals(memoryContainer.getEvaluation(0),0.5);
+            memoryContainer.setPolicy(Policy.ITERATE);
+            assertEquals(memoryContainer.getPolicy(),Policy.ITERATE);
+            int i = (int) memoryContainer.getI();
+            assertEquals(i,1);
+            i = (int) memoryContainer.getLastI();
+            assertEquals(i,1);
+            MemoryObject mo = (MemoryObject) memoryContainer.getLast();
+            i = (int) mo.getI();
+            assertEquals(i,1);
+            memoryContainer.setEvaluation(0.6,0);
+            assertEquals(memoryContainer.getEvaluation(),0.6);
+            assertEquals(memoryContainer.getEvaluation(0),0.6);
+        }
+        
+        @Test
+        public void testGetTimestamp() {
+            MemoryContainer memoryContainer = new MemoryContainer("TEST");
+            // Without any initialization, the timestamp must be null
+            assertEquals(memoryContainer.getTimestamp(),null);
+            System.out.println("This test will raise a warning...");
+            assertEquals(memoryContainer.getTimestamp(0),null);
+            System.out.println("This test will raise a warning...");
+            assertEquals(memoryContainer.getTimestamp(1),null);
+            // after we initialize the container, the timestamp must be something different from null
+            memoryContainer.setI(1);
+            assertEquals(memoryContainer.getTimestamp()!=null,true);
+            assertEquals(memoryContainer.getTimestamp(0)!=null,true);
+            // nevertheless, if we go further, it should remain null
+            System.out.println("This test will raise a warning...");
+            assertEquals(memoryContainer.getTimestamp(1),null);
+            assertEquals(memoryContainer.get(0).getI(),memoryContainer.getI());
+        }
+        
+        @Test
+        public void testDoubleIndirection() {
+            MemoryContainer mc1 = new MemoryContainer("TEST1");
+            MemoryContainer mc2 = new MemoryContainer("TEST2");
+            mc2.setI(0);
+            mc1.add(mc2);
+            assertEquals(mc1.getI(),0);
+            mc1.setI(1,0.5,0);
+            assertEquals(mc1.getI(),1);
+            mc1.setEvaluation(0.6,0);
+            assertEquals(mc1.getEvaluation(),0.6);
+        }
 
 }
