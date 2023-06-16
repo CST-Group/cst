@@ -57,7 +57,7 @@ public class HabitExecutionerCodelet extends Codelet {
     @Override
     public void proc() {
         if (h != null) {
-            List<Idea> ois = h.exec(root);
+            Idea ois = h.exec(root);
             for (Memory m : outputs)
                m.setI(ois);
         }

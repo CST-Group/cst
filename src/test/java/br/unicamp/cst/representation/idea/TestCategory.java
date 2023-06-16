@@ -37,7 +37,7 @@ public class TestCategory {
              return(0.0);
         }
         @Override
-        public Idea getInstance(List<Idea> constraints) {
+        public Idea getInstance(Idea constraints) {
              // Create an instance of the category based on constraints
              int number = new Random().nextInt();             
              Idea evenNumber = new Idea("even_number",number*2);
@@ -60,7 +60,7 @@ public class TestCategory {
              return(0.0);
         }
         @Override
-        public Idea getInstance(List<Idea> constraints) {
+        public Idea getInstance(Idea constraints) {
              // Create an instance of the category based on constraints
              int number = new Random().nextInt();             
              Idea oddNumber = new Idea("odd_number",number*2+1);
@@ -142,11 +142,11 @@ public class TestCategory {
                 return(0.0);
             }
             @Override
-            public Idea getInstance(List<Idea> constraints) {
+            public Idea getInstance(Idea constraints) {
                 int minimum = min;
                 int maximum = max;
                 if (constraints != null) {
-                    for (Idea i : constraints) {
+                    for (Idea i : constraints.getL()) {
                         if (i.getName().equals("min") && i.getValue() instanceof Integer && (int)i.getValue() > min) {
                             minimum = (int) i.getValue();
                         }
@@ -178,7 +178,9 @@ public class TestCategory {
         Idea c1 = new Idea("min",10);
         Idea c2 = new Idea("max",20);
         Idea[] co = {c1, c2};
-        List<Idea>  constraint = Arrays.asList(co);
+        Idea  constraint = new Idea("constraint");
+        constraint.add(c1);
+        constraint.add(c2);
         System.out.println("\nTesting the creation of interval (0,100) with constraints (10,20)");
         for (int i=0;i<100;i++) {
            Idea i1 = interval.getInstance(constraint);

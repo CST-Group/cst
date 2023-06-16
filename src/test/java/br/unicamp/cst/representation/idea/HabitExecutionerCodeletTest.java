@@ -48,7 +48,7 @@ public class HabitExecutionerCodeletTest {
     
     Habit summer = new Habit() { 
         @Override 
-        public List<Idea> exec(Idea idea) {
+        public Idea exec(Idea idea) {
              Idea adder = idea.get("value.add");
              int valuetoadd=0;
              if (adder != null && adder.getValue() instanceof Integer) {
@@ -57,9 +57,7 @@ public class HabitExecutionerCodeletTest {
              if (idea.get("value").getValue() instanceof Integer) {
                   int number = (int) idea.get("value").getValue();
                   Idea modifiedIdea = new Idea("incremented",number+valuetoadd);
-                  List<Idea> li = new ArrayList<Idea>();
-                  li.add(modifiedIdea);
-                  return(li);
+                  return(modifiedIdea);
              }
              System.out.println("Something wrong happened");
              return(null);
@@ -67,7 +65,7 @@ public class HabitExecutionerCodeletTest {
         };
     Habit decrementer = new Habit() { 
         @Override 
-        public List<Idea> exec(Idea idea) {
+        public Idea exec(Idea idea) {
              Idea adder = idea.get("value.add");
              int valuetodec=0;
              if (adder != null && adder.getValue() instanceof Integer) {
@@ -76,9 +74,7 @@ public class HabitExecutionerCodeletTest {
              if (idea.get("value").getValue() instanceof Integer) {
                   int number = (int) idea.get("value").getValue();
                   Idea modifiedIdea = new Idea("decremented",number-valuetodec);
-                  List<Idea> li = new ArrayList<Idea>();
-                  li.add(modifiedIdea);
-                  return(li);
+                  return(modifiedIdea);
              }
              System.out.println("Something wrong happened");
              return(null);
@@ -106,26 +102,24 @@ public class HabitExecutionerCodeletTest {
             while(moo.getTimestamp() < ti) System.out.print(".");
             oo = moo.getI();
             if (oo != null) {
-                List<Idea> ooi = (List<Idea>) oo;
-                for (Idea ii : ooi) {
-                   int sum = (int) ii.getValue();
-                   Idea ih = (Idea) mc.getLastI();
-                   int op;
-                   String ops;
-                   if (ih.getName().equals("Summer")) {
-                       op = 0;
-                       ops = "+";
-                   }
-                   else {
-                       op = 1;
-                       ops = "-";
-                   }
-                   System.out.println(ih+" "+major+ops+minor+"="+sum);
-                   if (op == 0)
-                      assertEquals(sum,major+minor);
-                   else 
-                      assertEquals(sum,major-minor); 
-                }   
+                Idea ooi = (Idea) oo;
+                int sum = (int) ooi.getValue();
+                Idea ih = (Idea) mc.getLastI();
+                int op;
+                String ops;
+                if (ih.getName().equals("Summer")) {
+                    op = 0;
+                    ops = "+";
+                }
+                else {
+                    op = 1;
+                    ops = "-";
+                }
+                System.out.println(ih+" "+major+ops+minor+"="+sum);
+                if (op == 0)
+                   assertEquals(sum,major+minor);
+                else 
+                   assertEquals(sum,major-minor); 
             }
             else fail("The output memory object is null");
         } 

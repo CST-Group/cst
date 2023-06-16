@@ -23,5 +23,5 @@ public interface Habit {
      * @param idea an optional parameter representing an idea that might be used by the habit to generate a new idea
      * @return a list of generated or modified ideas
      */
-    public List<Idea> exec(Idea idea);
+    public Idea exec(Idea idea);
 }

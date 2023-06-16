@@ -1223,7 +1223,7 @@ public class Idea implements Category,Habit {
      * @return an Idea, which is the result of the Habit execution. Can be null
      */
     @Override
-    public List<Idea> exec(Idea idea) {
+    public Idea exec(Idea idea) {
         if (isHabit()) {
             Habit h = (Habit) getValue();
             return(h.exec(idea));
@@ -1231,28 +1231,12 @@ public class Idea implements Category,Habit {
         else return(null);
     }
     
-    /**
-     * This is a convenience method for executing a Habit, if the Habit returns a single Idea
-     * @param idea an Idea passed as a parameter to the Habit. Can be null if no parameter is required 
-     * @return A single Idea, when this is the case. 
-     */
-    public Idea exec0(Idea idea) {
-        if (getValue() instanceof Habit) {
-            Habit h = (Habit) getValue();
-            List<Idea> result = h.exec(idea);
-            if (!result.isEmpty())
-                return(result.get(0));
-            else return(null);
-        }
-        else return(null);
-    }
-    
     public Idea getInstance() {
-        return getInstance(getL());
+        return getInstance(null);
     }
     
     @Override
-    public Idea getInstance(List<Idea> constraints ) {
+    public Idea getInstance(Idea constraints ) {
         if (getValue() instanceof Category) {
             Category c = (Category) getValue();
             return(c.getInstance(constraints));

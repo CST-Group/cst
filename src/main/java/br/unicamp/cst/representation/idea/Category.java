@@ -10,8 +10,6 @@
  ***********************************************************************************************/
 package br.unicamp.cst.representation.idea;
 
-import java.util.List;
-
 /**
  * This interface is used to represent a Category, i.e. a set that is subject to a membership law
  * indicated by the membership method. The instantiation method provides a random instance for
@@ -25,7 +23,7 @@ public interface Category {
      * @param constraints a list of constraints for the new instance, in the form of Ideas
      * @return the new Idea that was generated
      */
-    public Idea getInstance(List<Idea> constraints );
+    public Idea getInstance(Idea constraints );
     /**
      * This method tests if a provided Idea is a member of this category. 
      * @param idea the idea under consideration for membership
