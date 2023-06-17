@@ -19,11 +19,14 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.TimeZone;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArrayList;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 
 /**
@@ -189,9 +192,6 @@ public class Idea implements Category,Habit {
         if (ret == null) {
             ret = new Idea(name,value,type);
             repo.put(name+"."+type, ret);
-        }
-        else if (ret.getType() != type) {
-            ret = new Idea(name,value,type);
         }
         else { 
             ret.setValue(value);
@@ -452,7 +452,6 @@ public class Idea implements Category,Habit {
      */
     public void setValue(Object value) {
         this.value = value;
-        type = 1;
     }
     
     /**
@@ -544,9 +543,8 @@ public class Idea implements Category,Habit {
      * @return a boolean indicating if the value of the current Idea is a double number. 
      */
     public boolean isDouble() {
-        String objectClassName = value.getClass().getName();
-        if (objectClassName.equals("java.lang.Double"))
-            return(true);
+        if (value == null) return false;
+        if (value instanceof Double) return true;
         return(false);   
     }
     
@@ -555,9 +553,8 @@ public class Idea implements Category,Habit {
      * @return a boolean indicating if the value of the current Idea is a float number. 
      */
     public boolean isFloat() {
-        String objectClassName = value.getClass().getName();
-        if (objectClassName.equals("java.lang.Float"))
-            return(true);
+        if (value == null) return false;
+        if (value instanceof Float) return true;
         return(false);   
     }
     
@@ -566,9 +563,8 @@ public class Idea implements Category,Habit {
      * @return a boolean indicating if the value of the current Idea is an integer number. 
      */
     public boolean isInteger() {
-        String objectClassName = value.getClass().getName();
-        if (objectClassName.equals("java.lang.Integer"))
-            return(true);
+        if (value == null) return false;
+        if (value instanceof Integer) return true;
         return(false);   
     }
     
@@ -577,9 +573,8 @@ public class Idea implements Category,Habit {
      * @return a boolean indicating if the value of the current Idea is a long number. 
      */
     public boolean isLong() {
-        String objectClassName = value.getClass().getName();
-        if (objectClassName.equals("java.lang.Long"))
-            return(true);
+        if (value == null) return false;
+        if (value instanceof Long) return true;
         return(false);   
     }
     
@@ -589,9 +584,7 @@ public class Idea implements Category,Habit {
      * @return a boolean indicating if the value of the current Idea is a number. 
      */
     public boolean isNumber() {
-        String objectClassName = value.getClass().getName();
-        if (objectClassName.equals("java.lang.Float") || objectClassName.equals("java.lang.Double") || objectClassName.equals("java.lang.Integer") || objectClassName.equals("java.lang.Long"))
-            return(true);
+        if (isFloat() || isDouble() || isLong() || isInteger()) return(true);
         return(false);
     }
 
@@ -600,10 +593,9 @@ public class Idea implements Category,Habit {
      * @return a boolean indicating if the value of the current Idea is a HashMap. 
      */
     public boolean isHashMap(){
-        String objectClassName = value.getClass().getName();
-        if (objectClassName.equals("java.util.HashMap"))
-            return(true);
-        return(false);
+        if (value == null) return false;
+        if (value instanceof HashMap) return true;
+        return(false);   
     }
     
     /**
@@ -611,10 +603,9 @@ public class Idea implements Category,Habit {
      * @return a boolean indicating if the value of the current Idea is a String. 
      */
     public boolean isString() {
-        String objectClassName = value.getClass().getName();
-        if (objectClassName.equals("java.lang.String"))
-            return(true);
-        return(false);
+        if (value == null) return false;
+        if (value instanceof String) return true;
+        return(false);   
     }
     
     /**
@@ -622,10 +613,9 @@ public class Idea implements Category,Habit {
      * @return a boolean indicating if the value of the current Idea is a boolean. 
      */
     public boolean isBoolean() {
-        String objectClassName = value.getClass().getName();
-        if (objectClassName.equals("java.lang.Boolean"))
-            return(true);
-        return(false);
+        if (value == null) return false;
+        if (value instanceof Boolean) return true;
+        return(false);   
     }
     
     private Float tryParseFloat(String value) {
@@ -783,7 +773,7 @@ public class Idea implements Category,Habit {
      * @param classname the full name of the class for the object to be created. 
      * @return the created Object
      */
-    public Object createJavaObject(String classname) {
+    public static Object createJavaObject(String classname) {
         if (classname.equals("java.lang.Double")) {
             return Double.valueOf(0.0);
         }
@@ -814,7 +804,7 @@ public class Idea implements Category,Habit {
             javaObject = type.getDeclaredConstructor().newInstance();
             type.cast(javaObject);
         } catch (Exception e) {
-            e.printStackTrace();
+            Logger.getAnonymousLogger().log(Level.INFO, "The class name "+classname+" is not on the Java Library Path !");
         }
         return (javaObject);
     }

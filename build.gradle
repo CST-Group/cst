@@ -93,20 +93,19 @@ publishing {
     }
 }
 
-tasks.register('applicationCodeCoverageReport', JacocoReport) {
-    executionData run
-    sourceSets sourceSets.main
-}
+//tasks.register('applicationCodeCoverageReport', JacocoReport) {
+//    executionData run
+//    sourceSets sourceSets.main
+//}
 
 jacoco {
     toolVersion = "0.8.10"
-    //reportsDirectory = layout.buildDirectory.dir('customJacocoReportDir')
 }
 
 jacocoTestReport {
     reports {
         xml.required = true
-        html.outputLocation = layout.buildDirectory.dir('jacocoHtml')
+        html.outputLocation = layout.buildDirectory.dir('test-coverage')
         dependsOn test // tests are required to run before generating the report
     }
 }
