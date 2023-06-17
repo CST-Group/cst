@@ -58,6 +58,16 @@ public class Idea implements Category,Habit {
      */
     public static long lastId = 0;
     
+    private static final String cDouble = "java.lang.Double";
+    private static final String cFloat = "java.lang.Float";
+    private static final String cInt = "java.lang.Integer";
+    private static final String cLong = "java.lang.Long";
+    private static final String cShort = "java.lang.Short";
+    private static final String cByte = "java.lang.Byte";
+    private static final String cBoolean = "java.lang.Boolean";
+    private static final String cString = "java.lang.String";
+        
+    
     /**
      * This function generates a new id to be assigned to a new Idea being created. 
      * This id is generated in a serialized format, being the first one with value 0 
@@ -774,27 +784,27 @@ public class Idea implements Category,Habit {
      * @return the created Object
      */
     public static Object createJavaObject(String classname) {
-        if (classname.equals("java.lang.Double")) {
+        if (classname.equals(cDouble)) {
             return Double.valueOf(0.0);
         }
-        else if (classname.equals("java.lang.Float")) {
+        else if (classname.equals(cFloat)) {
             return Float.valueOf(0.0f);
         }
-        else if (classname.equals("java.lang.Integer")) {
+        else if (classname.equals(cInt)) {
             return Integer.valueOf(0);
         }
-        else if (classname.equals("java.lang.Long")) {
+        else if (classname.equals(cLong)) {
             return Long.valueOf(0L);
         }
-        else if (classname.equals("java.lang.Short")) {
+        else if (classname.equals(cShort)) {
             short ret = 0;
             return Short.valueOf(ret);
         }
-        else if (classname.equals("java.lang.Byte")) {
+        else if (classname.equals(cByte)) {
             byte ret = 0;
             return Byte.valueOf(ret);
         }
-        else if (classname.equals("java.lang.Boolean")) {
+        else if (classname.equals(cBoolean)) {
             return Boolean.valueOf(false);
         }
         Class type = null;
@@ -804,66 +814,66 @@ public class Idea implements Category,Habit {
             javaObject = type.getDeclaredConstructor().newInstance();
             type.cast(javaObject);
         } catch (Exception e) {
-            Logger.getAnonymousLogger().log(Level.INFO, "The class name "+classname+" is not on the Java Library Path !");
+            Logger.getAnonymousLogger().log(Level.INFO, "The class name {0} is not on the Java Library Path !", classname);
         }
         return (javaObject);
     }
     
     private Object convertObject(Object origin, String className) {
         if (origin == null) return(null);
-        if (origin.getClass().getCanonicalName().equals("java.lang.String") && ((String)origin).equalsIgnoreCase("null")) return(null);
+        if (origin.getClass().getCanonicalName().equals(cString) && ((String)origin).equalsIgnoreCase("null")) return(null);
         String objectClass = origin.getClass().getName();
-        if (className.equals("double") || className.equals("java.lang.Double")) {
+        if (className.equals("double") || className.equals(cDouble)) {
             double value;
-            if (objectClass.equals("java.lang.String")) {
+            if (objectClass.equals(cString)) {
                 value = tryParseDouble((String) origin);
             } else {
                 value = ((Number) origin).doubleValue();
             }
             return (value);
-        } else if (className.equals("float") || className.equals("java.lang.Float")) {
+        } else if (className.equals("float") || className.equals(cFloat)) {
             float value;
-            if (objectClass.equals("java.lang.String")) {
+            if (objectClass.equals(cString)) {
                 value = tryParseFloat((String) origin);
             } else {
                 value = ((Number) origin).floatValue();
             }
             return (value);
-        } else if (className.equals("long") || className.equals("java.lang.Long")) {
+        } else if (className.equals("long") || className.equals(cLong)) {
             long value;
-            if (objectClass.equals("java.lang.String")) {
+            if (objectClass.equals(cString)) {
                 value = tryParseLong((String) origin);
             } else {
                 value = ((Number) origin).longValue();
             }
             return (value);
-        } else if (className.equals("int") || className.equals("java.lang.Integer")) {
+        } else if (className.equals("int") || className.equals(cInt)) {
             int value;
-            if (objectClass.equals("java.lang.String")) {
+            if (objectClass.equals(cString)) {
                 value = tryParseInteger((String) origin);
             } else {
                 value = ((Number) origin).intValue();
             }
             return (value);
-        } else if (className.equals("short") || className.equals("java.lang.Short")) {
+        } else if (className.equals("short") || className.equals(cShort)) {
             short value;
-            if (objectClass.equals("java.lang.String")) {
+            if (objectClass.equals(cString)) {
                 value = tryParseShort((String) origin);
             } else {
                 value = ((Number) origin).shortValue();
             }
             return (value);
-        } else if (className.equals("byte") || className.equals("java.lang.Byte")) {
+        } else if (className.equals("byte") || className.equals(cByte)) {
             Byte value;
-            if (objectClass.equals("java.lang.String")) {
+            if (objectClass.equals(cString)) {
                 value = tryParseByte((String) origin);
             } else {
                 value = ((Number) origin).byteValue();
             }
             return (value);
-        } else if (className.equals("boolean") || className.equals("java.lang.Boolean")) {
+        } else if (className.equals("boolean") || className.equals(cBoolean)) {
             boolean value;
-            if (objectClass.equals("java.lang.String")) {
+            if (objectClass.equals(cString)) {
                 if (((String)origin).equals("true"))
                    value = true;
                 else value = false;
@@ -890,7 +900,7 @@ public class Idea implements Category,Habit {
             int[] out = new int[o.getL().size()];
             int j=0;
             for (Idea i : o.getL()) {
-               out[j++] = (Integer) convertObject(i.getValue(),"java.lang.Integer");
+               out[j++] = (Integer) convertObject(i.getValue(),cInt);
             }
             return(out);
         }
@@ -898,7 +908,7 @@ public class Idea implements Category,Habit {
             double[] out = new double[o.getL().size()];
             int j=0;
             for (Idea i : o.getL()) {
-               out[j++] = (Double) convertObject(i.getValue(),"java.lang.Double");
+               out[j++] = (Double) convertObject(i.getValue(),cDouble);
             }
             return(out);
         }    
@@ -906,7 +916,7 @@ public class Idea implements Category,Habit {
             float[] out = new float[o.getL().size()];
             int j=0;
             for (Idea i : o.getL()) {
-               out[j++] = (Float) convertObject(i.getValue(),"java.lang.Float");
+               out[j++] = (Float) convertObject(i.getValue(),cFloat);
             }
             return(out);
         }
@@ -914,7 +924,7 @@ public class Idea implements Category,Habit {
             long[] out = new long[o.getL().size()];
             int j=0;
             for (Idea i : o.getL()) {
-               out[j++] = (Long) convertObject(i.getValue(),"java.lang.Long");
+               out[j++] = (Long) convertObject(i.getValue(),cLong);
             }
             return(out);
         }
@@ -922,7 +932,7 @@ public class Idea implements Category,Habit {
             short[] out = new short[o.getL().size()];
             int j=0;
             for (Idea i : o.getL()) {
-               out[j++] = (Short) convertObject(i.getValue(),"java.lang.Short");
+               out[j++] = (Short) convertObject(i.getValue(),cShort);
             }
             return(out);
         }
@@ -930,7 +940,7 @@ public class Idea implements Category,Habit {
             byte[] out = new byte[o.getL().size()];
             int j=0;
             for (Idea i : o.getL()) {
-               out[j++] = (Byte) convertObject(i.getValue(),"java.lang.Byte");
+               out[j++] = (Byte) convertObject(i.getValue(),cByte);
             }
             return(out);
         }
@@ -938,7 +948,7 @@ public class Idea implements Category,Habit {
             boolean[] out = new boolean[o.getL().size()];
             int j=0;
             for (Idea i : o.getL()) {
-               out[j++] = (Boolean) convertObject(i.getValue(),"java.lang.Boolean");
+               out[j++] = (Boolean) convertObject(i.getValue(),cBoolean);
             }
             return(out);
         }    
@@ -977,13 +987,13 @@ public class Idea implements Category,Habit {
      * @return a new Java Object reflecting the desired Idea
      */
     public Object getObject(String name, String classname) {
-        if (classname.equals("java.lang.Double") ||
-            classname.equals("java.lang.Float") ||
-            classname.equals("java.lang.Integer") ||
-            classname.equals("java.lang.Short") ||
-            classname.equals("java.lang.Long") ||
-            classname.equals("java.lang.Byte") ||
-            classname.equals("java.lang.String") ||
+        if (classname.equals(cDouble) ||
+            classname.equals(cFloat) ||
+            classname.equals(cInt) ||
+            classname.equals(cLong) ||
+            classname.equals(cShort) ||
+            classname.equals(cByte) ||
+            classname.equals(cString) ||
             classname.equals("java.util.Date") ) {
             return convertObject(getValue(),classname);
         }
@@ -1000,6 +1010,7 @@ public class Idea implements Category,Habit {
             classname = "java.util.ArrayList";
         }
         Object ret = createJavaObject(classname);
+        if (ret == null) return(null);
         try {
             Field[] fieldList = ret.getClass().getDeclaredFields();
             for (Field field : fieldList) {
