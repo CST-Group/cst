@@ -58,14 +58,14 @@ public class Idea implements Category,Habit {
      */
     public static long lastId = 0;
     
-    private static final String cDouble = "java.lang.Double";
-    private static final String cFloat = "java.lang.Float";
-    private static final String cInt = "java.lang.Integer";
-    private static final String cLong = "java.lang.Long";
-    private static final String cShort = "java.lang.Short";
-    private static final String cByte = "java.lang.Byte";
-    private static final String cBoolean = "java.lang.Boolean";
-    private static final String cString = "java.lang.String";
+    private static final String CDOUBLE = "java.lang.Double";
+    private static final String CFLOAT = "java.lang.Float";
+    private static final String CINT = "java.lang.Integer";
+    private static final String CLONG = "java.lang.Long";
+    private static final String CSHORT = "java.lang.Short";
+    private static final String CBYTE = "java.lang.Byte";
+    private static final String CBOOLEAN = "java.lang.Boolean";
+    private static final String CSTRING = "java.lang.String";
         
     
     /**
@@ -784,27 +784,27 @@ public class Idea implements Category,Habit {
      * @return the created Object
      */
     public static Object createJavaObject(String classname) {
-        if (classname.equals(cDouble)) {
+        if (classname.equals(CDOUBLE)) {
             return Double.valueOf(0.0);
         }
-        else if (classname.equals(cFloat)) {
+        else if (classname.equals(CFLOAT)) {
             return Float.valueOf(0.0f);
         }
-        else if (classname.equals(cInt)) {
+        else if (classname.equals(CINT)) {
             return Integer.valueOf(0);
         }
-        else if (classname.equals(cLong)) {
+        else if (classname.equals(CLONG)) {
             return Long.valueOf(0L);
         }
-        else if (classname.equals(cShort)) {
+        else if (classname.equals(CSHORT)) {
             short ret = 0;
             return Short.valueOf(ret);
         }
-        else if (classname.equals(cByte)) {
+        else if (classname.equals(CBYTE)) {
             byte ret = 0;
             return Byte.valueOf(ret);
         }
-        else if (classname.equals(cBoolean)) {
+        else if (classname.equals(CBOOLEAN)) {
             return Boolean.valueOf(false);
         }
         Class type = null;
@@ -821,59 +821,59 @@ public class Idea implements Category,Habit {
     
     private Object convertObject(Object origin, String className) {
         if (origin == null) return(null);
-        if (origin.getClass().getCanonicalName().equals(cString) && ((String)origin).equalsIgnoreCase("null")) return(null);
+        if (origin.getClass().getCanonicalName().equals(CSTRING) && ((String)origin).equalsIgnoreCase("null")) return(null);
         String objectClass = origin.getClass().getName();
-        if (className.equals("double") || className.equals(cDouble)) {
+        if (className.equals("double") || className.equals(CDOUBLE)) {
             double value;
-            if (objectClass.equals(cString)) {
+            if (objectClass.equals(CSTRING)) {
                 value = tryParseDouble((String) origin);
             } else {
                 value = ((Number) origin).doubleValue();
             }
             return (value);
-        } else if (className.equals("float") || className.equals(cFloat)) {
+        } else if (className.equals("float") || className.equals(CFLOAT)) {
             float value;
-            if (objectClass.equals(cString)) {
+            if (objectClass.equals(CSTRING)) {
                 value = tryParseFloat((String) origin);
             } else {
                 value = ((Number) origin).floatValue();
             }
             return (value);
-        } else if (className.equals("long") || className.equals(cLong)) {
+        } else if (className.equals("long") || className.equals(CLONG)) {
             long value;
-            if (objectClass.equals(cString)) {
+            if (objectClass.equals(CSTRING)) {
                 value = tryParseLong((String) origin);
             } else {
                 value = ((Number) origin).longValue();
             }
             return (value);
-        } else if (className.equals("int") || className.equals(cInt)) {
+        } else if (className.equals("int") || className.equals(CINT)) {
             int value;
-            if (objectClass.equals(cString)) {
+            if (objectClass.equals(CSTRING)) {
                 value = tryParseInteger((String) origin);
             } else {
                 value = ((Number) origin).intValue();
             }
             return (value);
-        } else if (className.equals("short") || className.equals(cShort)) {
+        } else if (className.equals("short") || className.equals(CSHORT)) {
             short value;
-            if (objectClass.equals(cString)) {
+            if (objectClass.equals(CSTRING)) {
                 value = tryParseShort((String) origin);
             } else {
                 value = ((Number) origin).shortValue();
             }
             return (value);
-        } else if (className.equals("byte") || className.equals(cByte)) {
+        } else if (className.equals("byte") || className.equals(CBYTE)) {
             Byte value;
-            if (objectClass.equals(cString)) {
+            if (objectClass.equals(CSTRING)) {
                 value = tryParseByte((String) origin);
             } else {
                 value = ((Number) origin).byteValue();
             }
             return (value);
-        } else if (className.equals("boolean") || className.equals(cBoolean)) {
+        } else if (className.equals("boolean") || className.equals(CBOOLEAN)) {
             boolean value;
-            if (objectClass.equals(cString)) {
+            if (objectClass.equals(CSTRING)) {
                 if (((String)origin).equals("true"))
                    value = true;
                 else value = false;
@@ -900,7 +900,7 @@ public class Idea implements Category,Habit {
             int[] out = new int[o.getL().size()];
             int j=0;
             for (Idea i : o.getL()) {
-               out[j++] = (Integer) convertObject(i.getValue(),cInt);
+               out[j++] = (Integer) convertObject(i.getValue(),CINT);
             }
             return(out);
         }
@@ -908,7 +908,7 @@ public class Idea implements Category,Habit {
             double[] out = new double[o.getL().size()];
             int j=0;
             for (Idea i : o.getL()) {
-               out[j++] = (Double) convertObject(i.getValue(),cDouble);
+               out[j++] = (Double) convertObject(i.getValue(),CDOUBLE);
             }
             return(out);
         }    
@@ -916,7 +916,7 @@ public class Idea implements Category,Habit {
             float[] out = new float[o.getL().size()];
             int j=0;
             for (Idea i : o.getL()) {
-               out[j++] = (Float) convertObject(i.getValue(),cFloat);
+               out[j++] = (Float) convertObject(i.getValue(),CFLOAT);
             }
             return(out);
         }
@@ -924,7 +924,7 @@ public class Idea implements Category,Habit {
             long[] out = new long[o.getL().size()];
             int j=0;
             for (Idea i : o.getL()) {
-               out[j++] = (Long) convertObject(i.getValue(),cLong);
+               out[j++] = (Long) convertObject(i.getValue(),CLONG);
             }
             return(out);
         }
@@ -932,7 +932,7 @@ public class Idea implements Category,Habit {
             short[] out = new short[o.getL().size()];
             int j=0;
             for (Idea i : o.getL()) {
-               out[j++] = (Short) convertObject(i.getValue(),cShort);
+               out[j++] = (Short) convertObject(i.getValue(),CSHORT);
             }
             return(out);
         }
@@ -940,7 +940,7 @@ public class Idea implements Category,Habit {
             byte[] out = new byte[o.getL().size()];
             int j=0;
             for (Idea i : o.getL()) {
-               out[j++] = (Byte) convertObject(i.getValue(),cByte);
+               out[j++] = (Byte) convertObject(i.getValue(),CBYTE);
             }
             return(out);
         }
@@ -948,7 +948,7 @@ public class Idea implements Category,Habit {
             boolean[] out = new boolean[o.getL().size()];
             int j=0;
             for (Idea i : o.getL()) {
-               out[j++] = (Boolean) convertObject(i.getValue(),cBoolean);
+               out[j++] = (Boolean) convertObject(i.getValue(),CBOOLEAN);
             }
             return(out);
         }    
@@ -987,13 +987,13 @@ public class Idea implements Category,Habit {
      * @return a new Java Object reflecting the desired Idea
      */
     public Object getObject(String name, String classname) {
-        if (classname.equals(cDouble) ||
-            classname.equals(cFloat) ||
-            classname.equals(cInt) ||
-            classname.equals(cLong) ||
-            classname.equals(cShort) ||
-            classname.equals(cByte) ||
-            classname.equals(cString) ||
+        if (classname.equals(CDOUBLE) ||
+            classname.equals(CFLOAT) ||
+            classname.equals(CINT) ||
+            classname.equals(CLONG) ||
+            classname.equals(CSHORT) ||
+            classname.equals(CBYTE) ||
+            classname.equals(CSTRING) ||
             classname.equals("java.util.Date") ) {
             return convertObject(getValue(),classname);
         }
