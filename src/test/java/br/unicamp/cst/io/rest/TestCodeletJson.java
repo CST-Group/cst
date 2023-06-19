@@ -12,6 +12,7 @@ public class TestCodeletJson {
     Codelet interCodelet = new Codelet() {
         Memory in;
         Memory out;
+        Memory broad;
 
         @Override
         public void accessMemoryObjects() {
@@ -20,6 +21,9 @@ public class TestCodeletJson {
             }
             if (out == null) {
                 this.out = this.getOutput("M4");
+            }
+            if(broad == null){
+                this.broad = this.getBroadcast("M4");
             }
         }
 

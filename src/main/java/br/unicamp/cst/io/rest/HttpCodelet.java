@@ -67,11 +67,11 @@ public abstract class HttpCodelet extends Codelet {
         con.setRequestMethod("GET");
         //con.setRequestProperty("User-Agent", USER_AGENT);
         int responseCode=0;
-        try {
+        //try {
             responseCode = con.getResponseCode();
-        } catch (java.net.ConnectException e) {
-            e.printStackTrace();
-        }
+        //} catch (java.net.ConnectException e) {
+        //    e.printStackTrace();
+        //}
         if (responseCode != 200)
             System.out.println("GET Response Code :: " + responseCode);
         if (responseCode == HttpURLConnection.HTTP_OK) { // success

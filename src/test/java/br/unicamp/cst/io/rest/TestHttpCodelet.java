@@ -302,6 +302,10 @@ public class TestHttpCodelet {
             restMotorTestCodelet.sendPOST("http://127.0.0.1:6000", "2", null);
         });
 
+        Exception exception2 = assertThrows(ConnectException.class, () -> {
+            restMotorTestCodelet.sendGET("http://127.0.0.1:6000");
+        });
+
         //String actualMessage1 = exception1.getMessage();
 
         //Exception exception2 = assertThrows(IOException.class, () -> {
