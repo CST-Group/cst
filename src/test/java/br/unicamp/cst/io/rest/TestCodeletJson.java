@@ -5,6 +5,8 @@ import br.unicamp.cst.core.entities.Memory;
 import br.unicamp.cst.core.entities.MemoryObject;
 import org.junit.jupiter.api.Test;
 
+import java.util.List;
+
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class TestCodeletJson {
@@ -34,27 +36,35 @@ public class TestCodeletJson {
 
         @Override
         public void proc() {
-            Memory m3 = new MemoryObject();
-            m3.setName("M3");
 
-            Memory m4 = new MemoryObject();
-            m4.setName("M4");
-
-            interCodelet.addInput(m3);
-            interCodelet.addOutput(m4);
-            interCodelet.addBroadcast(m4);
-            interCodelet.setName("name");
-
-            CodeletJson codeletJson = new CodeletJson(interCodelet, "testGroup");
-
-            assertEquals(m3.getName(), codeletJson.getInputs().get(0).name);
-            assertEquals(m4.getName(), codeletJson.getOutputs().get(0).name);
-            assertEquals(m4.getName(), codeletJson.getBroadcast().get(0).name);
-            assertEquals(codeletJson.getGroup(), "testGroup");
-            assertEquals(interCodelet.getName(), codeletJson.getName());
         }
     };
 
-        @Test
-    public void testCod(){}
+    @Test
+    public void testCod(){
+        Memory m3 = new MemoryObject();
+        m3.setName("M3");
+
+        Memory m4 = new MemoryObject();
+        m4.setName("M4");
+
+        interCodelet.addInput(m3);
+        interCodelet.addOutput(m4);
+        interCodelet.addBroadcast(m4);
+        interCodelet.setName("name");
+
+        CodeletJson codeletJson = new CodeletJson(interCodelet, "testGroup");
+
+        List<MemoryJson> inputs = codeletJson.getInputs();
+        List<MemoryJson> outputs = codeletJson.getOutputs();
+        List<MemoryJson> broadcast = codeletJson.getBroadcast();
+        String group = codeletJson.getGroup();
+        String name = codeletJson.getName();
+
+        assertEquals(m3.getName(), inputs.get(0).name);
+        assertEquals(m4.getName(), outputs.get(0).name);
+        assertEquals(m4.getName(), broadcast.get(0).name);
+        assertEquals(group, "testGroup");
+        assertEquals(interCodelet.getName(), name);
+    }
 }

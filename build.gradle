@@ -94,14 +94,21 @@ publishing {
     }
 }
 
+jacoco {
+    toolVersion = "0.8.10"
+}
+
 jacocoTestReport {
     reports {
         xml.required = true
+        html.outputLocation = layout.buildDirectory.dir('test-coverage')
+        dependsOn test // tests are required to run before generating the report
     }
 }
 
 
 test {
+    finalizedBy jacocoTestReport // report is always generated after tests run
     testLogging {
         testLogging.showStandardStreams = true
     }

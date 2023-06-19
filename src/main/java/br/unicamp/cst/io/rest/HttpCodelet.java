@@ -9,13 +9,6 @@ import java.net.URLEncoder;
 import java.util.HashMap;
 
 public abstract class HttpCodelet extends Codelet {
-    /*public String URL;
-
-    public HttpCodelet(String URL){
-        super();
-        this.URL = URL;
-    }*/
-
 
     public String sendPOST(String POST_URL, String POST_PARAMS, String method) throws IOException {
         URL obj = new URL(POST_URL);
@@ -48,12 +41,7 @@ public abstract class HttpCodelet extends Codelet {
                 response.append(inputLine);
             }
             in.close();
-
-            // print result
-            //System.out.println(response);
             return response.toString();
-        } else {
-            System.out.println("POST request did not work.");
         }
 
         return null;
@@ -67,13 +55,9 @@ public abstract class HttpCodelet extends Codelet {
         con.setRequestMethod("GET");
         //con.setRequestProperty("User-Agent", USER_AGENT);
         int responseCode=0;
-        //try {
-            responseCode = con.getResponseCode();
-        //} catch (java.net.ConnectException e) {
-        //    e.printStackTrace();
-        //}
-        if (responseCode != 200)
-            System.out.println("GET Response Code :: " + responseCode);
+
+        responseCode = con.getResponseCode();
+
         if (responseCode == HttpURLConnection.HTTP_OK) { // success
             BufferedReader in = new BufferedReader(new InputStreamReader(
                     con.getInputStream()));
@@ -84,8 +68,6 @@ public abstract class HttpCodelet extends Codelet {
             }
             in.close();
             message = response.toString();
-        } else {
-            System.out.println("GET request not worked");
         }
         return(message);
     }

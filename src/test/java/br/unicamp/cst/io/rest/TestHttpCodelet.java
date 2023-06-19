@@ -1,12 +1,8 @@
 package br.unicamp.cst.io.rest;
 
 import br.unicamp.cst.core.entities.*;
-import br.unicamp.cst.core.exceptions.CodeletActivationBoundsException;
 import org.junit.jupiter.api.Test;
 
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
-import java.io.PrintStream;
 import java.io.UnsupportedEncodingException;
 import java.net.ConnectException;
 import java.net.URLEncoder;
@@ -262,41 +258,8 @@ public class TestHttpCodelet {
     @Test
     public void testError() {
 
-        Random r = new Random();
-        // Finding a random port higher than 5000
-        int portIn1 = 5000 + r.nextInt(5000);
-        int portIn2 = 5000 + r.nextInt(5000);
-        int portOut1 = 5000 + r.nextInt(5000);
-        int portOut2 = 5000 + r.nextInt(5000);
-
-        TestRESTMemory tr = new TestRESTMemory();
-        double outI1 = (5 + r.nextInt(500));
-        double toGetI1 = (5 + r.nextInt(500));
-        double outI2 = (5 + r.nextInt(500));
-        double toGetI2 =(5 + r.nextInt(500));
-
-        //tr.m1 = prepareMind(portOut1, portIn1, portOut2, portIn2, outI1, toGetI1, "localhost");
-        //tr.m2 = prepareMind(portOut2, portIn2, portOut1, portIn1, outI2, toGetI2, "localhost");
-
-        //tr.m1.start();
-        //tr.m2.start();
-
         try{Thread.sleep(2000);
         }catch (Exception e){e.printStackTrace();}
-
-        //tr.m1.shutDown();
-        //tr.m2.shutDown();
-
-        String expectedMessage1 = "POST request did not work.";
-        String expectedMessage2 = "GET request not worked";
-
-        //ByteArrayOutputStream outputStreamCaptor = new ByteArrayOutputStream();
-        //System.setOut(new PrintStream(outputStreamCaptor));
-
-        //assertTrue(outputStreamCaptor.toString().trim().contains(expectedMessage1));
-
-        //assertTrue(outputStreamCaptor.toString().trim().contains(expectedMessage2));
-
 
         Exception exception1 = assertThrows(ConnectException.class, () -> {
             restMotorTestCodelet.sendPOST("http://127.0.0.1:6000", "2", null);
@@ -306,17 +269,6 @@ public class TestHttpCodelet {
             restMotorTestCodelet.sendGET("http://127.0.0.1:6000");
         });
 
-        //String actualMessage1 = exception1.getMessage();
-
-        //Exception exception2 = assertThrows(IOException.class, () -> {
-        //    restSensoryTestCodelet.sendGET("http://127.0.0.1:6000");
-        //});
-
-        //String actualMessage2 = exception2.getMessage();
-
-
-        //assertTrue(actualMessage1.contains(expectedMessage1));
-        //assertTrue(actualMessage2.contains(expectedMessage2));
     }
 
 
