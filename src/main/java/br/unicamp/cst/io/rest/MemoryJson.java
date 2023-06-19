@@ -30,7 +30,7 @@ public class MemoryJson {
         I = memo.getI();
         name = memo.getName();
         if (memo instanceof MemoryContainer) {
-            memories = new ArrayList<MemoryJson>();
+            memories = new ArrayList<>();
             MemoryContainer memoAux = (MemoryContainer) memo;
             List<Memory> memoList = memoAux.getAllMemories();
             for (int i = 0; i < memoList.size(); i++) {
@@ -47,7 +47,7 @@ public class MemoryJson {
         name = memo.getName();
         this.group = group;
         if (memo instanceof MemoryContainer) {
-            memories = new ArrayList<MemoryJson>();
+            memories = new ArrayList<>();
             MemoryContainer memoAux = (MemoryContainer) memo;
             List<Memory> memoList = memoAux.getAllMemories();
             for (int i = 0; i < memoList.size(); i++) {
