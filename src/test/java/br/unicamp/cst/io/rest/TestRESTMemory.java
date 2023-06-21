@@ -139,8 +139,8 @@ public class TestRESTMemory {
         m6.add(m7);
 
         //dummy
-        RESTMemory m8 = new RESTMemory(portOut);
-        m8.setIdmemoryobject(1l);
+        RESTMemory m8 = new RESTMemory(portOut+1);
+        m8.setIdmemoryobject(2l);
         m8.setName("M8");
         m.getRawMemory().addMemory(m8);
 
@@ -246,7 +246,7 @@ public class TestRESTMemory {
         assertEquals(Double.parseDouble((String) tr.m1.getRawMemory().getAllOfType("M1").get(0).getI()), outI2, 0.0);
 
         RESTMemory m8 = (RESTMemory) tr.m2.getRawMemory().getAllOfType("M8").get(0);
-        assertEquals(m8.getIdmemoryobject(), 1l);
+        assertEquals(m8.getIdmemoryobject(), 2l);
 
         assertEquals(memoryContainerJson.memories.get(0).name, m.getName());
 
