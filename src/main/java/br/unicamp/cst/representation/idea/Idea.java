@@ -19,11 +19,14 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.TimeZone;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArrayList;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 
 /**
@@ -31,7 +34,7 @@ import java.util.concurrent.CopyOnWriteArrayList;
  * 
  * @author rgudwin
  */
-public class Idea {
+public class Idea implements Category,Habit {
     private long id;
     private String name="";
     private Object value="";
@@ -54,6 +57,16 @@ public class Idea {
      * This variable stores the last Id used while creating new Ideas. 
      */
     public static long lastId = 0;
+    
+    private static final String CDOUBLE = "java.lang.Double";
+    private static final String CFLOAT = "java.lang.Float";
+    private static final String CINT = "java.lang.Integer";
+    private static final String CLONG = "java.lang.Long";
+    private static final String CSHORT = "java.lang.Short";
+    private static final String CBYTE = "java.lang.Byte";
+    private static final String CBOOLEAN = "java.lang.Boolean";
+    private static final String CSTRING = "java.lang.String";
+        
     
     /**
      * This function generates a new id to be assigned to a new Idea being created. 
@@ -98,6 +111,13 @@ public class Idea {
      * 9 - PropertyCategory
      * 10 - ObjectCategory
      * 11 - EpisodeCategory
+     * 12 - PropertyPossibility
+     * 13 = ObjectPossibility
+     * 14 - EpisodePossibility
+     * 15 - ActionPossibility
+     * 16 - Action
+     * 17 - ActionCategory
+     * 18 - Goal
      * 
      * @param name The name assigned to the Idea.
      * @param value The value to be assigned to the Idea (can be an empty String, or null). If the value is given a null value, it is substituted by the String "null". 
@@ -183,9 +203,6 @@ public class Idea {
             ret = new Idea(name,value,type);
             repo.put(name+"."+type, ret);
         }
-        else if (ret.getType() != type) {
-            ret = new Idea(name,value,type);
-        }
         else { 
             ret.setValue(value);
             ret.l= new CopyOnWriteArrayList<>();
@@ -240,6 +257,18 @@ public class Idea {
             }
             else if (category.equalsIgnoreCase("Episode") && scope == 0) {
                 guess = 14;
+            }
+            else if (category.equalsIgnoreCase("Action") && scope == 0) {
+                guess = 15;
+            }
+            else if (category.equalsIgnoreCase("Action") && scope == 1) {
+                guess = 16;
+            }
+            else if (category.equalsIgnoreCase("Action") && scope == 2) {
+                guess = 17;
+            }
+            else if (category.equalsIgnoreCase("Goal")) {
+                guess = 18;
             }
         }
         return(guess);
@@ -370,7 +399,7 @@ public class Idea {
     
     private String toStringFull(int level, boolean withid) {
         String out; 
-        if (isType(1)) {
+        if (isLeaf()) {
            out = toStringPlus(withid)+"\n";
            return out; 
         }
@@ -433,7 +462,6 @@ public class Idea {
      */
     public void setValue(Object value) {
         this.value = value;
-        type = 1;
     }
     
     /**
@@ -455,6 +483,10 @@ public class Idea {
      * 12 - Property (Possibility)
      * 13 - AbstractObject (Possibility)
      * 14 - Episode (Possibility)
+     * 15 - ActionPossibility
+     * 16 - Action
+     * 17 - ActionCategory
+     * 18 - Goal
      * @return an integer indicating the type of the Idea
      */
     public int getType() {
@@ -521,9 +553,8 @@ public class Idea {
      * @return a boolean indicating if the value of the current Idea is a double number. 
      */
     public boolean isDouble() {
-        String objectClassName = value.getClass().getName();
-        if (objectClassName.equals("java.lang.Double"))
-            return(true);
+        if (value == null) return false;
+        if (value instanceof Double) return true;
         return(false);   
     }
     
@@ -532,9 +563,8 @@ public class Idea {
      * @return a boolean indicating if the value of the current Idea is a float number. 
      */
     public boolean isFloat() {
-        String objectClassName = value.getClass().getName();
-        if (objectClassName.equals("java.lang.Float"))
-            return(true);
+        if (value == null) return false;
+        if (value instanceof Float) return true;
         return(false);   
     }
     
@@ -543,9 +573,8 @@ public class Idea {
      * @return a boolean indicating if the value of the current Idea is an integer number. 
      */
     public boolean isInteger() {
-        String objectClassName = value.getClass().getName();
-        if (objectClassName.equals("java.lang.Integer"))
-            return(true);
+        if (value == null) return false;
+        if (value instanceof Integer) return true;
         return(false);   
     }
     
@@ -554,9 +583,8 @@ public class Idea {
      * @return a boolean indicating if the value of the current Idea is a long number. 
      */
     public boolean isLong() {
-        String objectClassName = value.getClass().getName();
-        if (objectClassName.equals("java.lang.Long"))
-            return(true);
+        if (value == null) return false;
+        if (value instanceof Long) return true;
         return(false);   
     }
     
@@ -566,9 +594,7 @@ public class Idea {
      * @return a boolean indicating if the value of the current Idea is a number. 
      */
     public boolean isNumber() {
-        String objectClassName = value.getClass().getName();
-        if (objectClassName.equals("java.lang.Float") || objectClassName.equals("java.lang.Double") || objectClassName.equals("java.lang.Integer") || objectClassName.equals("java.lang.Long"))
-            return(true);
+        if (isFloat() || isDouble() || isLong() || isInteger()) return(true);
         return(false);
     }
 
@@ -577,10 +603,9 @@ public class Idea {
      * @return a boolean indicating if the value of the current Idea is a HashMap. 
      */
     public boolean isHashMap(){
-        String objectClassName = value.getClass().getName();
-        if (objectClassName.equals("java.util.HashMap"))
-            return(true);
-        return(false);
+        if (value == null) return false;
+        if (value instanceof HashMap) return true;
+        return(false);   
     }
     
     /**
@@ -588,10 +613,9 @@ public class Idea {
      * @return a boolean indicating if the value of the current Idea is a String. 
      */
     public boolean isString() {
-        String objectClassName = value.getClass().getName();
-        if (objectClassName.equals("java.lang.String"))
-            return(true);
-        return(false);
+        if (value == null) return false;
+        if (value instanceof String) return true;
+        return(false);   
     }
     
     /**
@@ -599,10 +623,9 @@ public class Idea {
      * @return a boolean indicating if the value of the current Idea is a boolean. 
      */
     public boolean isBoolean() {
-        String objectClassName = value.getClass().getName();
-        if (objectClassName.equals("java.lang.Boolean"))
-            return(true);
-        return(false);
+        if (value == null) return false;
+        if (value instanceof Boolean) return true;
+        return(false);   
     }
     
     private Float tryParseFloat(String value) {
@@ -760,28 +783,28 @@ public class Idea {
      * @param classname the full name of the class for the object to be created. 
      * @return the created Object
      */
-    public Object createJavaObject(String classname) {
-        if (classname.equals("java.lang.Double")) {
+    public static Object createJavaObject(String classname) {
+        if (classname.equals(CDOUBLE)) {
             return Double.valueOf(0.0);
         }
-        else if (classname.equals("java.lang.Float")) {
+        else if (classname.equals(CFLOAT)) {
             return Float.valueOf(0.0f);
         }
-        else if (classname.equals("java.lang.Integer")) {
+        else if (classname.equals(CINT)) {
             return Integer.valueOf(0);
         }
-        else if (classname.equals("java.lang.Long")) {
+        else if (classname.equals(CLONG)) {
             return Long.valueOf(0L);
         }
-        else if (classname.equals("java.lang.Short")) {
+        else if (classname.equals(CSHORT)) {
             short ret = 0;
             return Short.valueOf(ret);
         }
-        else if (classname.equals("java.lang.Byte")) {
+        else if (classname.equals(CBYTE)) {
             byte ret = 0;
             return Byte.valueOf(ret);
         }
-        else if (classname.equals("java.lang.Boolean")) {
+        else if (classname.equals(CBOOLEAN)) {
             return Boolean.valueOf(false);
         }
         Class type = null;
@@ -791,66 +814,66 @@ public class Idea {
             javaObject = type.getDeclaredConstructor().newInstance();
             type.cast(javaObject);
         } catch (Exception e) {
-            e.printStackTrace();
+            Logger.getAnonymousLogger().log(Level.INFO, "The class name {0} is not on the Java Library Path !", classname);
         }
         return (javaObject);
     }
     
     private Object convertObject(Object origin, String className) {
         if (origin == null) return(null);
-        if (origin.getClass().getCanonicalName().equals("java.lang.String") && ((String)origin).equalsIgnoreCase("null")) return(null);
+        if (origin.getClass().getCanonicalName().equals(CSTRING) && ((String)origin).equalsIgnoreCase("null")) return(null);
         String objectClass = origin.getClass().getName();
-        if (className.equals("double") || className.equals("java.lang.Double")) {
+        if (className.equals("double") || className.equals(CDOUBLE)) {
             double value;
-            if (objectClass.equals("java.lang.String")) {
+            if (objectClass.equals(CSTRING)) {
                 value = tryParseDouble((String) origin);
             } else {
                 value = ((Number) origin).doubleValue();
             }
             return (value);
-        } else if (className.equals("float") || className.equals("java.lang.Float")) {
+        } else if (className.equals("float") || className.equals(CFLOAT)) {
             float value;
-            if (objectClass.equals("java.lang.String")) {
+            if (objectClass.equals(CSTRING)) {
                 value = tryParseFloat((String) origin);
             } else {
                 value = ((Number) origin).floatValue();
             }
             return (value);
-        } else if (className.equals("long") || className.equals("java.lang.Long")) {
+        } else if (className.equals("long") || className.equals(CLONG)) {
             long value;
-            if (objectClass.equals("java.lang.String")) {
+            if (objectClass.equals(CSTRING)) {
                 value = tryParseLong((String) origin);
             } else {
                 value = ((Number) origin).longValue();
             }
             return (value);
-        } else if (className.equals("int") || className.equals("java.lang.Integer")) {
+        } else if (className.equals("int") || className.equals(CINT)) {
             int value;
-            if (objectClass.equals("java.lang.String")) {
+            if (objectClass.equals(CSTRING)) {
                 value = tryParseInteger((String) origin);
             } else {
                 value = ((Number) origin).intValue();
             }
             return (value);
-        } else if (className.equals("short") || className.equals("java.lang.Short")) {
+        } else if (className.equals("short") || className.equals(CSHORT)) {
             short value;
-            if (objectClass.equals("java.lang.String")) {
+            if (objectClass.equals(CSTRING)) {
                 value = tryParseShort((String) origin);
             } else {
                 value = ((Number) origin).shortValue();
             }
             return (value);
-        } else if (className.equals("byte") || className.equals("java.lang.Byte")) {
+        } else if (className.equals("byte") || className.equals(CBYTE)) {
             Byte value;
-            if (objectClass.equals("java.lang.String")) {
+            if (objectClass.equals(CSTRING)) {
                 value = tryParseByte((String) origin);
             } else {
                 value = ((Number) origin).byteValue();
             }
             return (value);
-        } else if (className.equals("boolean") || className.equals("java.lang.Boolean")) {
+        } else if (className.equals("boolean") || className.equals(CBOOLEAN)) {
             boolean value;
-            if (objectClass.equals("java.lang.String")) {
+            if (objectClass.equals(CSTRING)) {
                 if (((String)origin).equals("true"))
                    value = true;
                 else value = false;
@@ -877,7 +900,7 @@ public class Idea {
             int[] out = new int[o.getL().size()];
             int j=0;
             for (Idea i : o.getL()) {
-               out[j++] = (Integer) convertObject(i.getValue(),"java.lang.Integer");
+               out[j++] = (Integer) convertObject(i.getValue(),CINT);
             }
             return(out);
         }
@@ -885,7 +908,7 @@ public class Idea {
             double[] out = new double[o.getL().size()];
             int j=0;
             for (Idea i : o.getL()) {
-               out[j++] = (Double) convertObject(i.getValue(),"java.lang.Double");
+               out[j++] = (Double) convertObject(i.getValue(),CDOUBLE);
             }
             return(out);
         }    
@@ -893,7 +916,7 @@ public class Idea {
             float[] out = new float[o.getL().size()];
             int j=0;
             for (Idea i : o.getL()) {
-               out[j++] = (Float) convertObject(i.getValue(),"java.lang.Float");
+               out[j++] = (Float) convertObject(i.getValue(),CFLOAT);
             }
             return(out);
         }
@@ -901,7 +924,7 @@ public class Idea {
             long[] out = new long[o.getL().size()];
             int j=0;
             for (Idea i : o.getL()) {
-               out[j++] = (Long) convertObject(i.getValue(),"java.lang.Long");
+               out[j++] = (Long) convertObject(i.getValue(),CLONG);
             }
             return(out);
         }
@@ -909,7 +932,7 @@ public class Idea {
             short[] out = new short[o.getL().size()];
             int j=0;
             for (Idea i : o.getL()) {
-               out[j++] = (Short) convertObject(i.getValue(),"java.lang.Short");
+               out[j++] = (Short) convertObject(i.getValue(),CSHORT);
             }
             return(out);
         }
@@ -917,7 +940,7 @@ public class Idea {
             byte[] out = new byte[o.getL().size()];
             int j=0;
             for (Idea i : o.getL()) {
-               out[j++] = (Byte) convertObject(i.getValue(),"java.lang.Byte");
+               out[j++] = (Byte) convertObject(i.getValue(),CBYTE);
             }
             return(out);
         }
@@ -925,7 +948,7 @@ public class Idea {
             boolean[] out = new boolean[o.getL().size()];
             int j=0;
             for (Idea i : o.getL()) {
-               out[j++] = (Boolean) convertObject(i.getValue(),"java.lang.Boolean");
+               out[j++] = (Boolean) convertObject(i.getValue(),CBOOLEAN);
             }
             return(out);
         }    
@@ -964,13 +987,13 @@ public class Idea {
      * @return a new Java Object reflecting the desired Idea
      */
     public Object getObject(String name, String classname) {
-        if (classname.equals("java.lang.Double") ||
-            classname.equals("java.lang.Float") ||
-            classname.equals("java.lang.Integer") ||
-            classname.equals("java.lang.Short") ||
-            classname.equals("java.lang.Long") ||
-            classname.equals("java.lang.Byte") ||
-            classname.equals("java.lang.String") ||
+        if (classname.equals(CDOUBLE) ||
+            classname.equals(CFLOAT) ||
+            classname.equals(CINT) ||
+            classname.equals(CLONG) ||
+            classname.equals(CSHORT) ||
+            classname.equals(CBYTE) ||
+            classname.equals(CSTRING) ||
             classname.equals("java.util.Date") ) {
             return convertObject(getValue(),classname);
         }
@@ -987,6 +1010,7 @@ public class Idea {
             classname = "java.util.ArrayList";
         }
         Object ret = createJavaObject(classname);
+        if (ret == null) return(null);
         try {
             Field[] fieldList = ret.getClass().getDeclaredFields();
             for (Field field : fieldList) {
@@ -1192,5 +1216,71 @@ public class Idea {
             return;
         }
     }
+    
+    /**
+     * This method can be called from an Idea, it the Idea is a Habit. 
+     * It executes the Habit without the necessity to first recover the Habit from the Idea
+     * @param idea an Idea passed as a parameter to the Habit. Can be null if no parameter is required
+     * @return an Idea, which is the result of the Habit execution. Can be null
+     */
+    @Override
+    public Idea exec(Idea idea) {
+        if (isHabit()) {
+            Habit h = (Habit) getValue();
+            return(h.exec(idea));
+        }
+        else return(null);
+    }
+    
+    public Idea getInstance() {
+        return getInstance(null);
+    }
+    
+    @Override
+    public Idea getInstance(Idea constraints ) {
+        if (getValue() instanceof Category) {
+            Category c = (Category) getValue();
+            return(c.getInstance(constraints));
+        }
+        return(null);
+    }
+    
+    @Override
+    public double membership(Idea idea) {
+        if (getValue() instanceof Category) {
+            Category c = (Category) getValue();
+            return(c.membership(idea));
+        }
+        return(0.0);
+    }
+    
+    /**
+     * This method returns true if the present Idea is a Category, i.e., have a Category as its value.
+     * If it is a Habit, an user can call the methods instantiation and membership from this Idea
+     * @return true if this idea is a Category or false otherwise
+     */
+    public boolean isCategory() {
+        if (getValue() instanceof Category) return(true);
+        else return(false);
+    }
+    
+    /**
+     * This method returns true if the present Idea is a Habit, i.e., have a Habit as its value.
+     * If it is a Habit, an user can call the method exec (or exec0) from this Idea
+     * @return true if this idea is a Habit or false otherwise
+     */
+    public boolean isHabit() {
+        if (getValue() instanceof Habit) return(true);
+        else return(false);
+    }
+    
+    /**
+     * This method returns true if the present Idea is a Leaf, i.e., does not have any children Idea
+     * @return true if this idea is a leaf or false otherwise
+     */
+    public boolean isLeaf() {
+        return this.l.isEmpty();
+    }
+    
     
 }

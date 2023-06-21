@@ -12,10 +12,7 @@
 package br.unicamp.cst.core.entities;
 
 import java.io.Serializable;
-import java.util.ArrayList;
 import java.util.HashSet;
-import java.util.Iterator;
-import java.util.List;
 import java.util.Set;
 
 /**
@@ -277,4 +274,16 @@ public class MemoryObject implements Memory, Serializable {
 		}
 		this.memoryObservers.add(memoryObserver);
 	}
+        
+        /**
+	 * Remove a memory observer from its list
+	 * @param memoryObserver the MemoryObserve to be removed
+	 */
+	public void removeMemoryObserver(MemoryObserver memoryObserver) {
+		if (this.memoryObservers != null) {
+		    this.memoryObservers.remove(memoryObserver);
+                }
+	}
+        
+        
 }

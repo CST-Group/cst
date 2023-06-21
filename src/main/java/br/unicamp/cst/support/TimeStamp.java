@@ -91,6 +91,10 @@ public class TimeStamp {
        s = df.format(tl);
        return(s);
    }
+   
+   public static String getStringTimeStamp(long tl) {
+       return getStringTimeStamp(tl,"dd/MM/yyyy HH:mm:ss.SSS");
+   }
 
    public static long getLongDelay(String ts) {
        long tst=0;

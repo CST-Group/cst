@@ -800,6 +800,21 @@ public abstract class Codelet implements Runnable, MemoryObserver {
 	public synchronized void setIsMemoryObserver(boolean isMemoryObserver) {
 		this.isMemoryObserver = isMemoryObserver;
 	}
+        
+        public synchronized void setPublishSubscribe(boolean enable) {
+            if (enable) {
+                setIsMemoryObserver(true);
+                for (Memory m : inputs) {
+                    m.addMemoryObserver(this);
+                }
+            } else {
+                setIsMemoryObserver(false);
+                for (Memory m : inputs) {
+                    m.removeMemoryObserver(this);
+                }
+                run();
+            }
+        }    
 	
 	/**
 	 * Sets Codelet Profiler
