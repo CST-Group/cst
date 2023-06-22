@@ -91,6 +91,12 @@ public interface Memory {
 	 * @param memoryObserver MemoryObserver to be added
 	 */
 	public void addMemoryObserver(MemoryObserver memoryObserver);
+        
+        /**
+	 * Remove a memory observer from its list
+	 * @param memoryObserver MemoryObserver to be removed
+	 */
+	public void removeMemoryObserver(MemoryObserver memoryObserver);
 	
 
 }

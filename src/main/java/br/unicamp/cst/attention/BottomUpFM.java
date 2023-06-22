@@ -13,6 +13,7 @@
 package br.unicamp.cst.attention;
 
 import br.unicamp.cst.core.entities.MemoryObject;
+import br.unicamp.cst.core.entities.Codelet;
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.logging.Level;
@@ -48,7 +49,7 @@ public class BottomUpFM extends FeatMapCodelet {
     private int qd;
     private boolean print_to_file = false, debug;
     private CopyOnWriteArrayList<Float> data_FM_t;
-    private String file = "bottomUpFM.txt";
+    private String file = "tests/bottomUpFM.txt";
    
     
     /**

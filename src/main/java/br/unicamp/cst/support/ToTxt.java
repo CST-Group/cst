@@ -42,7 +42,7 @@ public class ToTxt {
     
     public static void printToFile(Object object,String filename, boolean debug, int time_graph){
         String user_dir = System.getProperty("user.dir");
-        File dir = new File(user_dir);
+        File dir = new File(user_dir+"/tests");
         if (!dir.exists()) {
             dir.mkdir();
             if(debug) Logger.getAnonymousLogger().log(Level.INFO, "dir created: {0}",  new Object[]{dir});

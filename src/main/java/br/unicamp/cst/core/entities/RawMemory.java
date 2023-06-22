@@ -181,6 +181,45 @@ public class RawMemory {
 
 
 	/**
+	 * Creates a new RestMemory and adds it to the Raw Memory, using provided
+	 * name, hostname and port .
+	 *
+	 * @param name
+	 *            memory object type.
+	 * @param hostname
+	 *            the hostname of the REST server
+	 * @param port
+	 * 			the port of the REST server
+	 * @return mo created MemoryObject.
+	 */
+	public synchronized RESTMemoryContainer createRESTMemoryContainer(String name, String hostname, int port) {
+		// memory object to be added to rawmemory
+		RESTMemoryContainer mo = new RESTMemoryContainer(hostname, port);
+		//mo.setI("");
+		//mo.setTimestamp(System.currentTimeMillis());
+		mo.setEvaluation(0.0d);
+		mo.setName(name);
+
+		// adding the new object to raw memory
+		this.addMemory(mo);
+		return mo;
+	}
+
+	/**
+	 * Creates a memory object of the type passed.
+	 *
+	 * @param name
+	 *            the type of the memory object created.
+	 * @param port
+	 * 			the port of the REST server
+	 * @return the memory object created.
+	 */
+	public synchronized RESTMemoryContainer createRESTMemoryContainer(String name, int port) {
+		return createRESTMemoryContainer(name, "localhost", port);
+	}
+
+
+	/**
 	 * Creates a new MemoryObject and adds it to the Raw Memory, using provided
 	 * info and type.
 	 *

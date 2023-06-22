@@ -144,8 +144,8 @@ public class CFM extends CombFeatMapCodelet {
         }
         comb_feature_mapMO.setI(CFMrow);
         if(debug) Logger.getAnonymousLogger().log(Level.INFO, "CFM: steps: {0} Timestamp after: {1}",  new Object[]{this.steps, TimeStamp.getStringTimeStamp(comb_feature_mapMO.getTimestamp(),"dd/MM/yyyy HH:mm:ss.SSS")});
-        if(print_to_file){ ToTxt.printToFile((CopyOnWriteArrayList<Float>) CFMrow, "CFM.txt", debug, time_graph);
-            ToTxt.printToFile((CopyOnWriteArrayList<Integer>) winners_row, "winnerType.txt", debug, time_graph);
+        if(print_to_file){ ToTxt.printToFile((CopyOnWriteArrayList<Float>) CFMrow, "tests/CFM.txt", debug, time_graph);
+            ToTxt.printToFile((CopyOnWriteArrayList<Integer>) winners_row, "tests/winnerType.txt", debug, time_graph);
             time_graph++;
         }
         steps++;

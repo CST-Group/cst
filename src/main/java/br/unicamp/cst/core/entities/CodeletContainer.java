@@ -322,6 +322,18 @@ public class CodeletContainer implements Memory {
 			}
 		}
 	}
+        
+        @Override
+	public void removeMemoryObserver(MemoryObserver memoryObserver) {
+		for (Codelet codelet : codelets) {
+			for (Memory memory : codelet.inputs) {
+				memory.removeMemoryObserver(memoryObserver);
+			}
+			for (Memory memory : codelet.broadcast) {
+				memory.removeMemoryObserver(memoryObserver);
+			}
+		}
+	}
 	
 	public synchronized List<Memory> getOutputs() {
 		return outputs;

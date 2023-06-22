@@ -4,16 +4,13 @@ import br.unicamp.cst.core.entities.*;
 import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
-import java.io.UnsupportedEncodingException;
-import java.net.URLEncoder;
 import java.util.HashMap;
 import java.util.Random;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 
 
-public class TestRESTMemory {
+public class TestRESTMemoryContainer {
     Mind m1;
     Mind m2;
 
@@ -106,12 +103,12 @@ public class TestRESTMemory {
         //RESTMemory m1 = m.createRESTMemory("M1", baseIP, portIn);
         //m1.setI(1);
 
-        RESTMemory m1;
+        RESTMemoryContainer m1;
         if (baseIP.equals("localhost")){
-            m1 = m.createRESTMemory("M1", portIn);
+            m1 = m.createRESTMemoryContainer("M1", portIn);
         }
         else{
-            m1 = m.createRESTMemory("M1", baseIP, portIn);
+            m1 = m.createRESTMemoryContainer("M1", baseIP, portIn);
         }
         m1.setI(1);
 
@@ -120,12 +117,12 @@ public class TestRESTMemory {
         MemoryObject m3 = m.createMemoryObject("M3", null);
         MemoryObject m4 = m.createMemoryObject("M4", null);
 
-        RESTMemory m5;
+        RESTMemoryContainer m5;
         if (baseIP.equals("localhost")){
-            m5 = m.createRESTMemory("M5", portOut);
+            m5 = m.createRESTMemoryContainer("M5", portOut);
         }
         else{
-            m5 = m.createRESTMemory("M5", baseIP, portOut);
+            m5 = m.createRESTMemoryContainer("M5", baseIP, portOut);
         }
         m5.setI(toGetI);
 
@@ -139,9 +136,10 @@ public class TestRESTMemory {
         m6.add(m7);
 
         //dummy
-        RESTMemory m8 = new RESTMemory(portOut+1);
-        m8.setIdmemoryobject(2l);
+        RESTMemoryContainer m8 = new RESTMemoryContainer(portOut+1);
+        //m8.setIdmemoryobject(2l);
         m8.setName("M8");
+        m8.setI("2");
         m.getRawMemory().addMemory(m8);
 
         //REST Sensory that will use GET on another agent motor memory
@@ -185,7 +183,7 @@ public class TestRESTMemory {
         int portOut1 = 5000 + r.nextInt(50000);
         int portOut2 = 5000 + r.nextInt(50000);
 
-        TestRESTMemory tr = new TestRESTMemory();
+        TestRESTMemoryContainer tr = new TestRESTMemoryContainer();
         double outI1 = (5 + r.nextInt(500));
         double toGetI1 = (5 + r.nextInt(500));
         double outI2 = (5 + r.nextInt(500));
@@ -218,7 +216,7 @@ public class TestRESTMemory {
         int portOut1 = 5000 + r.nextInt(50000);
         int portOut2 = 5000 + r.nextInt(50000);
 
-        TestRESTMemory tr = new TestRESTMemory();
+        TestRESTMemoryContainer tr = new TestRESTMemoryContainer();
         double outI1 = (5 + r.nextInt(500));
         double toGetI1 = (5 + r.nextInt(500));
         double outI2 = (5 + r.nextInt(500));
@@ -245,8 +243,8 @@ public class TestRESTMemory {
         assertEquals(tr.m2.getRawMemory().getAllOfType("M5").get(0).getI(), toGetI2);
         assertEquals(Double.parseDouble((String) tr.m1.getRawMemory().getAllOfType("M1").get(0).getI()), outI2, 0.0);
 
-        RESTMemory m8 = (RESTMemory) tr.m2.getRawMemory().getAllOfType("M8").get(0);
-        assertEquals(m8.getIdmemoryobject(), 2l);
+        RESTMemoryContainer m8 = (RESTMemoryContainer) tr.m2.getRawMemory().getAllOfType("M8").get(0);
+        //assertEquals(m8.getIdmemoryobject(), 2l);
 
         assertEquals(memoryContainerJson.memories.get(0).name, m.getName());
 

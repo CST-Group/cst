@@ -21,7 +21,9 @@ import javax.swing.tree.DefaultMutableTreeNode;
 
 
 import br.unicamp.cst.core.profiler.TestComplexMemoryObjectInfo;
+import java.util.HashMap;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import org.junit.jupiter.api.Test;
 
 
@@ -216,11 +218,163 @@ public class TestIdea {
         assertEquals(idea.getType(),13);
         idea = new Idea("idea","idea","Episode",0);
         assertEquals(idea.getType(),14);
+        idea = new Idea("idea","idea","Action",0);
+        assertEquals(idea.getType(),15);
+        idea = new Idea("idea","idea","Action",1);
+        assertEquals(idea.getType(),16);
+        idea = new Idea("idea","idea","Action",2);
+        assertEquals(idea.getType(),17);
+        idea = new Idea("idea","idea","Goal",0);
+        assertEquals(idea.getType(),18);
         idea = new Idea("idea","idea",0,"Episode",0);
         idea.setCategory("Property");
         idea.setScope(1);
         assertEquals(idea.getCategory().equalsIgnoreCase("Property"),true);
         assertEquals(idea.getScope(),1);
+        assertEquals(Idea.guessType(null, 0),0);
+    }
+    
+    @Test 
+    public void testIsMethods() {
+        Idea i = new Idea();
+        i.setName("test");
+        assertEquals(i.getName(),"test");
+        i.setValue(null);
+        assertEquals(i.getValue(),null);
+        assertEquals(i.isLong(),false);
+        assertEquals(i.isBoolean(),false);
+        assertEquals(i.isInteger(),false);
+        assertEquals(i.isString(),false);
+        assertEquals(i.isHashMap(),false);
+        assertEquals(i.isNumber(),false);
+        assertEquals(i.getInstance(),null);
+        assertEquals(i.membership(null),0.0);
+        assertEquals(i.exec(null),null);
+        i.setValue(1D);
+        assertEquals(i.isDouble(),true);
+        assertEquals(i.isNumber(),true);
+        assertEquals(i.isInteger(),false);
+        assertEquals(i.isBoolean(),false);
+        assertEquals(i.isString(),false);
+        assertEquals(i.isHashMap(),false);
+        assertEquals(i.getResumedValue()," 1.0");
+        i.setValue(1F);
+        assertEquals(i.isFloat(),true);
+        assertEquals(i.isNumber(),true);
+        assertEquals(i.getResumedValue()," 1.0");
+        i.setValue(1L);
+        assertEquals(i.isLong(),true);
+        assertEquals(i.isNumber(),true);
+        assertEquals(i.getResumedValue(),"1");
+        i.setValue(true);
+        assertEquals(i.isBoolean(),true);
+        i.setValue(1);
+        assertEquals(i.isInteger(),true);
+        assertEquals(i.isNumber(),true);
+        assertEquals(i.getResumedValue(),"1");
+        i.setValue("");
+        assertEquals(i.isString(),true);
+        i.setValue(new HashMap());
+        assertEquals(i.isHashMap(),true);
+        assertEquals(i.isType(0),true);
+        i.setType(1);
+        assertEquals(i.isType(0),false);
+        assertEquals(i.isType(1),true);
+    }
+    
+    @Test 
+    public void cloneTest() {
+        Idea i = new Idea("test","value",12,"category",2);
+        long n1,n2,n3,n4,n5,n6;
+        n1 = i.getId();
+        Idea sub1 = new Idea("sub","value1",13,"category1",1);
+        n2 = sub1.getId();
+        Idea sub2 = new Idea("sub2","value2",14,"category2",0);
+        n3 = sub2.getId();
+        assertNotEquals(n1,n2);
+        assertNotEquals(n1,n3);
+        assertNotEquals(n2,n3);
+        i.add(sub1);
+        sub1.add(sub2);
+        Idea i2 = i.clone();
+        n4 = i2.getId();
+        assertEquals(i2.getName(),"test");
+        assertEquals(i2.getValue(),"value");
+        assertEquals(i2.getType(),12);
+        assertEquals(i2.getCategory(),"category");
+        assertEquals(i2.getScope(),2);
+        assertEquals(i2.toString(),"test");
+        Idea i3 = i2.get("sub");
+        n5 = i3.getId();
+        assertEquals(i3.getName(),"sub");
+        assertEquals(i3.getValue(),"value1");
+        assertEquals(i3.getType(),13);
+        assertEquals(i3.getCategory(),"category1");
+        assertEquals(i3.getScope(),1);
+        i3 = i2.get("sub.sub2");
+        n6 = i3.getId();
+        assertEquals(i3.getName(),"sub2");
+        assertEquals(i3.getValue(),"value2");
+        assertEquals(i3.getType(),14);
+        assertEquals(i3.getCategory(),"category2");
+        assertEquals(i3.getScope(),0);
+        assertNotEquals(n1,n4);
+        assertNotEquals(n2,n5);
+        assertNotEquals(n3,n6);
+        i3 = i2.get("what?");
+        assertEquals(i3,null);
+    }
+    
+    @Test public void testSetL() {
+        Idea i = new Idea();
+        Idea i2 = new Idea("sub1");
+        Idea i3 = new Idea("sub2");
+        List<Idea> l = new ArrayList<>();
+        l.add(i2);
+        l.add(i3);
+        i.setL(l);
+        assertEquals(i.get("sub1"),i2);
+        assertEquals(i.get("sub2"),i3);
+    }
+    
+    @Test public void testConvertStringValue() {
+        Idea i = new Idea("test","2");
+        assertEquals(i.getValue(),2);
+        i = new Idea("test","3.0");
+        assertEquals(i.getValue(),3.0);
+    }
+    
+    @Test public void testCreateIdea() {
+        Idea i = Idea.createIdea("test", l, 0);
+        Idea i2 = Idea.createIdea("test", l, 1);
+        Idea i3 = Idea.createIdea("test", l, 1);
+        Idea i4 = Idea.createIdea("test", l, 1);
+        assertNotEquals(i,i2);
+        assertEquals(i2,i3);
+        assertEquals(i2,i4);
+        System.out.println("REPO: ");
+        Idea.repo.forEach((key, value) -> {
+            System.out.println("Key=" + key + ", Value=" + value.getName()+","+value.getType());
+        });
+    }
+    
+    @Test public void testCreateJavaObject() {
+        double d = (double) Idea.createJavaObject("java.lang.Double");
+        assertEquals(d,0);
+        float f = (float) Idea.createJavaObject("java.lang.Float");
+        assertEquals(f,0);
+        int i = (int) Idea.createJavaObject("java.lang.Integer");
+        assertEquals(i,0);
+        long l = (long) Idea.createJavaObject("java.lang.Long");
+        assertEquals(l,0);
+        short s = (short) Idea.createJavaObject("java.lang.Short");
+        assertEquals(s,0);
+        boolean b = (boolean) Idea.createJavaObject("java.lang.Boolean");
+        assertEquals(b,false);
+        byte by = (byte) Idea.createJavaObject("java.lang.Byte");
+        assertEquals(by,0);
+        Object o = Idea.createJavaObject("whatever");
+        assertEquals(o,null);
     }
     
 }
