@@ -21,6 +21,7 @@ import javax.swing.tree.DefaultMutableTreeNode;
 
 
 import br.unicamp.cst.core.profiler.TestComplexMemoryObjectInfo;
+import br.unicamp.cst.support.TimeStamp;
 import java.util.HashMap;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotEquals;
@@ -35,10 +36,13 @@ public class TestIdea {
         Idea node = new Idea("Test","",0);
         node.add(new Idea("child1","",0)).add(new Idea("subchild1",3.14,1)).add(new Idea("subsubchild1","whatthe..."));
         double variable[] = new double[3];
-        node.add(new Idea("child2","I2",0)).add(new Idea("array",new double[]{3.4, 2.2, 1.23}));
+        //node.add(new Idea("child2","I2",0)).add(new Idea("array",new double[]{3.4, 2.2, 1.23}));
+        node.add(new Idea("child2","I2",0)).addObject(new double[]{3.4, 2.2, 1.23},"array");
         node.add(new Idea("child3",3.1416d,1));
-        node.add(new Idea("child4",null,2));
-        System.out.println(node.toStringFull());
+        Idea child4 = new Idea("child4",null,2);
+        node.add(child4);
+        child4.add(node);
+        System.out.println(node.toStringFull(true));
         return(node);
     }
     
@@ -59,16 +63,24 @@ public class TestIdea {
         print("child1",o);
         o = n.get("child1.subchild1");
         print("child1.subchild1",o);
+        assertEquals(n.get("child1.subchild1").getValue(),3.14);
         o = n.get("child1.subchild1.subsubchild1");
         print("child1.subchild1.subsubchild1",o);
+        assertEquals(n.get("child1.subchild1.subsubchild1").getValue(),"whatthe...");
         o = n.get("child2");
         print("child2",o);
+        assertEquals(n.get("child2").getValue(),"I2");
         o = n.get("child2.array");
         print("child2.array",o);
+        assertEquals(n.get("child2.array.array[0]").getValue(),3.4);
+        assertEquals(n.get("child2.array.array[1]").getValue(),2.2);
+        assertEquals(n.get("child2.array.array[2]").getValue(),1.23);
         o = n.get("child3");
         print("child3",o);
+        assertEquals(n.get("child3").getValue(),3.1416);
         o = n.get("child4");
-        print("child4",o);     
+        print("child4",o);
+        assertEquals(n.get("child4.Test.child1.subchild1").getValue(),3.14);
     }
     
     @Test 
@@ -232,6 +244,18 @@ public class TestIdea {
         assertEquals(idea.getCategory().equalsIgnoreCase("Property"),true);
         assertEquals(idea.getScope(),1);
         assertEquals(Idea.guessType(null, 0),0);
+        assertEquals(Idea.guessType("Property",3),0);
+        assertEquals(Idea.guessType("AbstractObject",3),0);
+        assertEquals(Idea.guessType("Episode",3),0);
+        assertEquals(Idea.guessType("Action",3),0);
+        assertEquals(Idea.guessType("",3),0);
+        // Testing scope limits
+        idea = new Idea("idea","idea",0,"Episode",-1);
+        assertEquals(idea.getScope(),1);
+        assertEquals(idea.getType(),0);
+        idea = new Idea("idea","idea",0,"Episode",3);
+        assertEquals(idea.getScope(),1);
+        assertEquals(idea.getType(),0);
     }
     
     @Test 
@@ -276,10 +300,15 @@ public class TestIdea {
         assertEquals(i.isString(),true);
         i.setValue(new HashMap());
         assertEquals(i.isHashMap(),true);
-        assertEquals(i.isType(0),true);
-        i.setType(1);
-        assertEquals(i.isType(0),false);
+        // The default type should be 1
         assertEquals(i.isType(1),true);
+        i.setType(0);
+        assertEquals(i.isType(1),false);
+        assertEquals(i.isType(0),true);
+        i.setValue("3.1");
+        assertEquals(i.getResumedValue()," 3.1");
+        i.setValue("nothing");
+        assertEquals(i.getResumedValue(),"nothing");
     }
     
     @Test 
@@ -375,6 +404,29 @@ public class TestIdea {
         assertEquals(by,0);
         Object o = Idea.createJavaObject("whatever");
         assertEquals(o,null);
+    }
+    
+    @Test public void testTryThings() {
+        Idea root = new Idea("root","3.1");
+        assertEquals(root.getValue(),3.1);
+        root.setValue("3");
+        int ii = (int) root.getObject(null, "java.lang.Integer");
+        assertEquals(ii,3);
+        long il = (long) root.getObject(null,"java.lang.Long");
+        assertEquals(il,3);
+        short is = (short) root.getObject(null,"java.lang.Short");
+        assertEquals(is,3);
+        byte ibb = (byte) root.getObject(null,"java.lang.Byte");
+        assertEquals(ibb,3);
+        root.setValue("4.1");
+        double id = (double) root.getObject(null, "java.lang.Double");
+        assertEquals(id,4.1);
+        float iff = (float) root.getObject(null,"java.lang.Float");
+        assertEquals(iff,4.1F);
+        root.setValue("23/06/2023 10:23:34.789");
+        Date date = (Date) root.getObject(null, "java.util.Date");
+        assertEquals(date.getTime(),TimeStamp.getLongTimeStamp("23/06/2023 10:23:34.789","dd/MM/yyyy HH:mm:ss.SSS"));
+        System.out.println(date);
     }
     
 }

@@ -36,11 +36,11 @@ import java.util.logging.Logger;
  */
 public class Idea implements Category,Habit {
     private long id;
-    private String name="";
-    private Object value="";
+    private String name;
+    private Object value;
     private List<Idea> l= new CopyOnWriteArrayList<>();
-    private int type=0;
-    private String category="";
+    private int type=1;
+    private String category;
     private int scope=1;  // 0: possibility, 1: existence, 2: law
     private transient IdeaComparator ideaComparator = new IdeaComparator();
     // This list is used while building a toStringFull()
@@ -82,7 +82,8 @@ public class Idea implements Category,Habit {
      * This is the simpler constructor for an Idea. Basically, it finds a new id and creates an empty Idea. 
      */
     public Idea() {
-        id = genId();
+        // The default is to have ideas with name "", value null, of type 1, category Property with Existence scope
+        this("",null,1,"Property",1);
     }
     
     /**
@@ -90,14 +91,46 @@ public class Idea implements Category,Habit {
      * @param name The name to be assigned to the Idea
      */
     public Idea(String name) {
-        this.name = name;
-        id = genId();
+        this(name,null,1,"Property",1);
+    }
+    
+    /**
+     * This constructor is a wrapper for an Idea with type 1. If the value is a String, it is parsed in order to create a numeric value with a proper type. Up to now, the constructor recognizes Integers and Doubles.  
+     * @param name The name assigned to the Idea
+     * @param value The value assigned to the Idea. If this value is a String, it is parsed to check if this String describes an Integer or a Double and converts the number to a prpper type (an int or a double). 
+     */
+    public Idea(String name, Object value) {
+        this(name,value,1,"Property",1);
     }
     
     /**
      * This constructor initializes the Idea with a name, a value and a type. 
+     
+     * 
+     * @param name The name assigned to the Idea.
+     * @param value The value to be assigned to the Idea (can be an empty String, or null). If the value is given a null value, it is substituted by the String "null". 
+     * @param type The type assigned to the Idea
+     */
+    public Idea(String name, Object value, int type) {
+        this(name,value,type,"Property",1);
+    }
+    
+    /**
+     * This constructor initializes the Idea with a name, a value, a category and a scope. 
+     * The Idea type is guessed, based on its category
+     * @param name The name assigned to the Idea
+     * @param value The value to be assigned to the Idea (can be an empty String, or null). If the value is given a null value, it is substituted by the String "null". 
+     * @param category The category assigned to the Idea
+     * @param scope The scope assigned to the Idea (0: possibility, 1: existence, 2: law)
+     */
+    public Idea(String name, Object value, String category, int scope) {
+        this(name,value,guessType(category,scope),category,scope);
+    }
+    
+    /**
+     * This constructor initializes the Idea with a name, a value, a type, a category and a scope.
      * The value can be any Java object. The type is an integer number, which
-     * describes the kind of Idea. Even though the type can be used for any purpose,
+     * describes the category of the Idea. Even though the type can be used for any purpose,
      * the following reference for Idea types is used as a reference:
      * 0 - AbstractObject
      * 1 - Property
@@ -118,26 +151,13 @@ public class Idea implements Category,Habit {
      * 16 - Action
      * 17 - ActionCategory
      * 18 - Goal
-     * 
-     * @param name The name assigned to the Idea.
+     * @param name The name assigned to the Idea
      * @param value The value to be assigned to the Idea (can be an empty String, or null). If the value is given a null value, it is substituted by the String "null". 
      * @param type The type assigned to the Idea
+     * @param category The category assigned to the Idea
+     * @param scope The scope assigned to the Idea (0: possibility, 1: existence, 2: law)
      */
-    public Idea(String name, Object value, int type) {
-        this.name = name;
-        if (value != null) this.value = value;
-        else this.value = "null";
-        this.type = type;
-        id = genId();
-    }
-    
-    /**
-     * This constructor is a wrapper for an Idea with type 1. If the value is a String, it is parsed in order to create a numeric value with a proper type. Up to now, the constructor recognizes Integers and Doubles.  
-     * @param name The name assigned to the Idea
-     * @param value The value assigned to the Idea. If this value is a String, it is parsed to check if this String describes an Integer or a Double and converts the number to a prpper type (an int or a double). 
-     */
-    public Idea(String name, Object value) {
-        type = 1;
+    public Idea(String name, Object value, int type, String category, int scope) {
         this.name = name;
         id = genId();
         if (value instanceof String) {
@@ -155,35 +175,13 @@ public class Idea implements Category,Habit {
             } 
         }
         else this.value = value;
+        this.type = type;
+        this.category = category;
+        if (scope >= 0 && scope <=2) this.scope = scope;
+        else this.scope = 1;
     }
     
-    /**
-     * This constructor initializes the Idea with a name, a value, a type, a category and a scope. 
-     * @param name The name assigned to the Idea
-     * @param value The value to be assigned to the Idea (can be an empty String, or null). If the value is given a null value, it is substituted by the String "null". 
-     * @param type The type assigned to the Idea
-     * @param category The category assigned to the Idea
-     * @param scope The scope assigned to the Idea (0: possibility, 1: existence, 2: law)
-     */
-    public Idea(String name, Object value, int type, String category, int scope) {
-        this(name,value,type);
-        this.category = category;
-        this.scope = scope;
-    }
     
-    /**
-     * This constructor initializes the Idea with a name, a value, a category and a scope. 
-     * The Idea type is guessed, based on its category
-     * @param name The name assigned to the Idea
-     * @param value The value to be assigned to the Idea (can be an empty String, or null). If the value is given a null value, it is substituted by the String "null". 
-     * @param category The category assigned to the Idea
-     * @param scope The scope assigned to the Idea (0: possibility, 1: existence, 2: law)
-     */
-    public Idea(String name, Object value, String category, int scope) {
-        this(name,value,guessType(category,scope));
-        this.category = category;
-        this.scope = scope;
-    }
     
     /**
      * The createIdea method is used as a static Idea factory, which tries to reuse Ideas with the same name. 
@@ -352,6 +350,7 @@ public class Idea implements Category,Habit {
      * This method returns a String short version of the Idea
      * @return the name of the Idea, used as a short version of the Idea
      */
+    @Override
     public String toString() {
         return(name);
     }
