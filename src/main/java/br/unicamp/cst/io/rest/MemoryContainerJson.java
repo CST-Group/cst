@@ -16,44 +16,33 @@ import br.unicamp.cst.core.entities.MemoryContainer;
 import java.util.ArrayList;
 import java.util.List;
 
-public class MemoryJson {
+public class MemoryContainerJson {
     public Long timestamp;
     public volatile Double evaluation;
     public volatile Object I;
     public String name;
     public String group;
-    public ArrayList<MemoryJson> memories; // = new ArrayList<MemoryJson>();
+    public ArrayList<MemoryContainerJson> memories = new ArrayList<MemoryContainerJson>();
 
-    public MemoryJson(Memory memo) {
+    public MemoryContainerJson(Memory memo) {
         timestamp = memo.getTimestamp();
         evaluation = memo.getEvaluation();
         I = memo.getI();
         name = memo.getName();
         if (memo instanceof MemoryContainer) {
-            memories = new ArrayList<>();
             MemoryContainer memoAux = (MemoryContainer) memo;
             List<Memory> memoList = memoAux.getAllMemories();
             for (int i = 0; i < memoList.size(); i++) {
-                this.memories.add(new MemoryJson(memoList.get(i)));
+                this.memories.add(new MemoryContainerJson(memoList.get(i)));
             }
         }
 
     }
 
-    public MemoryJson(Memory memo, String group) {
-        timestamp = memo.getTimestamp();
-        evaluation = memo.getEvaluation();
-        I = memo.getI();
-        name = memo.getName();
+    public MemoryContainerJson(Memory memo, String group) {
+        this(memo);
         this.group = group;
-        if (memo instanceof MemoryContainer) {
-            memories = new ArrayList<>();
-            MemoryContainer memoAux = (MemoryContainer) memo;
-            List<Memory> memoList = memoAux.getAllMemories();
-            for (int i = 0; i < memoList.size(); i++) {
-                this.memories.add(new MemoryJson(memoList.get(i)));
-            }
-        }
+
 
     }
 }
