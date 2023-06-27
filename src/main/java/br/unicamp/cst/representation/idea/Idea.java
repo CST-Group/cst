@@ -66,6 +66,8 @@ public class Idea implements Category,Habit {
     private static final String CBYTE = "java.lang.Byte";
     private static final String CBOOLEAN = "java.lang.Boolean";
     private static final String CSTRING = "java.lang.String";
+    
+    private static final String DEFAULT_CATEGORY = "Property";
         
     
     /**
@@ -83,7 +85,7 @@ public class Idea implements Category,Habit {
      */
     public Idea() {
         // The default is to have ideas with name "", value null, of type 1, category Property with Existence scope
-        this("",null,1,"Property",1);
+        this("",null,1,DEFAULT_CATEGORY,1);
     }
     
     /**
@@ -91,7 +93,7 @@ public class Idea implements Category,Habit {
      * @param name The name to be assigned to the Idea
      */
     public Idea(String name) {
-        this(name,null,1,"Property",1);
+        this(name,null,1,DEFAULT_CATEGORY,1);
     }
     
     /**
@@ -100,7 +102,7 @@ public class Idea implements Category,Habit {
      * @param value The value assigned to the Idea. If this value is a String, it is parsed to check if this String describes an Integer or a Double and converts the number to a prpper type (an int or a double). 
      */
     public Idea(String name, Object value) {
-        this(name,value,1,"Property",1);
+        this(name,value,1,DEFAULT_CATEGORY,1);
     }
     
     /**
@@ -112,7 +114,7 @@ public class Idea implements Category,Habit {
      * @param type The type assigned to the Idea
      */
     public Idea(String name, Object value, int type) {
-        this(name,value,type,"Property",1);
+        this(name,value,type,DEFAULT_CATEGORY,1);
     }
     
     /**
