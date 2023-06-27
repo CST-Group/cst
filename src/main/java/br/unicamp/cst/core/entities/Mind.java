@@ -140,6 +140,82 @@ public class Mind {
 	 *
 	 * @param name
 	 *            memory object name.
+	 * @param hostname
+	 *            hostname of the REST server
+	 * @param port
+	 *            port of the REST server
+	 * @return mo created MemoryObject.
+	 */
+	public synchronized RESTMemory createRESTMemory(String name, String hostname, int port) {
+		RESTMemory mo = null;
+
+		if (rawMemory != null)
+			mo = rawMemory.createRESTMemory(name, hostname, port);
+
+		return mo;
+	}
+
+	/**
+	 * Creates a new MemoryObject and adds it to the Raw Memory, using provided
+	 * type.
+	 * 
+	 * @param name
+	 *            memory object type.
+	 * @param port
+	 *            port of the REST server
+	 * @return created MemoryObject.
+	 */
+	public synchronized RESTMemory createRESTMemory(String name, int port) {
+		return createRESTMemory(name, "localhost", port);
+	}
+
+
+
+	/**
+	 * Creates a new MemoryObject and adds it to the Raw Memory, using provided
+	 * info and type.
+	 *
+	 * @param name
+	 *            memory object name.
+	 * @param hostname
+	 *            hostname of the REST server
+	 * @param port
+	 *            port of the REST server
+	 * @return mo created MemoryObject.
+	 */
+	public synchronized RESTMemoryContainer createRESTMemoryContainer(String name, String hostname, int port) {
+		RESTMemoryContainer mo = null;
+
+		if (rawMemory != null)
+			mo = rawMemory.createRESTMemoryContainer(name, hostname, port);
+
+		return mo;
+	}
+
+	/**
+	 * Creates a new MemoryObject and adds it to the Raw Memory, using provided
+	 * type.
+	 *
+	 * @param name
+	 *            memory object type.
+	 * @param port
+	 *            port of the REST server
+	 * @return created MemoryObject.
+	 */
+	public synchronized RESTMemoryContainer createRESTMemoryContainer(String name, int port) {
+		return createRESTMemoryContainer(name, "localhost", port);
+	}
+
+
+
+
+
+	/**
+	 * Creates a new MemoryObject and adds it to the Raw Memory, using provided
+	 * info and type.
+	 *
+	 * @param name
+	 *            memory object name.
 	 * @param info
 	 *            memory object info.
 	 * @return mo created MemoryObject.
@@ -156,7 +232,7 @@ public class Mind {
 	/**
 	 * Creates a new MemoryObject and adds it to the Raw Memory, using provided
 	 * type.
-	 * 
+	 *
 	 * @param name
 	 *            memory object type.
 	 * @return created MemoryObject.
@@ -164,6 +240,7 @@ public class Mind {
 	public synchronized MemoryObject createMemoryObject(String name) {
 		return createMemoryObject(name, null);
 	}
+
 
 	/**
 	 * Inserts the Codelet passed in the Mind's CodeRack.
