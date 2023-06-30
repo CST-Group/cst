@@ -157,7 +157,7 @@ public class RESTServer {
                             message = gson.toJson(mem.getName());
                         else if (param.equalsIgnoreCase("id"))
                             message = gson.toJson(mem.getId());
-                        else message = "";
+                        else message = "Not Found";
                         res.send(message);
                         return;
                     }

@@ -73,5 +73,5 @@ public class RawMemoryTest {
         rawMemory.shutDown();
         assertEquals(0, rawMemory.size());
     }
-
+    
 }

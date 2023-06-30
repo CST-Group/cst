@@ -462,6 +462,18 @@ public class TestREST {
         mes = sendGET();
         System.out.println(mes);
         assertEquals(mes,"Not Found");
+        GET_URL = "http://localhost:"+port+"/rawmemory/whatever";
+        mes = sendGET();
+        System.out.println(mes);
+        assertEquals(mes,"Not Found");
+        GET_URL = "http://localhost:"+port+"/rawmemory/"+m0+"/whatever";
+        mes = sendGET();
+        System.out.println(mes);
+        assertEquals(mes,"Not Found");
+        GET_URL = "http://localhost:"+port+"/rawmemory/whatever/whatever";
+        mes = sendGET();
+        System.out.println(mes);
+        assertEquals(mes,"Not Found");
         //processTestWithoutGroups();
     }
     

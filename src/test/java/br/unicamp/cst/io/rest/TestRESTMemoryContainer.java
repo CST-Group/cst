@@ -1,12 +1,16 @@
 package br.unicamp.cst.io.rest;
 
 import br.unicamp.cst.core.entities.*;
+import java.io.BufferedReader;
 import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
+import java.io.InputStreamReader;
+import java.net.HttpURLConnection;
 import java.util.HashMap;
 import java.util.Random;
 import java.net.InetAddress;
+import java.net.URL;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
@@ -252,6 +256,100 @@ public class TestRESTMemoryContainer {
 
         assertEquals(memoryContainerJson.memories.get(0).name, m.getName());
 
+    }
+    
+    private String sendGET(String GET_URL) {
+                String message = "";
+                int responseCode=0;
+                HttpURLConnection con=null;
+                try {
+                    URL obj = new URL(GET_URL);
+                    con = (HttpURLConnection) obj.openConnection();
+                    con.setRequestMethod("GET");
+                    //con.setRequestProperty("User-Agent", USER_AGENT);
+                    responseCode = con.getResponseCode();
+                    if (responseCode != 200)
+                        System.out.println("GET Response Code :: " + responseCode);
+                    if (responseCode == HttpURLConnection.HTTP_OK) { // success
+			BufferedReader in = new BufferedReader(new InputStreamReader(
+					con.getInputStream()));
+			String inputLine;
+			StringBuffer response = new StringBuffer();
+			while ((inputLine = in.readLine()) != null) {
+				response.append(inputLine);
+			}
+			in.close();
+                        message = response.toString();
+                    } else {
+			//System.out.println(con.getResponseMessage());
+                        return(con.getResponseMessage());
+                    }
+                } catch (java.net.ConnectException e) {
+                    return("Connection refused");
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+          return(message);
+	}
+    
+    @Test
+    public void testConstructors() {
+        String ret;
+        RESTMemoryContainer mc1 = new RESTMemoryContainer(10000);
+        mc1.setI(252);
+        RESTMemoryContainer mc2 = new RESTMemoryContainer(10001, true);
+        mc2.setI(253);
+        RESTMemoryContainer mc3 = new RESTMemoryContainer(10002, true, "localhost"); 
+        mc3.setI(254);
+        do {
+          ret = sendGET("http://localhost:10000");
+        } while (ret.equalsIgnoreCase("Connection refused"));   
+        System.out.println("mc1: "+ret);
+        do {
+          ret = sendGET("http://localhost:10001");
+        } while (ret.equalsIgnoreCase("Connection refused"));   
+        System.out.println("mc2: "+ret);
+        do {
+          ret = sendGET("http://localhost:10002");
+        } while (ret.equalsIgnoreCase("Connection refused"));     
+        System.out.println("mc3: "+ret);
+        RESTMemoryObject mo1 = new RESTMemoryObject(10003);
+        mo1.setI(252);
+        RESTMemoryObject mo2 = new RESTMemoryObject(10004, true);
+        mo2.setI(253);
+        RESTMemoryObject mo3 = new RESTMemoryObject(10005, true, "localhost"); 
+        mo3.setI(254);
+        do {
+            ret = sendGET("http://localhost:10003");
+        } while (ret.equalsIgnoreCase("Connection refused"));       
+        System.out.println("mo1: "+ret);
+        do {
+            ret = sendGET("http://localhost:10004");
+        } while (ret.equalsIgnoreCase("Connection refused"));   
+        System.out.println("mo2: "+ret);
+        do {
+           ret = sendGET("http://localhost:10005");
+        } while (ret.equalsIgnoreCase("Connection refused"));      
+        System.out.println("mo3: "+ret);
+        
+    }
+    
+    @Test
+    public void testRawMemorycreateRESTMemories() {
+        String ret;
+        RawMemory rm = new RawMemory();
+        RESTMemoryObject rmo = rm.createRESTMemoryObject("testmo",10006);
+        rmo.setI(255);
+        do {
+           ret = sendGET("http://localhost:10006");
+        } while (ret.equalsIgnoreCase("Connection refused"));   
+        System.out.println("mo: "+ret);
+        RESTMemoryContainer rmc = rm.createRESTMemoryContainer("testmc",10007);
+        rmc.setI(256);
+        do {
+            ret = sendGET("http://localhost:10007");
+        } while (ret.equalsIgnoreCase("Connection refused"));
+        System.out.println("mc: "+ret);
     }
 
 

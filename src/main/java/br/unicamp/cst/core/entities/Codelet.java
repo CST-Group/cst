@@ -812,7 +812,8 @@ public abstract class Codelet implements Runnable, MemoryObserver {
                     m.removeMemoryObserver(this);
                 }
                 setIsMemoryObserver(false);
-                run();
+                //run();
+                start();
             }
         }    
 	
