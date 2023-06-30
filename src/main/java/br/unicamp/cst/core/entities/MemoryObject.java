@@ -42,7 +42,7 @@ public class MemoryObject implements Memory, Serializable {
 
 	private static final long serialVersionUID = 1L;
 
-	private Long idmemoryobject;
+	private Long id;
 
 	/**
 	 * Date when the data was "created" in milliseconds
@@ -81,18 +81,20 @@ public class MemoryObject implements Memory, Serializable {
 	 * 
 	 * @return the id of the Memory Object.
 	 */
-	public synchronized Long getIdmemoryobject() {
-		return this.idmemoryobject;
+        @Override
+	public synchronized Long getId() {
+		return this.id;
 	}
 
 	/**
 	 * Sets the id of the Memory Object.
 	 * 
-	 * @param idmemoryobject
+	 * @param id
 	 *            the id of the Memory Object to set.
 	 */
-	public synchronized void setIdmemoryobject(Long idmemoryobject) {
-		this.idmemoryobject = idmemoryobject;
+        @Override
+	public synchronized void setId(Long id) {
+		this.id = id;
 	}
 
 	/**
@@ -211,7 +213,7 @@ public class MemoryObject implements Memory, Serializable {
 
 	@Override
 	public String toString() {
-		return "MemoryObject [idmemoryobject=" + idmemoryobject + ", timestamp=" + timestamp + ", evaluation="
+		return "MemoryObject [idmemoryobject=" + id + ", timestamp=" + timestamp + ", evaluation="
 				+ evaluation + ", I=" + I + ", name=" + name + "]";
 	}
 
@@ -221,7 +223,7 @@ public class MemoryObject implements Memory, Serializable {
 		int result = 1;
 		result = prime * result + ((I == null) ? 0 : I.hashCode());
 		result = prime * result + ((evaluation == null) ? 0 : evaluation.hashCode());
-		result = prime * result + ((idmemoryobject == null) ? 0 : idmemoryobject.hashCode());
+		result = prime * result + ((id == null) ? 0 : id.hashCode());
 		result = prime * result + ((name == null) ? 0 : name.hashCode());
 		result = prime * result + ((timestamp == null) ? 0 : timestamp.hashCode());
 		return result;
@@ -246,10 +248,10 @@ public class MemoryObject implements Memory, Serializable {
 				return false;
 		} else if (!evaluation.equals(other.evaluation))
 			return false;
-		if (idmemoryobject == null) {
-			if (other.idmemoryobject != null)
+		if (id == null) {
+			if (other.id != null)
 				return false;
-		} else if (!idmemoryobject.equals(other.idmemoryobject))
+		} else if (!id.equals(other.id))
 			return false;
 		if (name == null) {
 			if (other.name != null)

@@ -18,9 +18,6 @@ public abstract class HttpCodelet extends Codelet {
         //"application/json"
         if(method != null){con.setRequestProperty("Content-Type", method);}
 
-
-        //con.setRequestProperty("User-Agent", USER_AGENT);
-
         // For POST only - START
         con.setDoOutput(true);
         OutputStream os = con.getOutputStream();
@@ -53,7 +50,6 @@ public abstract class HttpCodelet extends Codelet {
         URL obj = new URL(GET_URL);
         HttpURLConnection con = (HttpURLConnection) obj.openConnection();
         con.setRequestMethod("GET");
-        //con.setRequestProperty("User-Agent", USER_AGENT);
         int responseCode=0;
 
         responseCode = con.getResponseCode();

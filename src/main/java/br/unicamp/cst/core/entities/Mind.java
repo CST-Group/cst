@@ -146,11 +146,11 @@ public class Mind {
 	 *            port of the REST server
 	 * @return mo created MemoryObject.
 	 */
-	public synchronized RESTMemory createRESTMemory(String name, String hostname, int port) {
-		RESTMemory mo = null;
+	public synchronized RESTMemoryObject createRESTMemoryObject(String name, String hostname, int port) {
+		RESTMemoryObject mo = null;
 
 		if (rawMemory != null)
-			mo = rawMemory.createRESTMemory(name, hostname, port);
+			mo = rawMemory.createRESTMemoryObject(name, hostname, port);
 
 		return mo;
 	}
@@ -165,8 +165,8 @@ public class Mind {
 	 *            port of the REST server
 	 * @return created MemoryObject.
 	 */
-	public synchronized RESTMemory createRESTMemory(String name, int port) {
-		return createRESTMemory(name, "localhost", port);
+	public synchronized RESTMemoryObject createRESTMemoryObject(String name, int port) {
+		return createRESTMemoryObject(name, "localhost", port);
 	}
 
 

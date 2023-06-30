@@ -249,7 +249,8 @@ public class TestREST {
 			in.close();
                         message = response.toString();
                     } else {
-			System.out.println("GET request not worked");
+			//System.out.println(con.getResponseMessage());
+                        return(con.getResponseMessage());
                     }
                 } catch (java.net.ConnectException e) {
                     System.out.println("Connection refused");
@@ -423,6 +424,45 @@ public class TestREST {
         System.out.println("Creating a server in port "+port);
     	RESTServer rs = new RESTServer(tr.m,port,true,"*",500L);
         processTestWithoutGroups();
+    }
+    
+     @Test 
+    public void testRestRawMemory() {
+        Random r = new Random();
+        // Finding a random port higher than 5000
+        port = 5000 + r.nextInt(50000);
+        GET_URL = "http://localhost:"+port+"/rawmemory";
+        TestREST tr = new TestREST();
+        tr.m = prepareMindWithoutGroups();
+        tr.StartTimer();
+        System.out.println("Creating a server in port "+port);
+    	RESTServer rs = new RESTServer(tr.m,port,true,"*",500L);
+        String mes = sendGET();
+        System.out.println(mes);
+        long m0 = tr.m.getRawMemory().getAllMemoryObjects().get(0).getId();
+        GET_URL = "http://localhost:"+port+"/rawmemory/"+m0;
+        mes = sendGET();
+        System.out.println(mes);
+        GET_URL = "http://localhost:"+port+"/rawmemory/"+m0+"/I";
+        mes = sendGET();
+        System.out.println(mes);
+        GET_URL = "http://localhost:"+port+"/rawmemory/"+m0+"/timestamp";
+        mes = sendGET();
+        System.out.println(mes);
+        GET_URL = "http://localhost:"+port+"/rawmemory/"+m0+"/evaluation";
+        mes = sendGET();
+        System.out.println(mes);
+        GET_URL = "http://localhost:"+port+"/rawmemory/"+m0+"/name";
+        mes = sendGET();
+        System.out.println(mes);
+        GET_URL = "http://localhost:"+port+"/rawmemory/"+m0+"/id";
+        mes = sendGET();
+        System.out.println(mes);
+        GET_URL = "http://localhost:"+port+"/rawmemory/7";
+        mes = sendGET();
+        System.out.println(mes);
+        assertEquals(mes,"Not Found");
+        //processTestWithoutGroups();
     }
     
 }

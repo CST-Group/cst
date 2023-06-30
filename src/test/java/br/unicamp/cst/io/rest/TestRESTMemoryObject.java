@@ -4,16 +4,13 @@ import br.unicamp.cst.core.entities.*;
 import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
-import java.io.UnsupportedEncodingException;
-import java.net.URLEncoder;
 import java.util.HashMap;
 import java.util.Random;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 
 
-public class TestRESTMemory {
+public class TestRESTMemoryObject {
     Mind m1;
     Mind m2;
 
@@ -48,7 +45,7 @@ public class TestRESTMemory {
         HttpCodelet restMotorTestCodelet = new HttpCodelet() {
             HashMap<String, String> params = new HashMap<>();
             final Random r = new Random();
-            final Double I = outI; //(double) (5 + r.nextInt(500));
+            final Double I = outI; 
 
             @Override
             public void accessMemoryObjects() {
@@ -103,15 +100,15 @@ public class TestRESTMemory {
 
 
         Mind m = new Mind();
-        //RESTMemory m1 = m.createRESTMemory("M1", baseIP, portIn);
+        //RESTMemory m1 = m.createRESTMemoryObject("M1", baseIP, portIn);
         //m1.setI(1);
 
-        RESTMemory m1;
+        RESTMemoryObject m1;
         if (baseIP.equals("localhost")){
-            m1 = m.createRESTMemory("M1", portIn);
+            m1 = m.createRESTMemoryObject("M1", portIn);
         }
         else{
-            m1 = m.createRESTMemory("M1", baseIP, portIn);
+            m1 = m.createRESTMemoryObject("M1", baseIP, portIn);
         }
         m1.setI(1);
 
@@ -120,12 +117,12 @@ public class TestRESTMemory {
         MemoryObject m3 = m.createMemoryObject("M3", null);
         MemoryObject m4 = m.createMemoryObject("M4", null);
 
-        RESTMemory m5;
+        RESTMemoryObject m5;
         if (baseIP.equals("localhost")){
-            m5 = m.createRESTMemory("M5", portOut);
+            m5 = m.createRESTMemoryObject("M5", portOut);
         }
         else{
-            m5 = m.createRESTMemory("M5", baseIP, portOut);
+            m5 = m.createRESTMemoryObject("M5", baseIP, portOut);
         }
         m5.setI(toGetI);
 
@@ -139,10 +136,10 @@ public class TestRESTMemory {
         m6.add(m7);
 
         //dummy
-        RESTMemory m8 = new RESTMemory(portOut+1);
-        m8.setIdmemoryobject(2l);
+        RESTMemoryObject m8 = new RESTMemoryObject(portOut+1);
         m8.setName("M8");
         m.getRawMemory().addMemory(m8);
+        m8.setId(2l);
 
         //REST Sensory that will use GET on another agent motor memory
         restSensoryTestCodelet.addInput(m1);
@@ -185,7 +182,7 @@ public class TestRESTMemory {
         int portOut1 = 5000 + r.nextInt(50000);
         int portOut2 = 5000 + r.nextInt(50000);
 
-        TestRESTMemory tr = new TestRESTMemory();
+        TestRESTMemoryObject tr = new TestRESTMemoryObject();
         double outI1 = (5 + r.nextInt(500));
         double toGetI1 = (5 + r.nextInt(500));
         double outI2 = (5 + r.nextInt(500));
@@ -218,7 +215,7 @@ public class TestRESTMemory {
         int portOut1 = 5000 + r.nextInt(50000);
         int portOut2 = 5000 + r.nextInt(50000);
 
-        TestRESTMemory tr = new TestRESTMemory();
+        TestRESTMemoryObject tr = new TestRESTMemoryObject();
         double outI1 = (5 + r.nextInt(500));
         double toGetI1 = (5 + r.nextInt(500));
         double outI2 = (5 + r.nextInt(500));
@@ -245,8 +242,8 @@ public class TestRESTMemory {
         assertEquals(tr.m2.getRawMemory().getAllOfType("M5").get(0).getI(), toGetI2);
         assertEquals(Double.parseDouble((String) tr.m1.getRawMemory().getAllOfType("M1").get(0).getI()), outI2, 0.0);
 
-        RESTMemory m8 = (RESTMemory) tr.m2.getRawMemory().getAllOfType("M8").get(0);
-        assertEquals(m8.getIdmemoryobject(), 2l);
+        RESTMemoryObject m8 = (RESTMemoryObject) tr.m2.getRawMemory().getAllOfType("M8").get(0);
+        assertEquals(m8.getId(), 2l);
 
         assertEquals(memoryContainerJson.memories.get(0).name, m.getName());
 

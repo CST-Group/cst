@@ -36,6 +36,11 @@ public class CodeletContainer implements Memory {
 	 * Type of the codelet container
 	 */
 	private String name;
+        
+        /**
+         * Id for the CodeletContainer
+         */
+        private Long id;
 	
 	
 	public CodeletContainer() {
@@ -50,6 +55,27 @@ public class CodeletContainer implements Memory {
 		codelets.forEach((codelet) -> {
 			this.addCodelet(codelet, isToStartCodelets);
 		});
+	}
+        
+        /**
+	 * Gets the id of the CodeletContainer.
+	 * 
+	 * @return the id of the CodeletContainer.
+	 */
+        @Override
+	public synchronized Long getId() {
+		return this.id;
+	}
+
+	/**
+	 * Sets the id of the CodeletContainer.
+	 * 
+	 * @param id
+	 *            the id of the CodeletContainer to set.
+	 */
+        @Override
+	public synchronized void setId(Long id) {
+		this.id = id;
 	}
 	
 	/**

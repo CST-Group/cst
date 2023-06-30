@@ -20,6 +20,9 @@ import com.google.gson.GsonBuilder;
 import express.Express;
 import express.middleware.CorsOptions;
 import express.middleware.Middleware;
+import express.utils.Status;
+import java.util.List;
+import java.util.ArrayList;
 
 /**
  * This is the main class for using REST to monitor inner activities from CST
@@ -95,6 +98,73 @@ public class RESTServer {
                 lastaccess = currentaccess;
             }
             res.send(lastmessage);
+        });
+        app.get("/rawmemory", (req, res) -> {
+            long currentaccess = System.currentTimeMillis();
+            long diff = currentaccess - lastaccess;
+            if (diff > refresh) {
+                List<Memory> lm = m.getRawMemory().getAllMemoryObjects();
+                ArrayList lmm = new ArrayList();
+                for (Memory mem : lm) {
+                    lmm.add(mem.getId());
+                }
+                lastmessage = gson.toJson(lmm);
+                lastaccess = currentaccess;
+            }
+            res.send(lastmessage);
+        });
+        app.get("/rawmemory/:id", (req, res) -> {
+                String ids = req.getParam("id");
+                int id;
+                try {
+                   id = Integer.parseInt(ids);
+                } catch(Exception e) {
+                    id = -1;
+                }
+                List<Memory> allmem = m.getRawMemory().getAllMemoryObjects();
+                for (Memory mem : allmem) {
+                    if (mem.getId() == id) {
+                        MemoryJson mj = new MemoryJson(mem);
+                        String message = gson.toJson(mj);
+                        res.send(message);
+                        return;
+                    }
+                }
+                String message = "Memory Object not found ...";
+                res.setStatus(Status._404);
+                res.send(message);
+        });
+        app.get("/rawmemory/:id/:param", (req, res) -> {
+                String ids = req.getParam("id");
+                String param = req.getParam("param");
+                int id;
+                try {
+                   id = Integer.parseInt(ids);
+                } catch(Exception e) {
+                    id = -1;
+                }
+                List<Memory> allmem = m.getRawMemory().getAllMemoryObjects();
+                for (Memory mem : allmem) {
+                    if (mem.getId() == id) {
+                        String message;
+                        if (param.equalsIgnoreCase("I")) 
+                            message = gson.toJson(mem.getI());
+                        else if (param.equalsIgnoreCase("timestamp")) 
+                            message = gson.toJson(mem.getTimestamp());
+                        else if (param.equalsIgnoreCase("evaluation"))
+                            message = gson.toJson(mem.getEvaluation());
+                        else if (param.equalsIgnoreCase("name"))
+                            message = gson.toJson(mem.getName());
+                        else if (param.equalsIgnoreCase("id"))
+                            message = gson.toJson(mem.getId());
+                        else message = "";
+                        res.send(message);
+                        return;
+                    }
+                }
+                String message = "Memory Object not found ...";
+                res.setStatus(Status._404);
+                res.send(message);
         });
         app.listen(port);
     }

@@ -27,6 +27,17 @@ public class MemoryTest {
         Double evaluation = 0.0;
         String name = "";
         Long timestamp = 10L;
+        Long id = null;
+        
+        @Override
+	public synchronized Long getId() {
+		return this.id;
+	}
+
+	@Override
+	public synchronized void setId(Long id) {
+		this.id = id;
+	}
 
         @Override
         public Object getI() {

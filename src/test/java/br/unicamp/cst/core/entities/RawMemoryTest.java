@@ -40,9 +40,8 @@ public class RawMemoryTest {
         RawMemory rawMemory = new RawMemory();
         MemoryObject mem = new MemoryObject();
         mem.setType("TYPE");
-        mem.setIdmemoryobject(100L);
         rawMemory.addMemory(mem);
-        String expectedMessage = "MemoryObject [idmemoryobject=" + 100L + ", timestamp=" + mem.getTimestamp() + ", evaluation="
+        String expectedMessage = "MemoryObject [idmemoryobject=" + mem.getId() + ", timestamp=" + mem.getTimestamp() + ", evaluation="
                 + 0.0 + ", I=" + null + ", name=" + "TYPE" + "]";
 
         ByteArrayOutputStream outputStreamCaptor = new ByteArrayOutputStream();

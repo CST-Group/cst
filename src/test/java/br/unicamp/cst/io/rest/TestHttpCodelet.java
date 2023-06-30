@@ -187,15 +187,15 @@ public class TestHttpCodelet {
 
 
         Mind m = new Mind();
-        //RESTMemory m1 = m.createRESTMemory("M1", baseIP, portIn);
+        //RESTMemory m1 = m.createRESTMemoryObject("M1", baseIP, portIn);
         //m1.setI(1);
 
-        RESTMemory m1;
+        RESTMemoryObject m1;
         if (baseIP.equals("localhost")){
-            m1 = m.createRESTMemory("M1", portIn);
+            m1 = m.createRESTMemoryObject("M1", portIn);
         }
         else{
-            m1 = m.createRESTMemory("M1", baseIP, portIn);
+            m1 = m.createRESTMemoryObject("M1", baseIP, portIn);
         }
         m1.setI(1);
 
@@ -204,12 +204,12 @@ public class TestHttpCodelet {
         MemoryObject m3 = m.createMemoryObject("M3", null);
         MemoryObject m4 = m.createMemoryObject("M4", null);
 
-        RESTMemory m5;
+        RESTMemoryObject m5;
         if (baseIP.equals("localhost")){
-            m5 = m.createRESTMemory("M5", portOut);
+            m5 = m.createRESTMemoryObject("M5", portOut);
         }
         else{
-            m5 = m.createRESTMemory("M5", baseIP, portOut);
+            m5 = m.createRESTMemoryObject("M5", baseIP, portOut);
         }
         m5.setI(toGetI);
 
@@ -223,8 +223,8 @@ public class TestHttpCodelet {
         m6.add(m7);
 
         //dummy
-        RESTMemory m8 = new RESTMemory(portOut);
-        m8.setIdmemoryobject(1l);
+        RESTMemoryObject m8 = new RESTMemoryObject(portOut);
+        m8.setId(1l);
         m8.setName("M8");
         m.getRawMemory().addMemory(m8);
 

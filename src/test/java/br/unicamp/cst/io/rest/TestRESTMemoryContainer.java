@@ -6,6 +6,7 @@ import org.junit.jupiter.api.Test;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Random;
+import java.net.InetAddress;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
@@ -100,7 +101,7 @@ public class TestRESTMemoryContainer {
 
 
         Mind m = new Mind();
-        //RESTMemory m1 = m.createRESTMemory("M1", baseIP, portIn);
+        //RESTMemory m1 = m.createRESTMemoryObject("M1", baseIP, portIn);
         //m1.setI(1);
 
         RESTMemoryContainer m1;
@@ -136,7 +137,9 @@ public class TestRESTMemoryContainer {
         m6.add(m7);
 
         //dummy
-        RESTMemoryContainer m8 = new RESTMemoryContainer(portOut+1);
+        String hostname = "";
+        try {hostname = InetAddress.getLocalHost().getHostName();} catch (Exception e){}
+        RESTMemoryContainer m8 = new RESTMemoryContainer(hostname,portOut+1);
         //m8.setIdmemoryobject(2l);
         m8.setName("M8");
         m8.setI("2");
@@ -175,6 +178,7 @@ public class TestRESTMemoryContainer {
         //String baseIP = "172.xx.x.x";
         String baseIP = "127.0.0.1";
         //String baseIP = "localhost";
+        try {baseIP = InetAddress.getLocalHost().getHostAddress();} catch (Exception e){}
 
         Random r = new Random();
         // Finding a random port higher than 5000
@@ -230,10 +234,10 @@ public class TestRESTMemoryContainer {
 
         MemoryObject m = new MemoryObject();
         m.setName("testName");
-        MemoryContainer memoryContainer = new MemoryContainer();
+        MemoryContainer memoryContainer = new MemoryContainer("anon");
         memoryContainer.add(m);
         MemoryContainerJson memoryContainerJson = new MemoryContainerJson(memoryContainer, "group");
-
+        
         try{Thread.sleep(2000);
         }catch (Exception e){e.printStackTrace();}
 
