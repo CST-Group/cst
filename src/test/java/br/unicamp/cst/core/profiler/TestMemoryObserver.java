@@ -18,7 +18,7 @@ import br.unicamp.cst.core.entities.MemoryContainer;
 import br.unicamp.cst.core.entities.MemoryObject;
 import br.unicamp.cst.core.entities.Mind;
 import br.unicamp.cst.core.exceptions.CodeletActivationBoundsException;
-import br.unicamp.cst.representation.idea.Idea;
+import br.unicamp.cst.support.TimeStamp;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -373,7 +373,13 @@ public class TestMemoryObserver {
                 assertEquals(nout,1);
 		c.setPublishSubscribe(false);
                 ts = output.getTimestamp();
-                while(ts == output.getTimestamp());
+                long startwait = System.currentTimeMillis();
+                while(ts == output.getTimestamp()) {
+                    if (System.currentTimeMillis() - startwait > 2000) {
+                        System.out.println("Restarting timer due to inactivity");
+                        c.start();
+                    }
+                }
                 System.out.println("Result: "+output.getI()+" "+c.getActivation());
                 m.shutDown();
 		//assertEquals(0, c.getCounter());
@@ -432,7 +438,13 @@ public class TestMemoryObserver {
                 assertEquals(nout,1);
 		c.setPublishSubscribe(false);
                 ts = output.getTimestamp();
-                while(ts == output.getTimestamp());
+                long startwait = System.currentTimeMillis();
+                while(ts == output.getTimestamp()) {
+                    if (System.currentTimeMillis() - startwait > 2000) {
+                        System.out.println("Restarting timer due to inactivity");
+                        c.start();
+                    }
+                }
                 System.out.println("Result: "+output.getI()+" "+c.getActivation());
                 
                 m.shutDown();

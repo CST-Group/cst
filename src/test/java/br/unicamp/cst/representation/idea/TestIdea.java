@@ -402,6 +402,7 @@ public class TestIdea {
         assertEquals(b,false);
         byte by = (byte) Idea.createJavaObject("java.lang.Byte");
         assertEquals(by,0);
+        System.out.println("This test is designed to fail !!!");
         Object o = Idea.createJavaObject("whatever");
         assertEquals(o,null);
     }

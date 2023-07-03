@@ -9,8 +9,12 @@ group = 'com.github.CST-Group'
 
 description = "CST"
 
-sourceCompatibility = 1.8
-targetCompatibility = 1.8
+java {
+   sourceCompatibility = JavaVersion.VERSION_1_8
+   targetCompatibility = JavaVersion.VERSION_1_8
+}
+
+
 version = '1.4.0'
 
 repositories {
@@ -57,7 +61,7 @@ jar {
 }
 
 task javadocJar(type: Jar) {
-    classifier = 'javadoc'
+    archiveClassifier = 'javadoc'
     from javadoc
     from {
     	configurations.extraLibs.collect { it.isDirectory() ? it : zipTree(it) }
@@ -65,7 +69,7 @@ task javadocJar(type: Jar) {
     javadoc.options.addStringOption('Xdoclint:none', '-quiet') // this is to avoid complaints about documentation missing parameter description
 }
 task sourcesJar(type: Jar) {
-    classifier = 'sources'
+    archiveClassifier = 'sources'
     from sourceSets.main.allSource
     from {
     	configurations.extraLibs.collect { it.isDirectory() ? it : zipTree(it) }
