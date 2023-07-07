@@ -325,6 +325,7 @@ public class TestREST {
         tr.StartTimer();
         System.out.println("Creating a server in port "+port);
     	RESTServer rs = new RESTServer(tr.m,port,true);
+        try {Thread.sleep(500);} catch (Exception e){};
         processTest();
     }
     
@@ -339,6 +340,7 @@ public class TestREST {
         tr.StartTimer();
         System.out.println("Creating a server in port "+port);
     	RESTServer rs = new RESTServer(tr.m,port);
+        try {Thread.sleep(500);} catch (Exception e){};
         processTest();
     }
     
@@ -353,6 +355,7 @@ public class TestREST {
         tr.StartTimer();
         System.out.println("Creating a server in port "+port);
     	RESTServer rs = new RESTServer(tr.m,port,true,"*");
+        try {Thread.sleep(500);} catch (Exception e){};
         processTest();
     }
     
@@ -367,6 +370,7 @@ public class TestREST {
         tr.StartTimer();
         System.out.println("Creating a server in port "+port);
     	RESTServer rs = new RESTServer(tr.m,port,true);
+        try {Thread.sleep(500);} catch (Exception e){};
         processTestWithoutGroups();
     }
     
@@ -381,6 +385,7 @@ public class TestREST {
         tr.StartTimer();
         System.out.println("Creating a server in port "+port);
     	RESTServer rs = new RESTServer(tr.m,port);
+        try {Thread.sleep(500);} catch (Exception e){};
         processTestWithoutGroups();
     }
     
@@ -395,6 +400,7 @@ public class TestREST {
         tr.StartTimer();
         System.out.println("Creating a server in port "+port);
     	RESTServer rs = new RESTServer(tr.m,port,true,"*");
+        try {Thread.sleep(500);} catch (Exception e){};
         processTestWithoutGroups();
     }
     
@@ -409,6 +415,7 @@ public class TestREST {
         tr.StartTimer();
         System.out.println("Creating a server in port "+port);
     	RESTServer rs = new RESTServer(tr.m,port,true,"*",500L);
+        try {Thread.sleep(500);} catch (Exception e){};
         processTest();
     }
     
@@ -423,6 +430,7 @@ public class TestREST {
         tr.StartTimer();
         System.out.println("Creating a server in port "+port);
     	RESTServer rs = new RESTServer(tr.m,port,true,"*",500L);
+        try {Thread.sleep(500);} catch (Exception e){};
         processTestWithoutGroups();
     }
     
@@ -437,42 +445,43 @@ public class TestREST {
         tr.StartTimer();
         System.out.println("Creating a server in port "+port);
     	RESTServer rs = new RESTServer(tr.m,port,true,"*",500L);
+        try {Thread.sleep(500);} catch (Exception e){};
         String mes = sendGET();
-        System.out.println(mes);
+        System.out.println("Test 1: "+mes);
         long m0 = tr.m.getRawMemory().getAllMemoryObjects().get(0).getId();
         GET_URL = "http://localhost:"+port+"/rawmemory/"+m0;
         mes = sendGET();
-        System.out.println(mes);
+        System.out.println("Test 2: "+mes);
         GET_URL = "http://localhost:"+port+"/rawmemory/"+m0+"/I";
         mes = sendGET();
-        System.out.println(mes);
+        System.out.println("Test 3: "+mes);
         GET_URL = "http://localhost:"+port+"/rawmemory/"+m0+"/timestamp";
         mes = sendGET();
-        System.out.println(mes);
+        System.out.println("Test 4: "+mes);
         GET_URL = "http://localhost:"+port+"/rawmemory/"+m0+"/evaluation";
         mes = sendGET();
-        System.out.println(mes);
+        System.out.println("Test 5: "+mes);
         GET_URL = "http://localhost:"+port+"/rawmemory/"+m0+"/name";
         mes = sendGET();
-        System.out.println(mes);
+        System.out.println("Test 6: "+mes);
         GET_URL = "http://localhost:"+port+"/rawmemory/"+m0+"/id";
         mes = sendGET();
-        System.out.println(mes);
+        System.out.println("Test 7: "+mes);
         GET_URL = "http://localhost:"+port+"/rawmemory/7";
         mes = sendGET();
-        System.out.println(mes);
+        System.out.println("Test 8: "+mes);
         assertEquals(mes,"Not Found");
         GET_URL = "http://localhost:"+port+"/rawmemory/whatever";
         mes = sendGET();
-        System.out.println(mes);
+        System.out.println("Test 9: "+mes);
         assertEquals(mes,"Not Found");
         GET_URL = "http://localhost:"+port+"/rawmemory/"+m0+"/whatever";
         mes = sendGET();
-        System.out.println(mes);
+        System.out.println("Test 10: "+mes);
         assertEquals(mes,"Not Found");
         GET_URL = "http://localhost:"+port+"/rawmemory/whatever/whatever";
         mes = sendGET();
-        System.out.println(mes);
+        System.out.println("Test 11: "+mes);
         assertEquals(mes,"Not Found");
         //processTestWithoutGroups();
     }

@@ -23,6 +23,7 @@ import javax.swing.tree.DefaultMutableTreeNode;
 import br.unicamp.cst.core.profiler.TestComplexMemoryObjectInfo;
 import br.unicamp.cst.support.TimeStamp;
 import java.util.HashMap;
+import java.util.Locale;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import org.junit.jupiter.api.Test;
@@ -85,6 +86,7 @@ public class TestIdea {
     
     @Test 
     public void testIdea() {
+        Locale.setDefault(Locale.US);
         System.out.println("\n Starting the testIdea ...");
         Idea ln = new Idea("a");
         Idea ln2 = new Idea("b");
@@ -260,6 +262,7 @@ public class TestIdea {
     
     @Test 
     public void testIsMethods() {
+        Locale.setDefault(Locale.US);
         Idea i = new Idea();
         i.setName("test");
         assertEquals(i.getName(),"test");

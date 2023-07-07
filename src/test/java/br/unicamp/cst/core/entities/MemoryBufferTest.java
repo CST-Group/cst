@@ -123,8 +123,9 @@ public class MemoryBufferTest {
         System.setOut(new PrintStream(outputStreamCaptor));
 
         memoryBuffer.printStatus();
+        String s = outputStreamCaptor.toString().trim().replaceAll("\r\n", "\n");
 
-        assertTrue(outputStreamCaptor.toString().trim().contains(expectedMessage));
+        assertTrue(outputStreamCaptor.toString().replaceAll("\r\n", "\n").trim().contains(expectedMessage));
     }
 
 }

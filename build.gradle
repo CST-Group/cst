@@ -29,7 +29,7 @@ configurations {
 dependencies {
    configurations.implementation.extendsFrom(configurations.extraLibs)
    
-   api 'com.google.code.gson:gson:2.8.9'
+   api 'com.google.code.gson:gson:2.10.1'
    api 'net.openhft:compiler:2.3.0'  // Used by representation/owrl/CodeBuilder.java
    api group: 'org.json', name: 'json', version: '20230227'
    api group: 'org.opt4j', name: 'opt4j-core', version: '3.1'  // Used in GLAS

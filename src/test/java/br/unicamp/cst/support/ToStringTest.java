@@ -10,6 +10,7 @@
  * **********************************************************************************************/
 package br.unicamp.cst.support;
 import java.util.Date;
+import java.util.Locale;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import org.junit.jupiter.api.Test;
 
@@ -21,6 +22,7 @@ public class ToStringTest {
     
     @Test
     public void testFrom() {
+        Locale.setDefault(Locale.US);
         Object o = null;
         String s = ToString.from(o);
         assertEquals(s,"<NULL>");
