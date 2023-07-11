@@ -364,6 +364,7 @@ public class TestMemoryObserver {
 		m.insertCodelet(c);
 		c.setPublishSubscribe(true);
                 m.start();
+                try { Thread.sleep(500); } catch(InterruptedException e) {}
 		//setI in Memory Container and verify if Codelet was notified
                 long ts = output.getTimestamp();
                 input.setI(0);
