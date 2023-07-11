@@ -683,7 +683,7 @@ public class MemoryContainer implements Memory {
          * @param memoryObserver the observer to be added
          */
 	@Override
-	public void addMemoryObserver(MemoryObserver memoryObserver) {
+	public synchronized void addMemoryObserver(MemoryObserver memoryObserver) {
 		for (Memory memory : memories) {
 			memory.addMemoryObserver(memoryObserver);
 		}
@@ -695,7 +695,7 @@ public class MemoryContainer implements Memory {
          * @param memoryObserver the observer to be removed
          */
         @Override
-	public void removeMemoryObserver(MemoryObserver memoryObserver) {
+	public synchronized void removeMemoryObserver(MemoryObserver memoryObserver) {
 		for (Memory memory : memories) {
 			memory.removeMemoryObserver(memoryObserver);
 		}

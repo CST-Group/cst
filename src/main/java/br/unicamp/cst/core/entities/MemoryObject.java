@@ -12,8 +12,8 @@
 package br.unicamp.cst.core.entities;
 
 import java.io.Serializable;
-import java.util.HashSet;
 import java.util.Set;
+import java.util.concurrent.CopyOnWriteArraySet;
 
 /**
  * A Memory Object is a generic information holder, acting as a sign or an
@@ -270,9 +270,9 @@ public class MemoryObject implements Memory, Serializable {
 	 * Add a memory observer to its list
 	 * @param memoryObserver the MemoryObserve to be added
 	 */
-	public void addMemoryObserver(MemoryObserver memoryObserver) {
+	public synchronized void addMemoryObserver(MemoryObserver memoryObserver) {
 		if (this.memoryObservers == null) {
-			this.memoryObservers = new HashSet<MemoryObserver>(); 
+			this.memoryObservers = new CopyOnWriteArraySet<>(); 
 		}
 		this.memoryObservers.add(memoryObserver);
 	}
@@ -281,7 +281,7 @@ public class MemoryObject implements Memory, Serializable {
 	 * Remove a memory observer from its list
 	 * @param memoryObserver the MemoryObserve to be removed
 	 */
-	public void removeMemoryObserver(MemoryObserver memoryObserver) {
+	public synchronized void removeMemoryObserver(MemoryObserver memoryObserver) {
 		if (this.memoryObservers != null) {
 		    this.memoryObservers.remove(memoryObserver);
                 }
