@@ -13,16 +13,20 @@ package br.unicamp.cst.representation.idea;
 import br.unicamp.cst.support.ToString;
 import java.lang.reflect.Array;
 import java.lang.reflect.Field;
+import java.lang.reflect.InaccessibleObjectException;
+import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.lang.reflect.ParameterizedType;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
+import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.TimeZone;
+import java.util.Vector;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.logging.Level;
@@ -1081,6 +1085,48 @@ public class Idea implements Category,Habit {
         return(ret);
     }
     
+    private Object checkIfObjectHasSetGet(Object bean, String propertyName) {
+    // access a no-arg method through reflection
+    // following bean naming conventions
+    try {
+        Method m = bean.getClass().getMethod(
+                "get"
+                +propertyName.substring(0,1).toUpperCase()
+                +propertyName.substring(1)
+                , null);
+        return m.invoke(bean);
+    }
+    catch (Exception e) {
+        try {
+            Method m = bean.getClass().getMethod(propertyName, null);
+        return m.invoke(bean);
+        }
+        catch (Exception e2) {
+            // (gulp) -- swallow exception and move on
+        }
+    }
+    return null; // it would be better to throw an exception, wouldn't it?
+}
+    
+    private void insertAlreadyExistObject(String fullname, String fname, Field field, Object fo, Idea ao) {
+        String ideaname = getFullName()+"."+ToString.getSimpleName(fullname)+"."+fname;
+        Idea fi = createIdea(ideaname,"",2);
+        if (!Modifier.isStatic(field.getModifiers())) {
+            for (Map.Entry<String,Idea> entry : repo.entrySet()) {
+                String key = entry.getKey();
+                Idea v = entry.getValue();
+                if (ToString.getSimpleName(ideaname).equals(ToString.getSimpleName(key))) {
+                    System.out.println("The Idea "+ideaname+" is already in the repository");
+                }
+            }
+            System.out.println(fo.getClass().getCanonicalName());
+            Idea alternative = repo.get(ideaname);
+            if (alternative != null) System.out.println("Ah ... I already found "+ideaname);
+            else System.out.println("Strange ... it seems that "+ideaname+" is already in the repo but I can't find it");
+        }
+        ao.add(fi);
+    }
+    
     /**
      * This method uses a Java Object as template, creating an Idea with a similar structure.
      * This new Idea is added to the current Idea
@@ -1169,6 +1215,42 @@ public class Idea implements Category,Habit {
             this.add(onode);
             return;
         }
+        else if (obj instanceof Enumeration) {
+            Enumeration ll = (Enumeration) obj;
+            String label = "";
+            int size = 0;
+            ArrayList components = new ArrayList();
+            while (ll.hasMoreElements()) {
+                components.add(ll.nextElement());
+                size++;
+            }
+            if (size == 0) label = "{0}";
+            else label = "{"+size+"} of "+components.get(0).getClass().getSimpleName();
+            Idea onode = createIdea(getFullName()+"."+fullname,label,0);
+            int i=0;
+            for (Object o : components) {
+                onode.addObject(o,ToString.el(ToString.getSimpleName(fullname),i),false);
+                listtoavoidloops.add(obj);
+                i++;
+            }
+            this.add(onode);
+            return;
+        }
+        else if (obj instanceof Vector) {
+            Vector ll = (Vector) obj;
+            String label = "";
+            if (ll.size() > 0) label = "{"+ll.size()+"} of "+ll.get(0).getClass().getSimpleName();
+            else label = "{0}";
+            Idea onode = createIdea(getFullName()+"."+fullname,label,0);
+            int i=0;
+            for (Object o : ll) {
+                onode.addObject(o,ToString.el(ToString.getSimpleName(fullname),i),false);
+                listtoavoidloops.add(obj);
+                i++;
+            }
+            this.add(onode);
+            return;
+        }
         else if (obj instanceof Idea) {
             Idea ao = (Idea) obj;
             this.add(ao);
@@ -1181,17 +1263,49 @@ public class Idea implements Category,Habit {
             Field[] fields = obj.getClass().getDeclaredFields();
             for (Field field : fields) {
                 String fname = field.getName();
+                int modifiers = field.getModifiers();
+                //if (Modifier.isProtected(modifiers)) System.out.println(ao.getName()+"."+fname+": PROTECTED");
+                //if (Modifier.isPrivate(modifiers)) System.out.println(ao.getName()+"."+fname+": PRIVATE");
+                //if (Modifier.isStatic(modifiers)) System.out.println(ao.getName()+"."+fname+": STATIC");
+                //if (Modifier.isVolatile(modifiers)) System.out.println(ao.getName()+"."+fname+": VOLATILE");
                 try {
-                   field.setAccessible(true);
+                   Object toget = null;
+                   if (!((modifiers & Modifier.STATIC) > 0)) toget = obj;
+                   //if (!field.canAccess(toget)) {
+                       //System.out.println("I can't access field "+field.getName()+" of object "+getFullName()+" of class "+obj.getClass().getCanonicalName());
+                       //System.out.println(field.toString());
+                   //} 
+                   boolean trysetaccessible = field.trySetAccessible();
+                   if (!trysetaccessible) {// This is the case the object is inaccessible
+                       //System.out.println("I tried to make the field "+fname+" accessible, but didn't succeeded");
+                       Object fo = checkIfObjectHasSetGet(obj, fname);
+                       if (fo != null) {
+                          //System.out.println("Hey .. it worked ... "+fname+" is a JavaBean"); 
+                          if (!already_exists(fo)) {
+                             ao.addObject(fo,fname,false);  
+                          }
+                          else insertAlreadyExistObject(fullname, fname, field, fo, ao);
+                       }
+                       else {
+                         //System.out.println("OK .. giving up ... "+fname+" is not a JavaBean ... I will not include it in the Idea");
+                         if (!already_exists(fo)) {
+                             ao.addObject(fo,fname,false);  
+                          }
+                         else insertAlreadyExistObject(fullname, fname, field, fo, ao);
+                       }
+                   }    
+                   else {// This is the case the object is accessible
                    Object fo=null;
                     try {
-                        fo = field.get(obj);
+                        if (Modifier.isStatic(modifiers)) fo = field.get(null);
+                        else fo = field.get(obj);
                     } catch (Exception e) {
+                        System.out.println(e.getClass().getCanonicalName());
                         e.printStackTrace();} 
                     if (!already_exists(fo)) {
                         ao.addObject(fo,fname,false);  
                     }    
-                    else {
+                    else {// This the object already exists in listtoavoidloops
                         String ideaname = getFullName()+"."+ToString.getSimpleName(fullname)+"."+fname;
                         Idea fi = createIdea(ideaname,"",2);
                         Idea alternative2 = null;
@@ -1210,7 +1324,11 @@ public class Idea implements Category,Habit {
                         }
                         ao.add(fi);
                     }
-                } catch (Exception e) {
+                }} catch (InaccessibleObjectException ioe) {
+                    System.out.println("I got an InaccessibleObjectException with "+ioe.getMessage());
+                }
+                catch (Exception e) {
+                    System.out.println("I got a "+e.getClass().getName()+" Exception in field "+fname+" in class Idea: "+e.getMessage()+"-->"+e.getLocalizedMessage());
                 }   
             }
             this.add(ao);

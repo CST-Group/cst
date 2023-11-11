@@ -261,6 +261,25 @@ public class TestIdea {
     }
     
     @Test 
+    public void testIdea3() {
+        DefaultMutableTreeNode tn = new DefaultMutableTreeNode();
+        tn.setUserObject("tn");
+        DefaultMutableTreeNode tn21 = new DefaultMutableTreeNode();
+        tn21.setUserObject("tn21");
+        DefaultMutableTreeNode tn22 = new DefaultMutableTreeNode();
+        tn22.setUserObject("tn22");
+        DefaultMutableTreeNode tn3 = new DefaultMutableTreeNode();
+        tn3.setUserObject("tn3");
+        tn.add(tn21);
+        tn22.add(tn3);
+        tn.add(tn22);
+        
+        Idea i = new Idea("dm");
+        i.addObject(tn, "tn");
+        System.out.println(i.toStringFull());
+    }
+    
+    @Test 
     public void testIsMethods() {
         Locale.setDefault(Locale.US);
         Idea i = new Idea();
