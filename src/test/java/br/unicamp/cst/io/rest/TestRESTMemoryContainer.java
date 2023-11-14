@@ -43,7 +43,7 @@ public class TestRESTMemoryContainer {
         };
 
         HttpCodelet restMotorTestCodelet = new HttpCodelet() {
-            HashMap<String, String> params = new HashMap<>();
+            HashMap<String, Object> params = new HashMap<>();
             final Random r = new Random();
             final Double I = outI; //(double) (5 + r.nextInt(500));
 
@@ -65,9 +65,9 @@ public class TestRESTMemoryContainer {
                 params.replace("I", I.toString());
                 params.replace("evaluation", eval.toString());
 
-                String paramsString = prepareParams(params);
+                //String paramsString = prepareParams(params);
                 try {
-                    this.sendPOST(partnerURLIn, paramsString, null);
+                    this.sendPOST(partnerURLIn, params, null);
                     System.out.println("send to: " + partnerURLIn);
                 }catch (Exception e){e.printStackTrace();}
             }
