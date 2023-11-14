@@ -89,7 +89,7 @@ public abstract class HttpCodelet extends Codelet {
         // For POST only - END
 
         int responseCode = con.getResponseCode();
-        System.out.println("POST Response Code :: " + responseCode);
+        //System.out.println("POST Response Code :: " + responseCode);
 
         if (responseCode == HttpURLConnection.HTTP_OK) { //success
             BufferedReader in = new BufferedReader(new InputStreamReader(con.getInputStream()));
@@ -103,7 +103,7 @@ public abstract class HttpCodelet extends Codelet {
             return response.toString();
         }
 
-        return null;
+        return "POST Response Code :: " + responseCode;
     }
 
     public String sendPOSTJSON(String POST_URL, String payload) throws IOException {
@@ -126,7 +126,7 @@ public abstract class HttpCodelet extends Codelet {
         // For POST only - END
 
         int responseCode = con.getResponseCode();
-        System.out.println("POST Response Code :: " + responseCode);
+        //System.out.println("POST Response Code :: " + responseCode);
 
         if (responseCode == HttpURLConnection.HTTP_OK) { //success
             BufferedReader in = new BufferedReader(new InputStreamReader(con.getInputStream()));
@@ -139,25 +139,8 @@ public abstract class HttpCodelet extends Codelet {
             in.close();
             return response.toString();
         }
-        return null;
+        return "POST Response Code :: " + responseCode;
     }
-
-
-    /*public String prepareParams(HashMap<String, Object> params){
-        StringBuilder sbParams = new StringBuilder();
-
-        int i = 0;
-        for (String key : params.keySet()) {
-            if (i != 0){
-                sbParams.append("&");
-            }
-            sbParams.append(key).append("=")
-                    .append(URLEncoder.encode(params.get(key).toString(), StandardCharsets.UTF_8));
-
-            i++;
-        }
-        return sbParams.toString();
-    }*/
 
     public String IdeaToJSON(HashMap<String, Object> idea){
         JSONObject json = new JSONObject(idea);
