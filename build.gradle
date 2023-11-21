@@ -10,6 +10,8 @@ group = 'com.github.CST-Group'
 description = "CST"
 
 java {
+   //sourceCompatibility = JavaVersion.VERSION_11
+   //targetCompatibility = JavaVersion.VERSION_11
    sourceCompatibility = JavaVersion.VERSION_1_8
    targetCompatibility = JavaVersion.VERSION_1_8
 }
@@ -33,14 +35,15 @@ dependencies {
    api 'net.openhft:compiler:2.3.0'  // Used by representation/owrl/CodeBuilder.java
    api group: 'org.json', name: 'json', version: '20230227'
    api 'com.google.inject:guice:7.0.0'
-   api group: 'com.github.sdarg', name: 'opt4j', version: '3.3.0'  // Used in GLAS
-   //api group: 'com.github.sdarg', name: 'opt4j-core', version: '3.3.0'  // Used in GLAS
-   //api group: 'com.github.sdarg', name: 'opt4j-optimizers', version: '3.3.0'
-   //api group: 'com.github.sdarg', name: 'opt4j-viewer', version: '3.3.0' 
-   //api group: 'com.github.sdarg', name: 'opt4j-benchmarks', version: '3.3.0'
-   //api group: 'com.github.sdarg', name: 'opt4j-operators', version: '3.3.0'
-   //api group: 'com.github.sdarg', name: 'opt4j-satdecoding', version: '3.3.0'
-   //api group: 'com.github.sdarg', name: 'opt4j-tutorial', version: '3.3.0'
+   //api 'com.github.sdarg:opt4j:3.3.0'  // Used in GLAS
+   //api 'com.github.sdarg:opt4j:4780f4e'  // Used in GLAS
+   api group: 'org.opt4j', name: 'opt4j-core', version: '3.1.4'  // Used in GLAS
+   api group: 'org.opt4j', name: 'opt4j-optimizers', version: '3.1.4'
+   api group: 'org.opt4j', name: 'opt4j-viewer', version: '3.1.4' 
+   api group: 'org.opt4j', name: 'opt4j-benchmarks', version: '3.1.4'
+   api group: 'org.opt4j', name: 'opt4j-operators', version: '3.1.4'
+   api group: 'org.opt4j', name: 'opt4j-satdecoding', version: '3.1.4'
+   api group: 'org.opt4j', name: 'opt4j-tutorial', version: '3.1.4'
    api 'org.antlr:antlr4-runtime:4.5.3' // Used in OwrlBaseListener
    api 'com.github.masecla22:java-express:0.2.2'
    //api 'io.vacco.murmux:murmux:2.2.2'
