@@ -39,7 +39,7 @@ public class TestHttpCodelet {
     };
 
     HttpCodelet restMotorTestCodelet = new HttpCodelet() {
-        HashMap<String, String> params = new HashMap<>();
+        HashMap<String, Object> params = new HashMap<>();
         final Random r = new Random();
         final Double I = 2.0; //(double) (5 + r.nextInt(500));
 
@@ -64,7 +64,7 @@ public class TestHttpCodelet {
             params.replace("I", I.toString());
             params.replace("evaluation", eval.toString());
             int i = 0;
-            for (String key : params.keySet()) {
+            /*for (String key : params.keySet()) {
                 try {
                     if (i != 0){
                         sbParams.append("&");
@@ -76,10 +76,10 @@ public class TestHttpCodelet {
                     e.printStackTrace();
                 }
                 i++;
-            }
+            }*/
             try {
-                String paramsString = sbParams.toString();
-                this.sendPOST("http://127.0.0.1:60000", paramsString, null);
+                //String paramsString = sbParams.toString();
+                this.sendPOST("http://127.0.0.1:60000", params, null);
                 System.out.println("send to: " + "http://127.0.0.1:60000");
             }catch (Exception e){e.printStackTrace();}
         }
@@ -114,7 +114,7 @@ public class TestHttpCodelet {
         };
 
         HttpCodelet restMotorTestCodelet = new HttpCodelet() {
-            HashMap<String, String> params = new HashMap<>();
+            HashMap<String, Object> params = new HashMap<>();
             final Random r = new Random();
             final Double I = outI; //(double) (5 + r.nextInt(500));
 
@@ -139,7 +139,7 @@ public class TestHttpCodelet {
                 params.replace("I", I.toString());
                 params.replace("evaluation", eval.toString());
                 int i = 0;
-                for (String key : params.keySet()) {
+                /*for (String key : params.keySet()) {
                     try {
                         if (i != 0){
                             sbParams.append("&");
@@ -151,10 +151,10 @@ public class TestHttpCodelet {
                         e.printStackTrace();
                     }
                     i++;
-                }
+                }*/
                 try {
-                    String paramsString = sbParams.toString();
-                    this.sendPOST("http://127.0.0.1:60000", paramsString, null);
+                    //String paramsString = sbParams.toString();
+                    this.sendPOST("http://127.0.0.1:60000", params, null);
                     System.out.println("send to: " + partnerURLIn);
                 }catch (Exception e){e.printStackTrace();}
             }
@@ -257,12 +257,13 @@ public class TestHttpCodelet {
 
     @Test
     public void testError() {
-
+        HashMap<String, Object> params = new HashMap<>();
+        params.put("test", 2);
         try{Thread.sleep(2000);
         }catch (Exception e){e.printStackTrace();}
 
         Exception exception1 = assertThrows(ConnectException.class, () -> {
-            restMotorTestCodelet.sendPOST("http://127.0.0.1:6000", "2", null);
+            restMotorTestCodelet.sendPOST("http://127.0.0.1:6000", params, null);
         });
 
         Exception exception2 = assertThrows(ConnectException.class, () -> {
