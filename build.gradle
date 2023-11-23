@@ -2,7 +2,7 @@ plugins {
 	id 'java-library-distribution'
   	id 'jacoco'
   	id 'maven-publish'
-        id 'com.adarshr.test-logger' version "3.2.0"
+        id 'com.adarshr.test-logger' version "4.0.0"
 }
 
 group = 'com.github.CST-Group'
@@ -50,6 +50,7 @@ dependencies {
    implementation 'ch.qos.logback:logback-classic:1.3.6' 
    testImplementation 'org.junit.jupiter:junit-jupiter-api:5.10.1'
    testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.10.1'
+   testRuntimeOnly("org.junit.platform:junit-platform-launcher")
 
 }
 

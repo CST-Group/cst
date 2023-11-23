@@ -452,4 +452,46 @@ public class TestIdea {
         System.out.println(date);
     }
     
+    static int maxid = 0;  // To be used in TestAutoReference
+    
+    private class TestAutoReference {
+        int id;
+        public TestAutoReference parent;
+        public ArrayList<TestAutoReference> children = new ArrayList<>();
+        public TestAutoReference() {
+            id = maxid;
+            maxid++;
+        }
+        public void add(TestAutoReference child) {
+            children.add(child);
+            parent = this;
+        }
+        @Override
+        public String toString() {
+            String s = "ar"+id;
+            return s;
+        }
+        
+    }
+    
+    @Test public void testAutoReferenceIdea() {
+        TestAutoReference ar = new TestAutoReference();
+        TestAutoReference ar2 = new TestAutoReference();
+        TestAutoReference ar3 = new TestAutoReference();
+        TestAutoReference ar4 = new TestAutoReference();
+        ar.add(ar2);
+        ar2.add(ar4);
+        ar.add(ar3);
+        Idea i1 = Idea.createIdea("autoref",ar,1);
+        i1.addObject(ar, "autoref");
+        i1.addObject(ar, "autoref",false);
+        i1.addObject(ar, "autoref2",false);
+        Idea i2 = i1.get("autoref");
+        i2.addObject(ar, "autoref",false);
+        i1.addObject(i2, "autoref",false);
+        System.out.println(i1.toStringFull());
+        Idea i3 = i1.get("autoref.autoref");
+        System.out.println(i3.toStringFull());
+    }
+    
 }

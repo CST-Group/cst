@@ -1110,24 +1110,6 @@ public class Idea implements Category,Habit {
     return null; // it would be better to throw an exception, wouldn't it?
 }
     
-    private void insertAlreadyExistObject(String fullname, String fname, Field field, Object fo, Idea ao) {
-        String ideaname = getFullName()+"."+ToString.getSimpleName(fullname)+"."+fname;
-        Idea fi = createIdea(ideaname,"",2);
-//        if (!Modifier.isStatic(field.getModifiers())) {
-//            for (Map.Entry<String,Idea> entry : repo.entrySet()) {
-//                String key = entry.getKey();
-//                Idea v = entry.getValue();
-//                if (ToString.getSimpleName(ideaname).equals(ToString.getSimpleName(key))) {
-//                    System.out.println("The Idea "+ideaname+" is already in the repository");
-//                }
-//            }
-            Idea alternative = repo.get(ideaname);
-            if (alternative != null) System.out.println(ideaname+" was already referenced as an earlier idea ... reusing it");
-            else System.out.println(ideaname+" is already referenced with a different name ... inserted as link !");          
-//        }
-        ao.add(fi);
-    }
-    
     private boolean trySetAccessibleTrue(Field f) {
         try {
             f.setAccessible(true);
@@ -1165,8 +1147,8 @@ public class Idea implements Category,Habit {
         if (listtoavoidloops.contains(obj) || already_exists(obj)) {
              Idea child = createIdea(getFullName()+"."+fullname,obj.toString(),2);
              Idea alternative = repo.get(getFullName()+"."+fullname);
-             if (alternative != null) System.out.println("Ah ... I already found "+getFullName()+"."+fullname);
-             else System.out.println("Strange ... it seems that "+getFullName()+"."+fullname+" is already in the repo but I can't find it");
+             if (alternative != null) System.out.println(getFullName()+"."+fullname+" is a recycled Idea");
+             else System.out.println(getFullName()+"."+fullname+" is already referenced ... creating a link instead");
              add(child);
              return;            
         }
@@ -1225,8 +1207,8 @@ public class Idea implements Category,Habit {
             this.add(onode);
             return;
         }
-        else if (obj instanceof Enumeration) {
-            Enumeration ll = (Enumeration) obj;
+        else if (obj instanceof Enumeration<?>) {
+            Enumeration<?> ll = (Enumeration<?>) obj;
             String label = "";
             int size = 0;
             ArrayList components = new ArrayList();
@@ -1239,21 +1221,6 @@ public class Idea implements Category,Habit {
             Idea onode = createIdea(getFullName()+"."+fullname,label,0);
             int i=0;
             for (Object o : components) {
-                onode.addObject(o,ToString.el(ToString.getSimpleName(fullname),i),false);
-                listtoavoidloops.add(obj);
-                i++;
-            }
-            this.add(onode);
-            return;
-        }
-        else if (obj instanceof Vector) {
-            Vector ll = (Vector) obj;
-            String label = "";
-            if (ll.size() > 0) label = "{"+ll.size()+"} of "+ll.get(0).getClass().getSimpleName();
-            else label = "{0}";
-            Idea onode = createIdea(getFullName()+"."+fullname,label,0);
-            int i=0;
-            for (Object o : ll) {
                 onode.addObject(o,ToString.el(ToString.getSimpleName(fullname),i),false);
                 listtoavoidloops.add(obj);
                 i++;
@@ -1287,37 +1254,11 @@ public class Idea implements Category,Habit {
                    if (!already_exists(fo)) {
                        ao.addObject(fo,fname,false);  
                    }
-                   else insertAlreadyExistObject(fullname, fname, field, fo, ao);
-                   
-                   
-                   
-//                   if (!trysetaccessible) {// This is the case the object is inaccessible
-//                       Object fo = checkIfObjectHasSetGet(obj, fname);
-//                       if (fo != null) {
-//                          if (!already_exists(fo)) {
-//                             ao.addObject(fo,fname,false);  
-//                          }
-//                          else insertAlreadyExistObject(fullname, fname, field, fo, ao);
-//                       }
-//                       else {
-//                         if (!already_exists(fo)) {
-//                             ao.addObject(fo,fname,false);  
-//                          }
-//                         else insertAlreadyExistObject(fullname, fname, field, fo, ao);
-//                       }
-//                   }    
-//                   else {// This is the case the object is accessible
-//                        Object fo=null;
-//                        int modifiers = field.getModifiers();
-//                        if (Modifier.isStatic(modifiers)) fo = field.get(null);
-//                        else fo = field.get(obj);
-//                        if (!already_exists(fo)) {
-//                           ao.addObject(fo,fname,false);  
-//                        }    
-//                        else {// This the object already exists in listtoavoidloops
-//                           insertAlreadyExistObject(fullname, fname, field, fo, ao);
-//                    }
-//                }
+                   else { // this is the case when a recursive object is detected ... inserting a link
+                       String ideaname = getFullName()+"."+ToString.getSimpleName(fullname)+"."+fname;
+                       Idea fi = createIdea(ideaname,"",2);
+                       ao.add(fi);
+                   }
                 } catch (Exception e) {
                     System.out.println("I got a "+e.getClass().getName()+" Exception in field "+fname+" in class Idea: "+e.getMessage()+"-->"+e.getLocalizedMessage());
                 }   
