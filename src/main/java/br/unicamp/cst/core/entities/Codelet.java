@@ -813,7 +813,10 @@ public abstract class Codelet implements Runnable, MemoryObserver {
                     m.removeMemoryObserver(this);
                 }
                 setIsMemoryObserver(false);
-                try { Thread.sleep(300); } catch(InterruptedException e) {};
+                try { this.wait(300L); } 
+                catch(InterruptedException e) {
+                    // just ignore exception
+                };
                 run();
             }
         }    

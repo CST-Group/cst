@@ -1089,7 +1089,7 @@ public class Idea implements Category,Habit {
     // access a no-arg method through reflection
     // following bean naming conventions
     try {
-        Class c =  bean.getClass();
+        Class<?> c =  bean.getClass();
         String methodName = "get"+propertyName.substring(0,1).toUpperCase()+propertyName.substring(1);
         Method m = c.getMethod(methodName,(Class[])null);
         Object o = m.invoke(bean);
@@ -1097,13 +1097,12 @@ public class Idea implements Category,Habit {
     }
     catch (Exception e) {
         try {
-            Class c = bean.getClass();
+            Class<?> c = bean.getClass();
             Method m = c.getMethod(propertyName,(Class[])null);
             Object o = m.invoke(bean);
             return o;
         }
         catch (Exception e2) {
-            //System.out.println("I got a "+e.getClass().getName()+" Exception in class Idea: "+e.getMessage()+"-->"+e.getLocalizedMessage());
             // (gulp) -- swallow exception and move on
         }
     }
@@ -1145,10 +1144,8 @@ public class Idea implements Category,Habit {
             return;
         }
         if (listtoavoidloops.contains(obj) || already_exists(obj)) {
+             // If the object has already been used (in a loop) I will create a link instead of digging inside it
              Idea child = createIdea(getFullName()+"."+fullname,obj.toString(),2);
-             Idea alternative = repo.get(getFullName()+"."+fullname);
-             if (alternative != null) System.out.println(getFullName()+"."+fullname+" is a recycled Idea");
-             else System.out.println(getFullName()+"."+fullname+" is already referenced ... creating a link instead");
              add(child);
              return;            
         }
@@ -1260,7 +1257,7 @@ public class Idea implements Category,Habit {
                        ao.add(fi);
                    }
                 } catch (Exception e) {
-                    System.out.println("I got a "+e.getClass().getName()+" Exception in field "+fname+" in class Idea: "+e.getMessage()+"-->"+e.getLocalizedMessage());
+                    Logger.getAnonymousLogger().log(Level.INFO,"I got a {0} Exception in field {1} in class Idea: {2}",new Object[]{e.getClass().getName(),fname,e.getMessage()+"-->"+e.getLocalizedMessage()});
                 }   
             }
             this.add(ao);
