@@ -801,6 +801,7 @@ public abstract class Codelet implements Runnable, MemoryObserver {
 		this.isMemoryObserver = isMemoryObserver;
 	}
         
+        @SuppressWarnings("empty-statement")
         public synchronized void setPublishSubscribe(boolean enable) {
             if (enable) {
                 setIsMemoryObserver(true);
@@ -808,10 +809,14 @@ public abstract class Codelet implements Runnable, MemoryObserver {
                     m.addMemoryObserver(this);
                 }
             } else {
-                setIsMemoryObserver(false);
                 for (Memory m : inputs) {
                     m.removeMemoryObserver(this);
                 }
+                setIsMemoryObserver(false);
+                try { this.wait(300L); } 
+                catch(InterruptedException e) {
+                    // just ignore exception
+                };
                 run();
             }
         }    

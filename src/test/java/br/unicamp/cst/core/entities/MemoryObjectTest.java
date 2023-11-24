@@ -27,9 +27,9 @@ public class MemoryObjectTest {
     public void idTest(){
         MemoryObject mo = new MemoryObject();
 
-        mo.setIdmemoryobject(2000L);
+        mo.setId(2000L);
 
-        assertEquals(2000L, (long)mo.getIdmemoryobject());
+        assertEquals(2000L, (long)mo.getId());
     }
 
 
@@ -38,7 +38,7 @@ public class MemoryObjectTest {
         MemoryObject mo = new MemoryObject();
         Object I = new Object();
 
-        mo.setIdmemoryobject(2000L);
+        mo.setId(2000L);
         mo.setEvaluation(0.8);
         mo.setI(I);
         mo.setType("testName");
@@ -57,7 +57,7 @@ public class MemoryObjectTest {
         Long id = 2000L;
         String name = "testName";
 
-        mo.setIdmemoryobject(id);
+        mo.setId(id);
         mo.setEvaluation(eval);
         mo.setI(I);
         mo.setType(name);
@@ -98,19 +98,19 @@ public class MemoryObjectTest {
         assertNotEquals(mo, thirdMO);
 
 
-        mo.setIdmemoryobject(1000L);
-        otherMO.setIdmemoryobject(2000L);
-        thirdMO.setIdmemoryobject(2000L);
+        mo.setId(1000L);
+        otherMO.setId(2000L);
+        thirdMO.setId(2000L);
 
 
         fourthMO.setEvaluation(0.0);
-        fourthMO.setIdmemoryobject(null);
+        fourthMO.setId(null);
 
         assertNotEquals(fourthMO, mo);
         assertNotEquals(mo, otherMO);
 
-        otherMO.setIdmemoryobject(1000L);
-        fourthMO.setIdmemoryobject(1000L);
+        otherMO.setId(1000L);
+        fourthMO.setId(1000L);
 
         mo.setType("firstName");
         otherMO.setType("firstName");
@@ -168,9 +168,9 @@ public class MemoryObjectTest {
         assertFalse(mo.equals(thirdMO));
 
 
-        mo.setIdmemoryobject(1000L);
-        otherMO.setIdmemoryobject(1000L);
-        thirdMO.setIdmemoryobject(2000L);
+        mo.setId(1000L);
+        otherMO.setId(1000L);
+        thirdMO.setId(2000L);
 
         assertFalse(fourthMO.equals(mo));
         assertFalse(mo.equals(thirdMO));

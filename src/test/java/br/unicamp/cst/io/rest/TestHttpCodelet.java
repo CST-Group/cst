@@ -39,7 +39,7 @@ public class TestHttpCodelet {
     };
 
     HttpCodelet restMotorTestCodelet = new HttpCodelet() {
-        HashMap<String, String> params = new HashMap<>();
+        HashMap<String, Object> params = new HashMap<>();
         final Random r = new Random();
         final Double I = 2.0; //(double) (5 + r.nextInt(500));
 
@@ -64,7 +64,7 @@ public class TestHttpCodelet {
             params.replace("I", I.toString());
             params.replace("evaluation", eval.toString());
             int i = 0;
-            for (String key : params.keySet()) {
+            /*for (String key : params.keySet()) {
                 try {
                     if (i != 0){
                         sbParams.append("&");
@@ -76,10 +76,10 @@ public class TestHttpCodelet {
                     e.printStackTrace();
                 }
                 i++;
-            }
+            }*/
             try {
-                String paramsString = sbParams.toString();
-                this.sendPOST("http://127.0.0.1:60000", paramsString, null);
+                //String paramsString = sbParams.toString();
+                this.sendPOST("http://127.0.0.1:60000", params, null);
                 System.out.println("send to: " + "http://127.0.0.1:60000");
             }catch (Exception e){e.printStackTrace();}
         }
@@ -114,7 +114,7 @@ public class TestHttpCodelet {
         };
 
         HttpCodelet restMotorTestCodelet = new HttpCodelet() {
-            HashMap<String, String> params = new HashMap<>();
+            HashMap<String, Object> params = new HashMap<>();
             final Random r = new Random();
             final Double I = outI; //(double) (5 + r.nextInt(500));
 
@@ -139,7 +139,7 @@ public class TestHttpCodelet {
                 params.replace("I", I.toString());
                 params.replace("evaluation", eval.toString());
                 int i = 0;
-                for (String key : params.keySet()) {
+                /*for (String key : params.keySet()) {
                     try {
                         if (i != 0){
                             sbParams.append("&");
@@ -151,10 +151,10 @@ public class TestHttpCodelet {
                         e.printStackTrace();
                     }
                     i++;
-                }
+                }*/
                 try {
-                    String paramsString = sbParams.toString();
-                    this.sendPOST("http://127.0.0.1:60000", paramsString, null);
+                    //String paramsString = sbParams.toString();
+                    this.sendPOST("http://127.0.0.1:60000", params, null);
                     System.out.println("send to: " + partnerURLIn);
                 }catch (Exception e){e.printStackTrace();}
             }
@@ -187,15 +187,15 @@ public class TestHttpCodelet {
 
 
         Mind m = new Mind();
-        //RESTMemory m1 = m.createRESTMemory("M1", baseIP, portIn);
+        //RESTMemory m1 = m.createRESTMemoryObject("M1", baseIP, portIn);
         //m1.setI(1);
 
-        RESTMemory m1;
+        RESTMemoryObject m1;
         if (baseIP.equals("localhost")){
-            m1 = m.createRESTMemory("M1", portIn);
+            m1 = m.createRESTMemoryObject("M1", portIn);
         }
         else{
-            m1 = m.createRESTMemory("M1", baseIP, portIn);
+            m1 = m.createRESTMemoryObject("M1", baseIP, portIn);
         }
         m1.setI(1);
 
@@ -204,12 +204,12 @@ public class TestHttpCodelet {
         MemoryObject m3 = m.createMemoryObject("M3", null);
         MemoryObject m4 = m.createMemoryObject("M4", null);
 
-        RESTMemory m5;
+        RESTMemoryObject m5;
         if (baseIP.equals("localhost")){
-            m5 = m.createRESTMemory("M5", portOut);
+            m5 = m.createRESTMemoryObject("M5", portOut);
         }
         else{
-            m5 = m.createRESTMemory("M5", baseIP, portOut);
+            m5 = m.createRESTMemoryObject("M5", baseIP, portOut);
         }
         m5.setI(toGetI);
 
@@ -223,8 +223,8 @@ public class TestHttpCodelet {
         m6.add(m7);
 
         //dummy
-        RESTMemory m8 = new RESTMemory(portOut);
-        m8.setIdmemoryobject(1l);
+        RESTMemoryObject m8 = new RESTMemoryObject(portOut);
+        m8.setId(1l);
         m8.setName("M8");
         m.getRawMemory().addMemory(m8);
 
@@ -257,12 +257,13 @@ public class TestHttpCodelet {
 
     @Test
     public void testError() {
-
+        HashMap<String, Object> params = new HashMap<>();
+        params.put("test", 2);
         try{Thread.sleep(2000);
         }catch (Exception e){e.printStackTrace();}
 
         Exception exception1 = assertThrows(ConnectException.class, () -> {
-            restMotorTestCodelet.sendPOST("http://127.0.0.1:6000", "2", null);
+            restMotorTestCodelet.sendPOST("http://127.0.0.1:6000", params, null);
         });
 
         Exception exception2 = assertThrows(ConnectException.class, () -> {

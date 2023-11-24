@@ -18,11 +18,11 @@ import br.unicamp.cst.core.entities.MemoryContainer;
 import br.unicamp.cst.core.entities.MemoryObject;
 import br.unicamp.cst.core.entities.Mind;
 import br.unicamp.cst.core.exceptions.CodeletActivationBoundsException;
-import br.unicamp.cst.representation.idea.Idea;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.fail;
 import org.junit.jupiter.api.Test;
 
 class CodeletToTest extends Codelet {
@@ -364,16 +364,31 @@ public class TestMemoryObserver {
 		m.insertCodelet(c);
 		c.setPublishSubscribe(true);
                 m.start();
+                try { Thread.sleep(500); } catch(InterruptedException e) {}
 		//setI in Memory Container and verify if Codelet was notified
                 long ts = output.getTimestamp();
                 input.setI(0);
-		while(ts == output.getTimestamp());
+                long startwait = System.currentTimeMillis();
+                while(ts == output.getTimestamp()) {
+                    if (System.currentTimeMillis() - startwait > 2000) {
+                        System.out.println("Restarting timer due to inactivity");
+                        c.start();
+                    }
+                    if (System.currentTimeMillis() - startwait > 5000) fail("Some problem have occurred 3 !");
+                }
                 int nout = (int) output.getI();
 		System.out.println("Result: "+output.getI());
                 assertEquals(nout,1);
 		c.setPublishSubscribe(false);
                 ts = output.getTimestamp();
-                while(ts == output.getTimestamp());
+                startwait = System.currentTimeMillis();
+                while(ts == output.getTimestamp()) {
+                    if (System.currentTimeMillis() - startwait > 2000) {
+                        System.out.println("Restarting timer due to inactivity");
+                        m.start();
+                    }
+                    if (System.currentTimeMillis() - startwait > 5000) fail("Some problem have occurred 4 !");
+                }
                 System.out.println("Result: "+output.getI()+" "+c.getActivation());
                 m.shutDown();
 		//assertEquals(0, c.getCounter());
@@ -426,13 +441,27 @@ public class TestMemoryObserver {
 		//setI in Memory Container and verify if Codelet was notified
                 long ts = output.getTimestamp();
                 input.setI(0,0);
-                while(ts == output.getTimestamp());
+                while(ts == output.getTimestamp()) System.out.print(".");
+                long startwait = System.currentTimeMillis();
+                while(ts == output.getTimestamp()) {
+                    if (System.currentTimeMillis() - startwait > 2000) {
+                        System.out.println("I am waiting too long ... something wrong happened");
+                    }
+                    if (System.currentTimeMillis() - startwait > 5000) fail("Some problem have occurred 1 !");
+                }
                 int nout = (int) output.getI();
 		System.out.println("Result: "+output.getI()+" "+c.getActivation());
                 assertEquals(nout,1);
 		c.setPublishSubscribe(false);
                 ts = output.getTimestamp();
-                while(ts == output.getTimestamp());
+                startwait = System.currentTimeMillis();
+                while(ts == output.getTimestamp()) {
+                    if (System.currentTimeMillis() - startwait > 2000) {
+                        System.out.println("Restarting timer due to inactivity");
+                        m.start();
+                    }
+                    if (System.currentTimeMillis() - startwait > 5000) fail("Some problem have occurred 2 !");
+                }
                 System.out.println("Result: "+output.getI()+" "+c.getActivation());
                 
                 m.shutDown();

@@ -98,5 +98,19 @@ public interface Memory {
 	 */
 	public void removeMemoryObserver(MemoryObserver memoryObserver);
 	
+        /**
+	 * Gets the id of the Memory.
+	 * 
+	 * @return the id of the Memory.
+	 */
+	public Long getId();
+
+	/**
+	 * Sets the id of the Memory.
+	 * 
+	 * @param id
+	 *            the id of the Memory to set.
+	 */
+	public void setId(Long id);
 
 }

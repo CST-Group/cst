@@ -8,16 +8,12 @@ import express.Express;
 import express.middleware.CorsOptions;
 import express.middleware.Middleware;
 
-import java.util.HashSet;
-import java.util.Set;
-
-public class RESTMemory extends MemoryObject {
+public class RESTMemoryObject extends MemoryObject {
     long refresh = 0; // A refresh of 0 means that every call will generate a new probe in mind
     long lastaccess = 0;
     String lastmessage = "";
-    Memory internalMemory;
 
-    public RESTMemory(int port) {
+    public RESTMemoryObject(int port) {
         this(port,false);
     }
 
@@ -26,7 +22,7 @@ public class RESTMemory extends MemoryObject {
      * @param hostname hostname of the REST server
      * @param port the port to install the REST server
      */
-    public RESTMemory(String hostname, int port) {
+    public RESTMemoryObject(String hostname, int port) {
         this(hostname, port,false);
     }
 
@@ -35,7 +31,7 @@ public class RESTMemory extends MemoryObject {
      * @param port the port to install the REST server
      * @param pretty set this to true to generate pretty printing JSON in the REST server
      */
-    public RESTMemory(int port, boolean pretty) {
+    public RESTMemoryObject(int port, boolean pretty) {
         this(port,pretty,"*");
     }
 
@@ -45,7 +41,7 @@ public class RESTMemory extends MemoryObject {
      * @param port the port to install the REST server
      * @param pretty set this to true to generate pretty printing JSON in the REST server
      */
-    public RESTMemory(String hostname, int port, boolean pretty) {
+    public RESTMemoryObject(String hostname, int port, boolean pretty) {
         this(hostname, port,pretty,"*", 0L);
     }
 
@@ -55,7 +51,7 @@ public class RESTMemory extends MemoryObject {
      * @param pretty set this to true to generate pretty printing JSON in the REST server
      * @param origin a pattern for users allowed to access the server - use "*" to allow everyone
      */
-    public RESTMemory(int port, boolean pretty, String origin) {
+    public RESTMemoryObject(int port, boolean pretty, String origin) {
         this("localhost", port,pretty,origin,0L);
     }
 
@@ -66,7 +62,7 @@ public class RESTMemory extends MemoryObject {
      * @param origin a pattern for users allowed to access the server - use "*" to allow everyone
      * @param nrefresh the refresh period in milliseconds
      */
-    public RESTMemory(String hostname, int port, boolean pretty, String origin, long nrefresh) {
+    public RESTMemoryObject(String hostname, int port, boolean pretty, String origin, long nrefresh) {
         refresh = nrefresh;
         Express app = new Express(hostname);
         Gson gson;
