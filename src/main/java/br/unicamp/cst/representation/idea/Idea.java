@@ -23,14 +23,11 @@ import java.util.Date;
 import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.TimeZone;
-import java.util.Vector;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import javax.swing.tree.DefaultMutableTreeNode;
 
 
 /**
@@ -50,7 +47,7 @@ public class Idea implements Category,Habit {
     // This list is used while building a toStringFull()
     /**
      * The repo hashmap is a list of known Ideas used by the createIdea factory method to 
-     * avoid that Ideas with a same new to be created. This list is used to reuse an 
+     * avoid that Ideas with a same name to be created. This list is used to reuse an 
      * Idea with the same name. This variable provides a global list with all known 
      * Ideas created so far. 
      */
@@ -414,7 +411,7 @@ public class Idea implements Category,Habit {
             for (Idea ln : l) {
                 for (int i=0;i<level;i++) out += "   ";
                 if (listtoavoidloops.contains(ln.toStringPlus(withid)) || already_exists(ln.toStringPlus(withid))) {
-                    out += ln.toStringPlus(withid)+"\n";
+                    out += ln.toStringPlus(withid)+" #\n";
                 }
                     
                 else out += ln.toStringFull(level+1,withid);
@@ -1028,7 +1025,7 @@ public class Idea implements Category,Habit {
                     if (field.getType().isArray()) {
                           Object out = mountArray(o,field.getType().getCanonicalName());
                           try {
-                                field.setAccessible(true);
+                                //field.setAccessible(true);
                                 field.set(ret,out);
                             }
                             catch(Exception e) {
@@ -1044,7 +1041,7 @@ public class Idea implements Category,Habit {
                             out.add(i.getObject(i.getName(), stype));
                         }
                         try {
-                            field.setAccessible(true);
+                            //field.setAccessible(true);
                             field.set(ret,out);
                         }
                         catch(Exception e) {
@@ -1056,7 +1053,7 @@ public class Idea implements Category,Habit {
                         if (value == null) System.out.println("Warning: value of "+field.getName()+" is null");
                         value = convertObject(value,field.getType().getCanonicalName());
                         try {
-                            field.setAccessible(true);
+                            //field.setAccessible(true);
                             field.set(ret,value);
                         }
                         catch(Exception e) {
@@ -1065,7 +1062,7 @@ public class Idea implements Category,Habit {
                             if (o.getL().size() > 0) out = o.getObject(field.getName(),field.getType().getCanonicalName());
                             else out = null;
                             try {
-                                field.setAccessible(true);
+                                //field.setAccessible(true);
                                 field.set(ret,out);
                             } catch(Exception e2) {
                                 if (value != null)
@@ -1103,19 +1100,22 @@ public class Idea implements Category,Habit {
             return o;
         }
         catch (Exception e2) {
+            return("<<NULL>>");
             // (gulp) -- swallow exception and move on
         }
     }
-    return null; // it would be better to throw an exception, wouldn't it?
+    //return null; // it would be better to throw an exception, wouldn't it?
 }
     
     private boolean trySetAccessibleTrue(Field f) {
-        try {
-            f.setAccessible(true);
-            return(true);
-        } catch(Exception e) {
-            return(false);
-        }
+        if (Modifier.isPublic(f.getModifiers())) return(true);
+        else return(false);
+//        try {
+//            f.setAccessible(true);
+//            return(true);
+//        } catch(Exception e) {
+//            return(false);
+//        }
     }
     
     /**
@@ -1226,9 +1226,11 @@ public class Idea implements Category,Habit {
             return;
         }
         else if (obj instanceof Idea) {
+            Idea child = createIdea(getFullName()+"."+fullname,s,0);
             Idea ao = (Idea) obj;
-            this.add(ao);
-            listtoavoidloops.add(obj);            
+            child.add(ao);
+            this.add(child);
+            listtoavoidloops.add(obj);  // should I include obj or child here ?           
             return;
         }
         else {
@@ -1247,14 +1249,27 @@ public class Idea implements Category,Habit {
                    }
                    else { // if it is inaccessible, check if it is a bean, before giving up
                        fo = checkIfObjectHasSetGet(obj, fname);
+                       if (fo != null && fo.equals("<<NULL>>")) {
+                           String mod = fname+":";
+                           if (Modifier.isStatic(field.getModifiers())) mod+=" STATIC";
+                           if (Modifier.isProtected(field.getModifiers())) mod+=" PROTECTED";
+                           if (Modifier.isPrivate(field.getModifiers())) mod+=" PRIVATE";
+                           if (Modifier.isTransient(field.getModifiers())) mod+=" TRANSIENT";
+                           if (Modifier.isVolatile(field.getModifiers())) mod+=" VOLATILE";
+                           System.out.println(mod);
+                       }
                    }
-                   if (!already_exists(fo)) {
+                   if (fo != null && fo.equals("<<NULL>>")) {
+                       // do nothing
+                   }
+                   else if (!already_exists(fo)) {
                        ao.addObject(fo,fname,false);  
                    }
                    else { // this is the case when a recursive object is detected ... inserting a link
                        String ideaname = getFullName()+"."+ToString.getSimpleName(fullname)+"."+fname;
                        Idea fi = createIdea(ideaname,"",2);
                        ao.add(fi);
+                       //System.out.println("Inserting link: "+fi.toStringFull()+" getFullName(): "+getFullName()+" fullname: "+fullname+" fname: "+fname+" ideaname: "+ideaname);
                    }
                 } catch (Exception e) {
                     Logger.getAnonymousLogger().log(Level.INFO,"I got a {0} Exception in field {1} in class Idea: {2}",new Object[]{e.getClass().getName(),fname,e.getMessage()+"-->"+e.getLocalizedMessage()});

@@ -22,6 +22,7 @@ import javax.swing.tree.DefaultMutableTreeNode;
 
 import br.unicamp.cst.core.profiler.TestComplexMemoryObjectInfo;
 import br.unicamp.cst.support.TimeStamp;
+import br.unicamp.cst.support.ToString;
 import java.util.HashMap;
 import java.util.Locale;
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -84,33 +85,7 @@ public class TestIdea {
         assertEquals(n.get("child4.Test.child1.subchild1").getValue(),3.14);
     }
     
-    @Test 
-    public void testIdea() {
-        Locale.setDefault(Locale.US);
-        System.out.println("\n Starting the testIdea ...");
-        Idea ln = new Idea("a");
-        Idea ln2 = new Idea("b");
-        Idea ln3 = new Idea("c");
-        ln.add(ln2);
-        ln2.add(ln3);
-        Idea v1 = new Idea("v","3");
-        ln.add(v1);
-        ln2.add(v1);
-        ln3.add(v1);
-        System.out.println(ln.toStringFull());
-        Date d = new Date();
-        Idea complexnode = Idea.createIdea("complexnode","",0);
-        System.out.println("Adding the object date within complexnode");
-        complexnode.addObject(d,"complexnode.date");
-        DefaultMutableTreeNode dt = new DefaultMutableTreeNode(d);
-        System.out.println("Adding the object defaultMutableTreeNode within complexnode");
-        complexnode.addObject(dt, "teste.defaultMutableTreeNode");
-        System.out.println("Adding the object complexnode within itself with the name recursion");
-        complexnode.addObject(complexnode,"complexnode.recursion");
-        //IdeaPanel wmp = new IdeaPanel(Idea.createIdea("Root","[S1]",0),true);
-        System.out.println("Adding the object wmpanel within complexnode");
-        //complexnode.addObject(wmp, "complexnode.wmpanel");
-        TestComplexMemoryObjectInfo ttt = new TestComplexMemoryObjectInfo();
+    private void initialize(TestComplexMemoryObjectInfo ttt) {
         ttt.testbyte = 10;
         ttt.testshort = 0xa;
         ttt.testlong = 23;
@@ -130,9 +105,46 @@ public class TestIdea {
             ttt.testshortarray[i] = i;
         for (byte i=0;i<ttt.testbytearray.length;i++)
             ttt.testbytearray[i] = i;
+    }
+    
+    @Test 
+    public void testIdea() {
+        Locale.setDefault(Locale.US);
+        System.out.println("\n Starting the testIdea ...");
+        Idea ln = new Idea("a");
+        Idea ln2 = new Idea("b");
+        Idea ln3 = new Idea("c");
+        ln.add(ln2);
+        ln2.add(ln3);
+        Idea v1 = new Idea("v","3");
+        ln.add(v1);
+        ln2.add(v1);
+        ln3.add(v1);
+        assertEquals(ln.get("b.c.v").getValue(),3);
+        assertEquals(ln.get("b.v").getValue(),3);
+        assertEquals(ln.get("v").getValue(),3);
+        Date d = new Date();
+        Idea complexnode = Idea.createIdea("complexnode","",0);
+        System.out.println("Adding the object date within complexnode");
+        complexnode.addObject(d,"date");
+        assertEquals(complexnode.get("date").getValue(),ToString.from(d));
+        DefaultMutableTreeNode dt = new DefaultMutableTreeNode(d);
+        System.out.println("Adding the object defaultMutableTreeNode within complexnode");
+        complexnode.addObject(dt, "defaultMutableTreeNode");
+        assertEquals(complexnode.get("defaultMutableTreeNode.userObject").getValue(),ToString.from(d));
+        System.out.println("Adding the object complexnode within itself with the name recursion");
+        complexnode.addObject(complexnode,"recursion");
+        System.out.println(complexnode.toStringFull(true));
+        assertEquals(complexnode.get("recursion").getId(),complexnode.get("recursion.complexnode.recursion").getId());
+        assertEquals(complexnode.get("recursion").getId(),complexnode.get("recursion.complexnode.recursion.complexnode.recursion").getId());
+        TestComplexMemoryObjectInfo ttt = new TestComplexMemoryObjectInfo();
+        initialize(ttt);
+        TestComplexMemoryObjectInfo ttt2 = new TestComplexMemoryObjectInfo();
+        initialize(ttt2);
+        ttt2.complextestlist2.add(3.12);
+        ttt.complextest = ttt2;
         System.out.println("Adding the object complex within complexnode");
-        complexnode.addObject(ttt,"complexnode.complex");
-        System.out.println("Finished creation of objects");
+        complexnode.addObject(ttt,"complex");
         System.out.println(complexnode.toStringFull());
         TestComplexMemoryObjectInfo returned = (TestComplexMemoryObjectInfo) complexnode.getObject("complex", "br.unicamp.cst.core.profiler.TestComplexMemoryObjectInfo");
         System.out.println("Recovered object: "+returned.toString());
@@ -142,6 +154,14 @@ public class TestIdea {
         System.out.println("returned: "+returned);
         System.out.println("returned.equals(ttt): "+returned.equals(ttt));
         assertEquals(returned.equals(ttt),0);
+        System.out.println("Now testing if addObject can detect recursion ...");
+        ttt.complextest = ttt;
+        complexnode = new Idea("complexnode","",0);
+        complexnode.addObject(ttt, "complex");
+        Idea recursion = complexnode.get("complex.complextest");
+        assertEquals(recursion.getName(),"complextest");
+        assertEquals(recursion.getType(),2);
+        System.out.println("recursion: "+recursion.toStringFull());
         double[] nt = new double[3];
         nt[0] = 1.2;
         nt[1] = 2.3;
