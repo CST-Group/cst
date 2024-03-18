@@ -39,7 +39,7 @@ public class Idea implements Category,Habit {
     private long id;
     private String name;
     private Object value;
-    private List<Idea> l= new CopyOnWriteArrayList<>();
+    private List<String> l= new CopyOnWriteArrayList<>();
     private int type=1;
     private String category;
     private int scope=1;  // 0: possibility, 1: existence, 2: law
@@ -326,7 +326,11 @@ public class Idea implements Category,Habit {
      * @return The list of Ideas associated with the current Idea
      */
     public List<Idea> getL() {
-        return l;
+        ArrayList<Idea> lIdeas = new ArrayList<>();
+        for (String identifier : l){
+            lIdeas.add(repo.get(identifier));
+        }
+        return lIdeas;
     }
 
     /**
@@ -334,7 +338,11 @@ public class Idea implements Category,Habit {
      * @param l The list of Ideas to substitute the old list of associated Ideas. 
      */
     public void setL(List<Idea> l) {
-        this.l = l;
+        ArrayList<String> lIdentifiers = new ArrayList<>();
+        for (Idea idea : l){
+            lIdentifiers.add(idea.getName()+"."+idea.getType());
+        }
+        this.l = lIdentifiers;
     }
     
     /**
@@ -351,7 +359,7 @@ public class Idea implements Category,Habit {
      * @return the add method also returns the associated Idea, for nesting the association of Ideas with a single call. This return can be safely ignored. 
      */
     public Idea add(Idea node) {
-        l.add(node);
+        l.add(node.getName()+"."+node.getType());
         sort();
         return(node);
     }
@@ -422,7 +430,8 @@ public class Idea implements Category,Habit {
         else {
             out = toStringPlus(withid)+"\n";
             listtoavoidloops.add(toStringPlus(withid));
-            for (Idea ln : l) {
+            for (String identifier : l) {
+                Idea ln = repo.get(identifier);
                 for (int i=0;i<level;i++) out += "   ";
                 if (listtoavoidloops.contains(ln.toStringPlus(withid)) || already_exists(ln.toStringPlus(withid))) {
                     out += ln.toStringPlus(withid)+" #\n";
