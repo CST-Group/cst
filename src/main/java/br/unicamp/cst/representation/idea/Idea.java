@@ -58,7 +58,8 @@ public class Idea implements Category,Habit {
      * This variable stores the last Id used while creating new Ideas. 
      */
     public static long lastId = 0;
-    
+    public static CopyOnWriteArrayList<Long> avaiableIds = new CopyOnWriteArrayList<>();
+
     private static final String CDOUBLE = "java.lang.Double";
     private static final String CFLOAT = "java.lang.Float";
     private static final String CINT = "java.lang.Integer";
@@ -78,7 +79,12 @@ public class Idea implements Category,Habit {
      * last id created so far is stored in the <i>lastId</i> static variable. 
      * @return the generated new id
      */
-    public static long genId() {
+    private static long genId() {
+        if (!avaiableIds.isEmpty()) {
+            long nextId = avaiableIds.get(0);
+            avaiableIds.remove(nextId);
+            return nextId;
+        }
         return(lastId++);
     }
     /**
@@ -129,7 +135,11 @@ public class Idea implements Category,Habit {
     public Idea(String name, Object value, String category, int scope) {
         this(name,value,guessType(category,scope),category,scope);
     }
-    
+
+    public Idea(String name, Object value, int type, String category, int scope) {
+        createIdea(name,value,type,category,scope);
+    }
+
     /**
      * This constructor initializes the Idea with a name, a value, a type, a category and a scope.
      * The value can be any Java object. The type is an integer number, which
@@ -160,9 +170,9 @@ public class Idea implements Category,Habit {
      * @param category The category assigned to the Idea
      * @param scope The scope assigned to the Idea (0: possibility, 1: existence, 2: law)
      */
-    public Idea(String name, Object value, int type, String category, int scope) {
+    private Idea(String name, Object value, int type, String category, int scope, long id) {
         this.name = name;
-        id = genId();
+        this.id = id;
         if (value instanceof String) {
             String svalue = (String) value;
             try {
@@ -199,18 +209,22 @@ public class Idea implements Category,Habit {
      * @return The newly created Idea
      */
     public synchronized static Idea createIdea(String name, Object value, int type) {
+        return createIdea(name, value,type, DEFAULT_CATEGORY, 1);
+    }
+
+    public synchronized static Idea createIdea(String name, Object value, int type, String category, int scope) {
         Idea ret = repo.get(name+"."+type);
         if (ret == null) {
-            ret = new Idea(name,value,type);
+            ret = new Idea(name,value,type, category, scope, genId());
             repo.put(name+"."+type, ret);
         }
-        else { 
+        else {
             ret.setValue(value);
             ret.l= new CopyOnWriteArrayList<>();
-        }    
+        }
         return(ret);
     }
-    
+
     public static int guessType(String category, int scope) {
         int guess = 0;
         if (category != null) {
