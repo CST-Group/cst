@@ -11,19 +11,15 @@
 package br.unicamp.cst.representation.idea;
 
 import br.unicamp.cst.support.ToString;
+import org.jetbrains.annotations.NotNull;
+
 import java.lang.reflect.Array;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.lang.reflect.ParameterizedType;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Date;
-import java.util.Enumeration;
-import java.util.HashMap;
-import java.util.List;
-import java.util.TimeZone;
+import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.logging.Level;
@@ -340,7 +336,7 @@ public class Idea implements Category,Habit {
     public void setL(List<Idea> l) {
         ArrayList<String> lIdentifiers = new ArrayList<>();
         for (Idea idea : l){
-            lIdentifiers.add(idea.getName()+"."+idea.getType());
+            lIdentifiers.add(getIdentifier(idea));
         }
         this.l = lIdentifiers;
     }
@@ -359,11 +355,23 @@ public class Idea implements Category,Habit {
      * @return the add method also returns the associated Idea, for nesting the association of Ideas with a single call. This return can be safely ignored. 
      */
     public Idea add(Idea node) {
-        l.add(node.getName()+"."+node.getType());
+        l.add(getIdentifier(node));
         sort();
         return(node);
     }
-    
+
+
+    public Idea remove(Idea node){
+        String identifier = getIdentifier(node);
+        l.remove(identifier);
+        return node;
+    }
+
+    @NotNull
+    private static String getIdentifier(Idea node) {
+        return node.getName() + "." + node.getType();
+    }
+
     /**
      * This static method is used to reset the list of known names used by the createIdea factory
      */
@@ -1368,5 +1376,26 @@ public class Idea implements Category,Habit {
         return this.l.isEmpty();
     }
     
-    
+    private static synchronized void free(Idea node){
+        String identifier = getIdentifier(node);
+        long id = node.getId();
+        avaiableIds.add(id);
+        repo.remove(identifier);
+    }
+
+    private static synchronized void cleanRepo(){
+        Set<String> existingLinks = new HashSet<>();
+        for (Map.Entry<String, Idea> aa : repo.entrySet()){
+            existingLinks.addAll(aa.getValue().l);
+        }
+
+        List<Idea> garbage = new ArrayList<>();
+        for (Map.Entry<String, Idea> aa : repo.entrySet()){
+            if (!existingLinks.contains(aa.getKey()))
+                garbage.add(aa.getValue());
+        }
+
+        for (Idea delete : garbage)
+            free(delete);
+    }
 }
