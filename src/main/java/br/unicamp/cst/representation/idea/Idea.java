@@ -13,6 +13,7 @@ package br.unicamp.cst.representation.idea;
 import br.unicamp.cst.support.ToString;
 import org.jetbrains.annotations.NotNull;
 
+import java.lang.ref.WeakReference;
 import java.lang.reflect.Array;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
@@ -47,7 +48,7 @@ public class Idea implements Category,Habit {
      * Idea with the same name. This variable provides a global list with all known 
      * Ideas created so far. 
      */
-    public static ConcurrentHashMap<String,Idea> repo = new ConcurrentHashMap<>();
+    public static ConcurrentHashMap<String, IdeaReferrant> repo = new ConcurrentHashMap<>();
     // This list is used while converting a Java Object to an Idea, to avoid recursions
     transient static CopyOnWriteArrayList<Object> listtoavoidloops = new CopyOnWriteArrayList<>();
     /**
@@ -209,16 +210,25 @@ public class Idea implements Category,Habit {
     }
 
     public synchronized static Idea createIdea(String name, Object value, int type, String category, int scope) {
-        Idea ret = repo.get(name+"."+type);
-        if (ret == null) {
-            ret = new Idea(name,value,type, category, scope, genId());
-            repo.put(name+"."+type, ret);
+        String ideaIdentfier = name + "." + type;
+        IdeaReferrant repoRef = repo.get(ideaIdentfier);
+        Idea returnIdea;
+        if (repoRef == null) {
+            returnIdea = new Idea(name,value,type, category, scope, genId());
+            repo.put(ideaIdentfier, new IdeaReferrant(returnIdea));
         }
         else {
-            ret.setValue(value);
-            ret.l= new CopyOnWriteArrayList<>();
+            if (repoRef.isFree()){
+                free(ideaIdentfier);
+                returnIdea = new Idea(name,value,type, category, scope, genId());
+                repo.put(ideaIdentfier, new IdeaReferrant(returnIdea));
+            } else {
+                returnIdea = repoRef.getIdea();
+                returnIdea.setValue(value);
+                returnIdea.l= new CopyOnWriteArrayList<>();
+            }
         }
-        return(ret);
+        return(returnIdea);
     }
 
     public static int guessType(String category, int scope) {
@@ -324,7 +334,7 @@ public class Idea implements Category,Habit {
     public List<Idea> getL() {
         ArrayList<Idea> lIdeas = new ArrayList<>();
         for (String identifier : l){
-            lIdeas.add(repo.get(identifier));
+            lIdeas.add(repo.get(identifier).getIdea());
         }
         return lIdeas;
     }
@@ -439,7 +449,7 @@ public class Idea implements Category,Habit {
             out = toStringPlus(withid)+"\n";
             listtoavoidloops.add(toStringPlus(withid));
             for (String identifier : l) {
-                Idea ln = repo.get(identifier);
+                Idea ln = repo.get(identifier).getIdea();
                 for (int i=0;i<level;i++) out += "   ";
                 if (listtoavoidloops.contains(ln.toStringPlus(withid)) || already_exists(ln.toStringPlus(withid))) {
                     out += ln.toStringPlus(withid)+" #\n";
@@ -1376,26 +1386,44 @@ public class Idea implements Category,Habit {
         return this.l.isEmpty();
     }
     
-    private static synchronized void free(Idea node){
-        String identifier = getIdentifier(node);
-        long id = node.getId();
+    private static synchronized void free(String identifier){
+        IdeaReferrant ref = repo.get(identifier);
+        long id = ref.getId();
         avaiableIds.add(id);
         repo.remove(identifier);
     }
 
     private static synchronized void cleanRepo(){
-        Set<String> existingLinks = new HashSet<>();
-        for (Map.Entry<String, Idea> aa : repo.entrySet()){
-            existingLinks.addAll(aa.getValue().l);
+        List<String> garbage = new ArrayList<>();
+        for (Map.Entry<String, IdeaReferrant> aa : repo.entrySet()){
+            if (aa.getValue().isFree())
+                garbage.add(aa.getKey());
         }
 
-        List<Idea> garbage = new ArrayList<>();
-        for (Map.Entry<String, Idea> aa : repo.entrySet()){
-            if (!existingLinks.contains(aa.getKey()))
-                garbage.add(aa.getValue());
-        }
-
-        for (Idea delete : garbage)
+        for (String delete : garbage)
             free(delete);
+    }
+
+    static class IdeaReferrant{
+
+        private WeakReference<Idea> referant;
+        private long id;
+
+        protected IdeaReferrant(Idea referant){
+            this.referant = new WeakReference<>(referant);
+            id = referant.getId();
+        }
+
+        protected boolean isFree(){
+            return referant.get() == null;
+        }
+
+        protected long getId(){
+            return id;
+        }
+
+        protected Idea getIdea(){
+            return referant.get();
+        }
     }
 }
