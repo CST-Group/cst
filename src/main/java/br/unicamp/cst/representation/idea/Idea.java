@@ -36,7 +36,7 @@ public class Idea implements Category,Habit {
     private long id;
     private String name;
     private Object value;
-    private List<String> l= new CopyOnWriteArrayList<>();
+    private List<Idea> l= new CopyOnWriteArrayList<>();
     private int type=1;
     private String category;
     private int scope=1;  // 0: possibility, 1: existence, 2: law
@@ -134,7 +134,7 @@ public class Idea implements Category,Habit {
     }
 
     public Idea(String name, Object value, int type, String category, int scope) {
-        createIdea(name,value,type,category,scope);
+        Idea ref = createIdea(name,value,type,category,scope);
     }
 
     /**
@@ -190,8 +190,8 @@ public class Idea implements Category,Habit {
         if (scope >= 0 && scope <=2) this.scope = scope;
         else this.scope = 1;
     }
-    
-    
+
+
     
     /**
      * The createIdea method is used as a static Idea factory, which tries to reuse Ideas with the same name. 
@@ -332,11 +332,7 @@ public class Idea implements Category,Habit {
      * @return The list of Ideas associated with the current Idea
      */
     public List<Idea> getL() {
-        ArrayList<Idea> lIdeas = new ArrayList<>();
-        for (String identifier : l){
-            lIdeas.add(repo.get(identifier).getIdea());
-        }
-        return lIdeas;
+        return l;
     }
 
     /**
@@ -344,11 +340,7 @@ public class Idea implements Category,Habit {
      * @param l The list of Ideas to substitute the old list of associated Ideas. 
      */
     public void setL(List<Idea> l) {
-        ArrayList<String> lIdentifiers = new ArrayList<>();
-        for (Idea idea : l){
-            lIdentifiers.add(getIdentifier(idea));
-        }
-        this.l = lIdentifiers;
+        this.l = l;
     }
     
     /**
@@ -365,7 +357,7 @@ public class Idea implements Category,Habit {
      * @return the add method also returns the associated Idea, for nesting the association of Ideas with a single call. This return can be safely ignored. 
      */
     public Idea add(Idea node) {
-        l.add(getIdentifier(node));
+        l.add(node);
         sort();
         return(node);
     }
@@ -448,8 +440,7 @@ public class Idea implements Category,Habit {
         else {
             out = toStringPlus(withid)+"\n";
             listtoavoidloops.add(toStringPlus(withid));
-            for (String identifier : l) {
-                Idea ln = repo.get(identifier).getIdea();
+            for (Idea ln : l) {
                 for (int i=0;i<level;i++) out += "   ";
                 if (listtoavoidloops.contains(ln.toStringPlus(withid)) || already_exists(ln.toStringPlus(withid))) {
                     out += ln.toStringPlus(withid)+" #\n";
@@ -1393,7 +1384,7 @@ public class Idea implements Category,Habit {
         repo.remove(identifier);
     }
 
-    private static synchronized void cleanRepo(){
+    public static synchronized void cleanRepo(){
         List<String> garbage = new ArrayList<>();
         for (Map.Entry<String, IdeaReferrant> aa : repo.entrySet()){
             if (aa.getValue().isFree())

@@ -414,7 +414,7 @@ public class TestIdea {
         i = new Idea("test","3.0");
         assertEquals(i.getValue(),3.0);
     }
-    
+
     @Test public void testCreateIdea() {
         Idea i = Idea.createIdea("test", l, 0);
         Idea i2 = Idea.createIdea("test", l, 1);
@@ -425,7 +425,7 @@ public class TestIdea {
         assertEquals(i2,i4);
         System.out.println("REPO: ");
         Idea.repo.forEach((key, value) -> {
-            System.out.println("Key=" + key + ", Value=" + value.getName()+","+value.getType());
+            System.out.println("Key=" + key + ", Value=" + value.getIdea().getName()+","+value.getIdea().getType());
         });
     }
     
