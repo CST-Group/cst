@@ -415,7 +415,7 @@ public class TestIdea {
         assertEquals(i.getValue(),3.0);
     }
 
-    @Test public void testCreateIdea() {
+    @Test public void testCreateIdeaReturnsPreviousIdea() {
         Idea i = Idea.createIdea("test", l, 0);
         Idea i2 = Idea.createIdea("test", l, 1);
         Idea i3 = Idea.createIdea("test", l, 1);
@@ -427,6 +427,99 @@ public class TestIdea {
         Idea.repo.forEach((key, value) -> {
             System.out.println("Key=" + key + ", Value=" + value.getIdea().getName()+","+value.getIdea().getType());
         });
+    }
+
+    @Test public void testRepoDeletesUnusedIdeas(){
+        System.out.println("Initial repository size: " + Idea.repo.size());
+        Idea.cleanRepo();
+        System.out.println("After clean up repository size: " + Idea.repo.size());
+        int initialSize = Idea.repo.size();
+        Idea i1 = Idea.createIdea("test", 1, 0);
+        Idea i2 = Idea.createIdea("test2", 2, 1);
+        long i1ID = i1.getId();
+        long i2ID = i2.getId();
+        i1.add(i2);
+        assertEquals(2, Idea.repo.size() - initialSize);
+        i2 = null;
+
+        System.gc();
+        try {
+            Thread.sleep(100);
+        } catch (InterruptedException e) {
+            throw new RuntimeException(e);
+        }
+
+        Idea.cleanRepo();
+        assertEquals(2, Idea.repo.size() - initialSize);
+        i2 = Idea.createIdea("test2", 2, 1);
+        assertEquals(i2ID, i2.getId());
+
+        i1 = null;
+        System.gc();
+        try {
+            Thread.sleep(100);
+        } catch (InterruptedException e) {
+            throw new RuntimeException(e);
+        }
+
+        Idea.cleanRepo();
+        assertEquals(1, Idea.repo.size() - initialSize);
+        assertEquals(1, Idea.avaiableIds.size());
+        assertEquals(i1ID, Idea.avaiableIds.get(0));
+
+        i2 = null;
+        System.gc();
+        try {
+            Thread.sleep(100);
+        } catch (InterruptedException e) {
+            throw new RuntimeException(e);
+        }
+        Idea.cleanRepo();
+        assertEquals(0, Idea.repo.size());
+    }
+
+    @Test public void testRepoReuseOfIds(){
+        System.out.println("Initial repository size: " + Idea.repo.size());
+        Idea.cleanRepo();
+        System.out.println("After clean up repository size: " + Idea.repo.size());
+        int initialSize = Idea.repo.size();
+        Idea i1 = Idea.createIdea("test", 1, 0);
+        Idea i2 = Idea.createIdea("test2", 2, 1);
+        long i1ID = i1.getId();
+        long i2ID = i2.getId();
+        assertEquals(2, Idea.repo.size() - initialSize);
+
+        i1 = null;
+        System.gc();
+        try {
+            Thread.sleep(100);
+        } catch (InterruptedException e) {
+            throw new RuntimeException(e);
+        }
+        Idea.cleanRepo();
+        Idea i3 = Idea.createIdea("test3", 3, 2);
+        assertEquals(i1ID, i3.getId());
+
+        i2 = null;
+        System.gc();
+        try {
+            Thread.sleep(100);
+        } catch (InterruptedException e) {
+            throw new RuntimeException(e);
+        }
+        Idea.cleanRepo();
+        i3 = null;
+        System.gc();
+        try {
+            Thread.sleep(100);
+        } catch (InterruptedException e) {
+            throw new RuntimeException(e);
+        }
+
+        i1 = Idea.createIdea("test3", 3, 2);
+        assertEquals(i2ID, i1.getId());
+        assertEquals(1, Idea.avaiableIds.size());
+        assertEquals(i1ID, Idea.avaiableIds.get(0));
     }
     
     @Test public void testCreateJavaObject() {

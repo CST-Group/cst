@@ -134,7 +134,8 @@ public class Idea implements Category,Habit {
     }
 
     public Idea(String name, Object value, int type, String category, int scope) {
-        Idea ref = createIdea(name,value,type,category,scope);
+        this(name, value, type, category, scope, genId());
+        //Idea ref = createIdea(name,value,type,category,scope);
     }
 
     /**
