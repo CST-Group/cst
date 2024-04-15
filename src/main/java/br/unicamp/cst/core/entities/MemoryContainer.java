@@ -53,8 +53,8 @@ public class MemoryContainer implements Memory {
 	 */
 	private Policy policy;
         
-        private Memory last;
-        private int lasti=0;
+        private volatile Memory last;
+        private volatile int lasti=0;
         private Random rand = new Random();
 
 	/**
