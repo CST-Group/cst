@@ -455,19 +455,20 @@ public class TestMemoryObserver {
                 System.out.println("The test took "+amountwait+" miliseconds");
                 int nout = (int) output.getI();
 		System.out.println("Result: "+nout+" "+c.getActivation());
-                //assertEquals(nout,1);
-		//c.setPublishSubscribe(false);
+                assertEquals(nout,1);
+		c.setPublishSubscribe(false);
                 
-//                ts = output.getTimestamp();
-//                startwait = System.currentTimeMillis();
-//                while(ts == output.getTimestamp()) {
-//                    if (System.currentTimeMillis() - startwait > 2000) {
-//                        System.out.println("Restarting timer due to inactivity");
-//                        m.start();
-//                    }
-//                    if (System.currentTimeMillis() - startwait > 5000) fail("Some problem have occurred 2 !");
-//                }
-//                System.out.println("Result: "+output.getI()+" "+c.getActivation());
+                ts = output.getTimestamp();
+                startwait = System.currentTimeMillis();
+                while(ts == output.getTimestamp()) {
+                    try{Thread.sleep(100);}catch(Exception e){};
+                    if (System.currentTimeMillis() - startwait > 2000) {
+                        System.out.println("Restarting timer due to inactivity");
+                        m.start();
+                    }
+                    if (System.currentTimeMillis() - startwait > 5000) fail("Some problem have occurred 2 !");
+                }
+                System.out.println("Result: "+output.getI()+" "+c.getActivation());
                 
                 m.shutDown();
 		//assertEquals(0, c.getCounter());
