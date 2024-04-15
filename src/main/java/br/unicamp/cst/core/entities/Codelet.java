@@ -131,7 +131,7 @@ public abstract class Codelet implements Runnable, MemoryObserver {
 	 */
 	public abstract void proc();
 
-	private Timer timer = new Timer();
+	private volatile Timer timer = new Timer();
 
 	/**
 	 * Option for profiling execution times
