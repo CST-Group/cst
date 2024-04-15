@@ -83,7 +83,7 @@ public abstract class Codelet implements Runnable, MemoryObserver {
 	protected boolean loop = true; //
 	
 	/** defines if codelet is a memory observer (runs when memory input changes) */
-	protected boolean isMemoryObserver = false; //
+	protected volatile boolean isMemoryObserver = false; //
 	
 	/**
 	 * If the proc() method is set to be called automatically in a loop, this
