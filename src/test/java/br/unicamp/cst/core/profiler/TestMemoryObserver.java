@@ -27,7 +27,7 @@ import org.junit.jupiter.api.Test;
 
 class CodeletToTest extends Codelet {
 
-	private int counter = 0;
+	private volatile int counter = 0;
 
 	public int getCounter() {
 		return counter;
@@ -453,6 +453,7 @@ public class TestMemoryObserver {
 		System.out.println("Result: "+output.getI()+" "+c.getActivation());
                 assertEquals(nout,1);
 		c.setPublishSubscribe(false);
+                c.start();
                 ts = output.getTimestamp();
                 startwait = System.currentTimeMillis();
                 while(ts == output.getTimestamp()) {
