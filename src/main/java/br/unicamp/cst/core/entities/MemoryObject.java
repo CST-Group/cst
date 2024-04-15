@@ -47,7 +47,7 @@ public class MemoryObject implements Memory, Serializable {
 	/**
 	 * Date when the data was "created" in milliseconds
 	 */
-	private Long timestamp;
+	private volatile Long timestamp;
 
 	/**
 	 * An evaluation of this memory object based on inner references
@@ -60,7 +60,7 @@ public class MemoryObject implements Memory, Serializable {
 	private volatile Object I;
 
 	/**
-	 * Type of the memory object
+	 * Name of the memory object
 	 */
 	private String name;
 	
