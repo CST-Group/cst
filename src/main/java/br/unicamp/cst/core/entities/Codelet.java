@@ -58,29 +58,29 @@ public abstract class Codelet implements Runnable, MemoryObserver {
 	/**
 	 * Activation level of the Codelet. Ranges from 0.0 to 1.0d.
 	 */
-	protected double activation = 0.0d;
+	protected volatile double activation = 0.0d;
 
 	/**
 	 * Threshold of the codelet, which is used to decide if it runs or not. If
 	 * activation is equal or greater than activation, codelet runs
 	 * proc().Ranges from 0.0 to 1.0d.
 	 */
-	protected double threshold = 0.0d;
+	protected volatile double threshold = 0.0d;
 	/**
 	 * Input memories, the ones that are read.
 	 */
-	protected List<Memory> inputs = new ArrayList<Memory>();
+	protected volatile List<Memory> inputs = new ArrayList<Memory>();
 	/**
 	 * Output memories, the ones that are written.
 	 */
-	protected List<Memory> outputs = new ArrayList<Memory>();
+	protected volatile List<Memory> outputs = new ArrayList<Memory>();
 	/**
 	 * Input memories, the ones that were broadcasted.
 	 */
-	protected List<Memory> broadcast = new ArrayList<Memory>();
+	protected volatile List<Memory> broadcast = new ArrayList<Memory>();
 
 	/** defines if proc() should be automatically called in a loop */
-	protected boolean loop = true; //
+	protected volatile boolean loop = true; //
 	
 	/** defines if codelet is a memory observer (runs when memory input changes) */
 	protected volatile boolean isMemoryObserver = false; //
@@ -97,7 +97,7 @@ public abstract class Codelet implements Runnable, MemoryObserver {
 	 * A codelet is a priori enabled to run its proc(). However, if it tries to
 	 * read from a given output and fails, it becomes not able to do so.
 	 */
-	private boolean enabled = true;
+	private volatile boolean enabled = true;
 
 	/** Must be zero for this codelet to be enabled */
 	private int enable_count = 0;
@@ -106,10 +106,10 @@ public abstract class Codelet implements Runnable, MemoryObserver {
 	protected String name = Thread.currentThread().getName();
 
 	/** The time for the last proc() execution for profiling purposes */
-	long laststarttime = 0l;
+	volatile long laststarttime = 0l;
 
 	/** This variable is a safe lock for multithread access */
-	public Lock lock = new ReentrantLock();
+	public volatile Lock lock = new ReentrantLock();
 
 	/**
 	 * This method is used in every Codelet to capture input, broadcast and
