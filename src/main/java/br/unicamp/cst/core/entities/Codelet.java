@@ -172,8 +172,10 @@ public abstract class Codelet implements Runnable, MemoryObserver {
 	 * Starts this codelet execution.
 	 */
 	public synchronized void start() {
+            if (isMemoryObserver == false) {
 		Thread t = new Thread(this);
 		t.start();
+            }    
 	}
 
 	/**

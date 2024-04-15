@@ -452,7 +452,7 @@ public class TestMemoryObserver {
                 int nout = (int) output.getI();
 		System.out.println("Result: "+output.getI()+" "+c.getActivation());
                 assertEquals(nout,1);
-		c.setPublishSubscribe(false);
+		//c.setPublishSubscribe(false);
                 
 //                ts = output.getTimestamp();
 //                startwait = System.currentTimeMillis();
