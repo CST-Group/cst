@@ -400,8 +400,8 @@ public class TestMemoryObserver {
 		MemoryContainer input = m.createMemoryContainer("INPUT_NUMBER");
 		MemoryObject output = m.createMemoryObject("OUTPUT_NUMBER", 0.32);
                 Codelet c = new Codelet() {
-                    MemoryContainer input_number;
-                    MemoryObject output_number;
+                    volatile MemoryContainer input_number;
+                    volatile MemoryObject output_number;
                     public int counter = 0;
                     @Override
                     public void accessMemoryObjects() {
