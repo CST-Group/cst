@@ -453,8 +453,7 @@ public class TestMemoryObserver {
 		System.out.println("Result: "+output.getI()+" "+c.getActivation());
                 assertEquals(nout,1);
 		c.setPublishSubscribe(false);
-                c.stop();
-                c.start();
+                m.start();
                 ts = output.getTimestamp();
                 startwait = System.currentTimeMillis();
                 while(ts == output.getTimestamp()) {
