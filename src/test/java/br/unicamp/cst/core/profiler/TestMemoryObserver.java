@@ -444,13 +444,13 @@ public class TestMemoryObserver {
                 //while(ts == output.getTimestamp()) System.out.print(".");
                 long startwait = System.currentTimeMillis();
                 long amountwait=0;
-                while(ts == output.getTimestamp() && amountwait < 3000) {
-                    amountwait = System.currentTimeMillis() - startwait;
-                    if (amountwait > 2000) {
-                        System.out.println("I am waiting too long ... something wrong happened");
-                    }
-                    //if (System.currentTimeMillis() - startwait > 5000) fail("Some problem have occurred 1 !");
-                }
+//                while(ts == output.getTimestamp() && amountwait < 3000) {
+//                    amountwait = System.currentTimeMillis() - startwait;
+//                    if (amountwait > 2000) {
+//                        System.out.println("I am waiting too long ... something wrong happened");
+//                    }
+//                    //if (System.currentTimeMillis() - startwait > 5000) fail("Some problem have occurred 1 !");
+//                }
                 System.out.println("The test took "+amountwait+" miliseconds");
                 int nout = (int) output.getI();
 		System.out.println("Result: "+nout+" "+c.getActivation());
