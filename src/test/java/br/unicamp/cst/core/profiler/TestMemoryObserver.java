@@ -444,7 +444,7 @@ public class TestMemoryObserver {
                 //while(ts == output.getTimestamp()) System.out.print(".");
                 long startwait = System.currentTimeMillis();
                 long amountwait=0;
-                while(ts == output.getTimestamp() || amountwait > 3000) {
+                while(ts == output.getTimestamp() && amountwait < 3000) {
                     amountwait = System.currentTimeMillis() - startwait;
                     if (amountwait > 2000) {
                         System.out.println("I am waiting too long ... something wrong happened");
