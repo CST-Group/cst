@@ -402,7 +402,7 @@ public class TestMemoryObserver {
                 Codelet c = new Codelet() {
                     volatile MemoryContainer input_number;
                     volatile MemoryObject output_number;
-                    public int counter = 0;
+                    public volatile int counter = 0;
                     @Override
                     public void accessMemoryObjects() {
                         input_number = (MemoryContainer) this.getInput("INPUT_NUMBER");
