@@ -461,7 +461,7 @@ public class TestMemoryObserver {
                 ts = output.getTimestamp();
                 startwait = System.currentTimeMillis();
                 while(ts == output.getTimestamp()) {
-                    try{Thread.sleep(100);}catch(Exception e){};
+                    try{Thread.sleep(400);}catch(Exception e){};
                     if (System.currentTimeMillis() - startwait > 2000) {
                         System.out.println("Restarting timer due to inactivity");
                         m.start();
