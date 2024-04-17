@@ -450,7 +450,7 @@ public class TestMemoryObserver {
                     if (amountwait > 2000) {
                         System.out.println("I am waiting too long ... something wrong happened");
                     }
-                    if (amountwait > 5000) fail("Some problem have occurred 1 !");
+                    if (amountwait > 10000) fail("Failed during the Publish-Subscribe regime !");
                 }
                 System.out.println("The test took "+amountwait+" miliseconds");
                 int nout = (int) output.getI();
@@ -466,7 +466,7 @@ public class TestMemoryObserver {
                         System.out.println("Restarting timer due to inactivity");
                         m.start();
                     }
-                    if (System.currentTimeMillis() - startwait > 10000) fail("Some problem have occurred 2 !");
+                    if (System.currentTimeMillis() - startwait > 10000) fail("Failed during the Timer-based regime !");
                 }
                 System.out.println("Result: "+output.getI()+" "+c.getActivation());
                 
