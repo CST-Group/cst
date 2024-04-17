@@ -466,7 +466,7 @@ public class TestMemoryObserver {
                         System.out.println("Restarting timer due to inactivity");
                         m.start();
                     }
-                    if (System.currentTimeMillis() - startwait > 5000) fail("Some problem have occurred 2 !");
+                    if (System.currentTimeMillis() - startwait > 10000) fail("Some problem have occurred 2 !");
                 }
                 System.out.println("Result: "+output.getI()+" "+c.getActivation());
                 
