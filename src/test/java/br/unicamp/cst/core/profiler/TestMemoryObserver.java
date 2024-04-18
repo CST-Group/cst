@@ -55,6 +55,9 @@ class CodeletToTest extends Codelet {
 }
 
 public class TestMemoryObserver {
+    
+        private volatile MemoryContainer input_container;
+        private volatile MemoryObject output;
 
 	@Test
 	public void noMemoryChangeTest() throws InterruptedException {
@@ -397,8 +400,8 @@ public class TestMemoryObserver {
         @Test
 	public void changeOfRegimeTestMemoryContainer() {
                 Mind m = new Mind();
-		MemoryContainer input = m.createMemoryContainer("INPUT_NUMBER");
-		MemoryObject output = m.createMemoryObject("OUTPUT_NUMBER", 0.32);
+		input_container = m.createMemoryContainer("INPUT_NUMBER");
+		output = m.createMemoryObject("OUTPUT_NUMBER", 0.32);
                 Codelet c = new Codelet() {
                     volatile MemoryContainer input_number;
                     volatile MemoryObject output_number;
@@ -432,15 +435,15 @@ public class TestMemoryObserver {
                         }
                     }
                 };
-		c.addInput(input);
+		c.addInput(input_container);
 		c.addOutput(output);
 		m.insertCodelet(c);
-                input.setI(0);
+                input_container.setI(0);
 		c.setPublishSubscribe(true);
                 m.start();
 		//setI in Memory Container and verify if Codelet was notified
                 long ts = output.getTimestamp();
-                input.setI(0,0);
+                input_container.setI(0,0);
                 //while(ts == output.getTimestamp()) System.out.print(".");
                 long startwait = System.currentTimeMillis();
                 long amountwait=0;
