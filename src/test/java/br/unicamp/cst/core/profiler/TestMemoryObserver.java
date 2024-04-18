@@ -447,7 +447,7 @@ public class TestMemoryObserver {
                 //while(ts == output.getTimestamp()) System.out.print(".");
                 long startwait = System.currentTimeMillis();
                 long amountwait=0;
-                while(ts == output.getTimestamp()) {
+                while(ts == output.getTimestamp() && amountwait < 10000) {
                     try{Thread.sleep(100);}catch(Exception e){};
                     amountwait = System.currentTimeMillis() - startwait;
                     if (amountwait > 2000) {
@@ -466,7 +466,7 @@ public class TestMemoryObserver {
                 ts = output.getTimestamp();
                 startwait = System.currentTimeMillis();
                 amountwait = 0;
-                while(ts == output.getTimestamp()) {
+                while(ts == output.getTimestamp() && amountwait < 10000) {
                     try{Thread.sleep(400);}catch(Exception e){};
                     amountwait = System.currentTimeMillis() - startwait;
                     if (amountwait > 2000) {
