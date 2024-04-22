@@ -12,7 +12,7 @@ import java.util.HashMap;
 
 public abstract class HttpCodelet extends Codelet {
     
-    private static final String application_json = "application/json";
+    private static final String APPLICATION_JSON = "application/json";
 
     public String sendPOST(String POST_URL, String POST_PARAMS, String method) throws IOException {
         URL obj = new URL(POST_URL);
@@ -97,7 +97,7 @@ public abstract class HttpCodelet extends Codelet {
             String paramsString = prepareParams(params);
             return sendPOSTForm(POST_URL,  paramsString);
         }
-        else if (method.equals(application_json)){
+        else if (method.equals(APPLICATION_JSON)){
             String payload = IdeaToJSON(params);
             return sendPOSTJSON(POST_URL,  payload);
         }
@@ -141,7 +141,7 @@ public abstract class HttpCodelet extends Codelet {
     }
 
     public String sendPOSTJSON(String POST_URL, String payload) throws IOException {
-        String method = application_json;
+        String method = APPLICATION_JSON;
         URL obj = new URL(POST_URL);
         HttpURLConnection con = (HttpURLConnection) obj.openConnection();
         con.setRequestMethod("POST");
@@ -151,7 +151,7 @@ public abstract class HttpCodelet extends Codelet {
         con.setRequestProperty("Content-Type", method);
         con.setRequestProperty("mimetype", method);
 
-        con.setRequestProperty("Accept", application_json);
+        con.setRequestProperty("Accept", APPLICATION_JSON);
         try(OutputStream os = con.getOutputStream()) {
             byte[] input = payload.getBytes(StandardCharsets.UTF_8);
             os.write(input);
