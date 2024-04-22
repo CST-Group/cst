@@ -11,6 +11,8 @@ import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
 
 public abstract class HttpCodelet extends Codelet {
+    
+    private static final String application_json = "application/json";
 
     public String sendPOST(String POST_URL, String POST_PARAMS, String method) throws IOException {
         URL obj = new URL(POST_URL);
@@ -95,7 +97,7 @@ public abstract class HttpCodelet extends Codelet {
             String paramsString = prepareParams(params);
             return sendPOSTForm(POST_URL,  paramsString);
         }
-        else if (method.equals("application/json")){
+        else if (method.equals(application_json)){
             String payload = IdeaToJSON(params);
             return sendPOSTJSON(POST_URL,  payload);
         }
@@ -122,7 +124,6 @@ public abstract class HttpCodelet extends Codelet {
         // For POST only - END
 
         int responseCode = con.getResponseCode();
-        //System.out.println("POST Response Code :: " + responseCode);
 
         if (responseCode == HttpURLConnection.HTTP_OK) { //success
             BufferedReader in = new BufferedReader(new InputStreamReader(con.getInputStream()));
@@ -140,7 +141,7 @@ public abstract class HttpCodelet extends Codelet {
     }
 
     public String sendPOSTJSON(String POST_URL, String payload) throws IOException {
-        String method = "application/json";
+        String method = application_json;
         URL obj = new URL(POST_URL);
         HttpURLConnection con = (HttpURLConnection) obj.openConnection();
         con.setRequestMethod("POST");
@@ -150,7 +151,7 @@ public abstract class HttpCodelet extends Codelet {
         con.setRequestProperty("Content-Type", method);
         con.setRequestProperty("mimetype", method);
 
-        con.setRequestProperty("Accept", "application/json");
+        con.setRequestProperty("Accept", application_json);
         try(OutputStream os = con.getOutputStream()) {
             byte[] input = payload.getBytes(StandardCharsets.UTF_8);
             os.write(input);
@@ -159,7 +160,6 @@ public abstract class HttpCodelet extends Codelet {
         // For POST only - END
 
         int responseCode = con.getResponseCode();
-        //System.out.println("POST Response Code :: " + responseCode);
 
         if (responseCode == HttpURLConnection.HTTP_OK) { //success
             BufferedReader in = new BufferedReader(new InputStreamReader(con.getInputStream()));
