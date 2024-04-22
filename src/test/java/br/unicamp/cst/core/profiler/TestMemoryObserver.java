@@ -445,7 +445,6 @@ public class TestMemoryObserver {
                 input_container.setI(0);
                 System.out.println("Settting up Public-Subscribe");
 		c.setPublishSubscribe(true);
-                c.setProfiling(true);
                 m.start();
 		//setI in Memory Container and verify if Codelet was notified
                 long ts = output.getTimestamp();
@@ -454,7 +453,7 @@ public class TestMemoryObserver {
                 long startwait = System.currentTimeMillis();
                 long amountwait=0;
                 long myoutput = output.getTimestamp();
-                while(ts == myoutput) {
+                while(ts == myoutput && amountwait < 11000 ) {
                     synchronized(output) {
                     myoutput = output.getTimestamp();
                     }
@@ -464,8 +463,8 @@ public class TestMemoryObserver {
                         System.out.println("I am waiting too long ... something wrong happened ... myoutput: "+myoutput+" current: "+System.currentTimeMillis());
                     }
                     if (amountwait > 10000) 
-                        //fail("Failed during the Publish-Subscribe regime !");
-                        System.out.println("Failed during the Publish-Subscribe regime !"); 
+                        fail("Failed during the Publish-Subscribe regime ! startwait: "+startwait+" output: "+output.getTimestamp()+" now: "+System.currentTimeMillis());
+                        //System.out.println("Failed during the Publish-Subscribe regime !"); 
                 }
                 System.out.println("The test took "+amountwait+" miliseconds");
                 int nout = (int) output.getI();
@@ -480,7 +479,7 @@ public class TestMemoryObserver {
                 amountwait = 0;
                 myoutput = output.getTimestamp();
                 
-                while(ts == myoutput) {
+                while(ts == myoutput && amountwait < 11000) {
                     synchronized(output) {
                     myoutput = output.getTimestamp();
                     }
@@ -491,8 +490,8 @@ public class TestMemoryObserver {
                         m.start();
                     }
                     if (amountwait > 10000) 
-                        //fail("Failed during the Timer-based regime !");
-                       System.out.println("Failed during the Timer-based regime !"); 
+                        fail("Failed during the Timer-based regime ! startwait: "+startwait+" output: "+output.getTimestamp()+" now: "+System.currentTimeMillis());
+                       //System.out.println("Failed during the Timer-based regime !"); 
                 }
                 System.out.println("Result: "+output.getI()+" "+c.getActivation());
                 System.out.println("I: "+output.getI()+" TimeStamp: "+TimeStamp.getStringTimeStamp(output.getTimestamp())+" now: "+TimeStamp.getStringTimeStamp(System.currentTimeMillis()));
