@@ -448,11 +448,12 @@ public class TestMemoryObserver {
                 m.start();
 		//setI in Memory Container and verify if Codelet was notified
                 long ts = output.getTimestamp();
+                int oorig = (int) output.getI();
+                long startwait = System.currentTimeMillis();
+                long myoutput = output.getTimestamp();
                 input_container.setI(0,0);
                 //while(ts == output.getTimestamp()) System.out.print(".");
-                long startwait = System.currentTimeMillis();
                 long amountwait=0;
-                long myoutput = output.getTimestamp();
                 while(ts == myoutput && amountwait < 11000 ) {
                     synchronized(output) {
                     myoutput = output.getTimestamp();
@@ -463,7 +464,7 @@ public class TestMemoryObserver {
                         System.out.println("I am waiting too long ... something wrong happened ... myoutput: "+myoutput+" current: "+System.currentTimeMillis());
                     }
                     if (amountwait > 10000) 
-                        fail("Failed during the Publish-Subscribe regime ! startwait: "+startwait+" output: "+output.getTimestamp()+" now: "+System.currentTimeMillis());
+                        fail("Failed during the Publish-Subscribe regime ! startwait: "+startwait+" output: "+output.getTimestamp()+" now: "+System.currentTimeMillis()+" oorig: "+oorig+" opost: "+output.getI());
                         //System.out.println("Failed during the Publish-Subscribe regime !"); 
                 }
                 System.out.println("The test took "+amountwait+" miliseconds");
