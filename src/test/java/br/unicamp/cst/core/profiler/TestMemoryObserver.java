@@ -448,7 +448,7 @@ public class TestMemoryObserver {
                 m.start();
 		//setI in Memory Container and verify if Codelet was notified
                 long ts = output.getTimestamp();
-                int oorig = (int) output.getI();
+                double oorig = (double) output.getI();
                 long startwait = System.currentTimeMillis();
                 long myoutput = output.getTimestamp();
                 input_container.setI(0,0);
