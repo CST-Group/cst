@@ -18,6 +18,7 @@ import br.unicamp.cst.core.entities.MemoryContainer;
 import br.unicamp.cst.core.entities.MemoryObject;
 import br.unicamp.cst.core.entities.Mind;
 import br.unicamp.cst.core.exceptions.CodeletActivationBoundsException;
+import br.unicamp.cst.support.TimeStamp;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -337,9 +338,9 @@ public class TestMemoryObserver {
 		MemoryObject input = m.createMemoryObject("INPUT_NUMBER", 0.12);
 		MemoryObject output = m.createMemoryObject("OUTPUT_NUMBER", 0.32);
                 Codelet c = new Codelet() {
-                    MemoryObject input_number;
-                    MemoryObject output_number;
-                    public int counter = 0;
+                    volatile MemoryObject input_number;
+                    volatile MemoryObject output_number;
+                    public volatile int counter = 0;
                     @Override
                     public void accessMemoryObjects() {
                         input_number = (MemoryObject) this.getInput("INPUT_NUMBER");
@@ -356,7 +357,7 @@ public class TestMemoryObserver {
                     }
                     @Override
                     public void proc() {
-                        System.out.println("Processing");
+                        System.out.println("This is TestMemoryObject ... Processing... "+counter);
                         int n = (int) input_number.getI();
                         output_number.setI(n+1);
                         counter++;
@@ -394,22 +395,24 @@ public class TestMemoryObserver {
                 }
                 System.out.println("Result: "+output.getI()+" "+c.getActivation());
                 m.shutDown();
+                System.out.println("Waiting 2s for shutdown");
+                try{Thread.sleep(2000);}catch(Exception e){};
 		//assertEquals(0, c.getCounter());
         }
         
         @Test
 	public void changeOfRegimeTestMemoryContainer() {
                 Mind m = new Mind();
-		input_container = m.createMemoryContainer("INPUT_NUMBER");
-		output = m.createMemoryObject("OUTPUT_NUMBER", 0.32);
+		input_container = m.createMemoryContainer("INPUT_NUMBER_MC");
+		output = m.createMemoryObject("OUTPUT_NUMBER_MC", 0.32);
                 Codelet c = new Codelet() {
                     volatile MemoryContainer input_number;
                     volatile MemoryObject output_number;
                     public volatile int counter = 0;
                     @Override
                     public void accessMemoryObjects() {
-                        input_number = (MemoryContainer) this.getInput("INPUT_NUMBER");
-                        output_number = (MemoryObject) this.getOutput("OUTPUT_NUMBER");
+                        input_number = (MemoryContainer) this.getInput("INPUT_NUMBER_MC");
+                        output_number = (MemoryObject) this.getOutput("OUTPUT_NUMBER_MC");
                     }
                     @Override
                     public void calculateActivation() {
@@ -423,9 +426,10 @@ public class TestMemoryObserver {
                     }
                     @Override
                     public void proc() {
-                        System.out.println("Processing");
+                        System.out.println("TestMemoryContainer ... Processing ... "+counter);
                         int n = (int) input_number.getI();
                         output_number.setI(n+1);
+                        System.out.println("Input: "+n+" its: "+input_number.getTimestamp()+" Output: "+output_number.getI()+" ots: "+output_number.getTimestamp());
                         counter++;
                         try {
                             double a = counter;
@@ -439,7 +443,9 @@ public class TestMemoryObserver {
 		c.addOutput(output);
 		m.insertCodelet(c);
                 input_container.setI(0);
+                System.out.println("Settting up Public-Subscribe");
 		c.setPublishSubscribe(true);
+                c.setProfiling(true);
                 m.start();
 		//setI in Memory Container and verify if Codelet was notified
                 long ts = output.getTimestamp();
@@ -455,7 +461,7 @@ public class TestMemoryObserver {
                     try{Thread.sleep(100);}catch(Exception e){};
                     amountwait = System.currentTimeMillis() - startwait;
                     if (amountwait > 2000) {
-                        System.out.println("I am waiting too long ... something wrong happened");
+                        System.out.println("I am waiting too long ... something wrong happened ... myoutput: "+myoutput+" current: "+System.currentTimeMillis());
                     }
                     if (amountwait > 10000) 
                         //fail("Failed during the Publish-Subscribe regime !");
@@ -465,9 +471,11 @@ public class TestMemoryObserver {
                 int nout = (int) output.getI();
 		System.out.println("Result: "+nout+" "+c.getActivation());
                 assertEquals(nout,1);
+                System.out.println("Settting back Timer-based");
 		c.setPublishSubscribe(false);
                 output.setI(0);
                 ts = output.getTimestamp();
+                System.out.println("I: "+output.getI()+" TimeStamp: "+TimeStamp.getStringTimeStamp(output.getTimestamp())+" now: "+TimeStamp.getStringTimeStamp(System.currentTimeMillis()));
                 startwait = System.currentTimeMillis();
                 amountwait = 0;
                 myoutput = output.getTimestamp();
@@ -487,7 +495,7 @@ public class TestMemoryObserver {
                        System.out.println("Failed during the Timer-based regime !"); 
                 }
                 System.out.println("Result: "+output.getI()+" "+c.getActivation());
-                
+                System.out.println("I: "+output.getI()+" TimeStamp: "+TimeStamp.getStringTimeStamp(output.getTimestamp())+" now: "+TimeStamp.getStringTimeStamp(System.currentTimeMillis()));
                 m.shutDown();
                 nout = (int) output.getI();
                 assertEquals(nout,1);
