@@ -404,6 +404,7 @@ public class TestMemoryObserver {
 	public void changeOfRegimeTestMemoryContainer() {
                 Mind m = new Mind();
 		input_container = m.createMemoryContainer("INPUT_NUMBER_MC");
+                input_container.setI(-99);
 		output = m.createMemoryObject("OUTPUT_NUMBER_MC", 0.32);
                 Codelet c = new Codelet() {
                     volatile MemoryContainer input_number;
@@ -442,7 +443,6 @@ public class TestMemoryObserver {
 		c.addInput(input_container);
 		c.addOutput(output);
 		m.insertCodelet(c);
-                input_container.setI(0);
                 System.out.println("Settting up Public-Subscribe");
 		c.setPublishSubscribe(true);
                 m.start();
@@ -451,7 +451,9 @@ public class TestMemoryObserver {
                 double oorig = (double) output.getI();
                 long startwait = System.currentTimeMillis();
                 long myoutput = output.getTimestamp();
+                System.out.println("Before iI: "+input_container.getI()+" iTS: "+input_container.getTimestamp()+" oI: "+output.getI()+" oTS: "+output.getTimestamp());
                 input_container.setI(0,0);
+                System.out.println("After iI: "+input_container.getI()+" iTS: "+input_container.getTimestamp()+" oI: "+output.getI()+" oTS: "+output.getTimestamp());
                 //while(ts == output.getTimestamp()) System.out.print(".");
                 long amountwait=0;
                 while(ts == myoutput && amountwait < 11000 ) {
