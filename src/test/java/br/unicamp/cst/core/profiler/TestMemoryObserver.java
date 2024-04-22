@@ -443,6 +443,7 @@ public class TestMemoryObserver {
                 double oorig = (double) output.getI();
                 long startwait = System.currentTimeMillis();
                 long myoutput = output.getTimestamp();
+                try{Thread.sleep(100);}catch(Exception e){};
                 input_container.setI(0,0);
                 long amountwait=0;
                 while(ts == myoutput && amountwait < 11000 ) {
