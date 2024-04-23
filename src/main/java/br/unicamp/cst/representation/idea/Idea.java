@@ -1025,7 +1025,6 @@ public class Idea implements Category,Habit {
                     if (field.getType().isArray()) {
                           Object out = mountArray(o,field.getType().getCanonicalName());
                           try {
-                                //field.setAccessible(true);
                                 field.set(ret,out);
                             }
                             catch(Exception e) {
@@ -1041,7 +1040,6 @@ public class Idea implements Category,Habit {
                             out.add(i.getObject(i.getName(), stype));
                         }
                         try {
-                            //field.setAccessible(true);
                             field.set(ret,out);
                         }
                         catch(Exception e) {
@@ -1053,7 +1051,6 @@ public class Idea implements Category,Habit {
                         if (value == null) System.out.println("Warning: value of "+field.getName()+" is null");
                         value = convertObject(value,field.getType().getCanonicalName());
                         try {
-                            //field.setAccessible(true);
                             field.set(ret,value);
                         }
                         catch(Exception e) {
@@ -1062,7 +1059,6 @@ public class Idea implements Category,Habit {
                             if (o.getL().size() > 0) out = o.getObject(field.getName(),field.getType().getCanonicalName());
                             else out = null;
                             try {
-                                //field.setAccessible(true);
                                 field.set(ret,out);
                             } catch(Exception e2) {
                                 if (value != null)
@@ -1110,12 +1106,6 @@ public class Idea implements Category,Habit {
     private boolean trySetAccessibleTrue(Field f) {
         if (Modifier.isPublic(f.getModifiers())) return(true);
         else return(false);
-//        try {
-//            f.setAccessible(true);
-//            return(true);
-//        } catch(Exception e) {
-//            return(false);
-//        }
     }
     
     /**
@@ -1256,7 +1246,7 @@ public class Idea implements Category,Habit {
                            if (Modifier.isPrivate(field.getModifiers())) mod+=" PRIVATE";
                            if (Modifier.isTransient(field.getModifiers())) mod+=" TRANSIENT";
                            if (Modifier.isVolatile(field.getModifiers())) mod+=" VOLATILE";
-                           System.out.println(mod);
+                           Logger.getAnonymousLogger().log(Level.INFO,mod);
                        }
                    }
                    if (fo != null && fo.equals("<<NULL>>")) {
@@ -1269,7 +1259,6 @@ public class Idea implements Category,Habit {
                        String ideaname = getFullName()+"."+ToString.getSimpleName(fullname)+"."+fname;
                        Idea fi = createIdea(ideaname,"",2);
                        ao.add(fi);
-                       //System.out.println("Inserting link: "+fi.toStringFull()+" getFullName(): "+getFullName()+" fullname: "+fullname+" fname: "+fname+" ideaname: "+ideaname);
                    }
                 } catch (Exception e) {
                     Logger.getAnonymousLogger().log(Level.INFO,"I got a {0} Exception in field {1} in class Idea: {2}",new Object[]{e.getClass().getName(),fname,e.getMessage()+"-->"+e.getLocalizedMessage()});
