@@ -94,7 +94,6 @@ public class RESTMemoryObject extends MemoryObject {
             long diff = currentaccess - lastaccess;
             if (diff > refresh) {
                 String contentType = req.getContentType();
-                //double evaluation = 0.0d;
                 if(contentType.equals("application/json")){
 
                     InputStream inputStreamObject = req.getBody();
@@ -123,7 +122,7 @@ public class RESTMemoryObject extends MemoryObject {
                     }
 
                 }
-                else {//if(!req.getFormQuery("evaluation").isEmpty()){
+                else {
                     String I = req.getFormQuery("I");
                     double evaluation = Double.parseDouble(req.getFormQuery("evaluation"));
 
