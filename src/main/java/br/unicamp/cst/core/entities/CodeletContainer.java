@@ -7,35 +7,40 @@ import java.util.Map;
 
 public class CodeletContainer implements Memory {
 	
-	private HashMap<String, List<Memory>> mapInputs = new HashMap<String, List<Memory>>();
+	private volatile HashMap<String, List<Memory>> mapInputs = new HashMap<String, List<Memory>>();
 	
 	
-	private HashMap<String, List<Memory>> mapOutputs = new HashMap<String, List<Memory>>();
+	private volatile HashMap<String, List<Memory>> mapOutputs = new HashMap<String, List<Memory>>();
 	
 
-	private HashMap<String, List<Memory>> mapBroadcast = new HashMap<String, List<Memory>>();
+	private volatile HashMap<String, List<Memory>> mapBroadcast = new HashMap<String, List<Memory>>();
 	
 	/**
 	 * Output memories, the ones that are written.
 	 */
-	protected List<Memory> outputs = new ArrayList<Memory>();
+	protected volatile List<Memory> outputs = new ArrayList<Memory>();
 	
 	/**
 	 * Input memories, the ones that were broadcasted.
 	 */
-	private List<Memory> broadcast = new ArrayList<Memory>();
+	private volatile List<Memory> broadcast = new ArrayList<Memory>();
 	
 	/**
 	 * Input memories, the ones that are read.
 	 */
-	protected List<Memory> inputs = new ArrayList<Memory>();
+	protected volatile List<Memory> inputs = new ArrayList<Memory>();
 	
-	private ArrayList<Codelet> codelets;
+	private volatile ArrayList<Codelet> codelets;
 	
 	/**
-	 * Type of the codelet container
+	 * Name of the codelet container
 	 */
 	private String name;
+        
+        /**
+         * Id for the CodeletContainer
+         */
+        private Long id;
 	
 	
 	public CodeletContainer() {
@@ -50,6 +55,27 @@ public class CodeletContainer implements Memory {
 		codelets.forEach((codelet) -> {
 			this.addCodelet(codelet, isToStartCodelets);
 		});
+	}
+        
+        /**
+	 * Gets the id of the CodeletContainer.
+	 * 
+	 * @return the id of the CodeletContainer.
+	 */
+        @Override
+	public synchronized Long getId() {
+		return this.id;
+	}
+
+	/**
+	 * Sets the id of the CodeletContainer.
+	 * 
+	 * @param id
+	 *            the id of the CodeletContainer to set.
+	 */
+        @Override
+	public synchronized void setId(Long id) {
+		this.id = id;
 	}
 	
 	/**

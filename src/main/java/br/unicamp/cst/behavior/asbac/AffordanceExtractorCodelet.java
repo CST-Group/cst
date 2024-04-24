@@ -275,7 +275,7 @@ public class AffordanceExtractorCodelet extends Codelet {
      * Preprocess and init the computation of the cartesian product.
      * @param aff
      * @param relevantPercepts
-     * @return a list of map<String,Percept>
+     * @return a list of {@code Map<String,Percept>}
      */
     public List<Map<String, Percept>> getPerceptsCombinations(AffordanceType aff, Map<String, List<Percept>> relevantPercepts){
         

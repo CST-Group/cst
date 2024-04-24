@@ -12,8 +12,7 @@ public class RESTMemoryContainer extends MemoryContainer {
     long refresh = 0; // A refresh of 0 means that every call will generate a new probe in mind
     long lastaccess = 0;
     String lastmessage = "";
-    Memory internalMemory;
-
+   
     public RESTMemoryContainer(int port) {
         this(port,false);
     }

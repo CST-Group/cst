@@ -38,6 +38,8 @@ import java.util.logging.Logger;
 public class MemoryContainer implements Memory {
 
 	private volatile ArrayList<Memory> memories;
+        
+        private Long id;
 
 	/**
 	 * Type of the memory container
@@ -51,8 +53,8 @@ public class MemoryContainer implements Memory {
 	 */
 	private Policy policy;
         
-        private Memory last;
-        private int lasti=0;
+        private volatile Memory last;
+        private volatile int lasti=0;
         private Random rand = new Random();
 
 	/**
@@ -75,6 +77,27 @@ public class MemoryContainer implements Memory {
 		memories = new ArrayList<>();
                 policy = Policy.MAX;
 		this.name = type;
+	}
+        
+        /**
+	 * Gets the id of the Memory Container.
+	 * 
+	 * @return the id of the Memory Container.
+	 */
+        @Override
+	public synchronized Long getId() {
+		return this.id;
+	}
+
+	/**
+	 * Sets the id of the Memory Container.
+	 * 
+	 * @param id
+	 *            the id of the Memory Object to set.
+	 */
+        @Override
+	public synchronized void setId(Long id) {
+		this.id = id;
 	}
 
 	/**
@@ -220,7 +243,7 @@ public class MemoryContainer implements Memory {
                 if (lasti > memories.size()-1) lasti = 0;
                 return (last.getI());
             }
-            Logger.getAnonymousLogger().log(Level.INFO,"This MemoryContainer still does not have any internal Memories ..."); 
+            Logger.getAnonymousLogger().log(Level.INFO,"The MemoryContainer {0} still does not have any internal Memories ...",getName()); 
             return null;
         }
         
@@ -509,7 +532,7 @@ public class MemoryContainer implements Memory {
                 if (last != null && last instanceof Memory) {
                     last.setEvaluation(eval);
                 }
-                else Logger.getAnonymousLogger().log(Level.INFO,"This MemoryContainer still does not have any internal Memories ..."); 
+                else Logger.getAnonymousLogger().log(Level.INFO,"The MemoryContainer {0} still does not have any internal Memories ...",getName()); 
 	}
 
 	/**
@@ -542,6 +565,7 @@ public class MemoryContainer implements Memory {
 		if (memory != null) {
 			memories.add(memory);
 			index = memories.indexOf(memory);
+                        last = memory;
 		}
 		return index;
 	}
@@ -633,7 +657,7 @@ public class MemoryContainer implements Memory {
 		return(last.getTimestamp());
             }    
             else {
-                Logger.getAnonymousLogger().log(Level.INFO, "This MemoryContainer still does not have any internal Memories ...");
+                Logger.getAnonymousLogger().log(Level.INFO, "The MemoryContainer {0} still does not have any internal Memories ...",getName());
                 return null;
             }
 	}
@@ -659,7 +683,7 @@ public class MemoryContainer implements Memory {
          * @param memoryObserver the observer to be added
          */
 	@Override
-	public void addMemoryObserver(MemoryObserver memoryObserver) {
+	public synchronized void addMemoryObserver(MemoryObserver memoryObserver) {
 		for (Memory memory : memories) {
 			memory.addMemoryObserver(memoryObserver);
 		}
@@ -671,7 +695,7 @@ public class MemoryContainer implements Memory {
          * @param memoryObserver the observer to be removed
          */
         @Override
-	public void removeMemoryObserver(MemoryObserver memoryObserver) {
+	public synchronized void removeMemoryObserver(MemoryObserver memoryObserver) {
 		for (Memory memory : memories) {
 			memory.removeMemoryObserver(memoryObserver);
 		}

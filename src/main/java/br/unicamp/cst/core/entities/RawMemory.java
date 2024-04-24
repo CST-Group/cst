@@ -32,6 +32,8 @@ public class RawMemory {
 	 * List of all memories in the system
 	 */
 	private List<Memory> allMemories;
+        
+        private static long lastid = 0;
 
 	/**
 	 * Crates a Raw Memory.
@@ -84,6 +86,12 @@ public class RawMemory {
 	public synchronized void setAllMemoryObjects(List<Memory> allMemories) {
 		synchronized (this.allMemories) {
 			this.allMemories = allMemories;
+                        for (Memory m : allMemories) {
+                            if (m.getId() == null) {
+                                m.setId(lastid);
+                                lastid++;
+                            }
+                        }
 		}
 	}
 
@@ -109,6 +117,8 @@ public class RawMemory {
 	public synchronized void addMemoryObject(Memory mo) {
 		synchronized (allMemories) {
 			allMemories.add(mo);
+                        mo.setId(lastid);
+                        lastid++;
 		}
 	}
 
@@ -121,6 +131,8 @@ public class RawMemory {
 	public synchronized void addMemory(Memory mo) {
 		synchronized (allMemories) {
 			allMemories.add(mo);
+                        mo.setId(lastid);
+                        lastid++;
 		}
 	}
 
@@ -134,7 +146,6 @@ public class RawMemory {
 	public synchronized MemoryContainer createMemoryContainer(String name) {
 
 		MemoryContainer mc = new MemoryContainer(name);
-
 		this.addMemory(mc);
 
 		return mc;
@@ -153,9 +164,9 @@ public class RawMemory {
 	 * 			the port of the REST server
 	 * @return mo created MemoryObject.
 	 */
-	public synchronized RESTMemory createRESTMemory(String name, String hostname, int port) {
+	public synchronized RESTMemoryObject createRESTMemoryObject(String name, String hostname, int port) {
 		// memory object to be added to rawmemory
-		RESTMemory mo = new RESTMemory(hostname, port);
+		RESTMemoryObject mo = new RESTMemoryObject(hostname, port);
 		//mo.setI("");
 		mo.setTimestamp(System.currentTimeMillis());
 		mo.setEvaluation(0.0d);
@@ -175,8 +186,8 @@ public class RawMemory {
 	 * 			the port of the REST server
 	 * @return the memory object created.
 	 */
-	public synchronized RESTMemory createRESTMemory(String name, int port) {
-		return createRESTMemory(name, "localhost", port);
+	public synchronized RESTMemoryObject createRESTMemoryObject(String name, int port) {
+		return RawMemory.this.createRESTMemoryObject(name, "localhost", port);
 	}
 
 
@@ -197,11 +208,11 @@ public class RawMemory {
 		RESTMemoryContainer mo = new RESTMemoryContainer(hostname, port);
 		//mo.setI("");
 		//mo.setTimestamp(System.currentTimeMillis());
-		mo.setEvaluation(0.0d);
+		//mo.setEvaluation(0.0d);
 		mo.setName(name);
 
 		// adding the new object to raw memory
-		this.addMemory(mo);
+		this.addMemory(mo);                
 		return mo;
 	}
 

@@ -23,12 +23,14 @@ public class MemoryJson {
     public String name;
     public String group;
     public ArrayList<MemoryJson> memories; // = new ArrayList<MemoryJson>();
+    public Long id;
 
     public MemoryJson(Memory memo) {
         timestamp = memo.getTimestamp();
         evaluation = memo.getEvaluation();
         I = memo.getI();
         name = memo.getName();
+        id = memo.getId();
         if (memo instanceof MemoryContainer) {
             memories = new ArrayList<>();
             MemoryContainer memoAux = (MemoryContainer) memo;

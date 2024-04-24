@@ -12,8 +12,8 @@
 package br.unicamp.cst.core.entities;
 
 import java.io.Serializable;
-import java.util.HashSet;
 import java.util.Set;
+import java.util.concurrent.CopyOnWriteArraySet;
 
 /**
  * A Memory Object is a generic information holder, acting as a sign or an
@@ -42,12 +42,12 @@ public class MemoryObject implements Memory, Serializable {
 
 	private static final long serialVersionUID = 1L;
 
-	private Long idmemoryobject;
+	private Long id;
 
 	/**
 	 * Date when the data was "created" in milliseconds
 	 */
-	private Long timestamp;
+	private volatile Long timestamp;
 
 	/**
 	 * An evaluation of this memory object based on inner references
@@ -60,14 +60,14 @@ public class MemoryObject implements Memory, Serializable {
 	private volatile Object I;
 
 	/**
-	 * Type of the memory object
+	 * Name of the memory object
 	 */
 	private String name;
 	
 	/**
 	 * List of codetlets that observes memory
 	 */
-	private transient Set<MemoryObserver> memoryObservers;
+	private volatile transient Set<MemoryObserver> memoryObservers;
 
 	/**
 	 * Creates a MemoryObject.
@@ -81,18 +81,20 @@ public class MemoryObject implements Memory, Serializable {
 	 * 
 	 * @return the id of the Memory Object.
 	 */
-	public synchronized Long getIdmemoryobject() {
-		return this.idmemoryobject;
+        @Override
+	public synchronized Long getId() {
+		return this.id;
 	}
 
 	/**
 	 * Sets the id of the Memory Object.
 	 * 
-	 * @param idmemoryobject
+	 * @param id
 	 *            the id of the Memory Object to set.
 	 */
-	public synchronized void setIdmemoryobject(Long idmemoryobject) {
-		this.idmemoryobject = idmemoryobject;
+        @Override
+	public synchronized void setId(Long id) {
+		this.id = id;
 	}
 
 	/**
@@ -211,7 +213,7 @@ public class MemoryObject implements Memory, Serializable {
 
 	@Override
 	public String toString() {
-		return "MemoryObject [idmemoryobject=" + idmemoryobject + ", timestamp=" + timestamp + ", evaluation="
+		return "MemoryObject [idmemoryobject=" + id + ", timestamp=" + timestamp + ", evaluation="
 				+ evaluation + ", I=" + I + ", name=" + name + "]";
 	}
 
@@ -221,7 +223,7 @@ public class MemoryObject implements Memory, Serializable {
 		int result = 1;
 		result = prime * result + ((I == null) ? 0 : I.hashCode());
 		result = prime * result + ((evaluation == null) ? 0 : evaluation.hashCode());
-		result = prime * result + ((idmemoryobject == null) ? 0 : idmemoryobject.hashCode());
+		result = prime * result + ((id == null) ? 0 : id.hashCode());
 		result = prime * result + ((name == null) ? 0 : name.hashCode());
 		result = prime * result + ((timestamp == null) ? 0 : timestamp.hashCode());
 		return result;
@@ -246,10 +248,10 @@ public class MemoryObject implements Memory, Serializable {
 				return false;
 		} else if (!evaluation.equals(other.evaluation))
 			return false;
-		if (idmemoryobject == null) {
-			if (other.idmemoryobject != null)
+		if (id == null) {
+			if (other.id != null)
 				return false;
-		} else if (!idmemoryobject.equals(other.idmemoryobject))
+		} else if (!id.equals(other.id))
 			return false;
 		if (name == null) {
 			if (other.name != null)
@@ -268,9 +270,9 @@ public class MemoryObject implements Memory, Serializable {
 	 * Add a memory observer to its list
 	 * @param memoryObserver the MemoryObserve to be added
 	 */
-	public void addMemoryObserver(MemoryObserver memoryObserver) {
+	public synchronized void addMemoryObserver(MemoryObserver memoryObserver) {
 		if (this.memoryObservers == null) {
-			this.memoryObservers = new HashSet<MemoryObserver>(); 
+			this.memoryObservers = new CopyOnWriteArraySet<>(); 
 		}
 		this.memoryObservers.add(memoryObserver);
 	}
@@ -279,7 +281,7 @@ public class MemoryObject implements Memory, Serializable {
 	 * Remove a memory observer from its list
 	 * @param memoryObserver the MemoryObserve to be removed
 	 */
-	public void removeMemoryObserver(MemoryObserver memoryObserver) {
+	public synchronized void removeMemoryObserver(MemoryObserver memoryObserver) {
 		if (this.memoryObservers != null) {
 		    this.memoryObservers.remove(memoryObserver);
                 }

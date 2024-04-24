@@ -13,15 +13,16 @@ package br.unicamp.cst.representation.idea;
 import br.unicamp.cst.support.ToString;
 import java.lang.reflect.Array;
 import java.lang.reflect.Field;
+import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.lang.reflect.ParameterizedType;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
+import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.TimeZone;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArrayList;
@@ -36,17 +37,17 @@ import java.util.logging.Logger;
  */
 public class Idea implements Category,Habit {
     private long id;
-    private String name="";
-    private Object value="";
+    private String name;
+    private Object value;
     private List<Idea> l= new CopyOnWriteArrayList<>();
-    private int type=0;
-    private String category="";
+    private int type=1;
+    private String category;
     private int scope=1;  // 0: possibility, 1: existence, 2: law
     private transient IdeaComparator ideaComparator = new IdeaComparator();
     // This list is used while building a toStringFull()
     /**
      * The repo hashmap is a list of known Ideas used by the createIdea factory method to 
-     * avoid that Ideas with a same new to be created. This list is used to reuse an 
+     * avoid that Ideas with a same name to be created. This list is used to reuse an 
      * Idea with the same name. This variable provides a global list with all known 
      * Ideas created so far. 
      */
@@ -66,6 +67,8 @@ public class Idea implements Category,Habit {
     private static final String CBYTE = "java.lang.Byte";
     private static final String CBOOLEAN = "java.lang.Boolean";
     private static final String CSTRING = "java.lang.String";
+    
+    private static final String DEFAULT_CATEGORY = "Property";
         
     
     /**
@@ -82,7 +85,8 @@ public class Idea implements Category,Habit {
      * This is the simpler constructor for an Idea. Basically, it finds a new id and creates an empty Idea. 
      */
     public Idea() {
-        id = genId();
+        // The default is to have ideas with name "", value null, of type 1, category Property with Existence scope
+        this("",null,1,DEFAULT_CATEGORY,1);
     }
     
     /**
@@ -90,14 +94,46 @@ public class Idea implements Category,Habit {
      * @param name The name to be assigned to the Idea
      */
     public Idea(String name) {
-        this.name = name;
-        id = genId();
+        this(name,null,1,DEFAULT_CATEGORY,1);
+    }
+    
+    /**
+     * This constructor is a wrapper for an Idea with type 1. If the value is a String, it is parsed in order to create a numeric value with a proper type. Up to now, the constructor recognizes Integers and Doubles.  
+     * @param name The name assigned to the Idea
+     * @param value The value assigned to the Idea. If this value is a String, it is parsed to check if this String describes an Integer or a Double and converts the number to a prpper type (an int or a double). 
+     */
+    public Idea(String name, Object value) {
+        this(name,value,1,DEFAULT_CATEGORY,1);
     }
     
     /**
      * This constructor initializes the Idea with a name, a value and a type. 
+     
+     * 
+     * @param name The name assigned to the Idea.
+     * @param value The value to be assigned to the Idea (can be an empty String, or null). If the value is given a null value, it is substituted by the String "null". 
+     * @param type The type assigned to the Idea
+     */
+    public Idea(String name, Object value, int type) {
+        this(name,value,type,DEFAULT_CATEGORY,1);
+    }
+    
+    /**
+     * This constructor initializes the Idea with a name, a value, a category and a scope. 
+     * The Idea type is guessed, based on its category
+     * @param name The name assigned to the Idea
+     * @param value The value to be assigned to the Idea (can be an empty String, or null). If the value is given a null value, it is substituted by the String "null". 
+     * @param category The category assigned to the Idea
+     * @param scope The scope assigned to the Idea (0: possibility, 1: existence, 2: law)
+     */
+    public Idea(String name, Object value, String category, int scope) {
+        this(name,value,guessType(category,scope),category,scope);
+    }
+    
+    /**
+     * This constructor initializes the Idea with a name, a value, a type, a category and a scope.
      * The value can be any Java object. The type is an integer number, which
-     * describes the kind of Idea. Even though the type can be used for any purpose,
+     * describes the category of the Idea. Even though the type can be used for any purpose,
      * the following reference for Idea types is used as a reference:
      * 0 - AbstractObject
      * 1 - Property
@@ -118,26 +154,13 @@ public class Idea implements Category,Habit {
      * 16 - Action
      * 17 - ActionCategory
      * 18 - Goal
-     * 
-     * @param name The name assigned to the Idea.
+     * @param name The name assigned to the Idea
      * @param value The value to be assigned to the Idea (can be an empty String, or null). If the value is given a null value, it is substituted by the String "null". 
      * @param type The type assigned to the Idea
+     * @param category The category assigned to the Idea
+     * @param scope The scope assigned to the Idea (0: possibility, 1: existence, 2: law)
      */
-    public Idea(String name, Object value, int type) {
-        this.name = name;
-        if (value != null) this.value = value;
-        else this.value = "null";
-        this.type = type;
-        id = genId();
-    }
-    
-    /**
-     * This constructor is a wrapper for an Idea with type 1. If the value is a String, it is parsed in order to create a numeric value with a proper type. Up to now, the constructor recognizes Integers and Doubles.  
-     * @param name The name assigned to the Idea
-     * @param value The value assigned to the Idea. If this value is a String, it is parsed to check if this String describes an Integer or a Double and converts the number to a prpper type (an int or a double). 
-     */
-    public Idea(String name, Object value) {
-        type = 1;
+    public Idea(String name, Object value, int type, String category, int scope) {
         this.name = name;
         id = genId();
         if (value instanceof String) {
@@ -155,35 +178,13 @@ public class Idea implements Category,Habit {
             } 
         }
         else this.value = value;
+        this.type = type;
+        this.category = category;
+        if (scope >= 0 && scope <=2) this.scope = scope;
+        else this.scope = 1;
     }
     
-    /**
-     * This constructor initializes the Idea with a name, a value, a type, a category and a scope. 
-     * @param name The name assigned to the Idea
-     * @param value The value to be assigned to the Idea (can be an empty String, or null). If the value is given a null value, it is substituted by the String "null". 
-     * @param type The type assigned to the Idea
-     * @param category The category assigned to the Idea
-     * @param scope The scope assigned to the Idea (0: possibility, 1: existence, 2: law)
-     */
-    public Idea(String name, Object value, int type, String category, int scope) {
-        this(name,value,type);
-        this.category = category;
-        this.scope = scope;
-    }
     
-    /**
-     * This constructor initializes the Idea with a name, a value, a category and a scope. 
-     * The Idea type is guessed, based on its category
-     * @param name The name assigned to the Idea
-     * @param value The value to be assigned to the Idea (can be an empty String, or null). If the value is given a null value, it is substituted by the String "null". 
-     * @param category The category assigned to the Idea
-     * @param scope The scope assigned to the Idea (0: possibility, 1: existence, 2: law)
-     */
-    public Idea(String name, Object value, String category, int scope) {
-        this(name,value,guessType(category,scope));
-        this.category = category;
-        this.scope = scope;
-    }
     
     /**
      * The createIdea method is used as a static Idea factory, which tries to reuse Ideas with the same name. 
@@ -352,6 +353,7 @@ public class Idea implements Category,Habit {
      * This method returns a String short version of the Idea
      * @return the name of the Idea, used as a short version of the Idea
      */
+    @Override
     public String toString() {
         return(name);
     }
@@ -409,7 +411,7 @@ public class Idea implements Category,Habit {
             for (Idea ln : l) {
                 for (int i=0;i<level;i++) out += "   ";
                 if (listtoavoidloops.contains(ln.toStringPlus(withid)) || already_exists(ln.toStringPlus(withid))) {
-                    out += ln.toStringPlus(withid)+"\n";
+                    out += ln.toStringPlus(withid)+" #\n";
                 }
                     
                 else out += ln.toStringFull(level+1,withid);
@@ -1023,7 +1025,6 @@ public class Idea implements Category,Habit {
                     if (field.getType().isArray()) {
                           Object out = mountArray(o,field.getType().getCanonicalName());
                           try {
-                                field.setAccessible(true);
                                 field.set(ret,out);
                             }
                             catch(Exception e) {
@@ -1039,7 +1040,6 @@ public class Idea implements Category,Habit {
                             out.add(i.getObject(i.getName(), stype));
                         }
                         try {
-                            field.setAccessible(true);
                             field.set(ret,out);
                         }
                         catch(Exception e) {
@@ -1051,7 +1051,6 @@ public class Idea implements Category,Habit {
                         if (value == null) System.out.println("Warning: value of "+field.getName()+" is null");
                         value = convertObject(value,field.getType().getCanonicalName());
                         try {
-                            field.setAccessible(true);
                             field.set(ret,value);
                         }
                         catch(Exception e) {
@@ -1060,7 +1059,6 @@ public class Idea implements Category,Habit {
                             if (o.getL().size() > 0) out = o.getObject(field.getName(),field.getType().getCanonicalName());
                             else out = null;
                             try {
-                                field.setAccessible(true);
                                 field.set(ret,out);
                             } catch(Exception e2) {
                                 if (value != null)
@@ -1078,6 +1076,36 @@ public class Idea implements Category,Habit {
             System.out.println("Exception: " + e.getStackTrace().toString());
         }
         return(ret);
+    }
+    
+    private Object checkIfObjectHasSetGet(Object bean, String propertyName) {
+    // access a no-arg method through reflection
+    // following bean naming conventions
+    try {
+        Class<?> c =  bean.getClass();
+        String methodName = "get"+propertyName.substring(0,1).toUpperCase()+propertyName.substring(1);
+        Method m = c.getMethod(methodName,(Class[])null);
+        Object o = m.invoke(bean);
+        return o;
+    }
+    catch (Exception e) {
+        try {
+            Class<?> c = bean.getClass();
+            Method m = c.getMethod(propertyName,(Class[])null);
+            Object o = m.invoke(bean);
+            return o;
+        }
+        catch (Exception e2) {
+            return("<<NULL>>");
+            // (gulp) -- swallow exception and move on
+        }
+    }
+    //return null; // it would be better to throw an exception, wouldn't it?
+}
+    
+    private boolean trySetAccessibleTrue(Field f) {
+        if (Modifier.isPublic(f.getModifiers())) return(true);
+        else return(false);
     }
     
     /**
@@ -1106,10 +1134,8 @@ public class Idea implements Category,Habit {
             return;
         }
         if (listtoavoidloops.contains(obj) || already_exists(obj)) {
+             // If the object has already been used (in a loop) I will create a link instead of digging inside it
              Idea child = createIdea(getFullName()+"."+fullname,obj.toString(),2);
-             Idea alternative = repo.get(getFullName()+"."+fullname);
-             if (alternative != null) System.out.println("Ah ... I already found "+getFullName()+"."+fullname);
-             else System.out.println("Strange ... it seems that "+getFullName()+"."+fullname+" is already in the repo but I can't find it");
              add(child);
              return;            
         }
@@ -1168,10 +1194,33 @@ public class Idea implements Category,Habit {
             this.add(onode);
             return;
         }
+        else if (obj instanceof Enumeration<?>) {
+            Enumeration<?> ll = (Enumeration<?>) obj;
+            String label = "";
+            int size = 0;
+            ArrayList components = new ArrayList();
+            while (ll.hasMoreElements()) {
+                components.add(ll.nextElement());
+                size++;
+            }
+            if (size == 0) label = "{0}";
+            else label = "{"+size+"} of "+components.get(0).getClass().getSimpleName();
+            Idea onode = createIdea(getFullName()+"."+fullname,label,0);
+            int i=0;
+            for (Object o : components) {
+                onode.addObject(o,ToString.el(ToString.getSimpleName(fullname),i),false);
+                listtoavoidloops.add(obj);
+                i++;
+            }
+            this.add(onode);
+            return;
+        }
         else if (obj instanceof Idea) {
+            Idea child = createIdea(getFullName()+"."+fullname,s,0);
             Idea ao = (Idea) obj;
-            this.add(ao);
-            listtoavoidloops.add(obj);            
+            child.add(ao);
+            this.add(child);
+            listtoavoidloops.add(obj);  // should I include obj or child here ?           
             return;
         }
         else {
@@ -1181,35 +1230,38 @@ public class Idea implements Category,Habit {
             for (Field field : fields) {
                 String fname = field.getName();
                 try {
-                   field.setAccessible(true);
-                   Object fo=null;
-                    try {
-                        fo = field.get(obj);
-                    } catch (Exception e) {
-                        e.printStackTrace();} 
-                    if (!already_exists(fo)) {
-                        ao.addObject(fo,fname,false);  
-                    }    
-                    else {
-                        String ideaname = getFullName()+"."+ToString.getSimpleName(fullname)+"."+fname;
-                        Idea fi = createIdea(ideaname,"",2);
-                        Idea alternative2 = null;
-                        if (!Modifier.isStatic(field.getModifiers())) {
-                            for (Map.Entry<String,Idea> entry : repo.entrySet()) {
-                                String key = entry.getKey();
-                                Idea v = entry.getValue();
-                                if (ToString.getSimpleName(ideaname).equals(ToString.getSimpleName(key))) {
-                                    System.out.println("The Idea "+ideaname+" is already in the repository");
-                                }
-                            }
-                            System.out.println(fo.getClass().getCanonicalName());
-                            Idea alternative = repo.get(ideaname);
-                            if (alternative != null) System.out.println("Ah ... I already found "+ideaname);
-                            else System.out.println("Strange ... it seems that "+ideaname+" is already in the repo but I can't find it");
-                        }
-                        ao.add(fi);
-                    }
+                   boolean trysetaccessible = trySetAccessibleTrue(field);
+                   Object fo;
+                   if (trysetaccessible) { // if object is accessible, try to get it
+                       int modifiers = field.getModifiers();
+                       if (Modifier.isStatic(modifiers)) fo = field.get(null);
+                       else fo = field.get(obj);
+                   }
+                   else { // if it is inaccessible, check if it is a bean, before giving up
+                       fo = checkIfObjectHasSetGet(obj, fname);
+                       if (fo != null && fo.equals("<<NULL>>")) {
+                           String mod = fname+":";
+                           if (Modifier.isStatic(field.getModifiers())) mod+=" STATIC";
+                           if (Modifier.isProtected(field.getModifiers())) mod+=" PROTECTED";
+                           if (Modifier.isPrivate(field.getModifiers())) mod+=" PRIVATE";
+                           if (Modifier.isTransient(field.getModifiers())) mod+=" TRANSIENT";
+                           if (Modifier.isVolatile(field.getModifiers())) mod+=" VOLATILE";
+                           Logger.getAnonymousLogger().log(Level.INFO,mod);
+                       }
+                   }
+                   if (fo != null && fo.equals("<<NULL>>")) {
+                       // do nothing
+                   }
+                   else if (!already_exists(fo)) {
+                       ao.addObject(fo,fname,false);  
+                   }
+                   else { // this is the case when a recursive object is detected ... inserting a link
+                       String ideaname = getFullName()+"."+ToString.getSimpleName(fullname)+"."+fname;
+                       Idea fi = createIdea(ideaname,"",2);
+                       ao.add(fi);
+                   }
                 } catch (Exception e) {
+                    Logger.getAnonymousLogger().log(Level.INFO,"I got a {0} Exception in field {1} in class Idea: {2}",new Object[]{e.getClass().getName(),fname,e.getMessage()+"-->"+e.getLocalizedMessage()});
                 }   
             }
             this.add(ao);

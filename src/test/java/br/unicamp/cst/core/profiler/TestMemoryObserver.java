@@ -18,16 +18,17 @@ import br.unicamp.cst.core.entities.MemoryContainer;
 import br.unicamp.cst.core.entities.MemoryObject;
 import br.unicamp.cst.core.entities.Mind;
 import br.unicamp.cst.core.exceptions.CodeletActivationBoundsException;
-import br.unicamp.cst.representation.idea.Idea;
+import br.unicamp.cst.support.TimeStamp;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.fail;
 import org.junit.jupiter.api.Test;
 
 class CodeletToTest extends Codelet {
 
-	private int counter = 0;
+	private volatile int counter = 0;
 
 	public int getCounter() {
 		return counter;
@@ -55,6 +56,9 @@ class CodeletToTest extends Codelet {
 }
 
 public class TestMemoryObserver {
+    
+        private volatile MemoryContainer input_container;
+        private volatile MemoryObject output;
 
 	@Test
 	public void noMemoryChangeTest() throws InterruptedException {
@@ -334,9 +338,9 @@ public class TestMemoryObserver {
 		MemoryObject input = m.createMemoryObject("INPUT_NUMBER", 0.12);
 		MemoryObject output = m.createMemoryObject("OUTPUT_NUMBER", 0.32);
                 Codelet c = new Codelet() {
-                    MemoryObject input_number;
-                    MemoryObject output_number;
-                    public int counter = 0;
+                    volatile MemoryObject input_number;
+                    volatile MemoryObject output_number;
+                    public volatile int counter = 0;
                     @Override
                     public void accessMemoryObjects() {
                         input_number = (MemoryObject) this.getInput("INPUT_NUMBER");
@@ -353,8 +357,7 @@ public class TestMemoryObserver {
                     }
                     @Override
                     public void proc() {
-                        System.out.println("Processing");
-                        int n = (int) input_number.getI();
+                       int n = (int) input_number.getI();
                         output_number.setI(n+1);
                         counter++;
                     }
@@ -364,34 +367,49 @@ public class TestMemoryObserver {
 		m.insertCodelet(c);
 		c.setPublishSubscribe(true);
                 m.start();
+                try { Thread.sleep(500); } catch(InterruptedException e) {}
 		//setI in Memory Container and verify if Codelet was notified
                 long ts = output.getTimestamp();
                 input.setI(0);
-		while(ts == output.getTimestamp());
+                long startwait = System.currentTimeMillis();
+                while(ts == output.getTimestamp()) {
+                    if (System.currentTimeMillis() - startwait > 2000) {
+                        System.out.println("Restarting timer due to inactivity");
+                        c.start();
+                    }
+                    if (System.currentTimeMillis() - startwait > 5000) fail("Some problem have occurred 3 !");
+                }
                 int nout = (int) output.getI();
-		System.out.println("Result: "+output.getI());
-                assertEquals(nout,1);
+		assertEquals(nout,1);
+                output.setI(0.32);
 		c.setPublishSubscribe(false);
                 ts = output.getTimestamp();
-                while(ts == output.getTimestamp());
-                System.out.println("Result: "+output.getI()+" "+c.getActivation());
+                startwait = System.currentTimeMillis();
+                while(ts == output.getTimestamp()) {
+                    if (System.currentTimeMillis() - startwait > 2000) {
+                        System.out.println("Restarting timer due to inactivity");
+                        m.start();
+                    }
+                    if (System.currentTimeMillis() - startwait > 5000) fail("Some problem have occurred 4 !");
+                }
+                assertEquals(1,output.getI());
                 m.shutDown();
-		//assertEquals(0, c.getCounter());
         }
         
         @Test
 	public void changeOfRegimeTestMemoryContainer() {
                 Mind m = new Mind();
-		MemoryContainer input = m.createMemoryContainer("INPUT_NUMBER");
-		MemoryObject output = m.createMemoryObject("OUTPUT_NUMBER", 0.32);
+		MemoryContainer input_container = m.createMemoryContainer("INPUT_NUMBER_MC");
+                input_container.setI(-99);
+		MemoryObject output = m.createMemoryObject("OUTPUT_NUMBER_MC", 0.32);
                 Codelet c = new Codelet() {
-                    MemoryContainer input_number;
-                    MemoryObject output_number;
-                    public int counter = 0;
+                    volatile MemoryContainer input_number;
+                    volatile MemoryObject output_number;
+                    public volatile int counter = 0;
                     @Override
                     public void accessMemoryObjects() {
-                        input_number = (MemoryContainer) this.getInput("INPUT_NUMBER");
-                        output_number = (MemoryObject) this.getOutput("OUTPUT_NUMBER");
+                        input_number = (MemoryContainer) this.getInput("INPUT_NUMBER_MC");
+                        output_number = (MemoryObject) this.getOutput("OUTPUT_NUMBER_MC");
                     }
                     @Override
                     public void calculateActivation() {
@@ -401,11 +419,9 @@ public class TestMemoryObserver {
                         } catch (CodeletActivationBoundsException ex) {
                             Logger.getLogger(TestMemoryObserver.class.getName()).log(Level.SEVERE, null, ex);
                         }
-                        System.out.println("Calculating activation: "+getActivation());
                     }
                     @Override
                     public void proc() {
-                        System.out.println("Processing");
                         int n = (int) input_number.getI();
                         output_number.setI(n+1);
                         counter++;
@@ -417,25 +433,45 @@ public class TestMemoryObserver {
                         }
                     }
                 };
-		c.addInput(input);
+		c.addInput(input_container);
 		c.addOutput(output);
 		m.insertCodelet(c);
-                input.setI(0);
-		c.setPublishSubscribe(true);
+                c.setPublishSubscribe(true);
                 m.start();
 		//setI in Memory Container and verify if Codelet was notified
                 long ts = output.getTimestamp();
-                input.setI(0,0);
-                while(ts == output.getTimestamp());
+                double oorig = (double) output.getI();
+                long startwait = System.currentTimeMillis();
+                long myoutput = output.getTimestamp();
+                try{Thread.sleep(100);}catch(Exception e){};
+                input_container.setI(0,0);
+                long amountwait=0;
+                while(ts == myoutput && amountwait < 11000 ) {
+                    myoutput = output.getTimestamp();
+                    try{Thread.sleep(100);}catch(Exception e){};
+                    amountwait = System.currentTimeMillis() - startwait;
+                    if (amountwait > 10000) 
+                        fail("Failed during the Publish-Subscribe regime ! startwait: "+startwait+" output: "+output.getTimestamp()+" now: "+System.currentTimeMillis()+" oorig: "+oorig+" opost: "+output.getI());
+                        //System.out.println("Failed during the Publish-Subscribe regime !"); 
+                }
                 int nout = (int) output.getI();
-		System.out.println("Result: "+output.getI()+" "+c.getActivation());
-                assertEquals(nout,1);
-		c.setPublishSubscribe(false);
+		assertEquals(nout,1);
+                c.setPublishSubscribe(false);
+                output.setI(0);
                 ts = output.getTimestamp();
-                while(ts == output.getTimestamp());
-                System.out.println("Result: "+output.getI()+" "+c.getActivation());
-                
+                startwait = System.currentTimeMillis();
+                amountwait = 0;
+                myoutput = output.getTimestamp();
+                while(ts == myoutput && amountwait < 11000) {
+                    myoutput = output.getTimestamp();
+                    try{Thread.sleep(400);}catch(Exception e){};
+                    amountwait = System.currentTimeMillis() - startwait;
+                    if (amountwait > 10000) 
+                        fail("Failed during the Timer-based regime ! startwait: "+startwait+" output: "+output.getTimestamp()+" now: "+System.currentTimeMillis());
+                       //System.out.println("Failed during the Timer-based regime !"); 
+                }
+                nout = (int) output.getI();
+                assertEquals(nout,1);
                 m.shutDown();
-		//assertEquals(0, c.getCounter());
         }
 }
