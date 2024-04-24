@@ -7,7 +7,6 @@ import com.google.gson.GsonBuilder;
 import express.Express;
 import express.middleware.CorsOptions;
 import express.middleware.Middleware;
-import jdk.nashorn.internal.parser.JSONParser;
 import org.json.JSONObject;
 
 import java.io.*;
