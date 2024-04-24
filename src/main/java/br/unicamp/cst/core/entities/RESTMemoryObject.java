@@ -7,6 +7,10 @@ import com.google.gson.GsonBuilder;
 import express.Express;
 import express.middleware.CorsOptions;
 import express.middleware.Middleware;
+import jdk.nashorn.internal.parser.JSONParser;
+import org.json.JSONObject;
+
+import java.io.*;
 
 public class RESTMemoryObject extends MemoryObject {
     long refresh = 0; // A refresh of 0 means that every call will generate a new probe in mind
@@ -90,13 +94,49 @@ public class RESTMemoryObject extends MemoryObject {
             long currentaccess = System.currentTimeMillis();
             long diff = currentaccess - lastaccess;
             if (diff > refresh) {
-                String I = req.getFormQuery("I");
-                double evaluation = Double.parseDouble(req.getFormQuery("evaluation"));
-                // Process data
-                this.setI(I);
-                this.setEvaluation(evaluation);
-                lastmessage = "I: " + I + ", Evaluation: " + evaluation;
+                String contentType = req.getContentType();
+                //double evaluation = 0.0d;
+                if(contentType.equals("application/json")){
+
+                    InputStream inputStreamObject = req.getBody();
+                    BufferedReader streamReader = null;
+                    try {
+                        streamReader = new BufferedReader(new InputStreamReader(inputStreamObject, "UTF-8"));
+                        StringBuilder responseStrBuilder = new StringBuilder();
+                        String inputStr;
+                        while (true) {
+                            if ((inputStr = streamReader.readLine()) == null) break;
+
+                            responseStrBuilder.append(inputStr);
+                        }
+
+                        JSONObject jsonObject = new JSONObject(responseStrBuilder.toString());
+                        double evaluation = jsonObject.getDouble("Evaluation");
+                        String I = jsonObject.getString("I");
+
+                        // Process data
+                        this.setI(I);
+                        this.setEvaluation(evaluation);
+                        lastmessage = "I: " + I + ", Evaluation: " + evaluation;
+
+                    } catch (IOException e) {
+                        throw new RuntimeException(e);
+                    }
+
+                }
+                else {//if(!req.getFormQuery("evaluation").isEmpty()){
+                    String I = req.getFormQuery("I");
+                    double evaluation = Double.parseDouble(req.getFormQuery("evaluation"));
+
+                    // Process data
+                    this.setI(I);
+                    this.setEvaluation(evaluation);
+                    lastmessage = "I: " + I + ", Evaluation: " + evaluation;
+
+                }
                 lastaccess = currentaccess;
+
+
             }
             res.send(lastmessage);
         });

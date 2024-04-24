@@ -14,40 +14,6 @@ public abstract class HttpCodelet extends Codelet {
     
     private static final String APPLICATION_JSON = "application/json";
 
-    public String sendPOST(String POST_URL, String POST_PARAMS, String method) throws IOException {
-        URL obj = new URL(POST_URL);
-        HttpURLConnection con = (HttpURLConnection) obj.openConnection();
-        con.setRequestMethod("POST");
-
-        //"application/json"
-        if(method != null){con.setRequestProperty("Content-Type", method);}
-
-        // For POST only - START
-        con.setDoOutput(true);
-        OutputStream os = con.getOutputStream();
-        os.write(POST_PARAMS.getBytes());
-        os.flush();
-        os.close();
-        // For POST only - END
-
-        int responseCode = con.getResponseCode();
-        System.out.println("POST Response Code :: " + responseCode);
-
-        if (responseCode == HttpURLConnection.HTTP_OK) { //success
-            BufferedReader in = new BufferedReader(new InputStreamReader(con.getInputStream()));
-            String inputLine;
-            StringBuffer response = new StringBuffer();
-
-            while ((inputLine = in.readLine()) != null) {
-                response.append(inputLine);
-            }
-            in.close();
-            return response.toString();
-        }
-
-        return null;
-    }
-
     public String sendGET(String GET_URL) throws IOException {
         String message = "";
 

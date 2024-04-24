@@ -3,6 +3,7 @@ package br.unicamp.cst.io.rest;
 import br.unicamp.cst.core.entities.*;
 import org.junit.jupiter.api.Test;
 
+import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.net.ConnectException;
 import java.net.URLEncoder;
@@ -10,6 +11,7 @@ import java.util.HashMap;
 import java.util.Random;
 
 import static org.junit.jupiter.api.Assertions.*;
+//import static org.mockito.Mockito.*;
 
 
 public class TestHttpCodelet {
@@ -272,7 +274,55 @@ public class TestHttpCodelet {
 
     }
 
+    @Test
+    public void sendPOSTReturnsResponseWhenSuccessful() throws IOException {
+        //HttpCodelet httpCodelet = new HttpCodelet();
+        HashMap<String, Object> params = new HashMap<>();
+        params.put("I", "value");
+        params.put("Evaluation", 1.0);
 
+        Mind mind = new Mind();
+        Memory mo = mind.createRESTMemoryObject("M1","127.0.0.1", 60000);
+        mind.getRawMemory().addMemory(mo);
+        mind.start();
+
+        try {
+            Thread.sleep(1000);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+
+        String response = restMotorTestCodelet.sendPOST("http://localhost:60000", params, "application/json");
+
+        mind.shutDown();
+
+        assertEquals("I: value, Evaluation: 1.0", response);
+    }
+
+    @Test
+    public void sendPOSTThrowsExceptionWhenUnsuccessful() {
+        //HttpCodelet httpCodelet = new HttpCodelet();
+        HashMap<String, Object> params = new HashMap<>();
+        params.put("test", "value");
+
+        assertThrows(IOException.class, () -> restMotorTestCodelet.sendPOST("http://invalidurl", params, "application/json"));
+    }
+
+    /*@Test
+    public void sendGETReturnsResponseWhenSuccessful() throws IOException {
+        //HttpCodelet httpCodelet = new HttpCodelet();
+
+        String response = restMotorTestCodelet.sendGET("http://localhost:8080");
+
+        assertEquals("Expected Response", response);
+    }
+
+    @Test
+    public void sendGETThrowsExceptionWhenUnsuccessful() {
+        //HttpCodelet httpCodelet = new HttpCodelet();
+
+        assertThrows(IOException.class, () -> restMotorTestCodelet.sendGET("http://invalidurl"));
+    }*/
 
 
 }
