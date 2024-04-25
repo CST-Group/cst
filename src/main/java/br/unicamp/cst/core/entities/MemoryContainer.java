@@ -55,7 +55,7 @@ public class MemoryContainer implements Memory {
         
         private volatile Memory last;
         private volatile int lasti=0;
-        private Random rand = new Random();
+        private transient Random rand = new Random();
 
 	/**
 	 * Creates a MemoryContainer.
