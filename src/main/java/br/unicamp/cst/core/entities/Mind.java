@@ -75,7 +75,7 @@ public class Mind {
 	 * 
 	 */
         public synchronized void createMemoryGroup(String groupName) {
-            ArrayList<Codelet> group = new ArrayList<Codelet>();
+            ArrayList<Memory> group = new ArrayList<Memory>();
             memoryGroups.put(groupName,group);
         }
         

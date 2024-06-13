@@ -252,6 +252,62 @@ public class MemoryContainerTest {
         }
         
         @Test
+        public void testMaxPolicyWithSameEval() {
+            MemoryContainer memoryContainer = new MemoryContainer("MAX");
+            memoryContainer.setPolicy(Policy.MAX);
+            int m1 = memoryContainer.setI(1, 0.2D);
+            int m2 = memoryContainer.setI(2, 0.2D);
+            int m3 = memoryContainer.setI(3, 0.2D);
+            int i = -1;
+            int oldi = 0;
+            for (int j=0;j<10;j++) {
+               oldi = i;
+               // Despite the choice is random, if no chance in I happens, it stays the same
+               i = (int) memoryContainer.getI();
+               if (j > 0) assertEquals(oldi,i);
+            }
+            int i2;
+            int k=0;
+            do {
+                // Changing I will trigger a different choice, though ! 
+                memoryContainer.setI(1,m1);
+                memoryContainer.setI(2,m2);
+                memoryContainer.setI(3,m3);
+                i2 = (int) memoryContainer.getI();
+                k++;
+            } while (i2 == i && k < 100);
+            assertTrue(k != 100);
+        }
+        
+        @Test
+        public void testMinPolicyWithSameEval() {
+            MemoryContainer memoryContainer = new MemoryContainer("MIN");
+            memoryContainer.setPolicy(Policy.MIN);
+            int m1 = memoryContainer.setI(1, 0.2D);
+            int m2 = memoryContainer.setI(2, 0.2D);
+            int m3 = memoryContainer.setI(3, 0.2D);
+            int i = -1;
+            int oldi = 0;
+            for (int j=0;j<10;j++) {
+               oldi = i;
+               // Despite the choice is random, if no chance in I happens, it stays the same
+               i = (int) memoryContainer.getI();
+               if (j > 0) assertEquals(oldi,i);
+            }
+            int i2;
+            int k=0;
+            do {
+                // Changing I will trigger a different choice, though ! 
+                memoryContainer.setI(1,m1);
+                memoryContainer.setI(2,m2);
+                memoryContainer.setI(3,m3);
+                i2 = (int) memoryContainer.getI();
+                k++;
+            } while (i2 == i && k < 100);
+            assertTrue(k != 100);
+        }
+        
+        @Test
         public void testMaxUniquePolicy() {
             MemoryContainer memoryContainer = new MemoryContainer("MAX");
             memoryContainer.setPolicy(Policy.MAX);
@@ -355,6 +411,39 @@ public class MemoryContainerTest {
             assertEquals(count[2]>0,true);
         }
         
+         @Test
+        public void testRandomProportionalStablePolicy() {
+            MemoryContainer memoryContainer = new MemoryContainer("RANDOMPROPORTIONALSTABLE");
+            memoryContainer.setPolicy(Policy.RANDOM_PROPORTIONAL_STABLE);
+            int n = memoryContainer.setI(1, 0.2D); // 14%
+            memoryContainer.setI(2, 0.4D); // 28%
+            memoryContainer.setI(3, 0.8D); // 57%
+            int count[] = new int[3];
+            int first = 0;
+            for (int i=0;i<1000;i++) {
+                int j = (int) memoryContainer.getI();
+                if (i==0) first = j-1;
+                count[j-1]++;
+            }
+            //System.out.println("[0]: "+count[0]+" [1]: "+count[1]+" [2]: "+count[2]+" first:"+first);
+            for (int i=0;i<3;i++) {
+                if (i == first) assertEquals(count[i]>0,true);
+                else assertEquals(count[i]>0,false);
+            }
+            count[0] = 0;
+            count[1] = 0;
+            count[2] = 0;
+            for (int i=0;i<1000;i++) {
+                memoryContainer.setI(1,0.2D,n);
+                int j = (int) memoryContainer.getI();
+                count[j-1]++;
+            }
+            //System.out.println("[0]: "+count[0]+" [1]: "+count[1]+" [2]: "+count[2]);
+            assertEquals(count[0]<count[1],true);
+            assertEquals(count[1]<count[2],true);
+            
+        }
+        
         @Test
         public void testRandomFlat() {
             MemoryContainer memoryContainer = new MemoryContainer("RANDOMFLAT");
@@ -365,6 +454,38 @@ public class MemoryContainerTest {
             int count[] = new int[3];
             for (int i=0;i<1000;i++) {
                 int j = (int) memoryContainer.getI();
+                count[j-1]++;
+            }
+            assertEquals(count[0]>0,true);
+            assertEquals(count[1]>0,true);
+            assertEquals(count[2]>0,true);
+        }
+        
+        @Test
+        public void testRandomFlatStable() {
+            MemoryContainer memoryContainer = new MemoryContainer("RANDOMFLATSTABLE");
+            memoryContainer.setPolicy(Policy.RANDOM_FLAT_STABLE);
+            int n1 = memoryContainer.setI(1, 0.2D); // 14%
+            memoryContainer.setI(2, 0.4D); // 28%
+            memoryContainer.setI(3, 0.8D); // 57%
+            int count[] = new int[3];
+            int first=0;
+            for (int i=0;i<1000;i++) {
+                int j = (int) memoryContainer.getI();
+                if (i==0) first = j-1;
+                count[j-1]++;
+            }
+            for (int i=0;i<3;i++) {
+                if (i == first) assertEquals(count[i]>0,true);
+                else assertEquals(count[i]>0,false);
+            }
+            count[0] = 0;
+            count[1] = 0;
+            count[2] = 0;
+            for (int i=0;i<1000;i++) {
+                memoryContainer.setI(1, 0.2D, n1);
+                int j = (int) memoryContainer.getI();
+                if (i==0) first = j-1;
                 count[j-1]++;
             }
             assertEquals(count[0]>0,true);

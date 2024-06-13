@@ -46,7 +46,7 @@ public class MemoryContainer implements Memory {
 	 */
 	private String name;
         
-        public enum Policy {MAX, MIN, RANDOM_FLAT, RANDOM_PROPORTIONAL, ITERATE};
+        public enum Policy {MAX, MIN, RANDOM_FLAT, RANDOM_FLAT_STABLE, RANDOM_PROPORTIONAL, RANDOM_PROPORTIONAL_STABLE, ITERATE};
         
         /**
 	 * Policy used for selecting a MemoryObject at the MemoryContainer
@@ -56,6 +56,7 @@ public class MemoryContainer implements Memory {
         private volatile Memory last;
         private volatile int lasti=0;
         private transient Random rand = new Random();
+        private transient int randchoice = -1;
 
 	/**
 	 * Creates a MemoryContainer.
@@ -142,8 +143,8 @@ public class MemoryContainer implements Memory {
                         }
 		}
                 if (allmax.size() > 1) {
-                    int i = rand.nextInt(allmax.size());
-                    last = allmax.get(i);
+                    if (randchoice < 0) randchoice = rand.nextInt(allmax.size());
+                    last = allmax.get(randchoice);
                     return(last.getI());
                 }
                 else {
@@ -176,8 +177,8 @@ public class MemoryContainer implements Memory {
                         }
 		}
                 if (allmin.size() > 1) {
-                    int i = rand.nextInt(allmin.size());
-                    last = allmin.get(i);
+                    if (randchoice < 0) randchoice = rand.nextInt(allmin.size());
+                    last = allmin.get(randchoice);
                     return(last.getI());
                 }
                 else {
@@ -201,8 +202,21 @@ public class MemoryContainer implements Memory {
         
         /**
 	 * Gets the info of a random memory from within the MemoryContainer.
+         * In this case, the choice will only change after a change in the container
 	 * 
-	 * @return the info of a random memory within the MemoryContainer
+	 * @return the info of a random memory within the MemoryContainer (stable version)
+	 */
+	private synchronized Object getIRandomFlatStable() {
+
+                if (randchoice < 0) randchoice = rand.nextInt(memories.size());
+                last = memories.get(randchoice);
+                return(last.getI());
+	}
+        
+        /**
+	 * Gets the info of a random memory from within the MemoryContainer using eval as a weight.
+	 * 
+	 * @return the info of a random memory within the MemoryContainer using eval as a weight
 	 */
 	private synchronized Object getIRandomProportional() {
 
@@ -232,9 +246,42 @@ public class MemoryContainer implements Memory {
 	}
         
         /**
-	 * Gets the info of a random memory from within the MemoryContainer.
+	 * Gets the info of a random memory from within the MemoryContainer using eval as a weight.
 	 * 
-	 * @return the info of a random memory within the MemoryContainer
+	 * @return the info of a random memory within the MemoryContainer using eval as a weight
+	 */
+	private synchronized Object getIRandomProportionalStable() {
+
+                if (memories.size() == 0) return null;
+                double indexfrom[] = new double[memories.size()];
+                double indexto[] = new double[memories.size()];
+                int i = 0;
+                for (Memory memory : memories) {
+                    if (i == 0) 
+                       indexfrom[i] = 0;
+                    else
+                       indexfrom[i] = indexto[i-1];
+                    double interval = memory.getEvaluation();
+                    indexto[i] = indexfrom[i] + interval;
+                    i++;
+                }
+                double llast = indexto[i-1];
+                double wheel = rand.nextDouble();
+                if (llast*wheel == 0) return(getIRandomFlatStable());
+                for (int j=0;j<=memories.size();j++)
+                    if (indexfrom[j] < wheel*llast && wheel*llast < indexto[j]) {
+                        if (randchoice < 0) randchoice = j;
+                        last = memories.get(randchoice);
+                        return(last.getI());
+                    }
+                last = memories.get(0);
+                return(last.getI());
+	}
+        
+        /**
+	 * Gets the info of a memory from within the MemoryContainer in an iterative way.
+	 * 
+	 * @return the info of a memory within the MemoryContainer in an iterative way
 	 */
 	private synchronized Object getIIterate() {
             if (memories.size() > 0 && lasti < memories.size()) {
@@ -253,7 +300,9 @@ public class MemoryContainer implements Memory {
          *      Policy.MAX
          *      Policy.MIN
          *      Policy.RANDOM_FLAT
+         *      Policy.RANDOM_FLAT_STABLE
          *      Policy.RANDOM_PROPORTIONAL
+         *      Policy.RANDOM_PROPORTIONAL_STABLE
          *      Policy.ITERATE
 	 * 
 	 * @return the info of the memory according to the specified MemoryContainer policy
@@ -264,7 +313,9 @@ public class MemoryContainer implements Memory {
                     case MAX: return getIMax();
                     case MIN: return getIMin();
                     case RANDOM_FLAT: return getIRandomFlat();
+                    case RANDOM_FLAT_STABLE: return getIRandomFlatStable();
                     case RANDOM_PROPORTIONAL: return getIRandomProportional();
+                    case RANDOM_PROPORTIONAL_STABLE: return getIRandomProportionalStable();
                     case ITERATE: return getIIterate();
                     default: return getIMax();
                 }
@@ -390,7 +441,8 @@ public class MemoryContainer implements Memory {
 	 */
 	public synchronized int setI(Object info, Double evaluation) {
 
-		MemoryObject mo = new MemoryObject();
+		randchoice = -1;
+                MemoryObject mo = new MemoryObject();
 		mo.setI(info);
 		if (evaluation != -1.0)
 			mo.setEvaluation(evaluation);
@@ -408,6 +460,7 @@ public class MemoryContainer implements Memory {
 	 * @param index the index of the memory inside the container.
 	 */
 	public synchronized void setI(Object info, int index) {
+                randchoice = -1;
 		if (memories != null && memories.size() > index) {
 			Memory memory = memories.get(index);
 			if (memory != null) {
@@ -430,6 +483,7 @@ public class MemoryContainer implements Memory {
 	 * @param evaluation the evaluation to be set.
 	 */
 	public synchronized void setI(Object info, Double evaluation, int index) {
+            randchoice = -1;
 		if (memories != null && memories.size() > index) {
 			Memory memory = memories.get(index);
 			if (memory != null) {
@@ -454,6 +508,7 @@ public class MemoryContainer implements Memory {
 	 * @return the index of the memory
 	 */
 	public synchronized int setI(Object info, double evaluation, String type) {
+                randchoice = -1;
 		int index = -1;
 		if (memories != null) {
 			boolean set = false;
@@ -529,6 +584,7 @@ public class MemoryContainer implements Memory {
 	 */
 	@Override
 	public synchronized void setEvaluation(Double eval) {
+            randchoice = -1;
                 if (last != null && last instanceof Memory) {
                     last.setEvaluation(eval);
                 }
@@ -542,6 +598,7 @@ public class MemoryContainer implements Memory {
 	 * @param index the index of the memory inside this container.
 	 */
 	public synchronized void setEvaluation(Double eval, int index) {
+            randchoice = -1;
 		if (memories != null && memories.size() > index) {
 			Memory memory = memories.get(index);
 			if (memory != null) {
@@ -561,6 +618,7 @@ public class MemoryContainer implements Memory {
          * @return the index of the added memory
 	 */
 	public synchronized int add(Memory memory) {
+            randchoice = -1;
 		int index = -1;
 		if (memory != null) {
 			memories.add(memory);
@@ -707,6 +765,7 @@ public class MemoryContainer implements Memory {
          * @param pol the new Policy to be used
          */
         public void setPolicy(Policy pol) {
+            randchoice = -1;
             policy = pol;
         }
         
