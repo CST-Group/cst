@@ -25,6 +25,7 @@ import br.unicamp.cst.support.TimeStamp;
 import br.unicamp.cst.support.ToString;
 import java.util.HashMap;
 import java.util.Locale;
+import java.util.Random;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import org.junit.jupiter.api.Test;
@@ -475,7 +476,7 @@ public class TestIdea {
     static int maxid = 0;  // To be used in TestAutoReference
     
     private class TestAutoReference {
-        int id;
+        public int id;
         public TestAutoReference parent;
         public ArrayList<TestAutoReference> children = new ArrayList<>();
         public TestAutoReference() {
@@ -502,16 +503,64 @@ public class TestIdea {
         ar.add(ar2);
         ar2.add(ar4);
         ar.add(ar3);
-        Idea i1 = Idea.createIdea("autoref",ar,1);
+        Idea i1 = Idea.createIdea("root",ar,1);
         i1.addObject(ar, "autoref");
+        System.out.println("-1--"+i1.toStringFull(true));
+        Idea i11 = i1.get("autoref.children");
+        System.out.println("i11: "+i11.toStringFull(true));
+        
+        
+        
         i1.addObject(ar, "autoref",false);
+        System.out.println("-2--"+i1.toStringFull(true));
         i1.addObject(ar, "autoref2",false);
+        System.out.println("-3--"+i1.toStringFull(true));
         Idea i2 = i1.get("autoref");
         i2.addObject(ar, "autoref",false);
+        System.out.println("-4--"+i1.toStringFull(true));
         i1.addObject(i2, "autoref",false);
-        System.out.println(i1.toStringFull());
+        System.out.println("-5--"+i1.toStringFull(true));
         Idea i3 = i1.get("autoref.autoref");
-        System.out.println(i3.toStringFull());
+        System.out.println("i3: "+i3.getId());
+        i3 = i1.get("autoref.autoref.autoref");
+        System.out.println("i3: "+i3.getId());
+        Idea.reset();
+        System.out.println("-6--"+i3.toStringFull(true));
+        System.out.println(i3.getL().size());
     }
+    
+    @Test public void testMistakenIsCategoryAndIsHabit() {
+        Idea iorig = new Idea();
+        assertEquals(iorig.isCategory(),false);
+        assertEquals(iorig.isHabit(),false);
+        Idea i1 = Idea.createIdea("notcategory",iorig,1);
+        assertEquals(i1.isCategory(),false);
+        assertEquals(i1.isHabit(),false);
+        Category cat = new Category() { 
+        @Override 
+        public double membership(Idea idea) { 
+             //Check if belongs to category return membershipDegree;
+             return(1.0);
+        }
+        @Override
+        public Idea getInstance(Idea constraints) {
+             Idea id = new Idea("idea");
+             return(id);
+        }
+        };
+        iorig.setValue(cat);
+        assertEquals(i1.isCategory(),true);
+        assertEquals(i1.isHabit(),false);
+        Habit hab = new Habit() { 
+        @Override 
+        public Idea exec(Idea idea) { 
+                  Idea nid = new Idea("idea");
+                  return(nid);
+        }
+        };
+        iorig.setValue(hab);
+        assertEquals(i1.isCategory(),false);
+        assertEquals(i1.isHabit(),true);
+    }    
     
 }

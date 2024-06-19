@@ -495,12 +495,72 @@ public class Idea implements Category,Habit {
         return type;
     }
     
+    private void correctCategoryAndScope() {
+        switch(type) {
+            case 0:setCategory("AbstractObject");
+                   setScope(1);
+                   break;
+            case 1:setCategory("Property");
+                   setScope(1);
+                   break;
+            case 2://2 - Link or Reference to another Idea
+                   break;
+            case 3:setCategory("QualityDimension");
+                   setScope(1);
+                   break;
+            case 4:setCategory("Episode");
+                   setScope(1);
+                   break;       
+            case 5://5 - Composite
+                   break;
+            case 6://6 - Aggregate
+                   break;
+            case 7:// 7 - Configuration
+                   break;
+            case 8:setCategory("TimeStep");
+                   break;
+            case 9:setCategory("Property");
+                   setScope(2);
+                   break;
+            case 10:setCategory("AbstractObject");
+                   setScope(2);
+                   break;
+            case 11:setCategory("Episode");
+                   setScope(2);
+                   break;
+            case 12:setCategory("Property");
+                   setScope(0);
+                   break;
+            case 13:setCategory("AbstractObject");
+                   setScope(0);
+                   break;
+            case 14:setCategory("Episode");
+                   setScope(0);
+                   break;       
+            case 15:setCategory("Action");
+                   setScope(0);
+                   break;
+            case 16:setCategory("Action");
+                   setScope(1);
+                   break;
+            case 17:setCategory("Action");
+                   setScope(2);
+                   break;
+            case 18:setCategory("Goal");
+                   setScope(1);
+                   break;
+            default:break;              
+                   
+        }
+    }
+    
     /** 
      * This method is used to set a new type for the Idea
      * @param type the new type assigned to the Idea
      */
     public void setType(int type) {
         this.type = type;
+        correctCategoryAndScope();
     }
     
     /**
@@ -1236,17 +1296,19 @@ public class Idea implements Category,Habit {
                        int modifiers = field.getModifiers();
                        if (Modifier.isStatic(modifiers)) fo = field.get(null);
                        else fo = field.get(obj);
+                       System.out.println("Field "+fname+" with value "+fo+" is accessible");
                    }
                    else { // if it is inaccessible, check if it is a bean, before giving up
                        fo = checkIfObjectHasSetGet(obj, fname);
                        if (fo != null && fo.equals("<<NULL>>")) {
+                           // This is the case the field is inaccessible and DOES NOT have a get Method
                            String mod = fname+":";
                            if (Modifier.isStatic(field.getModifiers())) mod+=" STATIC";
                            if (Modifier.isProtected(field.getModifiers())) mod+=" PROTECTED";
                            if (Modifier.isPrivate(field.getModifiers())) mod+=" PRIVATE";
                            if (Modifier.isTransient(field.getModifiers())) mod+=" TRANSIENT";
                            if (Modifier.isVolatile(field.getModifiers())) mod+=" VOLATILE";
-                           Logger.getAnonymousLogger().log(Level.INFO,mod);
+                           Logger.getAnonymousLogger().log(Level.INFO,"The field "+getFullName()+"."+ToString.getSimpleName(fullname)+"."+mod+" is inaccessible while being proceessed by addObject and does not hava a get method ! It will not be included in the Idea");
                        }
                    }
                    if (fo != null && fo.equals("<<NULL>>")) {
@@ -1254,9 +1316,11 @@ public class Idea implements Category,Habit {
                    }
                    else if (!already_exists(fo)) {
                        ao.addObject(fo,fname,false);  
+                       System.out.println("Inserting a new idea with name "+fname+" with value "+fo);
                    }
                    else { // this is the case when a recursive object is detected ... inserting a link
                        String ideaname = getFullName()+"."+ToString.getSimpleName(fullname)+"."+fname;
+                       System.out.println("Im inserting a link "+fname+" here: "+ideaname);
                        Idea fi = createIdea(ideaname,"",2);
                        ao.add(fi);
                    }
@@ -1312,7 +1376,9 @@ public class Idea implements Category,Habit {
      * @return true if this idea is a Category or false otherwise
      */
     public boolean isCategory() {
-        if (getValue() instanceof Category) return(true);
+        Object val = getValue();
+        if (val instanceof Idea) return(((Idea) value).isCategory());
+        else if (getValue() instanceof Category) return(true);
         else return(false);
     }
     
@@ -1322,6 +1388,8 @@ public class Idea implements Category,Habit {
      * @return true if this idea is a Habit or false otherwise
      */
     public boolean isHabit() {
+        Object val = getValue();
+        if (val instanceof Idea) return(((Idea) value).isHabit());
         if (getValue() instanceof Habit) return(true);
         else return(false);
     }

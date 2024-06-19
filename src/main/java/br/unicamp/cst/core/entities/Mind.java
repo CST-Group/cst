@@ -14,6 +14,8 @@ package br.unicamp.cst.core.entities;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  * This class represents the Mind of the agent, wrapping all the CST's core
@@ -276,7 +278,8 @@ public class Mind {
          */
         public void registerCodelet(Codelet co, String groupName) {
             ArrayList<Codelet> groupList = codeletGroups.get(groupName);
-                if (groupList != null) groupList.add(co);
+            if (groupList != null) groupList.add(co);
+            else Logger.getAnonymousLogger().log(Level.INFO,"The Codelet Group {0} still does not have been created ... create it first with createCodeletGroup",groupName);
         }
         
         /**
@@ -287,7 +290,8 @@ public class Mind {
          */
         public void registerMemory(Memory m, String groupName) {
             ArrayList<Memory> groupList = memoryGroups.get(groupName);
-                if (groupList != null) groupList.add(m);
+            if (groupList != null) groupList.add(m);
+            else Logger.getAnonymousLogger().log(Level.INFO,"The Memory Group {0} still does not have been created ... create it first with createMemoryGroup",groupName);    
         }
         
         
