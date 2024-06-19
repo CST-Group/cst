@@ -475,6 +475,13 @@ public class TestIdea {
     
     static int maxid = 0;  // To be used in TestAutoReference
     
+    public void printChildren(Idea id) {
+        System.out.println("Children of "+id.getFullName());
+        for (Idea i : id.getL()) {
+            System.out.println(i.getFullName()+" ");
+        }
+    }
+    
     private class TestAutoReference {
         public int id;
         public TestAutoReference parent;
@@ -504,29 +511,26 @@ public class TestIdea {
         ar2.add(ar4);
         ar.add(ar3);
         Idea i1 = Idea.createIdea("root",ar,1);
+        // Converting the complex ar object into Idea using addObject
         i1.addObject(ar, "autoref");
-        System.out.println("-1--"+i1.toStringFull(true));
-        Idea i11 = i1.get("autoref.children");
-        System.out.println("i11: "+i11.toStringFull(true));
-        
-        
-        
-        i1.addObject(ar, "autoref",false);
-        System.out.println("-2--"+i1.toStringFull(true));
-        i1.addObject(ar, "autoref2",false);
-        System.out.println("-3--"+i1.toStringFull(true));
-        Idea i2 = i1.get("autoref");
-        i2.addObject(ar, "autoref",false);
-        System.out.println("-4--"+i1.toStringFull(true));
-        i1.addObject(i2, "autoref",false);
-        System.out.println("-5--"+i1.toStringFull(true));
-        Idea i3 = i1.get("autoref.autoref");
-        System.out.println("i3: "+i3.getId());
-        i3 = i1.get("autoref.autoref.autoref");
-        System.out.println("i3: "+i3.getId());
-        Idea.reset();
-        System.out.println("-6--"+i3.toStringFull(true));
-        System.out.println(i3.getL().size());
+        assertEquals(i1.get("autoref.id").getValue(),ar.id);
+        assertEquals(i1.get("autoref.children.children[0].id").getValue(),ar2.id);
+        assertEquals(i1.get("autoref.children.children[1].id").getValue(),ar3.id);
+        assertEquals(i1.get("autoref.children.children[0].children.children[0].id").getValue(),ar4.id);
+        // Creating a second level of reference to the same object
+        i1.get("autoref").addObject(ar, "autoref");
+        // This test checks if the original idea is different from the inner reference
+        assertNotEquals(i1.get("autoref.id"),i1.get("autoref.autoref.id"));
+        assertEquals(i1.get("autoref.id").getValue(),i1.get("autoref.autoref.id").getValue());
+        // Creating a second level of autoreference
+        i1.addObject(ar, "autoref2");
+        assertNotEquals(i1.get("autoref.id"),i1.get("autoref2.id"));
+        assertEquals(i1.get("autoref.id").getValue(),i1.get("autoref2.id").getValue());
+        Idea i3 = Idea.createIdea("autoref",null,1);
+        i3.add(i3);
+        Idea i4 = i3.get("autoref.autoref.autoref.autoref");
+        assertEquals(i4,i3);
+        System.out.println("i3:"+i3.toStringFull(true));
     }
     
     @Test public void testMistakenIsCategoryAndIsHabit() {
@@ -561,6 +565,86 @@ public class TestIdea {
         iorig.setValue(hab);
         assertEquals(i1.isCategory(),false);
         assertEquals(i1.isHabit(),true);
-    }    
+    }  
+    
+    /* 0 - AbstractObject (Existent)
+     * 1 - Property (Existent)
+     * 2 - Link or Reference to another Idea
+     * 3 - QualityDimension
+     * 4 - Episode (Existent)
+     * 5 - Composite
+     * 6 - Aggregate
+     * 7 - Configuration
+     * 8 - TimeStep
+     * 9 - Property (Law)
+     * 10 - AbstractObject (Law)
+     * 11 - Episode (Law)
+     * 12 - Property (Possibility)
+     * 13 - AbstractObject (Possibility)
+     * 14 - Episode (Possibility)
+     * 15 - ActionPossibility
+     * 16 - Action
+     * 17 - ActionCategory
+     * 18 - Goal */
+    
+    @Test public void testCorrectCategoryAndScope() {
+        for (int i=0;i<19;i++) {
+            Idea id = new Idea();
+            id.setType(i);
+            switch(i) {
+                case 0:assertEquals(id.getCategory(),"AbstractObject");
+                       assertEquals(id.getScope(),1);
+                       break;
+                case 1:assertEquals(id.getCategory(),"Property");
+                       assertEquals(id.getScope(),1);
+                       break;
+                case 2:assertEquals(id.getCategory(),"Link");
+                       break;
+                case 3:assertEquals(id.getCategory(),"QualityDimension");
+                       break;
+                case 4:assertEquals(id.getCategory(),"Episode");
+                       assertEquals(id.getScope(),1);
+                       break;
+                case 5:assertEquals(id.getCategory(),"Composite");
+                       break;
+                case 6:assertEquals(id.getCategory(),"Aggregate");
+                       break;
+                case 7:assertEquals(id.getCategory(),"Configuration");
+                       break;
+                case 8:assertEquals(id.getCategory(),"TimeStep");
+                       break;
+                case 9:assertEquals(id.getCategory(),"Property");
+                       assertEquals(id.getScope(),2);
+                       break;
+                case 10:assertEquals(id.getCategory(),"AbstractObject");
+                       assertEquals(id.getScope(),2);
+                       break;
+                case 11:assertEquals(id.getCategory(),"Episode");
+                       assertEquals(id.getScope(),2);
+                       break;
+                case 12:assertEquals(id.getCategory(),"Property");
+                       assertEquals(id.getScope(),0);
+                       break;
+                case 13:assertEquals(id.getCategory(),"AbstractObject");
+                       assertEquals(id.getScope(),0);
+                       break;
+                case 14:assertEquals(id.getCategory(),"Episode");
+                       assertEquals(id.getScope(),0);
+                       break;       
+                case 15:assertEquals(id.getCategory(),"Action");
+                       assertEquals(id.getScope(),0);
+                       break;
+                case 16:assertEquals(id.getCategory(),"Action");
+                       assertEquals(id.getScope(),1);
+                       break;
+                case 17:assertEquals(id.getCategory(),"Action");
+                       assertEquals(id.getScope(),2);
+                       break;
+                case 18:assertEquals(id.getCategory(),"Goal");
+                       break;              
+            }
+        }
+    }
+            
     
 }

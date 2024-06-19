@@ -504,6 +504,7 @@ public class Idea implements Category,Habit {
                    setScope(1);
                    break;
             case 2://2 - Link or Reference to another Idea
+                   setCategory("Link");
                    break;
             case 3:setCategory("QualityDimension");
                    setScope(1);
@@ -512,10 +513,13 @@ public class Idea implements Category,Habit {
                    setScope(1);
                    break;       
             case 5://5 - Composite
+                   setCategory("Composite");
                    break;
             case 6://6 - Aggregate
+                   setCategory("Aggregate");
                    break;
             case 7:// 7 - Configuration
+                   setCategory("Configuration");
                    break;
             case 8:setCategory("TimeStep");
                    break;
@@ -1280,6 +1284,7 @@ public class Idea implements Category,Habit {
             Idea ao = (Idea) obj;
             child.add(ao);
             this.add(child);
+            //this.add((Idea)obj);
             listtoavoidloops.add(obj);  // should I include obj or child here ?           
             return;
         }
@@ -1296,7 +1301,7 @@ public class Idea implements Category,Habit {
                        int modifiers = field.getModifiers();
                        if (Modifier.isStatic(modifiers)) fo = field.get(null);
                        else fo = field.get(obj);
-                       System.out.println("Field "+fname+" with value "+fo+" is accessible");
+                       //System.out.println("Field "+fname+" with value "+fo+" is accessible");
                    }
                    else { // if it is inaccessible, check if it is a bean, before giving up
                        fo = checkIfObjectHasSetGet(obj, fname);
@@ -1308,7 +1313,7 @@ public class Idea implements Category,Habit {
                            if (Modifier.isPrivate(field.getModifiers())) mod+=" PRIVATE";
                            if (Modifier.isTransient(field.getModifiers())) mod+=" TRANSIENT";
                            if (Modifier.isVolatile(field.getModifiers())) mod+=" VOLATILE";
-                           Logger.getAnonymousLogger().log(Level.INFO,"The field "+getFullName()+"."+ToString.getSimpleName(fullname)+"."+mod+" is inaccessible while being proceessed by addObject and does not hava a get method ! It will not be included in the Idea");
+                           //Logger.getAnonymousLogger().log(Level.INFO,"The field "+getFullName()+"."+ToString.getSimpleName(fullname)+"."+mod+" is inaccessible while being proceessed by addObject and does not hava a get method ! It will not be included in the Idea");
                        }
                    }
                    if (fo != null && fo.equals("<<NULL>>")) {
@@ -1316,11 +1321,11 @@ public class Idea implements Category,Habit {
                    }
                    else if (!already_exists(fo)) {
                        ao.addObject(fo,fname,false);  
-                       System.out.println("Inserting a new idea with name "+fname+" with value "+fo);
+                       //System.out.println("Inserting a new idea with name "+fname+" with value "+fo);
                    }
                    else { // this is the case when a recursive object is detected ... inserting a link
                        String ideaname = getFullName()+"."+ToString.getSimpleName(fullname)+"."+fname;
-                       System.out.println("Im inserting a link "+fname+" here: "+ideaname);
+                       //System.out.println("Im inserting a link "+fname+" here: "+ideaname);
                        Idea fi = createIdea(ideaname,"",2);
                        ao.add(fi);
                    }
