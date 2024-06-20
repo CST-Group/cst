@@ -11,11 +11,15 @@
 package br.unicamp.cst.representation.idea;
 
 import br.unicamp.cst.support.ToString;
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.google.gson.ToNumberPolicy;
 import java.lang.reflect.Array;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.lang.reflect.ParameterizedType;
+import java.math.BigDecimal;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -660,7 +664,7 @@ public class Idea implements Category,Habit {
      * @return a boolean indicating if the value of the current Idea is a number. 
      */
     public boolean isNumber() {
-        if (isFloat() || isDouble() || isLong() || isInteger()) return(true);
+        if (isFloat() || isDouble() || isLong() || isInteger() || value instanceof Short || value instanceof Byte) return(true);
         return(false);
     }
 
@@ -1405,6 +1409,117 @@ public class Idea implements Category,Habit {
      */
     public boolean isLeaf() {
         return this.l.isEmpty();
+    }
+    
+    public String toJSON() {
+        Gson gson;
+        //gson = new GsonBuilder().registerTypeAdapter(Idea.class, new InterfaceAdapter<Idea>())
+        //                     .setPrettyPrinting().create();
+        //gson = new Gson();
+        gson = new GsonBuilder().setPrettyPrinting().setObjectToNumberStrategy(ToNumberPolicy.LONG_OR_DOUBLE).create();
+        String out = "";
+        try {
+            out = gson.toJson(this);
+        } catch(Error e) {
+            Logger.getAnonymousLogger().log(Level.INFO,"It was not possible to generate a version of the idea {0}",this.getFullName());
+        }    
+        return(out);
+    }
+    
+    public static Idea fromJSON(String idea_json) {
+        Gson gson;
+        //gson = new GsonBuilder().registerTypeAdapter(Idea.class, new InterfaceAdapter<Idea>())
+        //                     .setPrettyPrinting().create();
+        //gson = new Gson();
+        gson = new GsonBuilder().setPrettyPrinting().setObjectToNumberStrategy(ToNumberPolicy.LONG_OR_DOUBLE).create();
+        Idea i = null;
+        try {
+            i = gson.fromJson(idea_json, Idea.class);
+        } catch(Error e) {
+            Logger.getAnonymousLogger().log(Level.INFO,"It was not possible to generate an idea from the given String ... creating a null Idea");
+        }
+        return(i);
+    }
+    
+    public boolean equals(Idea other) {
+        if (this != null && other == null) return(false);
+        boolean out = true;
+        out &= this.getFullName().equals(other.getFullName());
+        if (this.getValue() == null && other.getValue() != null ||
+            this.getValue() != null && other.getValue() == null) {
+            System.out.println("Values are different ..."+this.getName()+": "+this.getValue()+" ("+this.getValue().getClass().getCanonicalName()+") "+other.getName()+": "+other.getValue()+" ("+other.getValue().getClass().getCanonicalName()+")");
+            return(false);
+        }
+        else if (this.getValue() == null && other.getValue() == null) {
+            // do nothing
+        }
+        else {
+            boolean valuediff;
+            if (this.isNumber() && other.isNumber()) {
+                //System.out.println("OK, "+this.getName()+" and "+other.getName()+" are both numbers");
+                BigDecimal t = new BigDecimal(0);
+                if (this.getValue() instanceof Integer) t = new BigDecimal((Integer)this.getValue());
+                else if (this.getValue() instanceof Long) t = new BigDecimal((Long)this.getValue());
+                else if (this.getValue() instanceof Short) t = new BigDecimal((Short)this.getValue());
+                else if (this.getValue() instanceof Byte) t = new BigDecimal((Byte)this.getValue());
+                else if (this.getValue() instanceof Float) t = new BigDecimal((Float)this.getValue());
+                else if (this.getValue() instanceof Double) t = new BigDecimal((Double)this.getValue());
+                BigDecimal o = new BigDecimal(0);
+                if (other.getValue() instanceof Integer) o = new BigDecimal((Integer)other.getValue());
+                else if (other.getValue() instanceof Long) o = new BigDecimal((Long)other.getValue());
+                else if (other.getValue() instanceof Short) o = new BigDecimal((Short)other.getValue());
+                else if (other.getValue() instanceof Byte) o = new BigDecimal((Byte)other.getValue());
+                else if (other.getValue() instanceof Float) o = new BigDecimal((Float)other.getValue());
+                else if (other.getValue() instanceof Double) o = new BigDecimal((Double)other.getValue());
+                //valuediff = t.compareTo(o) == 0;
+                valuediff = t.floatValue() == o.floatValue();
+                if (valuediff == false) {
+                    System.out.println("t."+this.getFullName()+": "+t+" o."+other.getFullName()+": "+o);
+                }    
+                   
+            }
+            else {
+                valuediff = this.getValue().equals(other.getValue());
+                if (valuediff == false) System.out.println("Hmmm, "+this.getName()+" and "+other.getName()+" are not both numbers");
+            }
+           if (valuediff == false) System.out.println("Values are different ..."+this.getName()+": "+this.getValue()+" ("+this.getValue().getClass().getCanonicalName()+") "+other.getName()+": "+other.getValue()+" ("+other.getValue().getClass().getCanonicalName()+")");
+           out &= valuediff;
+           if (out == false) return(out);
+        }
+        long lt = this.getType();
+        long lo = other.getType();
+        out &= lt == lo;
+        if (out == false) {
+            System.out.println("Types are different ..."+this.getName()+": "+lt+" "+other.getName()+": "+lo);
+            return(out);
+        }
+        if (this.getCategory() == null && other.getCategory() != null ||
+            this.getCategory() != null && other.getCategory() == null) {
+            System.out.println("Categories are different ..."+this.getName()+": "+this.getCategory()+" "+other.getName()+": "+other.getCategory());
+            return(false);
+        }
+        else if (this.getCategory() == null && other.getCategory() == null) {
+            // do nothing
+        }
+        else { 
+            out &= this.getCategory().equals(other.getCategory());
+            if (out == false) System.out.println("Categories are different ..."+this.getName()+": "+this.getCategory()+" "+other.getName()+": "+other.getCategory());
+        }   
+        out &= this.getScope() == other.getScope();
+        if (this.getL().size() == other.getL().size()) {
+             for (int i=0;i<this.getL().size();i++) {
+                 boolean testsub = this.getL().get(i).equals(other.getL().get(i));
+                 if (testsub == false) {
+                     System.out.println("Difference in the "+this.getL().get(i).getName()+" idea "+this.getL().get(i).getFullName()+": "+this.getL().get(i).getValue()+" "+other.getL().get(i).getFullName()+": "+other.getL().get(i).getValue());
+                 }
+                 out &= testsub;
+             }
+        }
+        else {
+            System.out.println("Internal list has different number of elements ... l(this): "+this.getL().size()+" l(other): "+other.getL().size());
+            return(false);
+        }
+        return(out);        
     }
     
     

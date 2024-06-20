@@ -27,6 +27,7 @@ import java.util.HashMap;
 import java.util.Locale;
 import java.util.Random;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import org.junit.jupiter.api.Test;
 
@@ -530,7 +531,7 @@ public class TestIdea {
         i3.add(i3);
         Idea i4 = i3.get("autoref.autoref.autoref.autoref");
         assertEquals(i4,i3);
-        System.out.println("i3:"+i3.toStringFull(true));
+        System.out.println("i3:\n"+i3.toStringFull(true));
     }
     
     @Test public void testMistakenIsCategoryAndIsHabit() {
@@ -644,6 +645,24 @@ public class TestIdea {
                        break;              
             }
         }
+    }
+    
+    @Test public void testToJSON() {
+        Idea ii = Idea.createIdea("teste", 12, 1);
+        ii.add(Idea.createIdea("tt2",null,5));
+        Idea iref = Idea.createIdea("teste",ii,2);
+        ii.add(iref);
+        System.out.println(ii.toStringFull(true));
+        String idea_json = ii.toJSON();
+        Idea ii2 = Idea.fromJSON(idea_json);
+        assertTrue(ii.equals(ii2));
+        TestComplexMemoryObjectInfo ttt = new TestComplexMemoryObjectInfo();
+        initialize(ttt);
+        Idea i = Idea.createIdea("root",null,1);
+        i.addObject(ttt,"cmoi");
+        String ij = i.toJSON();
+        Idea i2 = Idea.fromJSON(ij);
+        assertTrue(i.equals(i2));
     }
             
     
