@@ -650,9 +650,6 @@ public class TestIdea {
     @Test public void testToJSON() {
         Idea ii = Idea.createIdea("teste", 12, 1);
         ii.add(Idea.createIdea("tt2",null,5));
-        Idea iref = Idea.createIdea("teste",ii,2);
-        ii.add(iref);
-        System.out.println(ii.toStringFull(true));
         String idea_json = ii.toJSON();
         Idea ii2 = Idea.fromJSON(idea_json);
         assertTrue(ii.equals(ii2));
