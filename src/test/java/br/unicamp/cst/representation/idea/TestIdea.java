@@ -23,11 +23,20 @@ import javax.swing.tree.DefaultMutableTreeNode;
 import br.unicamp.cst.core.profiler.TestComplexMemoryObjectInfo;
 import br.unicamp.cst.support.TimeStamp;
 import br.unicamp.cst.support.ToString;
+import ch.qos.logback.classic.Level;
+import ch.qos.logback.classic.Logger;
+import ch.qos.logback.classic.LoggerContext;
+import ch.qos.logback.classic.spi.ILoggingEvent;
+import ch.qos.logback.core.read.ListAppender;
 import java.util.HashMap;
 import java.util.Locale;
+
+import java.util.stream.Collectors;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import org.junit.jupiter.api.Test;
+import org.slf4j.LoggerFactory;
 
 
 public class TestIdea {
@@ -474,8 +483,15 @@ public class TestIdea {
     
     static int maxid = 0;  // To be used in TestAutoReference
     
+    public void printChildren(Idea id) {
+        System.out.println("Children of "+id.getFullName());
+        for (Idea i : id.getL()) {
+            System.out.println(i.getFullName()+" ");
+        }
+    }
+    
     private class TestAutoReference {
-        int id;
+        public int id;
         public TestAutoReference parent;
         public ArrayList<TestAutoReference> children = new ArrayList<>();
         public TestAutoReference() {
@@ -502,16 +518,206 @@ public class TestIdea {
         ar.add(ar2);
         ar2.add(ar4);
         ar.add(ar3);
-        Idea i1 = Idea.createIdea("autoref",ar,1);
+        Idea i1 = Idea.createIdea("root",ar,1);
+        // Converting the complex ar object into Idea using addObject
         i1.addObject(ar, "autoref");
-        i1.addObject(ar, "autoref",false);
-        i1.addObject(ar, "autoref2",false);
-        Idea i2 = i1.get("autoref");
-        i2.addObject(ar, "autoref",false);
-        i1.addObject(i2, "autoref",false);
-        System.out.println(i1.toStringFull());
-        Idea i3 = i1.get("autoref.autoref");
-        System.out.println(i3.toStringFull());
+        assertEquals(i1.get("autoref.id").getValue(),ar.id);
+        assertEquals(i1.get("autoref.children.children[0].id").getValue(),ar2.id);
+        assertEquals(i1.get("autoref.children.children[1].id").getValue(),ar3.id);
+        assertEquals(i1.get("autoref.children.children[0].children.children[0].id").getValue(),ar4.id);
+        // Creating a second level of reference to the same object
+        i1.get("autoref").addObject(ar, "autoref");
+        // This test checks if the original idea is different from the inner reference
+        assertNotEquals(i1.get("autoref.id"),i1.get("autoref.autoref.id"));
+        assertEquals(i1.get("autoref.id").getValue(),i1.get("autoref.autoref.id").getValue());
+        // Creating a second level of autoreference
+        i1.addObject(ar, "autoref2");
+        assertNotEquals(i1.get("autoref.id"),i1.get("autoref2.id"));
+        assertEquals(i1.get("autoref.id").getValue(),i1.get("autoref2.id").getValue());
+        Idea i3 = Idea.createIdea("autoref",null,1);
+        i3.add(i3);
+        Idea i4 = i3.get("autoref.autoref.autoref.autoref");
+        assertEquals(i4,i3);
+        System.out.println("i3:\n"+i3.toStringFull(true));
     }
+    
+    @Test public void testMistakenIsCategoryAndIsHabit() {
+        Idea iorig = new Idea();
+        assertEquals(iorig.isCategory(),false);
+        assertEquals(iorig.isHabit(),false);
+        Idea i1 = Idea.createIdea("notcategory",iorig,1);
+        assertEquals(i1.isCategory(),false);
+        assertEquals(i1.isHabit(),false);
+        Category cat = new Category() { 
+        @Override 
+        public double membership(Idea idea) { 
+             //Check if belongs to category return membershipDegree;
+             return(1.0);
+        }
+        @Override
+        public Idea getInstance(Idea constraints) {
+             Idea id = new Idea("idea");
+             return(id);
+        }
+        };
+        iorig.setValue(cat);
+        assertEquals(i1.isCategory(),true);
+        assertEquals(i1.isHabit(),false);
+        Habit hab = new Habit() { 
+        @Override 
+        public Idea exec(Idea idea) { 
+                  Idea nid = new Idea("idea");
+                  return(nid);
+        }
+        };
+        iorig.setValue(hab);
+        assertEquals(i1.isCategory(),false);
+        assertEquals(i1.isHabit(),true);
+    }  
+    
+    /* 0 - AbstractObject (Existent)
+     * 1 - Property (Existent)
+     * 2 - Link or Reference to another Idea
+     * 3 - QualityDimension
+     * 4 - Episode (Existent)
+     * 5 - Composite
+     * 6 - Aggregate
+     * 7 - Configuration
+     * 8 - TimeStep
+     * 9 - Property (Law)
+     * 10 - AbstractObject (Law)
+     * 11 - Episode (Law)
+     * 12 - Property (Possibility)
+     * 13 - AbstractObject (Possibility)
+     * 14 - Episode (Possibility)
+     * 15 - ActionPossibility
+     * 16 - Action
+     * 17 - ActionCategory
+     * 18 - Goal */
+    
+    @Test public void testCorrectCategoryAndScope() {
+        for (int i=0;i<19;i++) {
+            Idea id = new Idea();
+            id.setType(i);
+            switch(i) {
+                case 0:assertEquals(id.getCategory(),"AbstractObject");
+                       assertEquals(id.getScope(),1);
+                       break;
+                case 1:assertEquals(id.getCategory(),"Property");
+                       assertEquals(id.getScope(),1);
+                       break;
+                case 2:assertEquals(id.getCategory(),"Link");
+                       break;
+                case 3:assertEquals(id.getCategory(),"QualityDimension");
+                       break;
+                case 4:assertEquals(id.getCategory(),"Episode");
+                       assertEquals(id.getScope(),1);
+                       break;
+                case 5:assertEquals(id.getCategory(),"Composite");
+                       break;
+                case 6:assertEquals(id.getCategory(),"Aggregate");
+                       break;
+                case 7:assertEquals(id.getCategory(),"Configuration");
+                       break;
+                case 8:assertEquals(id.getCategory(),"TimeStep");
+                       break;
+                case 9:assertEquals(id.getCategory(),"Property");
+                       assertEquals(id.getScope(),2);
+                       break;
+                case 10:assertEquals(id.getCategory(),"AbstractObject");
+                       assertEquals(id.getScope(),2);
+                       break;
+                case 11:assertEquals(id.getCategory(),"Episode");
+                       assertEquals(id.getScope(),2);
+                       break;
+                case 12:assertEquals(id.getCategory(),"Property");
+                       assertEquals(id.getScope(),0);
+                       break;
+                case 13:assertEquals(id.getCategory(),"AbstractObject");
+                       assertEquals(id.getScope(),0);
+                       break;
+                case 14:assertEquals(id.getCategory(),"Episode");
+                       assertEquals(id.getScope(),0);
+                       break;       
+                case 15:assertEquals(id.getCategory(),"Action");
+                       assertEquals(id.getScope(),0);
+                       break;
+                case 16:assertEquals(id.getCategory(),"Action");
+                       assertEquals(id.getScope(),1);
+                       break;
+                case 17:assertEquals(id.getCategory(),"Action");
+                       assertEquals(id.getScope(),2);
+                       break;
+                case 18:assertEquals(id.getCategory(),"Goal");
+                       break;              
+            }
+        }
+    }
+    
+    public class MemoryAppender extends ListAppender<ILoggingEvent> {
+    public void reset() {
+        this.list.clear();
+    }
+
+    public boolean contains(String string, Level level) {
+        return this.list.stream()
+          .anyMatch(event -> event.toString().contains(string)
+            && event.getLevel().equals(level));
+    }
+
+    public int countEventsForLogger(String loggerName) {
+        return (int) this.list.stream()
+          .filter(event -> event.getLoggerName().contains(loggerName))
+          .count();
+    }
+
+    public List<ILoggingEvent> search(String string) {
+        return this.list.stream()
+          .filter(event -> event.toString().contains(string))
+          .collect(Collectors.toList());
+    }
+
+    public List<ILoggingEvent> search(String string, Level level) {
+        return this.list.stream()
+          .filter(event -> event.toString().contains(string)
+            && event.getLevel().equals(level))
+          .collect(Collectors.toList());
+    }
+
+    public int getSize() {
+        return this.list.size();
+    }
+
+    public List<ILoggingEvent> getLoggedEvents() {
+        return Collections.unmodifiableList(this.list);
+    }
+}
+    
+    @Test public void testToJSON() {
+        MemoryAppender memoryAppender = new MemoryAppender();
+        Logger logger = (Logger) LoggerFactory.getLogger(Idea.class);
+        memoryAppender.setContext((LoggerContext) LoggerFactory.getILoggerFactory());
+        logger.setLevel(Level.DEBUG);
+        logger.addAppender(memoryAppender);
+        memoryAppender.start();
+        Idea ii = Idea.createIdea("teste", 12, 1);
+        ii.add(Idea.createIdea("tt2",null,5));
+        String idea_json = ii.toJSON();
+        Idea ii2 = Idea.fromJSON(idea_json);
+        assertTrue(ii.equals(ii2));
+        TestComplexMemoryObjectInfo ttt = new TestComplexMemoryObjectInfo();
+        initialize(ttt);
+        Idea i = Idea.createIdea("root",null,1);
+        i.addObject(ttt,"cmoi");
+        String ij = i.toJSON();
+        Idea i2 = Idea.fromJSON(ij);
+        assertTrue(i.equals(i2));
+        ii = Idea.createIdea("feedback", l, 1);
+        ii.add(ii);
+        ij = ii.toJSON();
+        System.out.println(ij);
+        
+    }
+            
     
 }
