@@ -23,13 +23,20 @@ import javax.swing.tree.DefaultMutableTreeNode;
 import br.unicamp.cst.core.profiler.TestComplexMemoryObjectInfo;
 import br.unicamp.cst.support.TimeStamp;
 import br.unicamp.cst.support.ToString;
+import ch.qos.logback.classic.Level;
+import ch.qos.logback.classic.Logger;
+import ch.qos.logback.classic.LoggerContext;
+import ch.qos.logback.classic.spi.ILoggingEvent;
+import ch.qos.logback.core.read.ListAppender;
 import java.util.HashMap;
 import java.util.Locale;
-import java.util.Random;
+
+import java.util.stream.Collectors;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import org.junit.jupiter.api.Test;
+import org.slf4j.LoggerFactory;
 
 
 public class TestIdea {
@@ -647,7 +654,52 @@ public class TestIdea {
         }
     }
     
+    public class MemoryAppender extends ListAppender<ILoggingEvent> {
+    public void reset() {
+        this.list.clear();
+    }
+
+    public boolean contains(String string, Level level) {
+        return this.list.stream()
+          .anyMatch(event -> event.toString().contains(string)
+            && event.getLevel().equals(level));
+    }
+
+    public int countEventsForLogger(String loggerName) {
+        return (int) this.list.stream()
+          .filter(event -> event.getLoggerName().contains(loggerName))
+          .count();
+    }
+
+    public List<ILoggingEvent> search(String string) {
+        return this.list.stream()
+          .filter(event -> event.toString().contains(string))
+          .collect(Collectors.toList());
+    }
+
+    public List<ILoggingEvent> search(String string, Level level) {
+        return this.list.stream()
+          .filter(event -> event.toString().contains(string)
+            && event.getLevel().equals(level))
+          .collect(Collectors.toList());
+    }
+
+    public int getSize() {
+        return this.list.size();
+    }
+
+    public List<ILoggingEvent> getLoggedEvents() {
+        return Collections.unmodifiableList(this.list);
+    }
+}
+    
     @Test public void testToJSON() {
+        MemoryAppender memoryAppender = new MemoryAppender();
+        Logger logger = (Logger) LoggerFactory.getLogger(Idea.class);
+        memoryAppender.setContext((LoggerContext) LoggerFactory.getILoggerFactory());
+        logger.setLevel(Level.DEBUG);
+        logger.addAppender(memoryAppender);
+        memoryAppender.start();
         Idea ii = Idea.createIdea("teste", 12, 1);
         ii.add(Idea.createIdea("tt2",null,5));
         String idea_json = ii.toJSON();
@@ -660,6 +712,11 @@ public class TestIdea {
         String ij = i.toJSON();
         Idea i2 = Idea.fromJSON(ij);
         assertTrue(i.equals(i2));
+        ii = Idea.createIdea("feedback", l, 1);
+        ii.add(ii);
+        ij = ii.toJSON();
+        System.out.println(ij);
+        
     }
             
     

@@ -11,6 +11,8 @@
 package br.unicamp.cst.representation.idea;
 
 import br.unicamp.cst.support.ToString;
+import ch.qos.logback.classic.Level;
+import ch.qos.logback.classic.Logger;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.ToNumberPolicy;
@@ -30,8 +32,7 @@ import java.util.List;
 import java.util.TimeZone;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArrayList;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+import org.slf4j.LoggerFactory;
 
 
 /**
@@ -48,6 +49,7 @@ public class Idea implements Category,Habit {
     private String category;
     private int scope=1;  // 0: possibility, 1: existence, 2: law
     private transient IdeaComparator ideaComparator = new IdeaComparator();
+    private static transient Logger logger = (Logger) LoggerFactory.getLogger(Idea.class);
     // This list is used while building a toStringFull()
     /**
      * The repo hashmap is a list of known Ideas used by the createIdea factory method to 
@@ -884,7 +886,7 @@ public class Idea implements Category,Habit {
             javaObject = type.getDeclaredConstructor().newInstance();
             type.cast(javaObject);
         } catch (Exception e) {
-            Logger.getAnonymousLogger().log(Level.INFO, "The class name {0} is not on the Java Library Path !", classname);
+            logger.info("The class name {0} is not on the Java Library Path !", classname);
         }
         return (javaObject);
     }
@@ -1334,7 +1336,7 @@ public class Idea implements Category,Habit {
                        ao.add(fi);
                    }
                 } catch (Exception e) {
-                    Logger.getAnonymousLogger().log(Level.INFO,"I got a {0} Exception in field {1} in class Idea: {2}",new Object[]{e.getClass().getName(),fname,e.getMessage()+"-->"+e.getLocalizedMessage()});
+                    logger.info("I got a {0} Exception in field {1} in class Idea: {2}",new Object[]{e.getClass().getName(),fname,e.getMessage()+"-->"+e.getLocalizedMessage()});
                 }   
             }
             this.add(ao);
@@ -1421,7 +1423,7 @@ public class Idea implements Category,Habit {
         try {
             out = gson.toJson(this);
         } catch(Error e) {
-            Logger.getAnonymousLogger().log(Level.INFO,"It was not possible to generate a version of the idea {0}",this.getFullName());
+            logger.info("It was not possible to generate a version of the idea {0}",this.getFullName());
         }    
         return(out);
     }
@@ -1436,7 +1438,7 @@ public class Idea implements Category,Habit {
         try {
             i = gson.fromJson(idea_json, Idea.class);
         } catch(Error e) {
-            Logger.getAnonymousLogger().log(Level.INFO,"It was not possible to generate an idea from the given String ... creating a null Idea");
+            logger.info("It was not possible to generate an idea from the given String ... creating a null Idea");
         }
         return(i);
     }
