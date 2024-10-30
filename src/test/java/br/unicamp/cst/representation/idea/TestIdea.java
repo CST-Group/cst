@@ -33,6 +33,7 @@ import java.util.Locale;
 
 import java.util.stream.Collectors;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import org.junit.jupiter.api.Test;
@@ -231,62 +232,51 @@ public class TestIdea {
      */
     @Test 
     public void testIdea2() {
-        Idea idea = new Idea("idea","idea","AbstractObject",1);
+        Idea idea = new Idea("idea","idea","AbstractObject",1.0);
         assertEquals(idea.getType(),0);
-        idea = new Idea("idea","idea","Property",1);
+        idea = new Idea("idea","idea","Property",1.0);
         assertEquals(idea.getType(),1);
-        idea = new Idea("idea","idea","Link",1);
+        idea = new Idea("idea","idea","Link",1.0);
         assertEquals(idea.getType(),2);
-        idea = new Idea("idea","idea","QualityDimension",1);
+        idea = new Idea("idea","idea","QualityDimension",1.0);
         assertEquals(idea.getType(),3);
-        idea = new Idea("idea","idea","Episode",1);
+        idea = new Idea("idea","idea","Episode",1.0);
         assertEquals(idea.getType(),4);
-        idea = new Idea("idea","idea","Composite",1);
+        idea = new Idea("idea","idea","Composite",1.0);
         assertEquals(idea.getType(),5);
-        idea = new Idea("idea","idea","Aggregate",1);
+        idea = new Idea("idea","idea","Aggregate",1.0);
         assertEquals(idea.getType(),6);
-        idea = new Idea("idea","idea","Configuration",1);
+        idea = new Idea("idea","idea","Configuration",1.0);
         assertEquals(idea.getType(),7);
-        idea = new Idea("idea","idea","TimeStep",1);
+        idea = new Idea("idea","idea","TimeStep",1.0);
         assertEquals(idea.getType(),8);
-        idea = new Idea("idea","idea","Property",2);
+        idea = new Idea("idea",new EntityCategory(),"Property",0.0);
         assertEquals(idea.getType(),9);
-        idea = new Idea("idea","idea","AbstractObject",2);
+        idea = new Idea("idea",new EntityCategory(),"AbstractObject",0.0);
         assertEquals(idea.getType(),10);
-        idea = new Idea("idea","idea","Episode",2);
+        idea = new Idea("idea",new EntityCategory(),"Episode",0.0);
         assertEquals(idea.getType(),11);
-        idea = new Idea("idea","idea","Property",0);
+        idea = new Idea("idea","idea","Property",0.0);
         assertEquals(idea.getType(),12);
-        idea = new Idea("idea","idea","AbstractObject",0);
+        idea = new Idea("idea","idea","AbstractObject",0.0);
         assertEquals(idea.getType(),13);
-        idea = new Idea("idea","idea","Episode",0);
+        idea = new Idea("idea","idea","Episode",0.0);
         assertEquals(idea.getType(),14);
-        idea = new Idea("idea","idea","Action",0);
+        idea = new Idea("idea","idea","Action",0.0);
         assertEquals(idea.getType(),15);
-        idea = new Idea("idea","idea","Action",1);
+        idea = new Idea("idea","idea","Action",1.0);
         assertEquals(idea.getType(),16);
-        idea = new Idea("idea","idea","Action",2);
+        idea = new Idea("idea",new EntityCategory(),"Action",0.0);
         assertEquals(idea.getType(),17);
-        idea = new Idea("idea","idea","Goal",0);
+        idea = new Idea("idea","idea","Goal",0.0);
         assertEquals(idea.getType(),18);
-        idea = new Idea("idea","idea",0,"Episode",0);
+        idea = new Idea("idea","idea","Episode",0.0);
         idea.setCategory("Property");
         idea.setScope(1);
         assertEquals(idea.getCategory().equalsIgnoreCase("Property"),true);
         assertEquals(idea.getScope(),1);
-        assertEquals(Idea.guessType(null, 0),0);
-        assertEquals(Idea.guessType("Property",3),0);
-        assertEquals(Idea.guessType("AbstractObject",3),0);
-        assertEquals(Idea.guessType("Episode",3),0);
-        assertEquals(Idea.guessType("Action",3),0);
-        assertEquals(Idea.guessType("",3),0);
-        // Testing scope limits
-        idea = new Idea("idea","idea",0,"Episode",-1);
-        assertEquals(idea.getScope(),1);
-        assertEquals(idea.getType(),0);
-        idea = new Idea("idea","idea",0,"Episode",3);
-        assertEquals(idea.getScope(),1);
-        assertEquals(idea.getType(),0);
+        assertEquals(Idea.guessType(null, null,0.0,0.5),0);
+        assertEquals(Idea.guessType("",null,0.0,0.5),0);
     }
     
     @Test 
@@ -351,11 +341,11 @@ public class TestIdea {
         assertEquals(i.isString(),true);
         i.setValue(new HashMap());
         assertEquals(i.isHashMap(),true);
-        // The default type should be 1
+        // The default type should be 0
         assertEquals(i.isType(1),true);
-        i.setType(0);
-        assertEquals(i.isType(1),false);
-        assertEquals(i.isType(0),true);
+        i.setType(1);
+        assertEquals(i.isType(0),false);
+        assertEquals(i.isType(1),true);
         i.setValue("3.1");
         assertEquals(i.getResumedValue()," 3.1");
         i.setValue("nothing");
@@ -364,12 +354,13 @@ public class TestIdea {
     
     @Test 
     public void cloneTest() {
-        Idea i = new Idea("test","value",12,"category",2);
+        Object value = new EntityCategory();
+        Idea i = new Idea("test",value,12,"category",0.0,0.5);
         long n1,n2,n3,n4,n5,n6;
         n1 = i.getId();
-        Idea sub1 = new Idea("sub","value1",13,"category1",1);
+        Idea sub1 = new Idea("sub","value1",13,"category1",1.0,0.5);
         n2 = sub1.getId();
-        Idea sub2 = new Idea("sub2","value2",14,"category2",0);
+        Idea sub2 = new Idea("sub2","value2",14,"category2",0.0,0.5);
         n3 = sub2.getId();
         assertNotEquals(n1,n2);
         assertNotEquals(n1,n3);
@@ -379,7 +370,7 @@ public class TestIdea {
         Idea i2 = i.clone();
         n4 = i2.getId();
         assertEquals(i2.getName(),"test");
-        assertEquals(i2.getValue(),"value");
+        assertEquals(i2.getValue(),value);
         assertEquals(i2.getType(),12);
         assertEquals(i2.getCategory(),"category");
         assertEquals(i2.getScope(),2);
@@ -718,6 +709,35 @@ public class TestIdea {
         System.out.println(ij);
         
     }
-            
+    
+    @Test public void testEquivalence() {
+        Idea a = new Idea("a");
+        Idea b = new Idea("b");
+        Idea c = new Idea("c");
+        Idea d = new Idea("d");
+        Idea e = new Idea("e");
+        a.add(b);
+        a.add(c);
+        b.add(d);
+        d.add(e);
+        Idea a1 = new Idea("a");
+        Idea b1 = new Idea("b");
+        Idea c1 = new Idea("c");
+        Idea d1 = new Idea("d");
+        Idea e1 = new Idea("e");
+        Idea f1 = new Idea("f");
+        a1.add(b1);
+        a1.add(c1);
+        b1.add(d1);
+        d1.add(e1);
+        d1.add(f1);
+        assertTrue(a1.equivalent(a));
+        assertFalse(a.equivalent(a1));
+        // The next test is meant to create a loop and check if the procedure can avoid it
+        d.add(b);
+        d1.add(b1);
+        assertTrue(a1.equivalent(a));
+        assertFalse(a.equivalent(a1));
+    }
     
 }

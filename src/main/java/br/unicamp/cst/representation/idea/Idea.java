@@ -11,7 +11,6 @@
 package br.unicamp.cst.representation.idea;
 
 import br.unicamp.cst.support.ToString;
-import ch.qos.logback.classic.Level;
 import ch.qos.logback.classic.Logger;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
@@ -47,7 +46,8 @@ public class Idea implements Category,Habit {
     private List<Idea> l= new CopyOnWriteArrayList<>();
     private int type=1;
     private String category;
-    private int scope=1;  // 0: possibility, 1: existence, 2: law
+    private double belief=0.0;
+    private double threshold=0.5;
     private transient IdeaComparator ideaComparator = new IdeaComparator();
     private static transient Logger logger = (Logger) LoggerFactory.getLogger(Idea.class);
     // This list is used while building a toStringFull()
@@ -92,7 +92,7 @@ public class Idea implements Category,Habit {
      */
     public Idea() {
         // The default is to have ideas with name "", value null, of type 1, category Property with Existence scope
-        this("",null,1,DEFAULT_CATEGORY,1);
+        this("",null,DEFAULT_CATEGORY,1.0);
     }
     
     /**
@@ -100,7 +100,7 @@ public class Idea implements Category,Habit {
      * @param name The name to be assigned to the Idea
      */
     public Idea(String name) {
-        this(name,null,1,DEFAULT_CATEGORY,1);
+        this(name,null,DEFAULT_CATEGORY,1.0);
     }
     
     /**
@@ -109,7 +109,7 @@ public class Idea implements Category,Habit {
      * @param value The value assigned to the Idea. If this value is a String, it is parsed to check if this String describes an Integer or a Double and converts the number to a prpper type (an int or a double). 
      */
     public Idea(String name, Object value) {
-        this(name,value,1,DEFAULT_CATEGORY,1);
+        this(name,value,DEFAULT_CATEGORY,1.0);
     }
     
     /**
@@ -121,19 +121,20 @@ public class Idea implements Category,Habit {
      * @param type The type assigned to the Idea
      */
     public Idea(String name, Object value, int type) {
-        this(name,value,type,DEFAULT_CATEGORY,1);
+        this(name,value,type,DEFAULT_CATEGORY,0.0,0.5);
+        correctCategoryAndScope();
     }
     
     /**
-     * This constructor initializes the Idea with a name, a value, a category and a scope. 
+     * This constructor initializes the Idea with a name, a value, a category and a belief. 
      * The Idea type is guessed, based on its category
      * @param name The name assigned to the Idea
      * @param value The value to be assigned to the Idea (can be an empty String, or null). If the value is given a null value, it is substituted by the String "null". 
      * @param category The category assigned to the Idea
-     * @param scope The scope assigned to the Idea (0: possibility, 1: existence, 2: law)
+     * @param belief The belief that the Idea represents a part of Existence
      */
-    public Idea(String name, Object value, String category, int scope) {
-        this(name,value,guessType(category,scope),category,scope);
+    public Idea(String name, Object value, String category, double belief) {
+        this(name,value,guessType(category,value,belief,0.5),category,belief,0.5);
     }
     
     /**
@@ -164,9 +165,10 @@ public class Idea implements Category,Habit {
      * @param value The value to be assigned to the Idea (can be an empty String, or null). If the value is given a null value, it is substituted by the String "null". 
      * @param type The type assigned to the Idea
      * @param category The category assigned to the Idea
-     * @param scope The scope assigned to the Idea (0: possibility, 1: existence, 2: law)
+     * @param belief The belief that the Idea represents a part of Existence
+     * @param threshold The belief threshold to consider the Idea a part of Existence
      */
-    public Idea(String name, Object value, int type, String category, int scope) {
+    public Idea(String name, Object value, int type, String category, double belief, double threshold) {
         this.name = name;
         id = genId();
         if (value instanceof String) {
@@ -186,8 +188,8 @@ public class Idea implements Category,Habit {
         else this.value = value;
         this.type = type;
         this.category = category;
-        if (scope >= 0 && scope <=2) this.scope = scope;
-        else this.scope = 1;
+        this.belief = belief;
+        this.threshold = threshold;
     }
     
     
@@ -217,8 +219,15 @@ public class Idea implements Category,Habit {
         return(ret);
     }
     
-    public static int guessType(String category, int scope) {
+    public static int guessScope(Object value, double belief, double threshold) {
+        if (value != null && (value instanceof Category || value instanceof Habit)) return(2);
+        else if (belief >= threshold) return(1);
+        else return(0);
+    }
+    
+    public static int guessType(String category, Object value, double belief, double threshold) {
         int guess = 0;
+        int scope = guessScope(value, belief, threshold);
         if (category != null) {
             if (category.equalsIgnoreCase("AbstractObject") && scope == 1) {
                 guess = 0;
@@ -590,6 +599,38 @@ public class Idea implements Category,Habit {
     }
     
     /**
+     * This method is used to get the belief on the Idea
+     * @return a double between 0 an 1 indicating the belief that the Idea represents some part of Existence
+     */
+    public double getBelief() {
+        return belief;
+    }
+    
+    /**
+     * This method is used to set the belief for the Idea
+     * @param belief a double between 0 and 1 indicating the belief that the Idea represents a part of Existence
+     */
+    public void setBelief(double belief) {
+        this.belief = belief;
+    }
+    
+    /**
+     * This method is used to get the belief threshold on the Idea
+     * @return a double between 0 an 1 indicating the threshold to consider the Idea as a part of Existence
+     */
+    public double getThreshold() {
+        return threshold;
+    }
+    
+    /**
+     * This method is used to set the belief for the Idea
+     * @param threshold a double between 0 and 1 indicating the belief threshold to consider the Idea as a part of Existence
+     */
+    public void setThreshold(double threshold) {
+        this.threshold = threshold;
+    }
+    
+    /**
      * This method is used to set the scope of the Idea
      * The scope indicates if this idea is to be interpreted as
      * a possibility (scope = 0), an existent (scope = 1) or a law
@@ -597,7 +638,7 @@ public class Idea implements Category,Habit {
      * @return the Idea scope
      */
     public int getScope() {
-        return scope;
+        return(guessScope(value,belief,threshold));
     }
     
     /**
@@ -608,7 +649,22 @@ public class Idea implements Category,Habit {
      * @param scope the Idea's scope (0: possibility, 1: existent, 2:law)
      */
     public void setScope(int scope) {
-        this.scope = scope;
+        switch(scope) {
+            case 0: belief=0;
+                    break;
+            case 1:belief=1;
+                   break;
+            case 2:if (value == null) { 
+                    value = new EntityCategory();
+                   }
+                   else if (value instanceof Category || value instanceof Habit) {
+                      // Do nothing ... it is already considered a law !
+                   }
+                   else logger.error("It is not possible to set the scope to 2 because value is different from null but not a Habit or Category");
+                   break;
+            default:belief=0;
+                    break;
+        }
     }
     
     /**
@@ -776,12 +832,22 @@ public class Idea implements Category,Habit {
      * @return a cloned version of this Idea
      */
     public Idea clone() {
+        return(clone(true));
+    }
+
+    private Idea clone(boolean reset) {
+        boolean ae;
+        if (reset) reset();
+        ae = already_exists(this);
+        if (!ae) listtoavoidloops.add(this);
         Idea newnode;
-           newnode = new Idea(getName(), getValue(), getType(), getCategory(), getScope());
+           newnode = new Idea(getName(), getValue(), getType(), getCategory(), getBelief(), getThreshold());
            newnode.l = new ArrayList();
            for (Idea i : getL()) {
-            Idea ni = i.clone();
-            newnode.add(ni);
+            if (!already_exists(i)) {   
+                Idea ni = i.clone(false);
+                newnode.add(ni);
+            }
         }
         return newnode;
     }
@@ -1443,6 +1509,43 @@ public class Idea implements Category,Habit {
         return(i);
     }
     
+    /**
+     * This method identifies if the Idea is equivalent of another Idea, i.e., if they share a same set of sub-ideas
+     * @param other the other Idea, which is compared to this one
+     * @return a boolean indicating if the other Idea is equivalent to this one
+     */
+    public boolean equivalent(Idea other) {
+        return(equivalent(other,true));
+    } 
+    
+    private boolean equivalent(Idea other, boolean reset) {
+        boolean ae;
+        if (reset) reset();
+        ae = already_exists(other);
+        if (!ae) listtoavoidloops.add(other);
+        if (this != null && other == null) return(false);
+        boolean out = true;
+        out &= this.getName().equals(other.getName());
+        if (!ae) { // This is to prevent a loop to retest an Idea that was already tested
+          for (Idea id : other.getL()) {
+            String name = id.getName();
+            Idea myversion = this.get(name);
+            if (myversion != null) {
+                 boolean testsub = myversion.equivalent(id,false);
+//                 if (testsub == false) {
+//                      System.out.println("Idea "+this.getFullName()+" has an internal subfield missing");
+//                 }
+                 out &= testsub;
+            }
+            else {
+                out = false;
+//                System.out.println("Idea "+this.getFullName()+" does not have subfield "+name);
+            }
+          }
+        }
+        return(out);
+    }
+    
     public boolean equals(Idea other) {
         if (this != null && other == null) return(false);
         boolean out = true;
@@ -1507,7 +1610,16 @@ public class Idea implements Category,Habit {
             out &= this.getCategory().equals(other.getCategory());
             if (out == false) System.out.println("Categories are different ..."+this.getName()+": "+this.getCategory()+" "+other.getName()+": "+other.getCategory());
         }   
-        out &= this.getScope() == other.getScope();
+        out &= this.getBelief() == other.getBelief();
+        if (out == false) {
+            System.out.println("Beliefs are different ..."+this.getName()+": "+this.getBelief()+" "+other.getName()+": "+other.getBelief());
+            return(out);
+        }
+        out &= this.getThreshold() == other.getThreshold();
+        if (out == false) {
+            System.out.println("Belief Threasholds are different ..."+this.getName()+": "+this.getThreshold()+" "+other.getName()+": "+other.getThreshold());
+            return(out);
+        }
         if (this.getL().size() == other.getL().size()) {
              for (int i=0;i<this.getL().size();i++) {
                  boolean testsub = this.getL().get(i).equals(other.getL().get(i));
