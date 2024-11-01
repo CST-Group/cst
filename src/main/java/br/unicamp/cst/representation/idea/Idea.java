@@ -28,6 +28,7 @@ import java.util.Date;
 import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.TimeZone;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArrayList;
@@ -835,19 +836,23 @@ public class Idea implements Category,Habit {
         return(clone(true));
     }
 
+    static private Map<Idea,Idea> clonemap;
+    
     private Idea clone(boolean reset) {
-        boolean ae;
-        if (reset) reset();
-        ae = already_exists(this);
-        if (!ae) listtoavoidloops.add(this);
+        if (reset) {
+            clonemap = new HashMap<Idea,Idea>();
+        }
         Idea newnode;
+        newnode = clonemap.get(this);
+        if (newnode == null) {
            newnode = new Idea(getName(), getValue(), getType(), getCategory(), getBelief(), getThreshold());
-           newnode.l = new ArrayList();
-           for (Idea i : getL()) {
-            if (!already_exists(i)) {   
-                Idea ni = i.clone(false);
-                newnode.add(ni);
-            }
+           clonemap.put(this, newnode);
+        }
+        else return(newnode);
+        newnode.l = new ArrayList();
+        for (Idea i : getL()) {
+            Idea ni = i.clone(false);
+            newnode.add(ni);
         }
         return newnode;
     }
@@ -1547,12 +1552,30 @@ public class Idea implements Category,Habit {
     }
     
     public boolean equals(Idea other) {
+        return(equals(other,true));
+    }
+    
+    private boolean equals(Idea other, boolean reset) {
+        boolean ae;
+        if (reset) reset();
+        ae = already_exists(other);
+        if (ae) return(true);
         if (this != null && other == null) return(false);
         boolean out = true;
         out &= this.getFullName().equals(other.getFullName());
+        if (out == false) {
+            System.out.println("Idea names are different ..."+this.getFullName()+" "+other.getFullName());
+            return(false);
+        }
         if (this.getValue() == null && other.getValue() != null ||
             this.getValue() != null && other.getValue() == null) {
-            System.out.println("Values are different ..."+this.getName()+": "+this.getValue()+" ("+this.getValue().getClass().getCanonicalName()+") "+other.getName()+": "+other.getValue()+" ("+other.getValue().getClass().getCanonicalName()+")");
+            String valuetypethis;
+            if (this.getValue() != null) valuetypethis = this.getValue().getClass().getCanonicalName();
+            else valuetypethis = "null";
+            String valuetypeother;
+            if (other.getValue() != null) valuetypeother = other.getValue().getClass().getCanonicalName();
+            else valuetypeother = "null";
+            System.out.println("Values are different ..."+this.getName()+": "+this.getValue()+" ("+valuetypethis+") "+other.getName()+": "+other.getValue()+" ("+valuetypeother+")");
             return(false);
         }
         else if (this.getValue() == null && other.getValue() == null) {
@@ -1591,6 +1614,10 @@ public class Idea implements Category,Habit {
            out &= valuediff;
            if (out == false) return(out);
         }
+        if (out == false) {
+            System.out.println("I am false, but I don't know why !");
+            return(false);
+        }
         long lt = this.getType();
         long lo = other.getType();
         out &= lt == lo;
@@ -1608,7 +1635,10 @@ public class Idea implements Category,Habit {
         }
         else { 
             out &= this.getCategory().equals(other.getCategory());
-            if (out == false) System.out.println("Categories are different ..."+this.getName()+": "+this.getCategory()+" "+other.getName()+": "+other.getCategory());
+            if (out == false) {
+                System.out.println("Categories are different ..."+this.getName()+": "+this.getCategory()+" "+other.getName()+": "+other.getCategory());
+                return(out);
+            }
         }   
         out &= this.getBelief() == other.getBelief();
         if (out == false) {
@@ -1620,17 +1650,18 @@ public class Idea implements Category,Habit {
             System.out.println("Belief Threasholds are different ..."+this.getName()+": "+this.getThreshold()+" "+other.getName()+": "+other.getThreshold());
             return(out);
         }
+        if (out == true) listtoavoidloops.add(other);
         if (this.getL().size() == other.getL().size()) {
              for (int i=0;i<this.getL().size();i++) {
-                 boolean testsub = this.getL().get(i).equals(other.getL().get(i));
+                 boolean testsub = this.getL().get(i).equals(other.getL().get(i),false);
                  if (testsub == false) {
-                     System.out.println("Difference in the "+this.getL().get(i).getName()+" idea "+this.getL().get(i).getFullName()+": "+this.getL().get(i).getValue()+" "+other.getL().get(i).getFullName()+": "+other.getL().get(i).getValue());
+                     //System.out.println("Difference in the internal fields of "+this.getName()+" idea ... "+this.getL().get(i).getFullName()+": "+this.getL().get(i).getValue()+" "+other.getL().get(i).getFullName()+": "+other.getL().get(i).getValue());
                  }
                  out &= testsub;
              }
         }
         else {
-            System.out.println("Internal list has different number of elements ... l(this): "+this.getL().size()+" l(other): "+other.getL().size());
+            System.out.println("Internal lists of Ideas "+this.getName()+"(this) and "+other.getName()+"(other) has different number of elements ... "+this.getName()+"(this): "+this.getL().size()+" "+other.getName()+"(other): "+other.getL().size());
             return(false);
         }
         return(out);        

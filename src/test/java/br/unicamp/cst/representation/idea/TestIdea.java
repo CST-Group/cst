@@ -394,6 +394,14 @@ public class TestIdea {
         assertNotEquals(n3,n6);
         i3 = i2.get("what?");
         assertEquals(i3,null);
+        System.out.println("orig:\n"+i.toStringFull(true));
+        System.out.println("clone:\n"+i2.toStringFull(true));
+        // Including a loop, to test if clone works well with loops
+        i.get("sub.sub2").add(i);
+        System.out.println("orig:\n"+i.toStringFull(true));
+        i2 = i.clone();
+        System.out.println("clone:\n"+i2.toStringFull(true));
+        assertTrue(i2.equals(i));
     }
     
     @Test public void testSetL() {
@@ -738,6 +746,136 @@ public class TestIdea {
         d1.add(b1);
         assertTrue(a1.equivalent(a));
         assertFalse(a.equivalent(a1));
+    }
+    
+    @Test public void testEquality() {
+        Idea a = new Idea("a");
+        Idea b = new Idea("b");
+        Idea c = new Idea("c");
+        Idea d = new Idea("d");
+        Idea e = new Idea("e");
+        a.add(b);
+        a.add(c);
+        b.add(d);
+        d.add(e);
+        Idea a1 = new Idea("a");
+        Idea b1 = new Idea("b");
+        Idea c1 = new Idea("c");
+        Idea d1 = new Idea("d");
+        Idea e1 = new Idea("e");
+        Idea f1 = new Idea("f");
+        a1.add(b1);
+        a1.add(c1);
+        b1.add(d1);
+        d1.add(e1);
+        
+        System.out.print("\n\nTesting if a1 is equals to a ... ");
+        System.out.println(a1.equals(a));
+        System.out.print("\n\nTesting if a is equals to a1 ...");
+        System.out.println(a.equals(a1));
+        
+        assertTrue(a1.equals(a));
+        assertTrue(a.equals(a1));
+        // The next test is meant to create a loop and check if the procedure can avoid it
+        d.add(b);
+        d1.add(b1);
+        System.out.print("\n\nTesting if a1 is equals to a ... ");
+        System.out.println(a1.equals(a));
+        System.out.print("\n\nTesting if a is equals to a1 ... ");
+        System.out.println(a.equals(a1));
+        assertTrue(a1.equals(a));
+        assertTrue(a.equals(a1));
+        d1.add(f1);
+        System.out.print("\nAppended new Idea f to a1\nTesting if a1 is equals to a ... ");
+        System.out.println(a1.equals(a));
+        System.out.print("\n\nTesting if a is equals to a1 ...");
+        System.out.println(a.equals(a1));
+        assertFalse(a1.equals(a));
+        assertFalse(a.equals(a1));
+        Idea f = new Idea("g");
+        d.add(f);
+        System.out.print("\nAppended new Idea g to a\nTesting if a1 is equals to a ... ");
+        System.out.println(a1.equals(a));
+        System.out.println("\n\nTesting if a is equals to a1 ...");
+        System.out.println(a.equals(a1));
+        assertFalse(a1.equals(a));
+        assertFalse(a.equals(a1));
+        f.setName("f");
+        System.out.print("\nChanged g to f\nTesting if a1 is equals to a ... ");
+        System.out.println(a1.equals(a));
+        System.out.println("\n\nTesting if a is equals to a1 ...");
+        System.out.println(a.equals(a1));
+        assertTrue(a1.equals(a));
+        assertTrue(a.equals(a1));
+        f.setValue("f");
+        System.out.print("\nChanged value of f\nTesting if a1 is equals to a ... ");
+        System.out.println(a1.equals(a));
+        System.out.println("\n\nTesting if a is equals to a1 ...");
+        System.out.println(a.equals(a1));
+        assertFalse(a1.equals(a));
+        assertFalse(a.equals(a1));
+        f.setValue(null);
+        f.setCategory("Other");
+        System.out.print("\nChanged category of f\nTesting if a1 is equals to a ... ");
+        System.out.println(a1.equals(a));
+        System.out.print("\n\nTesting if a is equals to a1 ...");
+        System.out.println(a.equals(a1));
+        assertFalse(a1.equals(a));
+        assertFalse(a.equals(a1));
+        f.setCategory("Property");
+        f.setType(3);
+        System.out.print("\nChanged type of f\nTesting if a1 is equals to a ... ");
+        System.out.println(a1.equals(a));
+        System.out.println("\n\nTesting if a is equals to a1 ...");
+        System.out.println(a.equals(a1));
+        assertFalse(a1.equals(a));
+        assertFalse(a.equals(a1));
+        f.setType(1);
+        f.setBelief(0.0);
+        System.out.print("\nChanged belief of f\nTesting if a1 is equals to a ... ");
+        System.out.println(a1.equals(a));
+        System.out.println("\n\nTesting if a is equals to a1 ...");
+        System.out.println(a.equals(a1));
+        assertFalse(a1.equals(a));
+        assertFalse(a.equals(a1));
+        f.setBelief(1.0);
+        f.setThreshold(0);
+        System.out.print("\nChanged threshold of f\nTesting if a1 is equals to a ... ");
+        System.out.println(a1.equals(a));
+        System.out.println("\n\nTesting if a is equals to a1 ...");
+        System.out.println(a.equals(a1));
+        assertFalse(a1.equals(a));
+        assertFalse(a.equals(a1));
+        f.setThreshold(0.5);
+        f1.setValue(1);
+        f.setValue(1L);
+        System.out.print("\nChanged values with numbers\nTesting if a1 is equals to a ... ");
+        System.out.println(a1.equals(a));
+        System.out.println("\n\nTesting if a is equals to a1 ...");
+        System.out.println(a.equals(a1));
+        assertTrue(a1.equals(a));
+        assertTrue(a.equals(a1));
+        f.setValue((short)1);
+        System.out.print("\nSame numbers but one of them is short\nTesting if a1 is equals to a ... ");
+        System.out.println(a1.equals(a));
+        System.out.println("\n\nTesting if a is equals to a1 ...");
+        System.out.println(a.equals(a1));
+        assertTrue(a1.equals(a));
+        assertTrue(a.equals(a1));
+        f.setValue(1.0);
+        System.out.print("\nSame numbers but one of them is float\nTesting if a1 is equals to a ... ");
+        System.out.println(a1.equals(a));
+        System.out.println("\n\nTesting if a is equals to a1 ...");
+        System.out.println(a.equals(a1));
+        assertTrue(a1.equals(a));
+        assertTrue(a.equals(a1));
+        f.setValue(1.0D);
+        System.out.print("\nSame numbers but one of them is double\nTesting if a1 is equals to a ... ");
+        System.out.println(a1.equals(a));
+        System.out.println("\n\nTesting if a is equals to a1 ...");
+        System.out.println(a.equals(a1));
+        assertTrue(a1.equals(a));
+        assertTrue(a.equals(a1));
     }
     
 }

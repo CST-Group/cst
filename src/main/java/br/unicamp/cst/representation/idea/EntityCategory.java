@@ -28,13 +28,8 @@ public class EntityCategory implements Category {
     @Override
     public double membership(Idea idea) {
         if (template != null) {
-            double ms = 1.0;
-            for (Idea i : template.getL()) {
-                String name = i.getName();                
-                if (idea.get(name) == null) ms = 0.0;
-                
-            }
-            return(ms);
+             if (idea.equivalent(template)) return(1.0);
+             else return(0.0);
         }
         return (1.0);
     }
