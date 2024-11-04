@@ -11,8 +11,11 @@
 package br.unicamp.cst.representation.idea;
 
 import br.unicamp.cst.support.ToString;
+import com.fasterxml.jackson.annotation.*;
 import ch.qos.logback.classic.Level;
 import ch.qos.logback.classic.Logger;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.ToNumberPolicy;
@@ -40,14 +43,24 @@ import org.slf4j.LoggerFactory;
  * 
  * @author rgudwin
  */
+@JsonIncludeProperties({
+        "id",
+        "name",
+        "value",
+        "type",
+        "category",
+        "scope",
+        "l",
+})
+@JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "id")
 public class Idea implements Category,Habit {
     private long id;
     private String name;
     private Object value;
-    private List<Idea> l= new CopyOnWriteArrayList<>();
     private int type=1;
     private String category;
     private int scope=1;  // 0: possibility, 1: existence, 2: law
+    private List<Idea> l= new CopyOnWriteArrayList<>();
     private transient IdeaComparator ideaComparator = new IdeaComparator();
     private static transient Logger logger = (Logger) LoggerFactory.getLogger(Idea.class);
     // This list is used while building a toStringFull()
@@ -300,6 +313,7 @@ public class Idea implements Category,Habit {
      * (in the example "VowelA", use getName() instead. 
      * @return The full name registered for the Idea. 
      */
+    @JsonGetter("name")
     public String getFullName() {
         return(name);
     }
@@ -1414,33 +1428,36 @@ public class Idea implements Category,Habit {
     }
     
     public String toJSON() {
-        Gson gson;
-        //gson = new GsonBuilder().registerTypeAdapter(Idea.class, new InterfaceAdapter<Idea>())
-        //                     .setPrettyPrinting().create();
-        //gson = new Gson();
-        gson = new GsonBuilder().setPrettyPrinting().setObjectToNumberStrategy(ToNumberPolicy.LONG_OR_DOUBLE).create();
+        ObjectMapper objectMapper = new ObjectMapper();
         String out = "";
         try {
-            out = gson.toJson(this);
-        } catch(Error e) {
-            logger.info("It was not possible to generate a version of the idea {0}",this.getFullName());
-        }    
-        return(out);
+            out = objectMapper.writeValueAsString(this);
+        } catch (JsonProcessingException e) {
+            logger.info("It was not possible to generate a version of the idea {0}", this.getFullName());
+        }
+        return out;
     }
-    
+
+    public String toJSON(boolean preatty) {
+        ObjectMapper objectMapper = new ObjectMapper();
+        String out = "";
+        try {
+            out = objectMapper.writeValueAsString(this);
+        } catch (JsonProcessingException e) {
+            logger.info("It was not possible to generate a version of the idea {0}", this.getFullName());
+        }
+        return out;
+    }
+
     public static Idea fromJSON(String idea_json) {
-        Gson gson;
-        //gson = new GsonBuilder().registerTypeAdapter(Idea.class, new InterfaceAdapter<Idea>())
-        //                     .setPrettyPrinting().create();
-        //gson = new Gson();
-        gson = new GsonBuilder().setPrettyPrinting().setObjectToNumberStrategy(ToNumberPolicy.LONG_OR_DOUBLE).create();
+        ObjectMapper objectMapper = new ObjectMapper();
         Idea i = null;
         try {
-            i = gson.fromJson(idea_json, Idea.class);
-        } catch(Error e) {
+            i = objectMapper.readValue(idea_json, Idea.class);
+        } catch(JsonProcessingException e) {
             logger.info("It was not possible to generate an idea from the given String ... creating a null Idea");
         }
-        return(i);
+        return i;
     }
     
     public boolean equals(Idea other) {

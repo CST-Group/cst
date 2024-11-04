@@ -715,6 +715,14 @@ public class TestIdea {
         ii = Idea.createIdea("feedback", l, 1);
         ii.add(ii);
         ij = ii.toJSON();
+
+        Idea a = new Idea("A");
+        Idea b = new Idea("B");
+        Idea c = new Idea("C");
+        a.add(b);
+        b.add(c);
+        c.add(a);
+        System.out.println(a.toJSON());
         System.out.println(ij);
         
     }
