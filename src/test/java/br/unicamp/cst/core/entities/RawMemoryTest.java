@@ -28,7 +28,7 @@ public class RawMemoryTest {
         List<Memory> testList = Arrays.asList(new MemoryObject(), new MemoryObject(), new MemoryObject(), new MemoryObject());
         testList.get(0).setType("TYPE");
         testList.get(1).setType("TYPE");
-        rawMemory.setAllMemoryObjects(testList);
+        rawMemory.setAllMemories(testList);
 
         assertEquals(2, rawMemory.getAllOfType("TYPE").size());
         assertEquals(testList.subList(0,2), rawMemory.getAllOfType("TYPE"));
@@ -52,12 +52,12 @@ public class RawMemoryTest {
     }
 
     @Test
-    public void createAndDestroyMemoryObjectTest(){
+    public void createAndDestroyMemoryTest(){
         RawMemory rawMemory = new RawMemory();
         rawMemory.createMemoryObject("TYPE");
 
         assertEquals(1, rawMemory.size());
-        rawMemory.destroyMemoryObject(rawMemory.getAllMemoryObjects().get(0));
+        rawMemory.destroyMemory(rawMemory.getAllMemoryObjects().get(0));
 
         assertEquals(0, rawMemory.size());
     }
@@ -66,7 +66,7 @@ public class RawMemoryTest {
     public void shutdownTest(){
         RawMemory rawMemory = new RawMemory();
         List<Memory> testList = Arrays.asList(new MemoryObject(), new MemoryObject(), new MemoryObject(), new MemoryObject());
-        rawMemory.setAllMemoryObjects(testList);
+        rawMemory.setAllMemories(testList);
 
         assertEquals(4, rawMemory.size());
 

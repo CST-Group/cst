@@ -341,7 +341,7 @@ public class WorkingStorage  implements Subject
 	{
 		workingStorageContentList.remove(bpMo);
 		if(rawMemory!=null)
-			rawMemory.destroyMemoryObject(bpMo);
+			rawMemory.destroyMemory(bpMo);
 
 	}
 
@@ -354,7 +354,7 @@ public class WorkingStorage  implements Subject
 		if(rawMemory!=null && workingStorageContentList!=null)
 			for(Memory mo: workingStorageContentList)
 			{	
-				rawMemory.destroyMemoryObject(mo);
+				rawMemory.destroyMemory(mo);
 			}
 		this.workingStorageContentList.clear();
 

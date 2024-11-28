@@ -82,12 +82,12 @@ public class BgBComLayer
 			if(alreadyThere && sameInfo)
 			{// Remove MO from raw memory and discard it
 				if(rawMemory!=null)
-					rawMemory.destroyMemoryObject(bs);
+					rawMemory.destroyMemory(bs);
 			}else if(alreadyThere && !sameInfo){
 				//Update info from old MO and discard de unused new one
 				oldMO.setI(bs.getI());  //TODO I might need to change this in the future in case we implement a memory decay based on time
 				if(rawMemory!=null)
-					rawMemory.destroyMemoryObject(bs);
+					rawMemory.destroyMemory(bs);
 			}else
 			{//Simply add it to the list
 				this.behaviorsToBg.add(bs);
@@ -137,12 +137,12 @@ public class BgBComLayer
 			if(alreadyThere && sameInfo)
 			{// Remove MO from raw memory and discard it
 				if(rawMemory!=null)
-					rawMemory.destroyMemoryObject(bgI);
+					rawMemory.destroyMemory(bgI);
 			}else if(alreadyThere && !sameInfo)
 			{//Update info from old MO and discard de unused new one
 				oldMO.setI(bgI.getI());  //TODO I might need to change this in the future in case we implement a memory decay based on time
 				if(rawMemory!=null)
-					rawMemory.destroyMemoryObject(bgI);
+					rawMemory.destroyMemory(bgI);
 			}else
 			{//Simply add it to the list
 				this.bgToBehaviors.add(bgI);
