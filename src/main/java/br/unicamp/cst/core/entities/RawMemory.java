@@ -36,7 +36,7 @@ public class RawMemory {
         private static long lastid = 0;
 
 	/**
-	 * Crates a Raw Memory.
+	 * Creates a Raw Memory.
 	 */
 	public RawMemory() {
 		allMemories = Collections.synchronizedList(new ArrayList<Memory>());
