@@ -199,6 +199,7 @@ public class CodeletTest {
         boolean exceptionThrown = false;
         Codelet testCodelet = null;
         testCodelet = generateCodelet();
+        testCodelet.setTimeStep(50);
         testCodelet.setName("thisCodeletWillFail");
         List<Memory> dummyOutputs = Arrays.asList(new MemoryObject(), new MemoryObject());
         testCodelet.setOutputs(dummyOutputs);
@@ -211,7 +212,7 @@ public class CodeletTest {
         mind.insertCodelet(testCodelet);
         mind.start();
         try{
-            Thread.sleep(1000);
+            Thread.sleep(100);
         }
         catch (InterruptedException e)
         {
@@ -368,6 +369,7 @@ public class CodeletTest {
     public void runProfilingTest(){
         Codelet testCodelet = generateCodelet();
         testCodelet.setProfiling(true);
+        testCodelet.setTimeStep(50);
 
         ByteArrayOutputStream outputStreamCaptor = new ByteArrayOutputStream();
         System.setOut(new PrintStream(outputStreamCaptor));
@@ -376,7 +378,7 @@ public class CodeletTest {
         mind.insertCodelet(testCodelet);
         mind.start();
         try {
-            Thread.sleep(1000);
+            Thread.sleep(100);
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
