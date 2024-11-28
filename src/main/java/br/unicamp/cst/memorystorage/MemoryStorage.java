@@ -6,6 +6,7 @@ import br.unicamp.cst.core.entities.MemoryObject;
 import br.unicamp.cst.core.entities.Mind;
 
 import java.lang.ref.WeakReference;
+import java.lang.reflect.Type;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
@@ -18,6 +19,7 @@ import java.util.concurrent.TimeUnit;
 
 import org.slf4j.LoggerFactory;
 import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
 import ch.qos.logback.classic.LoggerContext;
 import io.lettuce.core.RedisClient;
 import io.lettuce.core.RedisFuture;
@@ -143,13 +145,15 @@ public class MemoryStorage extends Codelet {
         String baseName = nodeName;
 
         String mindNodesPath = String.format("%s:nodes", mindName);
-        RedisFuture<Boolean> isMemberFuture = commands.sismember(mindNodesPath, nodeName);
-        int nodeNumber = 2;
         try {
-            while (isMemberFuture.get()) {
-                nodeName = baseName + Integer.toString(nodeNumber);
-                nodeNumber += 1;
-                isMemberFuture = commands.sismember(mindNodesPath, nodeName);
+            if(commands.sismember(mindNodesPath, nodeName).get())
+            {
+                Long nodeNumber = commands.scard(mindNodesPath).get();
+                nodeName = baseName + Long.toString(nodeNumber);
+                while (commands.sismember(mindNodesPath, nodeName).get()) {
+                    nodeNumber += 1;
+                    nodeName = baseName+Long.toString(nodeNumber);
+                }
             }
         } catch (Exception e) {
             // TODO: handle exception
@@ -397,7 +401,8 @@ public class MemoryStorage extends Codelet {
     private void handlerTransferMemory(String message) {
         System.out.println(mindName + ":" + nodeName + " Transfer memory: " + message);
 
-        Map<String, String> request = gson.fromJson(message, HashMap.class);
+        Type type = new TypeToken<HashMap<String, String>>(){}.getType();
+        Map<String, String> request = gson.fromJson(message, type);
 
         String memoryName = request.get("memory_name");
         String requestingNode = request.get("node");
