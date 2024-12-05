@@ -1,26 +1,28 @@
 package br.unicamp.cst.memorystorage;
 
-import br.unicamp.cst.core.entities.Codelet;
-import br.unicamp.cst.core.entities.Memory;
-import br.unicamp.cst.core.entities.MemoryObject;
-import br.unicamp.cst.core.entities.Mind;
-
 import java.lang.ref.WeakReference;
 import java.lang.reflect.Type;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
-import java.util.function.Consumer;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
+import java.util.function.Consumer;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
-import org.slf4j.LoggerFactory;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
-import ch.qos.logback.classic.LoggerContext;
+
+import br.unicamp.cst.core.entities.Codelet;
+import br.unicamp.cst.core.entities.Memory;
+import br.unicamp.cst.core.entities.MemoryObject;
+import br.unicamp.cst.core.entities.Mind;
 import io.lettuce.core.RedisClient;
 import io.lettuce.core.RedisFuture;
 import io.lettuce.core.api.StatefulRedisConnection;
@@ -30,6 +32,14 @@ import io.lettuce.core.pubsub.RedisPubSubListener;
 import io.lettuce.core.pubsub.StatefulRedisPubSubConnection;
 
 public class MemoryStorageCodelet extends Codelet {
+    private static final String LOGICAL_TIME_FIELD = "logical_time";
+    private static final String OWNER_FIELD = "owner";
+    private static final String MEMORY_NAME_FIELD = "memory_name";
+
+    private static final String MEMORY_PATH_TEMPLATE = "%s:memories:%s";
+
+    private static final Logger LOGGER = Logger.getLogger(MemoryStorageCodelet.class.getName());
+
     private RedisClient redisClient;
     private StatefulRedisConnection<String, String> connection;
     private RedisAsyncCommands<String, String> commands;
@@ -56,27 +66,25 @@ public class MemoryStorageCodelet extends Codelet {
     private LamportTime currentTime;
     private Gson gson;
 
-    public MemoryStorageCodelet(Mind mind)
-    {
+    public MemoryStorageCodelet(Mind mind) throws ExecutionException, InterruptedException {
         this(mind, "node", "default_mind", 500.0e-3, RedisClient.create("redis://localhost"));
     }
 
-    public MemoryStorageCodelet(Mind mind, RedisClient redisClient)
-    {
+    public MemoryStorageCodelet(Mind mind, RedisClient redisClient) throws ExecutionException, InterruptedException {
         this(mind, "node", "default_mind", 500.0e-3, redisClient);
     }
 
-    public MemoryStorageCodelet(Mind mind, String mindName)
-    {
+    public MemoryStorageCodelet(Mind mind, String mindName) throws ExecutionException, InterruptedException {
         this(mind, "node", mindName, 500.0e-3, RedisClient.create("redis://localhost"));
     }
 
     public MemoryStorageCodelet(Mind mind, String mindName, RedisClient redisClient)
-    {
+            throws ExecutionException, InterruptedException {
         this(mind, "node", mindName, 500.0e-3, redisClient);
     }
 
-    public MemoryStorageCodelet(Mind mind, String nodeName, String mindName, double requestTimeout, RedisClient redisClient) {
+    public MemoryStorageCodelet(Mind mind, String nodeName, String mindName,
+            double requestTimeout, RedisClient redisClient) throws ExecutionException, InterruptedException {
         listeners = new HashMap<>();
         memories = new HashMap<>();
         lastUpdate = new HashMap<>();
@@ -99,22 +107,16 @@ public class MemoryStorageCodelet extends Codelet {
         String baseName = nodeName;
 
         String mindNodesPath = String.format("%s:nodes", mindName);
-        try {
-            boolean isMemberResult = commands.sismember(mindNodesPath, nodeName).get();
-            if(isMemberResult)
-            {
-                Long nodeNumber = commands.scard(mindNodesPath).get();
-                nodeName = baseName + Long.toString(nodeNumber);
+        boolean isMemberResult = commands.sismember(mindNodesPath, nodeName).get();
+        if (isMemberResult) {
+            Long nodeNumber = commands.scard(mindNodesPath).get();
+            nodeName = baseName + Long.toString(nodeNumber);
 
-                isMemberResult = commands.sismember(mindNodesPath, nodeName).get();
-                while (isMemberResult) {
-                    nodeNumber += 1;
-                    nodeName = baseName+Long.toString(nodeNumber);
-                }
+            isMemberResult = commands.sismember(mindNodesPath, nodeName).get();
+            while (isMemberResult) {
+                nodeNumber += 1;
+                nodeName = baseName + Long.toString(nodeNumber);
             }
-        } catch (Exception e) {
-            // TODO: handle exception
-            e.printStackTrace();
         }
 
         this.nodeName = nodeName;
@@ -141,11 +143,11 @@ public class MemoryStorageCodelet extends Codelet {
     }
 
     @Override
-    public void accessMemoryObjects() {
+    public void accessMemoryObjects() { // NOSONAR
     }
 
     @Override
-    public void calculateActivation() {
+    public void calculateActivation() { // NOSONAR
     }
 
     @Override
@@ -166,30 +168,27 @@ public class MemoryStorageCodelet extends Codelet {
         Set<String> difference = mindMemoriesNames;
         for (String memoryName : difference) {
             Memory memory = mindMemories.get(memoryName);
-            memories.put(memoryName, new WeakReference<Memory>(memory));
+            memories.put(memoryName, new WeakReference<>(memory));
 
-            String memoryPath = String.format("%s:memories:%s", mindName, memoryName);
+            String memoryPath = String.format(MEMORY_PATH_TEMPLATE, mindName, memoryName);
             RedisFuture<Long> existFuture = commands.exists(memoryPath);
             try {
                 if (existFuture.get() > 0) {
-                    retrieveExecutor.execute(() -> {
-                        retrieveMemory(memory);
-                    });
+                    retrieveExecutor.execute(() -> retrieveMemory(memory));
                 } else {
                     Map<String, String> impostor = new HashMap<>();
                     impostor.put("name", memoryName);
                     impostor.put("evaluation", "0.0");
                     impostor.put("I", "");
                     impostor.put("id", "0");
-                    impostor.put("owner", nodeName);
-                    impostor.put("logical_time", currentTime.toString());
+                    impostor.put(OWNER_FIELD, nodeName);
+                    impostor.put(LOGICAL_TIME_FIELD, currentTime.toString());
 
                     commands.hset(memoryPath, impostor);
                     currentTime = currentTime.increment();
                 }
-            } catch (Exception e) {
-                // TODO: handle exception
-                e.printStackTrace();
+            } catch (ExecutionException | InterruptedException e) { // NOSONAR
+                LOGGER.log(Level.SEVERE, "Can't send memory to Redis server");
             }
 
             String subscribeUpdatePath = String.format("%s:memories:%s:update", mindName, memoryName);
@@ -200,17 +199,12 @@ public class MemoryStorageCodelet extends Codelet {
 
         Set<String> toUpdate = lastUpdate.keySet();
         for (String memoryName : toUpdate) {
-            if (!memories.containsKey(memoryName)) {
+            if (!memories.containsKey(memoryName) || memories.get(memoryName).get() == null) {
                 lastUpdate.remove(memoryName);
                 memoryLogicalTime.remove(memoryName);
                 continue;
             }
             Memory memory = memories.get(memoryName).get();
-            if (memory == null) {
-                lastUpdate.remove(memoryName);
-                memories.remove(memoryName);
-                continue;
-            }
 
             if (memory.getTimestamp() > lastUpdate.get(memoryName)) {
                 memoryLogicalTime.put(memoryName, currentTime);
@@ -234,26 +228,21 @@ public class MemoryStorageCodelet extends Codelet {
         }
 
         try {
-            String memoryPath = String.format("%s:memories:%s", mindName, memoryName);
-            String messageTimeStr = commands.hget(memoryPath, "logical_time").get();
+            String memoryPath = String.format(MEMORY_PATH_TEMPLATE, mindName, memoryName);
+            String messageTimeStr = commands.hget(memoryPath, LOGICAL_TIME_FIELD).get();
             LamportTime messageTime = LamportTime.fromString(messageTimeStr);
 
             LamportTime memoryTime = memoryLogicalTime.get(memoryName);
 
-
             if (memoryTime.lessThan(messageTime)) {
-                retrieveExecutor.execute(() -> {
-                    retrieveMemory(memory);
-                });
+                retrieveExecutor.execute(() -> retrieveMemory(memory));
             } else if (messageTime.lessThan(memoryTime)) {
                 sendMemory(memory);
             }
 
             lastUpdate.put(memoryName, memory.getTimestamp());
-        } catch (Exception e) {
-            // TODO: handle exception
-            System.err.println("Memory update error!");
-            e.printStackTrace();
+        } catch (ExecutionException | InterruptedException e) { // NOSONAR
+            LOGGER.log(Level.SEVERE, "Can't retrieve information from Redis server");
         }
     }
 
@@ -261,10 +250,10 @@ public class MemoryStorageCodelet extends Codelet {
         String memoryName = memory.getName();
 
         Map<String, String> memoryDict = MemoryEncoder.toDict(memory);
-        memoryDict.put("owner", "");
-        memoryDict.put("logical_time", memoryLogicalTime.get(memoryName).toString());
+        memoryDict.put(OWNER_FIELD, "");
+        memoryDict.put(LOGICAL_TIME_FIELD, memoryLogicalTime.get(memoryName).toString());
 
-        String memoryPath = String.format("%s:memories:%s", mindName, memoryName);
+        String memoryPath = String.format(MEMORY_PATH_TEMPLATE, mindName, memoryName);
         commands.hset(memoryPath, memoryDict);
 
         String memoryUpdatePath = memoryPath + ":update";
@@ -281,23 +270,24 @@ public class MemoryStorageCodelet extends Codelet {
         }
         waitingRetrieval.add(memoryName);
 
-        String memoryPath = String.format("%s:memories:%s", mindName, memoryName);
+        String memoryPath = String.format(MEMORY_PATH_TEMPLATE, mindName, memoryName);
         Map<String, String> memoryDict;
         try {
             memoryDict = commands.hgetall(memoryPath).get();
-            String owner = memoryDict.get("owner");
+            String owner = memoryDict.get(OWNER_FIELD);
 
-            if (owner != "") {
-                CompletableFuture<Boolean> event = new CompletableFuture<Boolean>();
+            if (!owner.equals("")) {
+                CompletableFuture<Boolean> event = new CompletableFuture<>();
                 waitingRequestEvents.put(memoryName, event);
                 requestMemory(memoryName, owner);
 
-                try {
-                    if (!event.get((long) (requestTimeout * 1000), TimeUnit.MILLISECONDS)) {
+                try { // NOSONAR
+                    boolean eventResult = event.get((long) (requestTimeout * 1000), TimeUnit.MILLISECONDS);
+                    if (!eventResult) {
                         sendMemory(memory);
                     }
-                } catch (Exception e) {
-                    // sendMemory(memory);
+                } catch (TimeoutException e) {
+                    sendMemory(memory);
                 }
 
                 memoryDict = commands.hgetall(memoryPath).get();
@@ -305,30 +295,29 @@ public class MemoryStorageCodelet extends Codelet {
 
             MemoryEncoder.loadMemory(memory, memoryDict);
 
-            LamportTime messageTime = LamportTime.fromString(memoryDict.get("logical_time"));
+            LamportTime messageTime = LamportTime.fromString(memoryDict.get(LOGICAL_TIME_FIELD));
             currentTime = LamportTime.synchronize(messageTime, currentTime);
-            
+
             Long timestamp = memory.getTimestamp();
             lastUpdate.put(memoryName, timestamp);
             memoryLogicalTime.put(memoryName, messageTime);
 
             waitingRetrieval.remove(memoryName);
-        } catch (Exception e) {
-            // TODO handle exception
-            e.printStackTrace();
+        } catch (ExecutionException | InterruptedException e) { // NOSONAR
+            LOGGER.log(Level.SEVERE, "Can't send memory to Redis server");
         }
     }
 
     private void requestMemory(String memoryName, String ownerName) {
         String requestAddr = String.format("%s:nodes:%s:transfer_memory", mindName, ownerName);
 
-        HashMap<String, String> requestDict = new HashMap<String, String>();
-        requestDict.put("memory_name", memoryName);
+        HashMap<String, String> requestDict = new HashMap<>();
+        requestDict.put(MEMORY_NAME_FIELD, memoryName);
         requestDict.put("node", nodeName);
 
         Map<String, Object> fullRequestDict = new HashMap<>();
         fullRequestDict.put("request", requestDict);
-        fullRequestDict.put("logical_time", currentTime.toString());
+        fullRequestDict.put(LOGICAL_TIME_FIELD, currentTime.toString());
 
         String request = gson.toJson(fullRequestDict);
 
@@ -336,16 +325,16 @@ public class MemoryStorageCodelet extends Codelet {
     }
 
     private void handlerNotifyTransfer(String message) {
-        Type type = new TypeToken<HashMap<String, String>>(){}.getType();
+        Type type = new TypeToken<HashMap<String, String>>() {
+        }.getType();
         Map<String, String> data = gson.fromJson(message, type);
 
-        if(data.containsKey("logical_time"))
-        {
-            LamportTime messageTime = LamportTime.fromString(data.get("logical_time"));
+        if (data.containsKey(LOGICAL_TIME_FIELD)) {
+            LamportTime messageTime = LamportTime.fromString(data.get(LOGICAL_TIME_FIELD));
             currentTime = LamportTime.synchronize(messageTime, currentTime);
         }
 
-        String memoryName = data.get("memory_name");
+        String memoryName = data.get(MEMORY_NAME_FIELD);
 
         CompletableFuture<Boolean> event = waitingRequestEvents.get(memoryName);
         if (event != null) {
@@ -355,19 +344,26 @@ public class MemoryStorageCodelet extends Codelet {
         }
     }
 
+    @SuppressWarnings("unchecked")
     private void handlerTransferMemory(String message) {
-        Type type = new TypeToken<HashMap<String, Object>>(){}.getType();
+        Type type = new TypeToken<HashMap<String, Object>>() {
+        }.getType();
         Map<String, Object> data = gson.fromJson(message, type);
 
-        if(data.containsKey("logical_time"))
-        {
-            LamportTime messageTime = LamportTime.fromString((String) data.get("logical_time"));
+        if (data.containsKey(LOGICAL_TIME_FIELD)) {
+            LamportTime messageTime = LamportTime.fromString((String) data.get(LOGICAL_TIME_FIELD));
             currentTime = LamportTime.synchronize(messageTime, currentTime);
         }
 
-        Map<String, String> request = (Map<String, String>) data.get("request");
+        Map<String, String> request;
+        try {
+            request = (Map<String, String>) data.get("request");
+        } catch (ClassCastException e) {
+            LOGGER.warning("Transfer memory request is not valid");
+            return;
+        }
 
-        String memoryName = request.get("memory_name");
+        String memoryName = request.get(MEMORY_NAME_FIELD);
         String requestingNode = request.get("node");
 
         Memory memory;
@@ -383,9 +379,9 @@ public class MemoryStorageCodelet extends Codelet {
 
         sendMemory(memory);
 
-        Map<String, String> response = new HashMap<>(); 
-        response.put("memory_name", memoryName);
-        response.put("logical_time", currentTime.toString());
+        Map<String, String> response = new HashMap<>();
+        response.put(MEMORY_NAME_FIELD, memoryName);
+        response.put(LOGICAL_TIME_FIELD, currentTime.toString());
         String responseString = gson.toJson(response);
 
         String responseAddr = String.format("%s:nodes:%s:transfer_done", mindName, requestingNode);
@@ -403,20 +399,12 @@ public class MemoryStorageCodelet extends Codelet {
     }
 
     @Override
-    public void stop()
-    {
+    public synchronized void stop() {
         pubsubConnection.close();
         retrieveExecutor.shutdownNow();
         redisClient.shutdown();
 
         super.stop();
-    }
-
-    @Override
-    protected void finalize() {
-        pubsubConnection.close();
-        retrieveExecutor.shutdownNow();
-        redisClient.shutdown();
     }
 
 }
