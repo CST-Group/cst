@@ -4,6 +4,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assumptions.assumeTrue;
 
+import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -19,6 +20,7 @@ import org.junit.platform.commons.function.Try;
 
 import br.unicamp.cst.core.entities.Memory;
 import br.unicamp.cst.core.entities.Mind;
+import br.unicamp.cst.core.entities.RawMemory;
 import io.lettuce.core.RedisClient;
 import io.lettuce.core.RedisConnectionException;
 import io.lettuce.core.RedisURI;
@@ -62,6 +64,10 @@ public class MemoryStorageTest {
 
         mind = new Mind();
         mind2 = new Mind();
+
+        Field field = RawMemory.class.getDeclaredField("lastid");
+        field.setAccessible(true);
+        field.setLong(null, 0);
     }
 
     @AfterEach
