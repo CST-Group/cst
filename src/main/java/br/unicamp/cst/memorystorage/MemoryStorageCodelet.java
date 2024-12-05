@@ -58,10 +58,25 @@ public class MemoryStorageCodelet extends Codelet {
 
     public MemoryStorageCodelet(Mind mind)
     {
-        this(mind, "node", "default_mind", 500.0e-3);
+        this(mind, "node", "default_mind", 500.0e-3, RedisClient.create("redis://localhost"));
     }
 
-    public MemoryStorageCodelet(Mind mind, String nodeName, String mindName, double requestTimeout) {
+    public MemoryStorageCodelet(Mind mind, RedisClient redisClient)
+    {
+        this(mind, "node", "default_mind", 500.0e-3, redisClient);
+    }
+
+    public MemoryStorageCodelet(Mind mind, String mindName)
+    {
+        this(mind, "node", mindName, 500.0e-3, RedisClient.create("redis://localhost"));
+    }
+
+    public MemoryStorageCodelet(Mind mind, String mindName, RedisClient redisClient)
+    {
+        this(mind, "node", mindName, 500.0e-3, redisClient);
+    }
+
+    public MemoryStorageCodelet(Mind mind, String nodeName, String mindName, double requestTimeout, RedisClient redisClient) {
         listeners = new HashMap<>();
         memories = new HashMap<>();
         lastUpdate = new HashMap<>();
@@ -76,7 +91,7 @@ public class MemoryStorageCodelet extends Codelet {
         this.mindName = mindName;
         this.requestTimeout = requestTimeout;
 
-        redisClient = RedisClient.create("redis://localhost");
+        this.redisClient = redisClient;
         connection = redisClient.connect();
         commands = connection.async();
         pubsubConnection = redisClient.connectPubSub();

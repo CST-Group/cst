@@ -21,6 +21,7 @@ import br.unicamp.cst.core.entities.Memory;
 import br.unicamp.cst.core.entities.Mind;
 import io.lettuce.core.RedisClient;
 import io.lettuce.core.RedisConnectionException;
+import io.lettuce.core.RedisURI;
 import io.lettuce.core.api.StatefulRedisConnection;
 import io.lettuce.core.api.async.RedisAsyncCommands;
 
@@ -101,8 +102,22 @@ public class MemoryStorageTest {
         assertTrue(members.contains("node1"));
     }
 
-    public void redisArgsTest() {
-        // TODO
+    @Test
+    public void redisArgsTest() throws Exception {
+        RedisURI uri = RedisURI.Builder
+                .redis("localhost", 6379)
+                .build();
+        RedisClient client = RedisClient.create(uri);
+
+        MemoryStorageCodelet msCodelet = new MemoryStorageCodelet(mind, client);
+        mind.insertCodelet(msCodelet);
+        mind.start();
+
+        Thread.sleep(sleepTime);
+        
+        Set<String> members = commands.smembers("default_mind:nodes").get();
+        assertEquals(1, members.size());
+        assertTrue(members.contains("node"));
     }
 
     @Test
