@@ -9,13 +9,22 @@ import com.google.gson.ToNumberPolicy;
 
 import br.unicamp.cst.core.entities.Memory;
 
+/**
+ * Encodes and decodes Memories.
+ */
 public class MemoryEncoder {
     static Gson gson = new GsonBuilder().setObjectToNumberStrategy(ToNumberPolicy.LONG_OR_DOUBLE).create();
-
+    
     private MemoryEncoder() {
 
     }
 
+    /**
+     * Encodes a memory to a Map.
+     * 
+     * @param memory memory to encode.
+     * @return the encoded memory.
+     */
     public static Map<String, String> toDict(Memory memory) {
         Map<String, String> data = new HashMap<>();
         
@@ -37,7 +46,12 @@ public class MemoryEncoder {
         return data;
     }
 
-
+    /**
+     * Load a memory from a Map.
+     * 
+     * @param memory memory to store the loaded info.
+     * @param memoryDict map encoded memory.
+     */
     public static void loadMemory(Memory memory, Map<String, String> memoryDict) {
         memory.setEvaluation(Double.parseDouble(memoryDict.get("evaluation")));
         memory.setId(Long.parseLong(memoryDict.get("id")));

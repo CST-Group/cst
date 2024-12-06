@@ -31,6 +31,14 @@ import io.lettuce.core.pubsub.RedisPubSubAdapter;
 import io.lettuce.core.pubsub.RedisPubSubListener;
 import io.lettuce.core.pubsub.StatefulRedisPubSubConnection;
 
+/**
+ * Synchonizes local memories with a Redis database. 
+ * 
+ * When using MemoryStorage, each local CST instance is called a node.
+ * Memories with the same name in participating nodes are synchronized.
+ * 
+ * The collection of synchonized nodes is a mind.A single Redis instance can support multiple minds with unique names
+ */
 public class MemoryStorageCodelet extends Codelet {
     private static final String LOGICAL_TIME_FIELD = "logical_time";
     private static final String OWNER_FIELD = "owner";
@@ -49,10 +57,6 @@ public class MemoryStorageCodelet extends Codelet {
     private Mind mind;
     private String nodeName;
 
-    public String getNodeName() {
-        return nodeName;
-    }
-
     private String mindName;
     private double requestTimeout;
 
@@ -66,23 +70,66 @@ public class MemoryStorageCodelet extends Codelet {
     private LamportTime currentTime;
     private Gson gson;
 
+    /**
+     * MemoryStorageCodelet constructor.
+     * 
+     * @param mind agent mind, used to monitor memories.
+     * @throws ExecutionException
+     * @throws InterruptedException
+     */
     public MemoryStorageCodelet(Mind mind) throws ExecutionException, InterruptedException {
         this(mind, "node", "default_mind", 500.0e-3, RedisClient.create("redis://localhost"));
     }
 
+    /**
+     * MemoryStorageCodelet constructor.
+     * 
+     * @param mind agent mind, used to monitor memories.
+     * @param redisClient redis client to connect.
+     * @throws ExecutionException
+     * @throws InterruptedException
+     */
     public MemoryStorageCodelet(Mind mind, RedisClient redisClient) throws ExecutionException, InterruptedException {
         this(mind, "node", "default_mind", 500.0e-3, redisClient);
     }
 
+    /**
+     * MemoryStorageCodelet constructor.
+     * 
+     * @param mind agent mind, used to monitor memories.
+     * @param mindName name of the network mind.
+     * @throws ExecutionException
+     * @throws InterruptedException
+     */
     public MemoryStorageCodelet(Mind mind, String mindName) throws ExecutionException, InterruptedException {
         this(mind, "node", mindName, 500.0e-3, RedisClient.create("redis://localhost"));
     }
 
+    /***
+     * MemoryStorageCodelet constructor.
+     * 
+     * @param mind agent mind, used to monitor memories.
+     * @param mindName name of the network mind.
+     * @param redisClient redis client to connect.
+     * @throws ExecutionException
+     * @throws InterruptedException
+     */
     public MemoryStorageCodelet(Mind mind, String mindName, RedisClient redisClient)
             throws ExecutionException, InterruptedException {
         this(mind, "node", mindName, 500.0e-3, redisClient);
     }
 
+    /**
+     * MemoryStorageCodelet constructor.
+     * 
+     * @param mind agent mind, used to monitor memories.
+     * @param nodeName name of the local node in the network.
+     * @param mindName name of the network mind.
+     * @param requestTimeout time before timeout when requesting a memory synchonization.
+     * @param redisClient redis client to connect.
+     * @throws ExecutionException
+     * @throws InterruptedException
+     */
     public MemoryStorageCodelet(Mind mind, String nodeName, String mindName,
             double requestTimeout, RedisClient redisClient) throws ExecutionException, InterruptedException {
         listeners = new HashMap<>();
@@ -140,6 +187,15 @@ public class MemoryStorageCodelet extends Codelet {
         subscribe(String.format("%s:nodes:%s:transfer_memory", mindName, nodeName), handlerTransferMemory);
         Consumer<String> handlerNotifyTransfer = this::handlerNotifyTransfer;
         subscribe(String.format("%s:nodes:%s:transfer_done", mindName, nodeName), handlerNotifyTransfer);
+    }
+
+    /**
+     * Gets the name of the node.
+     * 
+     * @return node name.
+     */
+    public String getNodeName() {
+        return nodeName;
     }
 
     @Override
@@ -213,6 +269,15 @@ public class MemoryStorageCodelet extends Codelet {
         }
     }
 
+    /**
+     * Updates a memory, sending or retrieving the memory data
+     * to/from the database.
+     * 
+     * Performs a time comparison with the local data and storage
+     * data to decide whether to send or retrieve the data.
+     * 
+     * @param memoryName name of the memory to synchonize.
+     */
     private void updateMemory(String memoryName) {
         String memoryUpdatePath = String.format("%s:memories:%s:update", mindName, memoryName);
 
@@ -246,6 +311,11 @@ public class MemoryStorageCodelet extends Codelet {
         }
     }
 
+    /**
+     * Sends a memory data to the storage.
+     * 
+     * @param memory memory to send.
+     */
     private void sendMemory(Memory memory) {
         String memoryName = memory.getName();
 
@@ -262,6 +332,13 @@ public class MemoryStorageCodelet extends Codelet {
         currentTime = currentTime.increment();
     }
 
+    /**
+     * Retrieves a memory data from the storage.
+     * 
+     * Blocks the application, it is advisable to use a separate thread to call the method.
+     * 
+     * @param memory memory to retrieve data.
+     */
     private void retrieveMemory(Memory memory) {
         String memoryName = memory.getName();
 
@@ -308,6 +385,12 @@ public class MemoryStorageCodelet extends Codelet {
         }
     }
 
+    /**
+     * Requests another node to send its local memory to storage.
+     * 
+     * @param memoryName name of the memory to request.
+     * @param ownerName node owning the memory.
+     */
     private void requestMemory(String memoryName, String ownerName) {
         String requestAddr = String.format("%s:nodes:%s:transfer_memory", mindName, ownerName);
 
@@ -324,6 +407,11 @@ public class MemoryStorageCodelet extends Codelet {
         commands.publish(requestAddr, request);
     }
 
+    /**
+     * Handles a message in the notify transfer channel.
+     * 
+     * @param message message received in the channel.
+     */
     private void handlerNotifyTransfer(String message) {
         Type type = new TypeToken<HashMap<String, String>>() {
         }.getType();
@@ -344,6 +432,11 @@ public class MemoryStorageCodelet extends Codelet {
         }
     }
 
+    /**
+     * Handles a message in the transfer memory channel.
+     * 
+     * @param message message received in the channel.
+     */
     @SuppressWarnings("unchecked")
     private void handlerTransferMemory(String message) {
         Type type = new TypeToken<HashMap<String, Object>>() {

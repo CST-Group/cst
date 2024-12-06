@@ -1,19 +1,34 @@
 package br.unicamp.cst.memorystorage;
 
+/**
+ * Logical time implementation using Lamport times.
+ */
 public class LamportTime implements LogicalTime {
 
     private int time;
 
+    /**
+     * LamportTime constructor.
+     * 
+     * @param initialTime time to start the clock.
+     */
     public LamportTime(int initialTime)
     {
         this.time = initialTime;
     }
 
+    /**
+     * LamportTime constructor.
+     */
     public LamportTime()
     {
         this(0);
     }
 
+    /**
+     * Get the clock internal time.
+     * @return clock internal time.
+     */
     public int getTime()
     {
         return this.time;
