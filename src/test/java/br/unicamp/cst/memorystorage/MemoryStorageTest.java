@@ -158,7 +158,7 @@ public class MemoryStorageTest {
         expectedResult = new HashMap<>();
         expectedResult.put("name", "Memory1");
         expectedResult.put("evaluation", "0.0");
-        expectedResult.put("I", "INFO");
+        expectedResult.put("I", "\"INFO\"");
         expectedResult.put("id", "0");
         expectedResult.put("owner", "");
 

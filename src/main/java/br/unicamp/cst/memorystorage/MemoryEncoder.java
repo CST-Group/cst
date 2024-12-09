@@ -33,15 +33,7 @@ public class MemoryEncoder {
         data.put("id", memory.getId().toString());
         data.put("timestamp", memory.getTimestamp().toString());        
 
-        Object info = memory.getI();
-        if(String.class.isInstance(info))
-        {
-            data.put("I", (String) info);
-        }
-        else
-        {
-            data.put("I", gson.toJson(info));
-        }
+        data.put("I", gson.toJson(memory.getI()));
     
         return data;
     }
