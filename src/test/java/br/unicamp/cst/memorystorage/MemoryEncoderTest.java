@@ -45,7 +45,7 @@ public class MemoryEncoderTest {
         assertEquals(0.5, memory.getEvaluation());
         assertEquals(123, memory.getId());
 
-        List<Double> info = (List<Double>) memory.getI();
+        List<Long> info = (List<Long>) memory.getI();
 
         assertEquals(3, info.size());
         assertEquals(5, info.get(0));
