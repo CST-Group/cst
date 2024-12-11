@@ -163,6 +163,7 @@ public class MemoryStorageCodelet extends Codelet {
             while (isMemberResult) {
                 nodeNumber += 1;
                 nodeName = baseName + Long.toString(nodeNumber);
+                isMemberResult = commands.sismember(mindNodesPath, nodeName).get();
             }
         }
 

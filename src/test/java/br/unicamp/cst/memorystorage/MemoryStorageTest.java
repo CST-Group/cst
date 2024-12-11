@@ -33,6 +33,7 @@ public class MemoryStorageTest {
 
     private Mind mind;
     private Mind mind2;
+    private Mind mind3;
 
     private List<Double> startTimes;
     private long sleepTime;
@@ -62,6 +63,7 @@ public class MemoryStorageTest {
 
         mind = new Mind();
         mind2 = new Mind();
+        mind3 = new Mind();
 
         Field field = RawMemory.class.getDeclaredField("lastid");
         field.setAccessible(true);
@@ -72,6 +74,7 @@ public class MemoryStorageTest {
     public void tearDown() throws Exception {
         mind.shutDown();
         mind2.shutDown();
+        mind3.shutDown();
 
         commands.flushall().get();
     }
@@ -104,6 +107,11 @@ public class MemoryStorageTest {
 
     @Test
     public void nodeEnterTest() throws Exception {
+        RedisURI uri = RedisURI.Builder
+                .redis("localhost", 6379)
+                .build();
+        RedisClient client = RedisClient.create(uri);
+        
         MemoryStorageCodelet msCodelet = new MemoryStorageCodelet(mind);
         msCodelet.setTimeStep(50);
         mind.insertCodelet(msCodelet);
@@ -117,19 +125,34 @@ public class MemoryStorageTest {
         assertEquals(1, members.size());
         assertTrue(members.contains("node"));
 
-        MemoryStorageCodelet msCodelet2 = new MemoryStorageCodelet(mind2);
+        MemoryStorageCodelet msCodelet2 = new MemoryStorageCodelet(mind2,"node2",   "default_mind", 500.0e-3, client );
         msCodelet.setTimeStep(50);
         mind2.insertCodelet(msCodelet2);
         mind2.start();
 
         Thread.sleep(sleepTime);
 
-        assertEquals("node1", msCodelet2.getNodeName());
+        assertEquals("node2", msCodelet2.getNodeName());
 
         members = commands.smembers("default_mind:nodes").get();
         assertEquals(2, members.size());
         assertTrue(members.contains("node"));
-        assertTrue(members.contains("node1"));
+        assertTrue(members.contains("node2"));
+
+        MemoryStorageCodelet msCodelet3 = new MemoryStorageCodelet(mind3);
+        msCodelet3.setTimeStep(50);
+        mind3.insertCodelet(msCodelet3);
+        mind3.start();
+
+        Thread.sleep(sleepTime);
+
+        assertEquals("node3", msCodelet3.getNodeName());
+
+        members = commands.smembers("default_mind:nodes").get();
+        assertEquals(3, members.size());
+        assertTrue(members.contains("node"));
+        assertTrue(members.contains("node2"));
+        assertTrue(members.contains("node3"));
     }
 
     @Test
