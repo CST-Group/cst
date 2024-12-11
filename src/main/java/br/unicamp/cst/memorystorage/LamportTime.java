@@ -51,7 +51,7 @@ public class LamportTime implements LogicalTime {
 
     
     public static LamportTime synchronize(LogicalTime time0, LogicalTime time1) {
-        if(!(LogicalTime.class.isInstance(time0) && LogicalTime.class.isInstance(time1))){
+        if(!(LamportTime.class.isInstance(time0) && LamportTime.class.isInstance(time1))){
             throw new IllegalArgumentException("LamportTime can only synchonize LamportTime instances");
         }
         
