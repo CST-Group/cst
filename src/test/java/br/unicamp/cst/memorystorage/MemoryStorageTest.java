@@ -77,6 +77,32 @@ public class MemoryStorageTest {
     }
 
     @Test
+    public void testMindName() throws Exception{
+        MemoryStorageCodelet msCodelet = new MemoryStorageCodelet(mind, "Mind1");
+        msCodelet.setTimeStep(50);
+        mind.insertCodelet(msCodelet);
+
+        RedisURI uri = RedisURI.Builder
+                .redis("localhost", 6379)
+                .build();
+        RedisClient client = RedisClient.create(uri);
+
+        MemoryStorageCodelet msCodelet2 = new MemoryStorageCodelet(mind, "Mind2", client);
+        msCodelet2.setTimeStep(50);
+        mind.insertCodelet(msCodelet2);
+
+        mind.start();
+
+        Set<String> members = commands.smembers("Mind1:nodes").get();
+        assertEquals(1, members.size());
+        assertTrue(members.contains("node"));
+
+        Set<String> members2 = commands.smembers("Mind2:nodes").get();
+        assertEquals(1, members2.size());
+        assertTrue(members2.contains("node"));
+    }
+
+    @Test
     public void nodeEnterTest() throws Exception {
         MemoryStorageCodelet msCodelet = new MemoryStorageCodelet(mind);
         msCodelet.setTimeStep(50);
