@@ -4,11 +4,13 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assumptions.assumeTrue;
 
+import java.lang.ref.WeakReference;
 import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Set;
+import java.util.function.Consumer;
 import java.util.Map;
 
 import org.junit.jupiter.api.AfterEach;
@@ -174,7 +176,7 @@ public class MemoryStorageTest {
     }
 
     @Test
-    public void memoryTransferTest() throws Exception {
+    public void deleteMemoryTest() throws Exception {
         Memory memory1 = mind.createMemoryObject("Memory1", "INFO");
 
         MemoryStorageCodelet msCodelet = new MemoryStorageCodelet(mind);
@@ -237,7 +239,7 @@ public class MemoryStorageTest {
         Memory mind2Memory1 = mind2.createMemoryObject("Memory1", "");
 
         MemoryStorageCodelet msCodelet2 = new MemoryStorageCodelet(mind2);
-        msCodelet.setTimeStep(50);
+        msCodelet2.setTimeStep(50);
         mind2.insertCodelet(msCodelet2);
         mind2.start();
 
@@ -290,6 +292,50 @@ public class MemoryStorageTest {
 
         assertEquals(true, memory1.getI());
         assertEquals(true, mind2Memory1.getI());
+    }
+
+    @Test
+    public void unsubscribeTest() throws Exception
+    {
+        MemoryStorageCodelet msCodelet = new MemoryStorageCodelet(mind);
+        msCodelet.setTimeStep(50);
+        
+        mind.createMemoryObject("Memory", "NODE1_INFO");
+        
+        mind.insertCodelet(msCodelet);
+        mind.start();
+
+        Thread.sleep(sleepTime);
+
+        mind.getRawMemory().shutDown();
+        System.gc();
+
+        Thread.sleep(sleepTime);
+
+        commands.publish("default_mind:memories:Memory:update", "");
+
+        Thread.sleep(sleepTime);
+
+        Field memoriesField = msCodelet.getClass().getDeclaredField("memories");
+        memoriesField.setAccessible(true);
+        HashMap<String, WeakReference<Memory>> memories = (HashMap<String, WeakReference<Memory>>) memoriesField.get(msCodelet);
+        
+        Field listenersField = msCodelet.getClass().getDeclaredField("listeners");
+        listenersField.setAccessible(true);
+        HashMap<String, Consumer<String>> listeners = (HashMap<String, Consumer<String>>) listenersField.get(msCodelet);
+
+        assertEquals(0, memories.size());
+        assertEquals(2, listeners.size());
+
+        Memory memory2 = mind2.createMemoryObject("Memory", "NODE2_INFO");
+        MemoryStorageCodelet msCodelet2 = new MemoryStorageCodelet(mind2);
+        msCodelet2.setTimeStep(50);
+        mind2.insertCodelet(msCodelet2);
+        mind2.start();
+
+        Thread.sleep(sleepTime);
+
+        assertEquals("NODE2_INFO", memory2.getI());
     }
 
 }
