@@ -176,7 +176,7 @@ public class MemoryStorageTest {
     }
 
     @Test
-    public void deleteMemoryTest() throws Exception {
+    public void transferMemoryTest() throws Exception {
         Memory memory1 = mind.createMemoryObject("Memory1", "INFO");
 
         MemoryStorageCodelet msCodelet = new MemoryStorageCodelet(mind);
