@@ -78,6 +78,13 @@ public abstract class Behavior extends Codelet
 	private double activationMA=0;
 	
 	private WorkingStorage ws;
+        
+        //For test variables
+        private double inputfromstate;
+        private double inputfromgoals;
+        private double spreadbw;
+        private double spreadfw;
+        private double activationWhenActive;
 
 	public Behavior(WorkingStorage ws,GlobalVariables globalVariables)
 	{
@@ -121,7 +128,7 @@ public abstract class Behavior extends Codelet
 	 */
 	public void proc()
 	{
-
+                activationWhenActive = this.getActivation(); 
 		retrieveGoals(); // This should be done often because goals might change over time
 		retrieveState(); // This should be done often because world state might change over time
 		spreadActivation();
@@ -405,11 +412,11 @@ public abstract class Behavior extends Codelet
 		if(!this.isActive()){ //If active, it should remain at zero
 			double activation = 0;
 			// TODO this can be optimized, I could get all this information with only one method (this would iterate only once through the coalition list
-			double inputfromstate = inputFromState();
-			double inputfromgoals = inputFromGoals();
+			inputfromstate = inputFromState();
+			inputfromgoals = inputFromGoals();
 			double takenawaybyprotectedgoals = takenAwayByProtectedGoals();
-			double spreadbw = spreadBw();
-			double spreadfw = spreadFw();
+			spreadbw = spreadBw();
+			spreadfw = spreadFw();
 			double takenaway = takenAway();
 
 			activation = inputfromstate + inputfromgoals - takenawaybyprotectedgoals + (spreadbw + spreadfw - takenaway);
@@ -830,10 +837,12 @@ public abstract class Behavior extends Codelet
 							MODULE_softPrecon_and_ClassicPrecon.addAll(module.getListOfPreconditions());
 							MODULE_softPrecon_and_ClassicPrecon.addAll(module.getSoftPreconList());
 							
-							if (MODULE_softPrecon_and_ClassicPrecon.contains(j))
-							{
-								sharpM = sharpM + 1;
-							}
+                                                        for(Memory item : MODULE_softPrecon_and_ClassicPrecon) {
+                                                            if (item.getI().equals(j.getI()))
+                                                            {
+                                                                sharpM = sharpM + 1;
+                                                            }
+                                                        }
 						} finally
 						{
 							lock.unlock();
@@ -895,10 +904,12 @@ public abstract class Behavior extends Codelet
 					{
 						try
 						{
-							if (module.getAddList().contains(j))
-							{
-								sharpA = sharpA + 1;
-							}
+                                                    for(Memory addItem : module.getAddList()) {
+                                                        if (addItem.getI().equals(j.getI()))
+                                                        {
+                                                            sharpA = sharpA + 1;
+                                                        }
+                                                    }
 						} finally
 						{
 							lock.unlock();
@@ -948,10 +959,12 @@ public abstract class Behavior extends Codelet
 					{
 						try
 						{
-							if (module.getDeleteList().contains(j))
-							{
-								sharpU = sharpU + 1;
-							}
+                                                    for(Memory deleteItem : module.getDeleteList()) {
+                                                        if (deleteItem.getI().equals(j.getI()))
+                                                        {
+                                                            sharpU = sharpU + 1;
+                                                        }
+                                                    }
 						} finally
 						{
 							lock.unlock();
@@ -1429,22 +1442,28 @@ public abstract class Behavior extends Codelet
 	private double competencesWithPropInPrecon(Memory proposition)
 	{
 		double compWithProp = 0;
-		for (Behavior comp : this.getCoalition())
-		{
-			if (impendingAccess(comp))
-			{
-				try
-				{
-					if (comp.getListOfPreconditions().contains(proposition)||comp.getSoftPreconList().contains(proposition))
-					{
-						compWithProp = compWithProp + 1;
-					}
-				} finally
-				{
-					lock.unlock();
-					comp.lock.unlock();
-				}
-			}
+		for (Behavior comp : this.getCoalition()) {
+                    if (impendingAccess(comp)) {
+                        try {
+                            Boolean hasFound = false;
+                            for(Memory preconItem : comp.getListOfPreconditions()) {
+                                if (preconItem.getI().equals(proposition.getI())) {
+                                    compWithProp = compWithProp + 1;
+                                }
+                            }
+                            if (!hasFound) {
+                                for(Memory softPreconItem : comp.getSoftPreconList()) {
+                                    if (softPreconItem.getI().equals(proposition.getI())) {
+                                        compWithProp = compWithProp + 1;
+                                    }
+                                }
+                            }
+                            
+                        } finally {
+                            lock.unlock();
+                            comp.lock.unlock();
+                        }
+                    }
 		}
 		return compWithProp;
 	}
@@ -1455,52 +1474,48 @@ public abstract class Behavior extends Codelet
 	 */
 	private double competencesWithPropInAdd(Memory proposition)
 	{
-		double compWithProp = 0;
-		for (Behavior comp : this.getCoalition())
-		{
-			if (impendingAccess(comp))
-			{
-				try
-				{
-					if (comp.getAddList().contains(proposition))
-					{
-						compWithProp = compWithProp + 1;
-					}
-				} finally
-				{
-					lock.unlock();
-					comp.lock.unlock();
-				}
-			}
-		}
-		return compWithProp;
+            double compWithProp = 0;
+            for (Behavior comp : this.getCoalition()) {
+                if (impendingAccess(comp)) {
+                    try {
+                        for(Memory addItem : comp.getAddList()) {
+                            if (addItem.getI().equals(proposition.getI()))
+                            {
+                                compWithProp = compWithProp + 1;
+                                break;
+                            }
+                        }
+                    } finally {
+                        lock.unlock();
+                        comp.lock.unlock();
+                    }
+                }
+            }
+            return compWithProp;
 	}
 
 
 	/**
 	 * Returns the list of competences from coalition with the given proposition in its del lists
 	 */
-	private double competencesWithPropInDel(Memory proposition)
-	{
-		double compWithProp = 0;
-		for (Behavior comp : this.getCoalition())
-		{
-			if (impendingAccess(comp))
-			{
-				try
-				{
-					if (comp.getDeleteList().contains(proposition))
-					{
-						compWithProp = compWithProp + 1;
-					}
-				} finally
-				{
-					lock.unlock();
-					comp.lock.unlock();
-				}
-			}
-		}
-		return compWithProp;
+	private double competencesWithPropInDel(Memory proposition) {
+            double compWithProp = 0;
+            for (Behavior comp : this.getCoalition()) {
+                if (impendingAccess(comp)) {
+                    try {
+                        for(Memory deleteItem : comp.getDeleteList()) {
+                            if (deleteItem.getI().equals(proposition.getI())) {
+                                compWithProp = compWithProp + 1;
+                                break;
+                            }
+                        }
+                    } finally {
+                        lock.unlock();
+                        comp.lock.unlock();
+                    }
+                }
+            }
+            return compWithProp;
 	}
 
 	/**
@@ -1561,4 +1576,34 @@ public abstract class Behavior extends Codelet
 	public void setSoftPreconList(ArrayList<Memory> softPreconList) {
 		this.softPreconList = softPreconList;
 	}
+        /**
+	 * @return the inputfromstate
+	 */
+        public double getInputfromstate() {
+            return inputfromstate;
+        }
+        /**
+	 * @return the inputfromgoals
+	 */
+        public double getInputfromgoals() {
+            return inputfromgoals;
+        }
+        /**
+	 * @return the spreadbw
+	 */
+        public double getSpreadbw() {
+            return spreadbw;
+        }
+        /**
+	 * @return the spreadfw
+	 */
+        public double getSpreadfw() {
+            return spreadfw;
+        }
+        /**
+	 * @return the activationWhenActive
+	 */
+        public double getActivationWhenActive(){
+            return activationWhenActive;
+        }
 }

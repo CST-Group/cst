@@ -187,8 +187,12 @@ public class BehaviorsWTA extends Codelet
 		// TODO Auto-generated method stub
 		
 	}
-
-
+        /**
+         * @return the chosenBehavior from bn iteraction
+         */
+        public Behavior getChosenBehavior() {
+            return this.chosenBehavior;
+        }
 
 }
 
