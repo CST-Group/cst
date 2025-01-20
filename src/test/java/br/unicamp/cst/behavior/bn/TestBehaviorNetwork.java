@@ -127,6 +127,7 @@ public class TestBehaviorNetwork {
         ArrayList<Behavior> listOfAllBehaviors=new ArrayList<>();
         listOfAllBehaviors.add(eatCompetence);
         listOfAllBehaviors.add(exploreCompetence);
+        listOfAllBehaviors.add(forageFoodCompetence);
         
         bn.setCoalition(listOfAllBehaviors);
 
