@@ -91,12 +91,14 @@ public abstract class Behavior extends Codelet
 		this.ws = ws;
 		this.globalVariables = globalVariables;
 		
-		//All behaviors subscribe their input list to receive news from Working Storage about WORLD_STATE, and goals memory objects.
-		int io=0; //Input list
-		ws.registerCodelet(this, "WORLD_STATE", io);
-		ws.registerCodelet(this, "ONCE_ONLY_GOAL", io);
-		ws.registerCodelet(this, "PERMANENT_GOAL", io);
-		ws.registerCodelet(this, "PERMANENT_GOAL", io);
+                if (ws != null) {
+                    //All behaviors subscribe their input list to receive news from Working Storage about WORLD_STATE, and goals memory objects.
+                    int io=0; //Input list
+                    ws.registerCodelet(this, "WORLD_STATE", io);
+                    ws.registerCodelet(this, "ONCE_ONLY_GOAL", io);
+                    ws.registerCodelet(this, "PERMANENT_GOAL", io);
+                    ws.registerCodelet(this, "PERMANENT_GOAL", io);
+                }
 
 		this.setExecutable(false); // Every competence starts as non-executable
 		this.setActive(false); // Every competence starts as inactive
@@ -382,8 +384,8 @@ public abstract class Behavior extends Codelet
 
 		for(Memory precon:preconList){ 
 
-			for(Object ws:listOfWorldBeliefStates){
-				if(precon.getI().equals(ws)){
+			for(Object beliefState:listOfWorldBeliefStates){
+				if(precon.getI().equals(beliefState)){
 					tempPreconList.remove(precon);
 					break;
 				}
