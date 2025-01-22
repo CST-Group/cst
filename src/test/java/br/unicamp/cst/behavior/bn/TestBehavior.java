@@ -20,9 +20,9 @@ import org.json.JSONObject;
 import org.junit.jupiter.api.AfterEach;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import static br.unicamp.cst.behavior.bn.GlobalVariables.Goals.PROTECTED_GOALS;
 
 /**
  *
@@ -446,7 +446,7 @@ public class TestBehavior {
     }
     
     @Test
-    public void testTakenAwayByProtectedGoals() {
+    public void testInputFromGoalsOfTypeProtected() {
         
         Memory goalProtectedMO = createMemoryObject("PROTECTED_GOAL", stateNotHungry);
         
@@ -460,7 +460,7 @@ public class TestBehavior {
         exploreCompetence.proc();
         exploreCompetence.setCoalition(listOfAllBehaviors);
         
-        assertEquals(0.05, exploreCompetence.takenAwayByProtectedGoals());
+        assertEquals(0.05, exploreCompetence.inputFromGoalsOfType(PROTECTED_GOALS));
     }
     
     @Test

@@ -193,5 +193,9 @@ public class GlobalVariables
 	{
 		this.setThetaTemp(this.getThetaTemp()*this.getThetaTempDecreaseRate());
 	}
+        
+        public enum Goals {
+            ALL_GOALS, PROTECTED_GOALS
+        }
 
 }

@@ -10,6 +10,8 @@
  ******************************************************************************/
 package br.unicamp.cst.behavior.bn;
 
+import br.unicamp.cst.behavior.bn.GlobalVariables.Goals;
+import static br.unicamp.cst.behavior.bn.GlobalVariables.Goals.ALL_GOALS;
 import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.Hashtable;
@@ -23,6 +25,7 @@ import br.unicamp.cst.core.entities.Codelet;
 import br.unicamp.cst.core.entities.Memory;
 import br.unicamp.cst.core.exceptions.CodeletActivationBoundsException;
 import br.unicamp.cst.memory.WorkingStorage;
+import static br.unicamp.cst.behavior.bn.GlobalVariables.Goals.PROTECTED_GOALS;
 
 /**
  * This competence class extends Codelet. "A competence resemble the operators of a classical planning system. A competence module i can be described by a list of preconditions and expected effects."[Maes 1989]
@@ -343,8 +346,8 @@ public abstract class Behavior extends Codelet
 			double activation = 0;
 			// TODO this can be optimized, I could get all this information with only one method (this would iterate only once through the coalition list
 			inputfromstate = inputFromState();
-			inputfromgoals = inputFromGoals();
-			double takenawaybyprotectedgoals = takenAwayByProtectedGoals();
+			inputfromgoals = inputFromGoalsOfType(ALL_GOALS);
+			double takenawaybyprotectedgoals = inputFromGoalsOfType(PROTECTED_GOALS);
 			spreadbw = spreadBw();
 			spreadfw = spreadFw();
 			double takenaway = takenAway();
@@ -716,55 +719,83 @@ public abstract class Behavior extends Codelet
 		this.allBehaviors = allBehaviors;
 	}
 	/**
-	 * @return the amount of activation from goalsthis.coalition.lock();
+         * @param goalType the type of goals selected to be calculated in the activation
+	 * @return the amount of activation to be removed by the goals selected
 	 */
-	public double inputFromGoals()
+	public double inputFromGoalsOfType(Goals goalType)
 	{
-		double activation = 0;
-		ArrayList<Behavior> tempCodelets = new ArrayList<Behavior>(); //TODO Should we get this input from the coalition or from the full set of codelets?
-		tempCodelets.addAll(this.getAllBehaviors());
-		if (!tempCodelets.isEmpty())
-		{
-			ArrayList<Memory> intersection = getIntersectionSet(this.getGoals(), this.getAddList());
-			for (Memory j : intersection)
-			{
-				double sharpA = 0;
-				for (Behavior module : tempCodelets)
-				{
-					if (impendingAccess(module))
-					{
-						try
-						{
-                                                    for(Memory addItem : module.getAddList()) {
-                                                        if (addItem.getI().equals(j.getI()))
-                                                        {
-                                                            sharpA = sharpA + 1;
-                                                        }
-                                                    }
-						} finally
-						{
-							lock.unlock();
-							module.lock.unlock();
-						}
-					}
-				}
-				// synchronized(this.addList){
-				if ((sharpA > 0) && (this.getAddList().size() > 0))
-				{
-					double othermoduleActivation = globalVariables.getGamma() * ((1 / sharpA) * (1 / (double) this.getAddList().size()));
-					activation = activation + othermoduleActivation;
-				}
-				// }//end synch
-			}
-		}
-		// activation=activation*globalVariables.getGamma();
-		return activation;
+            double activation = 0;
+            
+            ArrayList<Behavior> tempCodelets = new ArrayList<>(); //TODO Should we get this input from the coalition or from the full set of codelets?
+            ArrayList<Memory> AList = new ArrayList<>();
+            ArrayList<Memory> BList = new ArrayList<>();
+            ArrayList<Memory> listToIterate = new ArrayList<>();
+            switch(goalType) {
+                case ALL_GOALS:
+                    tempCodelets.addAll(this.getAllBehaviors());
+                    AList.addAll(this.getGoals());
+                    BList.addAll(this.getAddList());
+                    break;
+                case PROTECTED_GOALS:
+                    tempCodelets.addAll(this.getCoalition());
+                    AList.addAll(this.getProtectedGoals());
+                    BList.addAll(this.getDeleteList());
+                    break;
+                default:
+                    System.out.println("Not valid option of goalType");
+                    break;
+            }
+            
+            if (!tempCodelets.isEmpty())
+            {
+                ArrayList<Memory> intersection = getIntersectionSet(AList, BList);
+                for (Memory j : intersection)
+                {
+                    double sharp = 0;
+                    for (Behavior module : tempCodelets)
+                    {
+                        if (impendingAccess(module))
+                        {
+                            try
+                            {
+                                if (goalType.equals(ALL_GOALS)) {
+                                    listToIterate.addAll(module.getAddList());
+                                } else {
+                                    listToIterate.addAll(module.getDeleteList());
+                                }
+                                
+                                for(Memory item : listToIterate) {
+                                    if (item.getI().equals(j.getI()))
+                                    {
+                                        sharp = sharp + 1;
+                                        break;
+                                    }
+                                }
+                                listToIterate.clear();
+                            } finally
+                            {
+                                lock.unlock();
+                                module.lock.unlock();
+                            }
+                        }
+                    }
+                    if ((sharp > 0) && (BList.size() > 0))
+                    {
+                        double energy ;
+                        if (goalType.equals(ALL_GOALS)) {
+                            energy = globalVariables.getGamma() * ((1 / sharp) * (1 / (double) BList.size()));
+                        } else {
+                            energy = (1 / sharp) * (1 / (double) BList.size()) * globalVariables.getDelta();
+                        }
+                        
+                        activation = activation + energy;
+                    }
+                }
+            }
+            return activation;
 	}
-
-	/**
-	 * @return the amount of activation to be removed by the goals that are protected
-	 */
-	public double takenAwayByProtectedGoals()
+        
+        public double takenAwayByProtectedGoals()
 	{
 		double activation = 0;
 		// synchronized(this.coalition){
@@ -780,12 +811,10 @@ public abstract class Behavior extends Codelet
 					{
 						try
 						{
-                                                    for(Memory deleteItem : module.getDeleteList()) {
-                                                        if (deleteItem.getI().equals(j.getI()))
-                                                        {
-                                                            sharpU = sharpU + 1;
-                                                        }
-                                                    }
+							if (module.getDeleteList().contains(j))
+							{
+								sharpU = sharpU + 1;
+							}
 						} finally
 						{
 							lock.unlock();
@@ -797,14 +826,16 @@ public abstract class Behavior extends Codelet
 				if ((sharpU > 0) && (this.getDeleteList().size() > 0))
 				{
 					double takenEnergy = (1 / sharpU) * (1 / (double) this.getDeleteList().size()) * globalVariables.getDelta();
+			
 					activation = activation + takenEnergy;
-				}
+				} 
 				// }//end synch
 			}
 		}
 		// }//end synch
 		return activation;
 	}
+        
 
 	/**
 	 * @return the amount of activation that is spread backwards from other modules in the direction of this module
@@ -841,7 +872,7 @@ public abstract class Behavior extends Codelet
 							intersection.removeAll(worldState);
 							for (Memory item : intersection)
 							{
-								amount = amount + ((1.0 / this.competencesWithPropInAdd(item)) * (1.0 / (double) this.getAddList().size()));
+								amount = amount + ((1.0 / this.competencesWithPropInListOfType(item, "add")) * (1.0 / (double) this.getAddList().size()));
 							}
 							amount = amount * module.getActivation() * (globalVariables.getPhi() / globalVariables.getGamma());
 					
@@ -897,7 +928,7 @@ public abstract class Behavior extends Codelet
 							intersection.removeAll(worldState);
 							for (Memory item : intersection)
 							{
-								amount = amount + ((1.0 / this.competencesWithPropInPrecon(item)) * (1.0 / (double) preconPlusSoftPrecon.size()));
+								amount = amount + ((1.0 / this.competencesWithPropInListOfType(item, "preconditions")) * (1.0 / (double) preconPlusSoftPrecon.size()));
 							}
 							amount = amount * module.getActivation() * (globalVariables.getPhi() / globalVariables.getGamma());
 
@@ -958,7 +989,7 @@ public abstract class Behavior extends Codelet
 							intersection = getIntersectionSet(intersection, worldState);
 							for (Memory item : intersection)
 							{
-								amount = amount + ((1.0 / this.competencesWithPropInDel(item)) * (1.0 / (double) this.getDeleteList().size()));
+								amount = amount + ((1.0 / this.competencesWithPropInListOfType(item, "delete")) * (1.0 / (double) this.getDeleteList().size()));
 							}
 							// amount = (b1.activation[0] *
 							// (self.conf_energy / self.goal_energy) *
@@ -1233,82 +1264,44 @@ public abstract class Behavior extends Codelet
 		this.actionList.clear();
 	}
 
-	/**
-	 * Returns the number of competences in coalition with the given proposition in their precondition lists
-	 */
-	private double competencesWithPropInPrecon(Memory proposition)
-	{
-		double compWithProp = 0;
-		for (Behavior comp : this.getCoalition()) {
-                    if (impendingAccess(comp)) {
-                        try {
-                            Boolean hasFound = false;
-                            for(Memory preconItem : comp.getListOfPreconditions()) {
-                                if (preconItem.getI().equals(proposition.getI())) {
-                                    compWithProp = compWithProp + 1;
-                                }
-                            }
-                            if (!hasFound) {
-                                for(Memory softPreconItem : comp.getSoftPreconList()) {
-                                    if (softPreconItem.getI().equals(proposition.getI())) {
-                                        compWithProp = compWithProp + 1;
-                                    }
-                                }
-                            }
-                            
-                        } finally {
-                            lock.unlock();
-                            comp.lock.unlock();
-                        }
-                    }
-		}
-		return compWithProp;
-	}
-
 
 	/**
-	 * Returns the list of competences from coalition with the given proposition in their add lists
+	 * Returns the list of competences from coalition with the given proposition in their lists of type specified
 	 */
-	private double competencesWithPropInAdd(Memory proposition)
+	private double competencesWithPropInListOfType(Memory proposition, String listType)
 	{
             double compWithProp = 0;
-            for (Behavior comp : this.getCoalition()) {
-                if (impendingAccess(comp)) {
-                    try {
-                        for(Memory addItem : comp.getAddList()) {
-                            if (addItem.getI().equals(proposition.getI()))
+            ArrayList<Memory> listToIterate = new ArrayList<>();
+            for (Behavior comp : this.getCoalition())
+            {
+                if (impendingAccess(comp))
+                {
+                    try
+                    {
+                        switch(listType){
+                            case "add":
+                                listToIterate = comp.getAddList();
+                                break;
+                            case "delete":
+                                listToIterate = comp.getDeleteList();
+                                break;
+                            case "preconditions":
+                                listToIterate.addAll(comp.getListOfPreconditions());
+                                listToIterate.addAll(comp.getSoftPreconList());
+                                break;
+                        }
+
+                        for(Memory item : listToIterate) {
+                            if (item.getI().equals(proposition.getI()))
                             {
                                 compWithProp = compWithProp + 1;
                                 break;
                             }
                         }
-                    } finally {
-                        lock.unlock();
-                        comp.lock.unlock();
-                    }
-                }
-            }
-            return compWithProp;
-	}
-
-
-	/**
-	 * Returns the list of competences from coalition with the given proposition in its del lists
-	 */
-	private double competencesWithPropInDel(Memory proposition) {
-            double compWithProp = 0;
-            for (Behavior comp : this.getCoalition()) {
-                if (impendingAccess(comp)) {
-                    try {
-                        for(Memory deleteItem : comp.getDeleteList()) {
-                            if (deleteItem.getI().equals(proposition.getI())) {
-                                compWithProp = compWithProp + 1;
-                                break;
-                            }
-                        }
-                    } finally {
-                        lock.unlock();
-                        comp.lock.unlock();
+                    } finally
+                    {
+                            lock.unlock();
+                            comp.lock.unlock();
                     }
                 }
             }
@@ -1403,4 +1396,6 @@ public abstract class Behavior extends Codelet
         public double getActivationWhenActive(){
             return activationWhenActive;
         }
+        
+        
 }
