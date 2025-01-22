@@ -8,6 +8,8 @@ package br.unicamp.cst.behavior.bn;
 import br.unicamp.cst.core.entities.Mind;
 import br.unicamp.cst.memory.WorkingStorage;
 import java.util.ArrayList;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -54,6 +56,31 @@ public class TestBehaviorNetwork {
         assertEquals(true, eatCompetence.hasStart);
         assertEquals(true, exploreCompetence.hasStart);
         assertEquals(true, forageFoodCompetence.hasStart);
+    }
+    
+    @Test
+    public void testStartCodeletSingleThreadBHCodeletBehaviorNetwork() {
+        mind.insertCodelet(exploreCompetence);
+        mind.insertCodelet(eatCompetence);
+        mind.insertCodelet(forageFoodCompetence);
+
+        bn.addCodelet(eatCompetence);
+        bn.addCodelet(exploreCompetence);
+        bn.addCodelet(forageFoodCompetence);
+        
+        bn.setSingleCodeletBN(true);
+        bn.startCodelets();
+        
+        try {
+            Thread.sleep(2000);
+        } catch (InterruptedException ex) {
+            Logger.getLogger(TestBehaviorNetwork.class.getName()).log(Level.SEVERE, null, ex);
+        }
+
+        assertEquals(true, eatCompetence.procExecuted);
+        assertEquals(true, exploreCompetence.procExecuted);
+        assertEquals(true, forageFoodCompetence.procExecuted);
+        assertEquals(true, bn.isSingleCodeletBN());
     }
     
     @Test
@@ -115,6 +142,23 @@ public class TestBehaviorNetwork {
     }
     
     @Test
+    public void testSetBehaviorsToZeroWhenActivated() {
+        mind.insertCodelet(exploreCompetence);
+        mind.insertCodelet(eatCompetence);
+        mind.insertCodelet(forageFoodCompetence);
+
+        bn.addCodelet(eatCompetence);
+        bn.addCodelet(exploreCompetence);
+        bn.addCodelet(forageFoodCompetence);
+        
+        bn.setBehaviorsToZeroWhenActivated(false);
+        assertEquals(false, eatCompetence.isSetToZeroWhenActivated());
+        assertEquals(false, exploreCompetence.isSetToZeroWhenActivated());
+        assertEquals(false, forageFoodCompetence.isSetToZeroWhenActivated());
+        
+    }
+    
+    @Test
     public void testSetCoalitionBehaviorNetwork() {
         mind.insertCodelet(exploreCompetence);
         mind.insertCodelet(eatCompetence);
@@ -141,9 +185,14 @@ public class TestBehaviorNetwork {
 class MockBehaviorForBN extends Behavior {
     
     public Boolean hasStart = false;
+    public Boolean procExecuted = false;
     
     public MockBehaviorForBN(WorkingStorage ws,GlobalVariables globalVariables) {
         super(ws, globalVariables);
+    }
+    @Override
+    public void proc() {
+        procExecuted = true;
     }
     
     @Override

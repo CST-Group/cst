@@ -32,38 +32,32 @@ import br.unicamp.cst.memory.WorkingStorage;
  */
 public abstract class Behavior extends Codelet
 {
-
-	//Debug variables
-	private boolean showActivationSpread = false; // Enable this to see the activation flow in the console
-	private boolean showCoalitionLinks = false; // Enable this to see the coalition links in the console
-	private boolean printNoActivationCases = false;//Enable this to see if there are any problems with absent preconditions
-
 	private String name = ""; //Each behavior must have a name.  If not given by the user, it will be the same as its running thread's one
-	protected ArrayList<String> actionList = new ArrayList<String>();// Actions that are to be performed by actuators and which constitute this behavior
+	protected ArrayList<String> actionList = new ArrayList<>();// Actions that are to be performed by actuators and which constitute this behavior
 	protected JSONArray jsonActionList = new JSONArray();
 
-	protected ArrayList<Memory> preconList = new ArrayList<Memory>(); // ci list of preconditions that must be fulfilled before the competence module can become active
-	protected ArrayList<Memory> addList = new ArrayList<Memory>(); // ai expected effects of this action in terms of an add list
-	protected ArrayList<Memory> deleteList = new ArrayList<Memory>(); // di expected effects of this action in terms of a delete list
+	protected ArrayList<Memory> preconList = new ArrayList<>(); // ci list of preconditions that must be fulfilled before the competence module can become active
+	protected ArrayList<Memory> addList = new ArrayList<>(); // ai expected effects of this action in terms of an add list
+	protected ArrayList<Memory> deleteList = new ArrayList<>(); // di expected effects of this action in terms of a delete list
 	//TODO I'm modifying MAES original model to encompass a "soft" precondition list. Is is "soft" in the sense that it is not a must have.
 	// a soft precondition affects activation spread in the same way a traditional precondition does, but its absense does not prevent the behavior to be executed.	
-	protected ArrayList<Memory> softPreconList = new ArrayList<Memory>(); // ci list of preconditions that are desirable to be fulfilled before the competence module can become active
+	protected ArrayList<Memory> softPreconList = new ArrayList<>(); // ci list of preconditions that are desirable to be fulfilled before the competence module can become active
 
 	// Alpha level of activation is the codelet's own A (activation level) [Hypothesis to be investigated]
-	protected ArrayList<Behavior> allBehaviors = new ArrayList<Behavior>();//Pointers to all behaviors in the network. Basal ganglia should support this hypothesis. 
-	protected ArrayList<Behavior> coalition = new ArrayList<Behavior>(); //A subset of all behaviors, given by consciousness.
+	protected ArrayList<Behavior> allBehaviors = new ArrayList<>();//Pointers to all behaviors in the network. Basal ganglia should support this hypothesis. 
+	protected ArrayList<Behavior> coalition = new ArrayList<>(); //A subset of all behaviors, given by consciousness.
 
-	protected Hashtable<Behavior, ArrayList<Memory>> predecessors = new Hashtable<Behavior, ArrayList<Memory>>();
-	protected Hashtable<Behavior, ArrayList<Memory>> successors = new Hashtable<Behavior, ArrayList<Memory>>();
-	protected Hashtable<Behavior, ArrayList<Memory>> conflicters = new Hashtable<Behavior, ArrayList<Memory>>();
+	protected Hashtable<Behavior, ArrayList<Memory>> predecessors = new Hashtable<>();
+	protected Hashtable<Behavior, ArrayList<Memory>> successors = new Hashtable<>();
+	protected Hashtable<Behavior, ArrayList<Memory>> conflicters = new Hashtable<>();
 
-	private ArrayList<Memory> permanentGoals = new ArrayList<Memory>();
-	private ArrayList<Memory> onceOnlyGoals = new ArrayList<Memory>();
-	private ArrayList<Memory> protectedGoals = new ArrayList<Memory>();
-	private ArrayList<Memory> goals = new ArrayList<Memory>();
-	private ArrayList<Memory> worldState = new ArrayList<Memory>();
-	private ArrayList<Object> listOfWorldBeliefStates=new ArrayList<Object>();
-	private ArrayList<Object> listOfPreviousWorldBeliefStates=new ArrayList<Object>();
+	private ArrayList<Memory> permanentGoals = new ArrayList<>();
+	private ArrayList<Memory> onceOnlyGoals = new ArrayList<>();
+	private ArrayList<Memory> protectedGoals = new ArrayList<>();
+	private ArrayList<Memory> goals = new ArrayList<>();
+	private ArrayList<Memory> worldState = new ArrayList<>();
+	private ArrayList<Object> listOfWorldBeliefStates=new ArrayList<>();
+	private ArrayList<Object> listOfPreviousWorldBeliefStates=new ArrayList<>();
 
 	private GlobalVariables globalVariables; //Behavior network global variables
 
@@ -73,7 +67,7 @@ public abstract class Behavior extends Codelet
 	private double maxA=1; // maximum activation for normalization
 	
 	//TODO resourceList is a list of all the action buffers this behavior needs to complete its actions.
-	private ArrayList<String> resourceList=new ArrayList<String>();
+	private ArrayList<String> resourceList=new ArrayList<>();
 	private boolean setToZeroWhenActivated=true;
 	private double activationMA=0;
 	
@@ -188,8 +182,6 @@ public abstract class Behavior extends Codelet
 				}
 			}
 		}
-		//		System.out.println("====> "+this.getId()+" worldState: "+worldState);
-
 	}
 
 	/**
@@ -206,22 +198,9 @@ public abstract class Behavior extends Codelet
 		successors.clear();
 		predecessors.clear();
 		conflicters.clear();
-
-//		if(this.getId().contains("TV")){
-//			int a=4;
-//			System.out.println(this.getId());
-//			
-//		}
-		
-
 		ArrayList<Memory> intersection = new ArrayList<Memory>();
 		for (Behavior competence : coalition)
 		{
-//			if(competence.getId().contains("ROOM13")){
-//				int a=4;
-//				System.out.println(competence.getId());
-//				
-//			}
 			if (impendingAccess(competence))
 			{
 				try
@@ -320,53 +299,6 @@ public abstract class Behavior extends Codelet
 
 		return 	(!temp1.equals(temp2));
 	}
-
-	/**
-	 *  Checks if there is a current behavior proposition in working storage that is using the resources this behavior needs
-	 * @return if there is conflict of resources
-	 */
-	private boolean resourceConflict() {//TODO must develop this idea further
-		boolean resourceConflict=false;
-		ArrayList<Memory> allOfType=new ArrayList<Memory>();
-
-		if(ws!=null)
-			allOfType.addAll(ws.getAllOfType("BEHAVIOR_PROPOSITION"));
-
-		ArrayList<String> usedResources=new ArrayList<String>();
-
-
-		if(allOfType!=null){
-
-			for(Memory bp:allOfType){
-				try {
-					JSONObject jsonBp=new JSONObject(bp.getI());
-					//System.out.println("=======> bp.getInfo(): "+bp.getInfo());
-					boolean performed=jsonBp.getBoolean("PERFORMED");
-					if(!performed){//otherwise it is not consuming those resources
-
-						JSONArray resourceList=jsonBp.getJSONArray("RESOURCELIST");
-
-						for(int i=0;i<resourceList.length();i++){
-							usedResources.add(resourceList.getString(i));
-						}
-					}
-				} catch (JSONException e) {e.printStackTrace();}
-			}
-		}
-		//		System.out.println("%%% usedResources: "+usedResources);
-		//		System.out.println("%%% getResourceList: "+getResourceList());
-		int sizeBefore=usedResources.size();
-		usedResources.removeAll(this.getResourceList());
-		int sizeLater=usedResources.size();
-
-		if(sizeLater!=sizeBefore){
-			resourceConflict=true;
-			//			System.out.println("%%%%%%%%%%%%%%%%%%%%% There was a conflict here");
-		}
-
-		return resourceConflict;
-	}
-
 	/**
 	 * A behavior module is executable at time t when all of its preconditions are observed to be true at time t.
 	 *
@@ -376,7 +308,6 @@ public abstract class Behavior extends Codelet
 		listOfWorldBeliefStates = new ArrayList<Object>();
 		for(Memory mo:this.getInputsOfType("WORLD_STATE")){
 			listOfWorldBeliefStates.add(mo.getI());
-			//				System.out.println("###########adding world state");
 		}
 		ArrayList<Memory> tempPreconList=new ArrayList<Memory>();
 		//Comparison between two MOs is performed between their infos
@@ -433,14 +364,6 @@ public abstract class Behavior extends Codelet
 				activation=activation*(1-this.getActivation())/maxA+this.getActivation(); //With Normalization
 			}
 
-
-
-			//TODO I'm trying to migrate this decay property to BehaviorsWTA.java
-			// decay();//TODO Decay process that scales the mean level of energy to pi  
-
-
-			//		//		activation=activation-globalVariables.getDecay(); //TODO Test with subtractive decay
-			//
 			if(globalVariables!=null)
 				activation=activation*globalVariables.getDecay(); //TODO test with multiplicative decay
 
@@ -466,34 +389,6 @@ public abstract class Behavior extends Codelet
 				e.printStackTrace();
 			}
 		}
-	}
-
-	/**
-	 * Decay function. Hypothesis: each time activation is spread from/towards a module this same module inhibits/excites the activation of all other modules making the mean activation level constant.
-	 */
-	private void decay()
-	{
-		// TODO this could be optimized
-		double activation = 0;
-		if (!this.coalition.isEmpty())
-		{
-			for (Behavior module : this.coalition)
-			{
-				if (impendingAccess(module))
-				{
-					try
-					{
-						activation = activation + module.getActivation();
-						activation = activation / this.coalition.size();
-					} finally
-					{
-						lock.unlock();
-						module.lock.unlock();
-					}
-				}
-			}
-		}
-
 	}
 
 	/**
@@ -681,62 +576,6 @@ public abstract class Behavior extends Codelet
 	{
 		this.coalition = coalition;
 		updateLinks(); // Isto soh deve ser feito quando a coalizao muda
-		if(showCoalitionLinks){
-			System.out.println("************* " + getName() + "'s Links ************");
-			System.out.println("* successors ------");
-			Enumeration e = this.successors.keys();
-			while (e.hasMoreElements())
-			{
-				Behavior module = (Behavior) e.nextElement();
-				if (impendingAccess(module))
-				{
-					try
-					{
-						System.out.println("Name: " + module.getName() + " |Props: " + this.successors.get(module));
-					} finally
-					{
-						lock.unlock();
-						module.lock.unlock();
-					}
-				}
-			}
-			System.out.println("* predecessors ----");
-			e = this.predecessors.keys();
-			while (e.hasMoreElements())
-			{
-				Behavior module = (Behavior) e.nextElement();
-				if (impendingAccess(module))
-				{
-					try
-					{
-						System.out.println(module.getName() + " |Props: " + this.predecessors.get(module));
-					} finally
-					{
-						lock.unlock();
-						module.lock.unlock();
-					}
-				}
-			}
-			System.out.println("* conflicters -----");
-			e = this.conflicters.keys();
-			while (e.hasMoreElements())
-			{
-				Behavior module = (Behavior) e.nextElement();
-				if (impendingAccess(module))
-				{
-					try
-					{
-						System.out.println(module.getName() + " |Props: " + this.conflicters.get(module));
-					} finally
-					{
-						lock.unlock();
-						module.lock.unlock();
-					}
-				}
-			}
-			System.out.println("************************************************");
-		}   
-
 	}
 
 	/**
@@ -858,15 +697,8 @@ public abstract class Behavior extends Codelet
 				if ((sharpM > 0) && (THIS_softPrecon_and_ClassicPrecon.size() > 0))
 				{
 					double activationfromstate = globalVariables.getPhi() * (1 / sharpM) * (1 / (double) THIS_softPrecon_and_ClassicPrecon.size());
-					if (showActivationSpread)
-					{
-						System.out.println(this.getName() + " got " + activationfromstate + " energy from the world state");
-					}
 					activation = activation + activationfromstate;
-				} else
-				{
-					if(printNoActivationCases){System.out.println("No activation in the case [" + this.getName() + " getting energy from the world state]: either the number of satisfying modules is zero or there are no preconditions in this module.");}
-				}
+				} 
 				// }//end synch
 			}
 		}
@@ -923,17 +755,7 @@ public abstract class Behavior extends Codelet
 				if ((sharpA > 0) && (this.getAddList().size() > 0))
 				{
 					double othermoduleActivation = globalVariables.getGamma() * ((1 / sharpA) * (1 / (double) this.getAddList().size()));
-					if (showActivationSpread)
-					{
-						System.out.println(this.getName() + " receives " + othermoduleActivation + " energy from goal " + j);
-					}
 					activation = activation + othermoduleActivation;
-				} else
-				{
-					if (showActivationSpread)
-					{
-						System.out.println("No activation from situation [" + this.getName() + " getting activation from goals]: either the number of satisfying modules is zero or there are no preconditions in this module.");
-					}
 				}
 				// }//end synch
 			}
@@ -978,17 +800,7 @@ public abstract class Behavior extends Codelet
 				if ((sharpU > 0) && (this.getDeleteList().size() > 0))
 				{
 					double takenEnergy = (1 / sharpU) * (1 / (double) this.getDeleteList().size()) * globalVariables.getDelta();
-					if (showActivationSpread)
-					{
-						System.out.println(this.getName() + " has " + takenEnergy + " taken away from it by protected goals.");
-					}
 					activation = activation + takenEnergy;
-				} else
-				{
-					if (showActivationSpread)
-					{
-						System.out.println("No activation from situation [" + this.getName() + " having energy taken away by protected goals]: either the number of satisfying modules is zero or there are no preconditions in this module.");
-					}
 				}
 				// }//end synch
 			}
@@ -1035,10 +847,7 @@ public abstract class Behavior extends Codelet
 								amount = amount + ((1.0 / this.competencesWithPropInAdd(item)) * (1.0 / (double) this.getAddList().size()));
 							}
 							amount = amount * module.getActivation() * (globalVariables.getPhi() / globalVariables.getGamma());
-							if (showActivationSpread)
-							{
-								System.out.println(this.getName() + " receives " + amount + " backwarded energy from " + module.getName() + " [which has A= " + module.getActivation() + " ]");
-							}
+					
 
 						}
 						// --------------------------
@@ -1087,17 +896,13 @@ public abstract class Behavior extends Codelet
 							preconPlusSoftPrecon.addAll(this.getSoftPreconList());
 
 
-							intersection.addAll(getIntersectionSet(module.getDeleteList(), preconPlusSoftPrecon));
+							intersection.addAll(getIntersectionSet(module.getAddList(), preconPlusSoftPrecon));
 							intersection.removeAll(worldState);
 							for (Memory item : intersection)
 							{
 								amount = amount + ((1.0 / this.competencesWithPropInPrecon(item)) * (1.0 / (double) preconPlusSoftPrecon.size()));
 							}
 							amount = amount * module.getActivation() * (globalVariables.getPhi() / globalVariables.getGamma());
-							if (showActivationSpread)
-							{
-								System.out.println(this.getName() + " receives " + amount + " forwarded energy from " + module.getName() + " [which has A= " + module.getActivation() + " ]");
-							}
 
 						}
 						// ------------------------------------------------
@@ -1170,10 +975,6 @@ public abstract class Behavior extends Codelet
 							}// TODO  Eu nao deveria precisar fazer este teste!
 							double moduleActivation = module.getActivation();
 							double activationFromModule = (globalVariables.getDelta() / globalVariables.getGamma()) * numberOfConflicters * moduleActivation;
-							if (showActivationSpread)
-							{
-								System.out.println(this.getName() + " has " + amount + " of its energy decreased by " + module.getName() + " [which has A= " + module.getActivation() + " ]");
-							}
 						}
 						// ------------------------------------
 						activation = activation + amount;
@@ -1228,8 +1029,6 @@ public abstract class Behavior extends Codelet
 		if((A.isEmpty()||B.isEmpty())||(A==null||B==null)){
 			return intersection;
 		}
-		//		System.out.println(B);
-		//		System.out.println(B.get(0));
 		//Gives preference to returning PROPOSITIONs
 		if(A.get(0).getName().equalsIgnoreCase("PROPOSITION")){
 			currentList.addAll(B);
@@ -1251,7 +1050,7 @@ public abstract class Behavior extends Codelet
 			if (!removeByInfo(currentList,mo.getI()))
 				removeByInfo(intersection,mo.getI());
 		}
-		return intersection;
+                return intersection;
 	}
 
 	public boolean removeByInfo(ArrayList<Memory> moList, Object target){
@@ -1428,7 +1227,6 @@ public abstract class Behavior extends Codelet
 
 
 		this.jsonActionList.put(jsonAction);
-		//		System.out.println("---JSON ACTION: "+jsonAction);
 	}
 	/**
 	 * Clears this behavior's action list

@@ -46,6 +46,10 @@ public class TestBehaviorsWTA {
     Memory stateFoundFoodMO = createMemoryObject("stateFoundFoodMO", stateFoundFood);
     Memory stateExploringMO = createMemoryObject("stateExploringMO", stateExploring);
     
+    Memory worldStateHungryMO;
+    Memory worldStateFoundFoodMO;
+    Memory worldStateExploringMO;
+    
     @BeforeEach 
     public void setUp() {
         gv =  new GlobalVariables();
@@ -62,7 +66,6 @@ public class TestBehaviorsWTA {
         exploreCompetence = new MockBehavior(ws, gv);
         eatCompetence = new MockBehavior(ws, gv);
         forageFoodCompetence = new MockBehavior(ws, gv);
-        
     }
     
     
@@ -187,6 +190,42 @@ public class TestBehaviorsWTA {
         assertFalse(eatCompetence.isActive());
     }
     
+     @Test
+    public void testChosenBehaviorNotNull() {
+        kWTA.addBehavior(eatCompetence);
+        kWTA.addBehavior(forageFoodCompetence);
+        kWTA.addBehavior(exploreCompetence);
+        try {
+            worldStateHungryMO = createMemoryObject("WORLD_STATE", "anything");
+            forageFoodCompetence.addInput(worldStateHungryMO);
+            
+            eatCompetence.setExecutable(true);
+            forageFoodCompetence.setExecutable(true);
+            exploreCompetence.setExecutable(true);
+        
+            eatCompetence.setActivation(0.5);
+            forageFoodCompetence.setActivation(1.0);
+            exploreCompetence.setActivation(0.3);
+
+            kWTA.proc();
+            
+            assertEquals(forageFoodCompetence, kWTA.getChosenBehavior());
+            assertTrue(forageFoodCompetence.isActive());
+            assertFalse(eatCompetence.isActive());
+            assertFalse(exploreCompetence.isActive());
+            
+            worldStateHungryMO.setI("other thing");
+            forageFoodCompetence.proc();
+            
+            assertEquals(true, kWTA.getChosenBehavior().changedWorldBeliefState());
+            kWTA.proc();
+            
+            assertEquals(null, kWTA.getChosenBehavior());
+        } catch (CodeletActivationBoundsException ex) {
+            Logger.getLogger(TestBehaviorsWTA.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }
+    
     public void addMockWTABehavior() {
         kWTA.addBehavior(competence1);
         kWTA.addBehavior(competence2);
@@ -270,9 +309,9 @@ public class TestBehaviorsWTA {
     }
     
     public void defineWorldStateAndGoals(String stateHungrySimulation, String stateFoundFoodSimulation, String stateExploringSimulation) {
-        Memory worldStateHungryMO = createMemoryObject("WORLD_STATE", stateHungrySimulation);
-        Memory worldStateFoundFoodMO = createMemoryObject("WORLD_STATE", stateFoundFoodSimulation);
-        Memory worldStateExploringMO = createMemoryObject("WORLD_STATE", stateExploringSimulation);
+        worldStateHungryMO = createMemoryObject("WORLD_STATE", stateHungrySimulation);
+        worldStateFoundFoodMO = createMemoryObject("WORLD_STATE", stateFoundFoodSimulation);
+        worldStateExploringMO = createMemoryObject("WORLD_STATE", stateExploringSimulation);
         
         Memory goals1MO = createMemoryObject("PERMANENT_GOAL", stateNotHungry);
         Memory goals2MO = createMemoryObject("PERMANENT_GOAL", stateExploring);
