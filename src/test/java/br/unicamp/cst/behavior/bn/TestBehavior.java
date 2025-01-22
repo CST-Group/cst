@@ -44,7 +44,9 @@ public class TestBehavior {
     Memory stateHungryMO = createMemoryObject("stateHungryMO", stateHungry);
     Memory stateNotHungryMO = createMemoryObject("stateNOTHungryMO", stateNotHungry);
     Memory stateFoundFoodMO = createMemoryObject("stateFoundFoodMO", stateFoundFood);
-    Memory stateExploringMO = createMemoryObject("stateExploringMO", stateExploring);       
+    Memory stateExploringMO = createMemoryObject("stateExploringMO", stateExploring);     
+    
+    Memory testStateMO = createMemoryObject("anythingName", "AnyInfo");     
     
     private final PrintStream standardOut = System.out;
     private final ByteArrayOutputStream outputStreamCaptor = new ByteArrayOutputStream();
@@ -202,11 +204,9 @@ public class TestBehavior {
         assertEquals(0.0, activationTakenAway);
     }
     
-    
     @Test
-    public void testTakenAwayWithConflicters() {
-        
-        defineCompetenceLists();
+    public void testUpdateLinks() {
+        defineCompetenceLists(true);
         
         ArrayList<Behavior> listOfAllBehaviors=new ArrayList<>();
         listOfAllBehaviors.add(exploreCompetence);
@@ -233,8 +233,28 @@ public class TestBehavior {
         Hashtable<Behavior, ArrayList<Memory>> listOfConflicters  = new Hashtable<Behavior, ArrayList<Memory>>();
         
         ArrayList<Memory> intersectionConflicters = new ArrayList<Memory>();
-        intersectionConflicters.add(stateHungryMO);
+        intersectionConflicters.add(testStateMO);
+        
         listOfConflicters.put(forageFoodCompetence, intersectionConflicters);
+        
+        eatCompetence.proc();
+        assertEquals(listOfSuccessors, eatCompetence.getSuccessors());
+        assertEquals(listOfPredecessors, eatCompetence.getPredecessors());
+        assertEquals(listOfConflicters, eatCompetence.getConflicters());
+    }
+    
+    
+    @Test
+    public void testTakenAwayWithConflicters() {
+        
+        defineCompetenceLists(false);
+        
+        ArrayList<Behavior> listOfAllBehaviors=new ArrayList<>();
+        listOfAllBehaviors.add(exploreCompetence);
+        listOfAllBehaviors.add(eatCompetence);
+        listOfAllBehaviors.add(forageFoodCompetence);
+        
+        eatCompetence.setCoalition(listOfAllBehaviors);
         
         Memory goalMO = createMemoryObject("WORLD_STATE", stateHungry);
         
@@ -248,10 +268,6 @@ public class TestBehavior {
         
         double activationTakenAway = eatCompetence.takenAway();
         assertEquals(0.125, activationTakenAway);
-        assertEquals(listOfSuccessors, eatCompetence.getSuccessors());
-        assertEquals(listOfPredecessors, eatCompetence.getPredecessors());
-        assertEquals(listOfConflicters, eatCompetence.getConflicters());
-        
     }
     
     @Test 
@@ -312,7 +328,7 @@ public class TestBehavior {
     @Test 
     public void testSpreadActivationExploreSelected() {
         defineWorldStateAndGoals(stateNotHungry, stateNotFoundFood, stateNotExploring);
-        defineCompetenceLists();
+        defineCompetenceLists(false);
         addAllBehaviors();
         
         eatCompetence.proc();
@@ -339,7 +355,7 @@ public class TestBehavior {
     @Test 
     public void testSpreadActivationEatSelected() {
         defineWorldStateAndGoals(stateHungry, stateFoundFood, stateExploring);
-        defineCompetenceLists();
+        defineCompetenceLists(false);
         addAllBehaviors();
         
         eatCompetence.proc();
@@ -366,7 +382,7 @@ public class TestBehavior {
     @Test 
     public void testSpreadActivationForageFoodSelected() {
         defineWorldStateAndGoals(stateHungry, stateNotFoundFood, stateExploring);
-        defineCompetenceLists();
+        defineCompetenceLists(false);
         addAllBehaviors();
         
         eatCompetence.proc();
@@ -393,7 +409,7 @@ public class TestBehavior {
     //TODO: voltar neste aqui
     @Test 
     public void testSpreadFwForageFoodCompetence(){
-        defineCompetenceLists();
+        defineCompetenceLists(false);
         ArrayList<Behavior> listOfAllBehaviors=new ArrayList<>();
         listOfAllBehaviors.add(exploreCompetence);
         listOfAllBehaviors.add(eatCompetence);
@@ -412,7 +428,7 @@ public class TestBehavior {
     
     @Test 
     public void testSpreadBwExploreCompetence(){
-        defineCompetenceLists();
+        defineCompetenceLists(false);
         ArrayList<Behavior> listOfAllBehaviors=new ArrayList<>();
         listOfAllBehaviors.add(exploreCompetence);
         listOfAllBehaviors.add(eatCompetence);
@@ -434,7 +450,7 @@ public class TestBehavior {
         
         Memory goalProtectedMO = createMemoryObject("PROTECTED_GOAL", stateNotHungry);
         
-        defineCompetenceLists();
+        defineCompetenceLists(false);
         exploreCompetence.addInput(goalProtectedMO);
         
         ArrayList<Behavior> listOfAllBehaviors=new ArrayList<>();
@@ -577,12 +593,19 @@ public class TestBehavior {
     
     
     
-    public void defineCompetenceLists() {
+    public void defineCompetenceLists(Boolean includeSoftPrecon) {
         
         //Define HARD-PRE-CONDITIONS
         ArrayList<Memory> preconditionsListExplore = new ArrayList<>();
         preconditionsListExplore.add(stateNotHungryMO);
         exploreCompetence.setListOfPreconditions(preconditionsListExplore);
+        if (includeSoftPrecon) {
+            //Define SOFT-PRE-CONDITIONS
+            ArrayList<Memory> softPreconditionsListExplore = new ArrayList<>();
+            softPreconditionsListExplore.add(stateNotHungryMO);
+            exploreCompetence.setSoftPreconList(softPreconditionsListExplore);
+        }
+        
         
         //Define ADD-LIST
         ArrayList<Memory> addListExplore = new ArrayList<>();
@@ -595,12 +618,20 @@ public class TestBehavior {
         deleteListExplore.add(stateNotHungryMO);
         exploreCompetence.setDeleteList(deleteListExplore);
         
+        if (includeSoftPrecon) {
+            //Define SOFT-PRE-CONDITIONS
+            ArrayList<Memory> softPreconditionsListForage = new ArrayList<>();
+            softPreconditionsListForage.add(testStateMO);
+            forageFoodCompetence.setSoftPreconList(softPreconditionsListForage);
+        }
         
         //Define HARD-PRE-CONDITIONS
         ArrayList<Memory> preconditionsListForage = new ArrayList<>();
         preconditionsListForage.add(stateHungryMO);
         forageFoodCompetence.setListOfPreconditions(preconditionsListForage);
 
+        
+        
         //Define ADD-LIST
         ArrayList<Memory> addListForage = new ArrayList<>();
         addListForage.add(stateFoundFoodMO);
@@ -614,21 +645,29 @@ public class TestBehavior {
         //Define HARD-PRE-CONDITIONS
         ArrayList<Memory> preconditionsListEat = new ArrayList<>();
         preconditionsListEat.add(stateHungryMO);
-        preconditionsListEat.add(stateFoundFoodMO);
+        
+        if (includeSoftPrecon) {
+            //Define SOFT-PRE-CONDITIONS
+            ArrayList<Memory> softPreconditionsListEat = new ArrayList<>();
+            softPreconditionsListEat.add(stateFoundFoodMO);
+            eatCompetence.setSoftPreconList(softPreconditionsListEat);
+        } else {
+            preconditionsListEat.add(stateFoundFoodMO);
+        }
+        
         eatCompetence.setListOfPreconditions(preconditionsListEat);
-
-        //Define SOFT-PRE-CONDITIONS
-        ArrayList<Memory> softPreconditionsListEat = new ArrayList<>();
-        eatCompetence.setSoftPreconList(softPreconditionsListEat);
-
         //Define ADD-LIST
         ArrayList<Memory> addListEat = new ArrayList<>();
         addListEat.add(stateNotHungryMO);
         eatCompetence.setAddList(addListEat);
 
+        
         //Define DELETE-LIST
         ArrayList<Memory> deleteListEat = new ArrayList<>();
         deleteListEat.add(stateHungryMO);
+        if(includeSoftPrecon) {
+            deleteListEat.add(testStateMO);
+        }
         eatCompetence.setDeleteList(deleteListEat);
     }
     

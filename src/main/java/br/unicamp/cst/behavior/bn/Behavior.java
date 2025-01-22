@@ -138,14 +138,11 @@ public abstract class Behavior extends Codelet
 
 	}
 
-
 	/**
 	 * 
 	 * @return list of resources used by this behavior
 	 */
 	private ArrayList<String> getResourceList() {//TODO must develop this idea further
-
-
 		return this.resourceList;
 	}
 	/**
@@ -1212,7 +1209,7 @@ public abstract class Behavior extends Codelet
 		String[] actionDecomposition=action.split(" ");
 		JSONObject jsonAction=new JSONObject();
 		try {
-			if(!this.resourceList.contains(actionDecomposition[0])){
+			if(!this.getResourceList().contains(actionDecomposition[0])){
 				this.resourceList.add(actionDecomposition[0]); //Stores this resource in this behavior's resource list
 			}
 
