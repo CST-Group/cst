@@ -758,21 +758,28 @@ public abstract class Behavior extends Codelet
         }
         
         private double calculateActivationFromGoals(ArrayList<Behavior> tempCodelets, ArrayList<Memory> intersection, Goals goalType) {
+            double activation = 0;
+
             for (Memory j : intersection) {
-                double sharp = 0;
-                sharp = calculateSharp(tempCodelets, j, goalType);
-                ArrayList<Memory> BList = new ArrayList<>();
-                if (goalType.equals(ALL_GOALS)) {
-                    BList.addAll(this.getAddList());
-                } else {
-                    BList.addAll(this.getDeleteList());
-                }
-                if ((sharp > 0) && (BList.size() > 0)) {
-                    activation = activation + calculateEnergyGoalType(sharp, goalType, BList);
+                double sharp = calculateSharp(tempCodelets, j, goalType);
+                ArrayList<Memory> relevantList = getRelevantList(goalType);
+
+                if (sharp > 0 && !relevantList.isEmpty()) {
+                    activation += calculateEnergyGoalType(sharp, goalType, relevantList);
                 }
             }
+
             return activation;
         }
+
+        private ArrayList<Memory> getRelevantList(Goals goalType) {
+            if (goalType.equals(ALL_GOALS)) {
+                return new ArrayList<>(this.getAddList());
+            } else {
+                return new ArrayList<>(this.getDeleteList());
+            }
+        }
+
         
         private double calculateSharp(ArrayList<Behavior> tempCodelets, Memory j, Goals goalType) {
             double sharp = 0;
