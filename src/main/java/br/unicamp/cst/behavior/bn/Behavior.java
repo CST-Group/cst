@@ -724,42 +724,23 @@ public abstract class Behavior extends Codelet
 	 */
 	public double inputFromGoalsOfType(Goals goalType) {
             double activation = 0;
-            
             ArrayList<Behavior> tempCodelets = new ArrayList<>(); //TODO Should we get this input from the coalition or from the full set of codelets?
             ArrayList<Memory> AList = new ArrayList<>();
             ArrayList<Memory> BList = new ArrayList<>();
-            switch(goalType) {
-                case ALL_GOALS:
-                    tempCodelets.addAll(this.getAllBehaviors());
-                    AList.addAll(this.getGoals());
-                    BList.addAll(this.getAddList());
-                    break;
-                case PROTECTED_GOALS:
-                    tempCodelets.addAll(this.getCoalition());
-                    AList.addAll(this.getProtectedGoals());
-                    BList.addAll(this.getDeleteList());
-                    break;
-                default:
-                    break;
+            if(goalType.equals(ALL_GOALS)){
+                tempCodelets.addAll(this.getAllBehaviors());
+                AList.addAll(this.getGoals());
+                BList.addAll(this.getAddList());
+            } else {
+                tempCodelets.addAll(this.getCoalition());
+                AList.addAll(this.getProtectedGoals());
+                BList.addAll(this.getDeleteList());
             }
-            
             if (!tempCodelets.isEmpty()) {
                 ArrayList<Memory> intersection = getIntersectionSet(AList, BList);
                 for (Memory j : intersection) {
                     double sharp = 0;
-                    for (Behavior module : tempCodelets) {
-                        if (impendingAccess(module)) {
-                            try {
-                                if (listContainsMemory(getListToIterateGoalType(module, goalType), j)) {
-                                    sharp = sharp + 1;
-                                    break;
-                                }
-                            } finally {
-                                lock.unlock();
-                                module.lock.unlock();
-                            }
-                        }
-                    }
+                    sharp = calculateSharp(tempCodelets, j, goalType);
                     if ((sharp > 0) && (BList.size() > 0)) {
                         activation = activation + calculateEnergyGoalType(sharp, goalType, BList);
                     }
@@ -767,6 +748,24 @@ public abstract class Behavior extends Codelet
             }
             return activation;
 	}
+        
+        private double calculateSharp(ArrayList<Behavior> tempCodelets, Memory j, Goals goalType) {
+            double sharp = 0;
+            for (Behavior module : tempCodelets) {
+                if (impendingAccess(module)) {
+                    try {
+                        if (listContainsMemory(getListToIterateGoalType(module, goalType), j)) {
+                            sharp = sharp + 1;
+                            break;
+                        }
+                    } finally {
+                        lock.unlock();
+                        module.lock.unlock();
+                    }
+                }
+            }
+            return sharp;
+        }
         
         private Boolean listContainsMemory( ArrayList<Memory> listToIterate, Memory j) {
             for(Memory item : listToIterate) {
