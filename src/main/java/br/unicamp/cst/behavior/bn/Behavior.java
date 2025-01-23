@@ -762,16 +762,13 @@ public abstract class Behavior extends Codelet
         private Boolean shouldIncrementSharp(Behavior module, Memory j, Goals goalType) {
             if (impendingAccess(module)) {
                 try {
-                    lock.lock();
-                    module.lock.lock();
                     return listContainsMemory(getListToIterateGoalType(module, goalType), j);
                 } finally {
-                    module.lock.unlock(); // Always release module lock
-                    lock.unlock();        // Always release main lock
+                    module.lock.unlock();
+                    lock.unlock(); 
                 }
-            } else {
-                return false;
             }
+            return false;
         }
         
         private Boolean listContainsMemory(ArrayList<Memory> listToIterate, Memory j) {
@@ -1200,24 +1197,30 @@ public abstract class Behavior extends Codelet
 	/**
 	 * Returns the list of competences from coalition with the given proposition in their lists of type specified
 	 */
-	private double competencesWithPropInListOfType(Memory proposition, String listType) {
+	private double competencesWithPropInListOfType(Memory j, String listType) {
             double compWithProp = 0;
             ArrayList<Memory> listToIterate = new ArrayList<>();
-            for (Behavior comp : this.getCoalition()) {
-                if (impendingAccess(comp)) {
-                    try {
-                        listToIterate = getListToIterate(comp, listType);
-                        if (listContainsMemory(listToIterate, proposition)) {
-                            compWithProp = compWithProp + 1;
-                        }
-                    } finally {
-                            lock.unlock();
-                            comp.lock.unlock();
-                    }
+            ArrayList<Behavior> tempCodelets = this.getCoalition();
+            for (Behavior module : tempCodelets) {
+                if(shouldIncrementComp(module, j, listType)) {
+                    compWithProp++;
                 }
+                
             }
             return compWithProp;
 	}
+        
+        private Boolean shouldIncrementComp(Behavior module, Memory j, String listType) {
+            if (impendingAccess(module)) {
+                try {
+                    return listContainsMemory(getListToIterate(module, listType), j);
+                } finally {
+                    module.lock.unlock();
+                    lock.unlock();
+                }
+            }
+            return false;
+        }
         
         private ArrayList<Memory> getListToIterate(Behavior comp, String listType) {
             ArrayList<Memory> listToIterate = new ArrayList<>();
