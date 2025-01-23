@@ -197,5 +197,9 @@ public class GlobalVariables
         public enum Goals {
             ALL_GOALS, PROTECTED_GOALS
         }
+        
+        public enum ListType {
+            DELETE, ADD, PRECONDITION
+        }
 
 }
