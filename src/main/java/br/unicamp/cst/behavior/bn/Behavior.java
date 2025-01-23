@@ -793,9 +793,9 @@ public abstract class Behavior extends Codelet
         private ArrayList<Memory> getListToIterateGoalType(Behavior module, Goals goalType) {
             ArrayList<Memory> listToIterate = new ArrayList<>();
             if (goalType.equals(ALL_GOALS)) {
-                listToIterate.addAll(module.getAddList());
+                listToIterate.addAll(getListToIterate(module, "add"));
             } else {
-                listToIterate.addAll(module.getDeleteList());
+                listToIterate.addAll(getListToIterate(module, "delete"));
             }
             return listToIterate;
         }
@@ -1199,7 +1199,6 @@ public abstract class Behavior extends Codelet
 	 */
 	private double competencesWithPropInListOfType(Memory j, String listType) {
             double compWithProp = 0;
-            ArrayList<Memory> listToIterate = new ArrayList<>();
             ArrayList<Behavior> tempCodelets = this.getCoalition();
             for (Behavior module : tempCodelets) {
                 if(shouldIncrementComp(module, j, listType)) {
@@ -1222,18 +1221,18 @@ public abstract class Behavior extends Codelet
             return false;
         }
         
-        private ArrayList<Memory> getListToIterate(Behavior comp, String listType) {
+        private ArrayList<Memory> getListToIterate(Behavior module, String listType) {
             ArrayList<Memory> listToIterate = new ArrayList<>();
             switch(listType){
                 case "add":
-                    listToIterate = comp.getAddList();
+                    listToIterate = module.getAddList();
                     break;
                 case "delete":
-                    listToIterate = comp.getDeleteList();
+                    listToIterate = module.getDeleteList();
                     break;
                 case "preconditions":
-                    listToIterate.addAll(comp.getListOfPreconditions());
-                    listToIterate.addAll(comp.getSoftPreconList());
+                    listToIterate.addAll(module.getListOfPreconditions());
+                    listToIterate.addAll(module.getSoftPreconList());
                     break;
                 default:
                     break;
