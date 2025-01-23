@@ -767,7 +767,7 @@ public abstract class Behavior extends Codelet
             return sharp;
         }
         
-        private Boolean listContainsMemory( ArrayList<Memory> listToIterate, Memory j) {
+        private Boolean listContainsMemory(ArrayList<Memory> listToIterate, Memory j) {
             for(Memory item : listToIterate) {
                 if (item.getI().equals(j.getI())) {
                     return true;
@@ -1200,11 +1200,8 @@ public abstract class Behavior extends Codelet
                 if (impendingAccess(comp)) {
                     try {
                         listToIterate = getListToIterate(comp, listType);
-                        for(Memory item : listToIterate) {
-                            if (item.getI().equals(proposition.getI())) {
-                                compWithProp = compWithProp + 1;
-                                break;
-                            }
+                        if (listContainsMemory(listToIterate, proposition)) {
+                            compWithProp = compWithProp + 1;
                         }
                     } finally {
                             lock.unlock();
