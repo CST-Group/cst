@@ -106,7 +106,7 @@ public abstract class Behavior extends Codelet
 		} catch (CodeletActivationBoundsException e) 
 		{
 			e.printStackTrace();
-		}// Initial activation should be zero;
+		}
 		
 		this.setFirstTime(true);
 
@@ -208,7 +208,6 @@ public abstract class Behavior extends Codelet
 				{
 					if (competence != this)
 					{
-						//------
 						intersection = getIntersectionSet(this.getAddList(), competence.getListOfPreconditions()); 
 						if (!intersection.isEmpty())
 						{
@@ -220,7 +219,6 @@ public abstract class Behavior extends Codelet
 						{
 							this.successors.put(competence, intersection);
 						}
-						//------
 						intersection = getIntersectionSet(this.getListOfPreconditions(), competence.getAddList());
 						if (!intersection.isEmpty())
 						{
@@ -232,7 +230,6 @@ public abstract class Behavior extends Codelet
 						{
 							this.predecessors.put(competence, intersection);
 						}
-						//------
 						intersection = getIntersectionSet(competence.getListOfPreconditions(), this.getDeleteList()); // because we are looking for how this module messes up others preconditions, and thats why it must be inhibited by them
 						if (!intersection.isEmpty())
 						{
@@ -361,7 +358,6 @@ public abstract class Behavior extends Codelet
 
 			if (!this.isActive())
 			{
-				//						activation = activation + this.getValue(); //TODO Without normalization
 				activation=activation*(1-this.getActivation())/maxA+this.getActivation(); //With Normalization
 			}
 
@@ -576,7 +572,7 @@ public abstract class Behavior extends Codelet
 	public void setCoalition(ArrayList<Behavior> coalition)
 	{
 		this.coalition = coalition;
-		updateLinks(); // Isto soh deve ser feito quando a coalizao muda
+		updateLinks(); 
 	}
 
 	/**
@@ -646,7 +642,6 @@ public abstract class Behavior extends Codelet
 	public String getName()
 	{
 		return name;
-		// return Thread.currentThread().getId();
 	}
 
 	/**
@@ -694,16 +689,13 @@ public abstract class Behavior extends Codelet
 				}
 				// What if sharpM or listOfPreconditions.size == zero?
 				// sharpM could zero because j comes from the intersection of S and c, so if no preconditions from the module is found in world state, the intersection shall be zero
-				// synchronized(listOfPreconditions){
 				if ((sharpM > 0) && (THIS_softPrecon_and_ClassicPrecon.size() > 0))
 				{
 					double activationfromstate = globalVariables.getPhi() * (1 / sharpM) * (1 / (double) THIS_softPrecon_and_ClassicPrecon.size());
 					activation = activation + activationfromstate;
 				} 
-				// }//end synch
 			}
 		}
-		// }//coalitionIsBusy=false;
 		return activation;
 	}
 
@@ -878,12 +870,9 @@ public abstract class Behavior extends Codelet
 	 */
 	public double spreadFw()
 	{
-            // In this case x= other modules, y= this module
             double activation = 0;
-            // synchronized(this.predecessors){
             if (!this.getPredecessors().isEmpty()) {
                 Enumeration e = this.getPredecessors().keys();
-                // iterate through Hashtable keys Enumeration
                 while (e.hasMoreElements()) {
                     Behavior module = (Behavior) e.nextElement();
                     if (impendingAccess(module)) {
@@ -1026,7 +1015,6 @@ public abstract class Behavior extends Codelet
 			currentList.addAll(A);
 			intersection.addAll(B);
 		}else{
-			//			return null; //Should throw an exception?
 			currentList.addAll(A);
 			intersection.addAll(B);
 
@@ -1202,7 +1190,7 @@ public abstract class Behavior extends Codelet
 		JSONObject jsonAction=new JSONObject();
 		try {
 			if(!this.getResourceList().contains(actionDecomposition[0])){
-				this.resourceList.add(actionDecomposition[0]); //Stores this resource in this behavior's resource list
+				this.resourceList.add(actionDecomposition[0]); 
 			}
 
 			jsonAction.put("RESOURCE", actionDecomposition[0]);
