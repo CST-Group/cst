@@ -777,7 +777,7 @@ public abstract class Behavior extends Codelet
         }
         
         private double calculateEnergyGoalType(double sharp, Goals goalType, ArrayList<Memory> BList) {
-            double energy = 0.0;
+            double energy;
             if (goalType.equals(ALL_GOALS)) {
                 energy = globalVariables.getGamma() * ((1 / sharp) * (1 / (double) BList.size()));
             } else {
@@ -819,9 +819,12 @@ public abstract class Behavior extends Codelet
 
                                         intersection.addAll(getIntersectionSet(preconPlusSoftPrecon, this.getAddList()));
                                         intersection.removeAll(worldState);
+                                        double size = (double) this.getAddList().size();
                                         for (Memory item : intersection)
                                         {
-                                            calculateAmount((double) this.getAddList().size(), this.competencesWithPropInListOfType(item, "add"));
+                                            double comp = this.competencesWithPropInListOfType(item, "add");
+                                            
+                                            calculateAmount(size, comp);
                                         }
                                         amount = amount * module.getActivation() * (globalVariables.getPhi() / globalVariables.getGamma());
                                 }
@@ -866,9 +869,11 @@ public abstract class Behavior extends Codelet
                                 preconPlusSoftPrecon.addAll(this.getSoftPreconList());
                                 intersection.addAll(getIntersectionSet(module.getAddList(), preconPlusSoftPrecon));
                                 intersection.removeAll(worldState);
+                                double size = (double) preconPlusSoftPrecon.size();
                                 for (Memory item : intersection)
                                 {
-                                    amount = amount + calculateAmount((double) preconPlusSoftPrecon.size(), this.competencesWithPropInListOfType(item, "preconditions"));
+                                    double comp = this.competencesWithPropInListOfType(item, "preconditions");
+                                    amount = amount + calculateAmount(size, comp);
                                 }
                                 amount = amount * module.getActivation() * (globalVariables.getPhi() / globalVariables.getGamma());
 
