@@ -934,11 +934,9 @@ public abstract class Behavior extends Codelet
 							intersection = getIntersectionSet(intersection, worldState);
 							for (Memory item : intersection)
 							{
-								amount = amount + ((1.0 / this.competencesWithPropInListOfType(item, "delete")) * (1.0 / (double) this.getDeleteList().size()));
-							}
-							// amount = (b1.activation[0] *
-							// (self.conf_energy / self.goal_energy) *
-							// amount)
+                                                                amount = amount + calculateAmount((double) this.getDeleteList().size(), this.competencesWithPropInListOfType(item, "delete"));
+                                                        }
+                                                        
 							amount = module.getActivation() * (globalVariables.getDelta() / globalVariables.getGamma()) * amount;
 							ArrayList<Memory> modulos = this.getConflicters().get(module);
 							double numberOfConflicters = 0;
