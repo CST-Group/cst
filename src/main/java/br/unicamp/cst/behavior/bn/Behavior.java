@@ -752,19 +752,26 @@ public abstract class Behavior extends Codelet
         private double calculateSharp(ArrayList<Behavior> tempCodelets, Memory j, Goals goalType) {
             double sharp = 0;
             for (Behavior module : tempCodelets) {
-                if (impendingAccess(module)) {
-                    try {
-                        if (listContainsMemory(getListToIterateGoalType(module, goalType), j)) {
-                            sharp = sharp + 1;
-                            break;
-                        }
-                    } finally {
-                        lock.unlock();
-                        module.lock.unlock();
-                    }
+                if(shouldIncrementSharp(module, j, goalType)) {
+                    sharp++;
                 }
             }
             return sharp;
+        }
+        
+        private Boolean shouldIncrementSharp(Behavior module, Memory j, Goals goalType) {
+            if (impendingAccess(module)) {
+                try {
+                    lock.lock();
+                    module.lock.lock();
+                    return listContainsMemory(getListToIterateGoalType(module, goalType), j);
+                } finally {
+                    module.lock.unlock(); // Always release module lock
+                    lock.unlock();        // Always release main lock
+                }
+            } else {
+                return false;
+            }
         }
         
         private Boolean listContainsMemory(ArrayList<Memory> listToIterate, Memory j) {
