@@ -722,14 +722,12 @@ public abstract class Behavior extends Codelet
          * @param goalType the type of goals selected to be calculated in the activation
 	 * @return the amount of activation to be removed by the goals selected
 	 */
-	public double inputFromGoalsOfType(Goals goalType)
-	{
+	public double inputFromGoalsOfType(Goals goalType) {
             double activation = 0;
             
             ArrayList<Behavior> tempCodelets = new ArrayList<>(); //TODO Should we get this input from the coalition or from the full set of codelets?
             ArrayList<Memory> AList = new ArrayList<>();
             ArrayList<Memory> BList = new ArrayList<>();
-            ArrayList<Memory> listToIterate = new ArrayList<>();
             switch(goalType) {
                 case ALL_GOALS:
                     tempCodelets.addAll(this.getAllBehaviors());
@@ -742,100 +740,62 @@ public abstract class Behavior extends Codelet
                     BList.addAll(this.getDeleteList());
                     break;
                 default:
-                    System.out.println("Not valid option of goalType");
                     break;
             }
             
-            if (!tempCodelets.isEmpty())
-            {
+            if (!tempCodelets.isEmpty()) {
                 ArrayList<Memory> intersection = getIntersectionSet(AList, BList);
-                for (Memory j : intersection)
-                {
+                for (Memory j : intersection) {
                     double sharp = 0;
-                    for (Behavior module : tempCodelets)
-                    {
-                        if (impendingAccess(module))
-                        {
-                            try
-                            {
-                                if (goalType.equals(ALL_GOALS)) {
-                                    listToIterate.addAll(module.getAddList());
-                                } else {
-                                    listToIterate.addAll(module.getDeleteList());
-                                }
-                                
-                                for(Memory item : listToIterate) {
-                                    if (item.getI().equals(j.getI()))
-                                    {
-                                        sharp = sharp + 1;
+                    for (Behavior module : tempCodelets) {
+                        if (impendingAccess(module)) {
+                            try {
+                                if (listContainsMemory(getListToIterateGoalType(module, goalType), j)) {
+                                    sharp = sharp + 1;
                                         break;
-                                    }
                                 }
-                                listToIterate.clear();
-                            } finally
-                            {
+                            } finally {
                                 lock.unlock();
                                 module.lock.unlock();
                             }
                         }
                     }
-                    if ((sharp > 0) && (BList.size() > 0))
-                    {
-                        double energy ;
-                        if (goalType.equals(ALL_GOALS)) {
-                            energy = globalVariables.getGamma() * ((1 / sharp) * (1 / (double) BList.size()));
-                        } else {
-                            energy = (1 / sharp) * (1 / (double) BList.size()) * globalVariables.getDelta();
-                        }
-                        
-                        activation = activation + energy;
+                    if ((sharp > 0) && (BList.size() > 0)) {
+                        activation = activation + calculateEnergyGoalType(sharp, goalType, BList);
                     }
                 }
             }
             return activation;
 	}
         
-        public double takenAwayByProtectedGoals()
-	{
-		double activation = 0;
-		// synchronized(this.coalition){
-		if (!this.getCoalition().isEmpty())
-		{
-			ArrayList<Memory> intersection = getIntersectionSet(this.getProtectedGoals(), this.getDeleteList());
-			for (Memory j : intersection)
-			{
-				double sharpU = 0;
-				for (Behavior module : this.getCoalition())
-				{
-					if (impendingAccess(module))
-					{
-						try
-						{
-							if (module.getDeleteList().contains(j))
-							{
-								sharpU = sharpU + 1;
-							}
-						} finally
-						{
-							lock.unlock();
-							module.lock.unlock();
-						}
-					}
-				}
-				// synchronized(this.deleteList){
-				if ((sharpU > 0) && (this.getDeleteList().size() > 0))
-				{
-					double takenEnergy = (1 / sharpU) * (1 / (double) this.getDeleteList().size()) * globalVariables.getDelta();
-			
-					activation = activation + takenEnergy;
-				} 
-				// }//end synch
-			}
-		}
-		// }//end synch
-		return activation;
-	}
+        private Boolean listContainsMemory( ArrayList<Memory> listToIterate, Memory j) {
+            for(Memory item : listToIterate) {
+                if (item.getI().equals(j.getI())) {
+                    return true;
+                }
+            }
+            return false;
+        }
         
+        private double calculateEnergyGoalType(double sharp, Goals goalType, ArrayList<Memory> BList) {
+            double energy = 0.0;
+            if (goalType.equals(ALL_GOALS)) {
+                energy = globalVariables.getGamma() * ((1 / sharp) * (1 / (double) BList.size()));
+            } else {
+                energy = (1 / sharp) * (1 / (double) BList.size()) * globalVariables.getDelta();
+            }
+            return energy;
+        }
+        
+        private ArrayList<Memory> getListToIterateGoalType(Behavior module, Goals goalType) {
+            ArrayList<Memory> listToIterate = new ArrayList<>();
+            if (goalType.equals(ALL_GOALS)) {
+                listToIterate.addAll(module.getAddList());
+            } else {
+                listToIterate.addAll(module.getDeleteList());
+            }
+            return listToIterate;
+        }
 
 	/**
 	 * @return the amount of activation that is spread backwards from other modules in the direction of this module
@@ -1268,38 +1228,20 @@ public abstract class Behavior extends Codelet
 	/**
 	 * Returns the list of competences from coalition with the given proposition in their lists of type specified
 	 */
-	private double competencesWithPropInListOfType(Memory proposition, String listType)
-	{
+	private double competencesWithPropInListOfType(Memory proposition, String listType) {
             double compWithProp = 0;
             ArrayList<Memory> listToIterate = new ArrayList<>();
-            for (Behavior comp : this.getCoalition())
-            {
-                if (impendingAccess(comp))
-                {
-                    try
-                    {
-                        switch(listType){
-                            case "add":
-                                listToIterate = comp.getAddList();
-                                break;
-                            case "delete":
-                                listToIterate = comp.getDeleteList();
-                                break;
-                            case "preconditions":
-                                listToIterate.addAll(comp.getListOfPreconditions());
-                                listToIterate.addAll(comp.getSoftPreconList());
-                                break;
-                        }
-
+            for (Behavior comp : this.getCoalition()) {
+                if (impendingAccess(comp)) {
+                    try {
+                        listToIterate = getListToIterate(comp, listType);
                         for(Memory item : listToIterate) {
-                            if (item.getI().equals(proposition.getI()))
-                            {
+                            if (item.getI().equals(proposition.getI())) {
                                 compWithProp = compWithProp + 1;
                                 break;
                             }
                         }
-                    } finally
-                    {
+                    } finally {
                             lock.unlock();
                             comp.lock.unlock();
                     }
@@ -1307,6 +1249,26 @@ public abstract class Behavior extends Codelet
             }
             return compWithProp;
 	}
+        
+        private ArrayList<Memory> getListToIterate(Behavior comp, String listType) {
+            ArrayList<Memory> listToIterate = new ArrayList<>();
+            switch(listType){
+                case "add":
+                    listToIterate = comp.getAddList();
+                    break;
+                case "delete":
+                    listToIterate = comp.getDeleteList();
+                    break;
+                case "preconditions":
+                    listToIterate.addAll(comp.getListOfPreconditions());
+                    listToIterate.addAll(comp.getSoftPreconList());
+                    break;
+                default:
+                    break;
+            }
+            
+            return listToIterate;
+        }
 
 	/**
 	 * Sets the list of actions constituting this behavior
@@ -1396,6 +1358,8 @@ public abstract class Behavior extends Codelet
         public double getActivationWhenActive(){
             return activationWhenActive;
         }
+
+
         
         
 }
