@@ -752,7 +752,7 @@ public abstract class Behavior extends Codelet
                             try {
                                 if (listContainsMemory(getListToIterateGoalType(module, goalType), j)) {
                                     sharp = sharp + 1;
-                                        break;
+                                    break;
                                 }
                             } finally {
                                 lock.unlock();
@@ -802,51 +802,38 @@ public abstract class Behavior extends Codelet
 	 * 
 	 *         Note: this approach is slightly different from the one proposed at the article by [Maes 1989] since here we try to avoid meddling with another codelet's states.
 	 */
-	public double spreadBw()
-	{
-		
-		// In this case x= other modules, y= this module
-		double activation = 0;
-		// synchronized(this.successors){
-		if (!this.getSuccessors().isEmpty())
-		{
-			Enumeration e = this.getSuccessors().keys();
-			// iterate through Hashtable keys Enumeration
-			while (e.hasMoreElements())
-			{
-				Behavior module = (Behavior) e.nextElement();
-				if (impendingAccess(module))
-				{
-					try
-					{
-						double amount = 0;
-						if (!module.isExecutable())
-						{// A competence module x that is not executable spreads activation backward.
+	public double spreadBw() {
+            double activation = 0;
+		if (!this.getSuccessors().isEmpty()) {
+                    Enumeration e = this.getSuccessors().keys();
+                    while (e.hasMoreElements()) {
+                        Behavior module = (Behavior) e.nextElement();
+                        if (impendingAccess(module)){
+                            try{
+                                double amount = 0;
+                                if (!module.isExecutable()) {// A competence module x that is not executable spreads activation backward.
 
-							ArrayList<Memory> intersection = new ArrayList<Memory>();
-							ArrayList<Memory> preconPlusSoftPrecon=new ArrayList<Memory>();
+                                        ArrayList<Memory> intersection = new ArrayList<>();
+                                        ArrayList<Memory> preconPlusSoftPrecon=new ArrayList<>();
 
-							preconPlusSoftPrecon.addAll(module.getListOfPreconditions());
+                                        preconPlusSoftPrecon.addAll(module.getListOfPreconditions());
 
-							intersection.addAll(getIntersectionSet(preconPlusSoftPrecon, this.getAddList()));
-							intersection.removeAll(worldState);
-							for (Memory item : intersection)
-							{
-								amount = amount + ((1.0 / this.competencesWithPropInListOfType(item, "add")) * (1.0 / (double) this.getAddList().size()));
-							}
-							amount = amount * module.getActivation() * (globalVariables.getPhi() / globalVariables.getGamma());
-					
-
-						}
-						// --------------------------
-						activation = activation + amount;
-					} finally
-					{
-						lock.unlock();
-						module.lock.unlock();
-					}
-				}
-			}
+                                        intersection.addAll(getIntersectionSet(preconPlusSoftPrecon, this.getAddList()));
+                                        intersection.removeAll(worldState);
+                                        for (Memory item : intersection)
+                                        {
+                                            calculateAmount((double) this.getAddList().size(), this.competencesWithPropInListOfType(item, "add"));
+                                        }
+                                        amount = amount * module.getActivation() * (globalVariables.getPhi() / globalVariables.getGamma());
+                                }
+                                activation = activation + amount;
+                            } finally
+                            {
+                                lock.unlock();
+                                module.lock.unlock();
+                            }
+                        }
+                    }
 		}
 
 		return activation;
@@ -859,53 +846,52 @@ public abstract class Behavior extends Codelet
 	 */
 	public double spreadFw()
 	{
-		// In this case x= other modules, y= this module
-		double activation = 0;
-		// synchronized(this.predecessors){
-		if (!this.getPredecessors().isEmpty())
-		{
-			Enumeration e = this.getPredecessors().keys();
-			// iterate through Hashtable keys Enumeration
-			while (e.hasMoreElements())
-			{
-				Behavior module = (Behavior) e.nextElement();
-				if (impendingAccess(module))
-				{
-					try
-					{
-						double amount = 0;
-						if (module.isExecutable())
-						{// An executable competence module x spreads activation forward.
-							ArrayList<Memory> intersection = new ArrayList<Memory>();
+            // In this case x= other modules, y= this module
+            double activation = 0;
+            // synchronized(this.predecessors){
+            if (!this.getPredecessors().isEmpty()) {
+                Enumeration e = this.getPredecessors().keys();
+                // iterate through Hashtable keys Enumeration
+                while (e.hasMoreElements()) {
+                    Behavior module = (Behavior) e.nextElement();
+                    if (impendingAccess(module)) {
+                        try {
+                            double amount = 0;
+                            if (module.isExecutable())
+                            {// An executable competence module x spreads activation forward.
+                                ArrayList<Memory> intersection = new ArrayList<Memory>();
 
-							ArrayList<Memory> preconPlusSoftPrecon=new ArrayList<Memory>();
+                                ArrayList<Memory> preconPlusSoftPrecon=new ArrayList<Memory>();
 
-							preconPlusSoftPrecon.addAll(this.getListOfPreconditions());
-							preconPlusSoftPrecon.addAll(this.getSoftPreconList());
+                                preconPlusSoftPrecon.addAll(this.getListOfPreconditions());
+                                preconPlusSoftPrecon.addAll(this.getSoftPreconList());
+                                intersection.addAll(getIntersectionSet(module.getAddList(), preconPlusSoftPrecon));
+                                intersection.removeAll(worldState);
+                                for (Memory item : intersection)
+                                {
+                                    amount = amount + calculateAmount((double) preconPlusSoftPrecon.size(), this.competencesWithPropInListOfType(item, "preconditions"));
+                                }
+                                amount = amount * module.getActivation() * (globalVariables.getPhi() / globalVariables.getGamma());
 
-
-							intersection.addAll(getIntersectionSet(module.getAddList(), preconPlusSoftPrecon));
-							intersection.removeAll(worldState);
-							for (Memory item : intersection)
-							{
-								amount = amount + ((1.0 / this.competencesWithPropInListOfType(item, "preconditions")) * (1.0 / (double) preconPlusSoftPrecon.size()));
-							}
-							amount = amount * module.getActivation() * (globalVariables.getPhi() / globalVariables.getGamma());
-
-						}
-						// ------------------------------------------------
-						activation = activation + amount;
-					} finally
-					{
-						lock.unlock();
-						module.lock.unlock();
-					}
-				}
-			}
-		}
-		// }//end synch
-		return activation;
+                            }
+                            activation = activation + amount;
+                        } finally {
+                            lock.unlock();
+                            module.lock.unlock();
+                        }
+                    }
+                }
+            }
+            return activation;
 	}
+        
+        private double calculateAmount(double size, double competencesWithPropInListOfType) {
+            double amount = 0;
+            if(size!=0  && competencesWithPropInListOfType != 0) {
+                amount = ((1.0 / competencesWithPropInListOfType) * (1.0 / size));
+            }
+            return amount;
+        }
 
 	/**
 	 * @return the amount of activation that is taken away from this module by other modules through conflict links
