@@ -820,12 +820,7 @@ public abstract class Behavior extends Codelet
                                         intersection.addAll(getIntersectionSet(preconPlusSoftPrecon, this.getAddList()));
                                         intersection.removeAll(worldState);
                                         double size = (double) this.getAddList().size();
-                                        for (Memory item : intersection)
-                                        {
-                                            double comp = this.competencesWithPropInListOfType(item, "add");
-                                            amount = amount + calculateAmount(size, comp);
-                                        }
-                                        amount = amount * module.getActivation() * (globalVariables.getPhi() / globalVariables.getGamma());
+                                        amount = calculateAmountOfType(size, intersection, "add", module);
                                 }
                                 activation = activation + amount;
                             } finally
@@ -869,12 +864,7 @@ public abstract class Behavior extends Codelet
                                 intersection.addAll(getIntersectionSet(module.getAddList(), preconPlusSoftPrecon));
                                 intersection.removeAll(worldState);
                                 double size = (double) preconPlusSoftPrecon.size();
-                                for (Memory item : intersection)
-                                {
-                                    double comp = this.competencesWithPropInListOfType(item, "preconditions");
-                                    amount = amount + calculateAmount(size, comp);
-                                }
-                                amount = amount * module.getActivation() * (globalVariables.getPhi() / globalVariables.getGamma());
+                                amount = calculateAmountOfType(size, intersection, "preconditions", module);
 
                             }
                             activation = activation + amount;
@@ -910,9 +900,9 @@ public abstract class Behavior extends Codelet
                     if (impendingAccess(module)) {
                         try {
                             double amount = 0;
-                            ArrayList<Memory> intersection = new ArrayList<Memory>();
+                            ArrayList<Memory> intersection = new ArrayList<>();
 
-                            ArrayList<Memory> preconPlusSoftPrecon=new ArrayList<Memory>();						
+                            ArrayList<Memory> preconPlusSoftPrecon=new ArrayList<>();						
                             preconPlusSoftPrecon.addAll(this.getListOfPreconditions());
                             preconPlusSoftPrecon.addAll(this.getSoftPreconList());
 
@@ -927,19 +917,7 @@ public abstract class Behavior extends Codelet
                                 intersection = getIntersectionSet(this.getDeleteList(), preconPlusSoftPrecon);
                                 intersection = getIntersectionSet(intersection, worldState);
                                 double size = (double) this.getDeleteList().size();
-                                for (Memory item : intersection) {
-                                    double comp = this.competencesWithPropInListOfType(item, "delete");
-                                    amount = amount + calculateAmount(size, comp);
-                                }
-
-                                amount = module.getActivation() * (globalVariables.getDelta() / globalVariables.getGamma()) * amount;
-                                ArrayList<Memory> modulos = this.getConflicters().get(module);
-                                double numberOfConflicters = 0;
-                                if (modulos != null) {
-                                        numberOfConflicters = (double) modulos.size();
-                                }// TODO  Eu nao deveria precisar fazer este teste!
-                                double moduleActivation = module.getActivation();
-                                double activationFromModule = (globalVariables.getDelta() / globalVariables.getGamma()) * numberOfConflicters * moduleActivation;
+                                amount = calculateAmountOfType(size, intersection, "delete", module);
                             }
                             activation = activation + amount;
                         } finally {
@@ -952,6 +930,18 @@ public abstract class Behavior extends Codelet
 
             return activation;
 	}
+        
+        private double calculateAmountOfType(double size, ArrayList<Memory> intersection, String listType, Behavior module) {
+            double amount = 0;
+            
+            for (Memory item : intersection) {
+                double comp = this.competencesWithPropInListOfType(item, listType);
+                amount = amount + calculateAmount(size, comp);
+            }
+
+            amount = module.getActivation() * (globalVariables.getDelta() / globalVariables.getGamma()) * amount;
+            return amount;
+        }
 
 	/**
 	 * 
