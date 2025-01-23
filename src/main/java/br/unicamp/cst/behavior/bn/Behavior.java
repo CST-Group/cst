@@ -823,8 +823,7 @@ public abstract class Behavior extends Codelet
                                         for (Memory item : intersection)
                                         {
                                             double comp = this.competencesWithPropInListOfType(item, "add");
-                                            
-                                            calculateAmount(size, comp);
+                                            amount = amount + calculateAmount(size, comp);
                                         }
                                         amount = amount * module.getActivation() * (globalVariables.getPhi() / globalVariables.getGamma());
                                 }
@@ -902,68 +901,56 @@ public abstract class Behavior extends Codelet
 	 * 
 	 *         Note: this approach is slightly different from the one proposed at the article by [Maes 1989] since here we try to avoid meddling with another codelet's states. Note: I am not using the "max" strategy described by maes
 	 */
-	public double takenAway()
-	{
-		// In this case x= other modules, y= this module
-		double activation = 0;
-		// synchronized(this.conflicters){
-		if (!this.getConflicters().isEmpty())
-		{
-			Enumeration e = this.getConflicters().keys();
-			// iterate through Hashtable keys Enumeration
-			while (e.hasMoreElements())
-			{
-				Behavior module = (Behavior) e.nextElement();
-				if (impendingAccess(module))
-				{
-					try
-					{
-						// ---------------------------------
-						double amount = 0;
-						ArrayList<Memory> intersection = new ArrayList<Memory>();
+	public double takenAway() {
+            double activation = 0;
+            if (!this.getConflicters().isEmpty()) {
+                Enumeration e = this.getConflicters().keys();
+                while (e.hasMoreElements()) {
+                    Behavior module = (Behavior) e.nextElement();
+                    if (impendingAccess(module)) {
+                        try {
+                            double amount = 0;
+                            ArrayList<Memory> intersection = new ArrayList<Memory>();
 
-						ArrayList<Memory> preconPlusSoftPrecon=new ArrayList<Memory>();						
-						preconPlusSoftPrecon.addAll(this.getListOfPreconditions());
-						preconPlusSoftPrecon.addAll(this.getSoftPreconList());
+                            ArrayList<Memory> preconPlusSoftPrecon=new ArrayList<Memory>();						
+                            preconPlusSoftPrecon.addAll(this.getListOfPreconditions());
+                            preconPlusSoftPrecon.addAll(this.getSoftPreconList());
 
-						intersection=getIntersectionSet(preconPlusSoftPrecon, module.getDeleteList());
-						intersection=getIntersectionSet(intersection, worldState);
+                            intersection=getIntersectionSet(preconPlusSoftPrecon, module.getDeleteList());
+                            intersection=getIntersectionSet(intersection, worldState);
 
-						if (!((module.getActivation() < this.getActivation()) && (!intersection.isEmpty())))
-						{ // this is the else case due to !
-							preconPlusSoftPrecon=new ArrayList<Memory>();						
-							preconPlusSoftPrecon.addAll(module.getListOfPreconditions());
-							preconPlusSoftPrecon.addAll(module.getSoftPreconList());
+                            if (!((module.getActivation() < this.getActivation()) && (!intersection.isEmpty()))) { // this is the else case due to !
+                                preconPlusSoftPrecon=new ArrayList<Memory>();						
+                                preconPlusSoftPrecon.addAll(module.getListOfPreconditions());
+                                preconPlusSoftPrecon.addAll(module.getSoftPreconList());
 
-							intersection = getIntersectionSet(this.getDeleteList(), preconPlusSoftPrecon);
-							intersection = getIntersectionSet(intersection, worldState);
-							for (Memory item : intersection)
-							{
-                                                                amount = amount + calculateAmount((double) this.getDeleteList().size(), this.competencesWithPropInListOfType(item, "delete"));
-                                                        }
-                                                        
-							amount = module.getActivation() * (globalVariables.getDelta() / globalVariables.getGamma()) * amount;
-							ArrayList<Memory> modulos = this.getConflicters().get(module);
-							double numberOfConflicters = 0;
-							if (modulos != null)
-							{
-								numberOfConflicters = (double) modulos.size();
-							}// TODO  Eu nao deveria precisar fazer este teste!
-							double moduleActivation = module.getActivation();
-							double activationFromModule = (globalVariables.getDelta() / globalVariables.getGamma()) * numberOfConflicters * moduleActivation;
-						}
-						// ------------------------------------
-						activation = activation + amount;
-					} finally
-					{
-						lock.unlock();
-						module.lock.unlock();
-					}
-				}
-			}
-		}
+                                intersection = getIntersectionSet(this.getDeleteList(), preconPlusSoftPrecon);
+                                intersection = getIntersectionSet(intersection, worldState);
+                                double size = (double) this.getDeleteList().size();
+                                for (Memory item : intersection) {
+                                    double comp = this.competencesWithPropInListOfType(item, "delete");
+                                    amount = amount + calculateAmount(size, comp);
+                                }
 
-		return activation;
+                                amount = module.getActivation() * (globalVariables.getDelta() / globalVariables.getGamma()) * amount;
+                                ArrayList<Memory> modulos = this.getConflicters().get(module);
+                                double numberOfConflicters = 0;
+                                if (modulos != null) {
+                                        numberOfConflicters = (double) modulos.size();
+                                }// TODO  Eu nao deveria precisar fazer este teste!
+                                double moduleActivation = module.getActivation();
+                                double activationFromModule = (globalVariables.getDelta() / globalVariables.getGamma()) * numberOfConflicters * moduleActivation;
+                            }
+                            activation = activation + amount;
+                        } finally {
+                                lock.unlock();
+                                module.lock.unlock();
+                        }
+                    }
+                }
+            }
+
+            return activation;
 	}
 
 	/**
