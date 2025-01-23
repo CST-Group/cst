@@ -1011,9 +1011,6 @@ public abstract class Behavior extends Codelet
 		if(A.get(0).getName().equalsIgnoreCase("PROPOSITION")){
 			currentList.addAll(B);
 			intersection.addAll(A);	
-		}else if((B.get(0).getName().equalsIgnoreCase("PROPOSITION"))){ 
-			currentList.addAll(A);
-			intersection.addAll(B);
 		}else{
 			currentList.addAll(A);
 			intersection.addAll(B);
