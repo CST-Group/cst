@@ -18,9 +18,10 @@ import br.unicamp.cst.core.exceptions.CodeletActivationBoundsException;
 
 /**
  * 
- * Following Hofstadter and Mitchell
- * "The copycat project: A model of mental fluidity and analogy-making". Pool of
- * all alive codelets in the system. The whole arena in the Baars-Franklin
+ * Pool of all alive codelets in the system.
+ * 
+ * Inspired in Hofstadter and Mitchell
+ * "The copycat project: A model of mental fluidity and analogy-making".  The whole arena in the Baars-Franklin
  * metaphor.
  * 
  * @author A. L. O. Paraense
@@ -70,10 +71,12 @@ public class CodeRack {
 	}
 
 	/**
-	 * Creates a codelet and adds it to this coderack.
+	 * Insert a codelet to the CodeRack.
+	 * 
+	 * Same as addCodelet.
 	 * 
 	 * @param co
-	 *            codelet to be created.
+	 *            codelet to be inserted.
 	 * @return the own codelet inserted, if it is needed to concatenate to
 	 *         further methods calls.
 	 */
@@ -127,7 +130,7 @@ public class CodeRack {
 	}
 
 	/**
-	 * Destroys all codelets. Stops CodeRack's thread.
+	 * Destroys all codelets. Stops the codelet threads.
 	 */
 	public void shutDown() {
 		for (Codelet co : this.getAllCodelets()) {

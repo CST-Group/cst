@@ -106,7 +106,7 @@ public class MemoryBuffer {
 
 		if (memoryObjects.size() == maxCapacity) {
 			if (rawMemory != null)
-				rawMemory.destroyMemoryObject(memoryObjects.get(0));// Gets rid
+				rawMemory.destroyMemory(memoryObjects.get(0));// Gets rid
 																	// of older
 																	// content
 																	// and
@@ -205,7 +205,7 @@ public class MemoryBuffer {
 	 */
 	public synchronized boolean remove(MemoryObject mo) {
 		if (rawMemory != null)
-			rawMemory.destroyMemoryObject(mo);// removes this mo form RawMemory
+			rawMemory.destroyMemory(mo);// removes this mo form RawMemory
 
 		return memoryObjects.remove(mo);// removes this mo from this buffer;
 
@@ -217,7 +217,7 @@ public class MemoryBuffer {
 	public synchronized void clear() {
 		if (rawMemory != null)
 			for (int i = 0; i < memoryObjects.size(); i++) {
-				rawMemory.destroyMemoryObject(memoryObjects.get(i));
+				rawMemory.destroyMemory(memoryObjects.get(i));
 			}
 		memoryObjects.clear();
 	}

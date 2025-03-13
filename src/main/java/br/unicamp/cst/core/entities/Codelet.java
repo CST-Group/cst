@@ -528,7 +528,7 @@ public abstract class Codelet implements Runnable, MemoryObserver {
 	 * 
 	 * @param name
 	 *            the name of a memory to be retrieved at the broadcast list.
-	 * @return the list of memories in the broadcast list.
+	 * @return the memory in the broadcast list.
 	 */
 	public synchronized Memory getBroadcast(String name) {
 		if (broadcast != null && broadcast.size() > 0)

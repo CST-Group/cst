@@ -198,30 +198,30 @@ public class CodeletTest {
     public void getOutputEnableFalseTest(){
         boolean exceptionThrown = false;
         Codelet testCodelet = null;
-        try {
         testCodelet = generateCodelet();
+        testCodelet.setTimeStep(50);
         testCodelet.setName("thisCodeletWillFail");
         List<Memory> dummyOutputs = Arrays.asList(new MemoryObject(), new MemoryObject());
         testCodelet.setOutputs(dummyOutputs);
-        
-        
-            testCodelet.getOutput("testType", 3); // This line will raise an exception
+    
+    
+        Memory output = testCodelet.getOutput("testType", 3); 
+        assertNull(output);
 
-            Mind mind = new Mind();
-            mind.insertCodelet(testCodelet);
-            mind.start();
-            //
-                Thread.sleep(1000);
-//            } catch (Exception e) {
-//                e.printStackTrace();
-//            }
-            mind.shutDown();
-        } catch (Exception e) {
-            // why this exception is not being thrown ? 
-            System.out.println("Passei aqui");
-            exceptionThrown = true;
+        Mind mind = new Mind();
+        mind.insertCodelet(testCodelet);
+        mind.start();
+        try{
+            Thread.sleep(100);
         }
-        //assertTrue(exceptionThrown);   If I uncomment this line, the test fails ... for some reason the exception is not being caught
+        catch (InterruptedException e)
+        {
+
+        }
+        
+
+        mind.shutDown();
+
         assertFalse(testCodelet.getEnabled());
         testCodelet.setEnabled(true);
         assertTrue(testCodelet.getEnabled());
@@ -369,6 +369,7 @@ public class CodeletTest {
     public void runProfilingTest(){
         Codelet testCodelet = generateCodelet();
         testCodelet.setProfiling(true);
+        testCodelet.setTimeStep(50);
 
         ByteArrayOutputStream outputStreamCaptor = new ByteArrayOutputStream();
         System.setOut(new PrintStream(outputStreamCaptor));
@@ -377,7 +378,7 @@ public class CodeletTest {
         mind.insertCodelet(testCodelet);
         mind.start();
         try {
-            Thread.sleep(1000);
+            Thread.sleep(100);
         } catch (InterruptedException e) {
             e.printStackTrace();
         }

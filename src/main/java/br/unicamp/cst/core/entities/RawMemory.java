@@ -36,7 +36,7 @@ public class RawMemory {
         private static long lastid = 0;
 
 	/**
-	 * Crates a Raw Memory.
+	 * Creates a Raw Memory.
 	 */
 	public RawMemory() {
 		allMemories = Collections.synchronizedList(new ArrayList<Memory>());
@@ -80,10 +80,23 @@ public class RawMemory {
 	/**
 	 * Sets the list of all memories inside raw memory.
 	 * 
+	 * @deprecated
+	 * 
 	 * @param allMemories
 	 *            the allMemoryObjects to set.
 	 */
+	@Deprecated
 	public synchronized void setAllMemoryObjects(List<Memory> allMemories) {
+		setAllMemories(allMemories);
+	}
+
+	/**
+	 * Sets the list of all memories inside raw memory.
+	 * 
+	 * @param allMemories
+	 *            the allMemoryObjects to set.
+	 */
+	public synchronized void setAllMemories(List<Memory> allMemories) {
 		synchronized (this.allMemories) {
 			this.allMemories = allMemories;
                         for (Memory m : allMemories) {
@@ -94,6 +107,8 @@ public class RawMemory {
                         }
 		}
 	}
+
+
 
 	/**
 	 * Print Raw Memory contents.
@@ -268,12 +283,25 @@ public class RawMemory {
 	/**
 	 * Destroys a given memory from raw memory
 	 * 
+	 * @deprecated
+	 * 
 	 * @param mo
 	 *            the memory to destroy.
 	 */
+	@Deprecated
 	public synchronized void destroyMemoryObject(Memory mo) {
+		destroyMemory(mo);
+	}
+
+	/**
+	 * Destroys a given memory from raw memory
+	 * 
+	 * @param memory
+	 *            the memory to destroy.
+	 */
+	public synchronized void destroyMemory(Memory memory) {
 		synchronized (allMemories) {
-			allMemories.remove(mo);
+			allMemories.remove(memory);
 		}
 	}
 
