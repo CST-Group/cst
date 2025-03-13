@@ -82,16 +82,7 @@ public class BehaviorNetwork
 				singleCodelet.start();
 			}
 
-		}else
-		{
-			for(Codelet oneCompetence:this.behaviors)
-			{
-				oneCompetence.start();//TODO This should have no effect, should I remove it?
-			}
-
 		}
-
-
 	}
 
 	/**

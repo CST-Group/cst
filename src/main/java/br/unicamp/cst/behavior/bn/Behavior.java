@@ -10,6 +10,8 @@
  ******************************************************************************/
 package br.unicamp.cst.behavior.bn;
 
+import br.unicamp.cst.behavior.bn.GlobalVariables.Goals;
+import static br.unicamp.cst.behavior.bn.GlobalVariables.Goals.ALL_GOALS;
 import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.Hashtable;
@@ -23,6 +25,8 @@ import br.unicamp.cst.core.entities.Codelet;
 import br.unicamp.cst.core.entities.Memory;
 import br.unicamp.cst.core.exceptions.CodeletActivationBoundsException;
 import br.unicamp.cst.memory.WorkingStorage;
+import static br.unicamp.cst.behavior.bn.GlobalVariables.Goals.PROTECTED_GOALS;
+import br.unicamp.cst.behavior.bn.GlobalVariables.ListType;
 
 /**
  * This competence class extends Codelet. "A competence resemble the operators of a classical planning system. A competence module i can be described by a list of preconditions and expected effects."[Maes 1989]
@@ -32,38 +36,32 @@ import br.unicamp.cst.memory.WorkingStorage;
  */
 public abstract class Behavior extends Codelet
 {
-
-	//Debug variables
-	private boolean showActivationSpread = false; // Enable this to see the activation flow in the console
-	private boolean showCoalitionLinks = false; // Enable this to see the coalition links in the console
-	private boolean printNoActivationCases = false;//Enable this to see if there are any problems with absent preconditions
-
 	private String name = ""; //Each behavior must have a name.  If not given by the user, it will be the same as its running thread's one
-	protected ArrayList<String> actionList = new ArrayList<String>();// Actions that are to be performed by actuators and which constitute this behavior
+	protected ArrayList<String> actionList = new ArrayList<>();// Actions that are to be performed by actuators and which constitute this behavior
 	protected JSONArray jsonActionList = new JSONArray();
 
-	protected ArrayList<Memory> preconList = new ArrayList<Memory>(); // ci list of preconditions that must be fulfilled before the competence module can become active
-	protected ArrayList<Memory> addList = new ArrayList<Memory>(); // ai expected effects of this action in terms of an add list
-	protected ArrayList<Memory> deleteList = new ArrayList<Memory>(); // di expected effects of this action in terms of a delete list
+	protected ArrayList<Memory> preconList = new ArrayList<>(); // ci list of preconditions that must be fulfilled before the competence module can become active
+	protected ArrayList<Memory> addList = new ArrayList<>(); // ai expected effects of this action in terms of an add list
+	protected ArrayList<Memory> deleteList = new ArrayList<>(); // di expected effects of this action in terms of a delete list
 	//TODO I'm modifying MAES original model to encompass a "soft" precondition list. Is is "soft" in the sense that it is not a must have.
 	// a soft precondition affects activation spread in the same way a traditional precondition does, but its absense does not prevent the behavior to be executed.	
-	protected ArrayList<Memory> softPreconList = new ArrayList<Memory>(); // ci list of preconditions that are desirable to be fulfilled before the competence module can become active
+	protected ArrayList<Memory> softPreconList = new ArrayList<>(); // ci list of preconditions that are desirable to be fulfilled before the competence module can become active
 
 	// Alpha level of activation is the codelet's own A (activation level) [Hypothesis to be investigated]
-	protected ArrayList<Behavior> allBehaviors = new ArrayList<Behavior>();//Pointers to all behaviors in the network. Basal ganglia should support this hypothesis. 
-	protected ArrayList<Behavior> coalition = new ArrayList<Behavior>(); //A subset of all behaviors, given by consciousness.
+	protected ArrayList<Behavior> allBehaviors = new ArrayList<>();//Pointers to all behaviors in the network. Basal ganglia should support this hypothesis. 
+	protected ArrayList<Behavior> coalition = new ArrayList<>(); //A subset of all behaviors, given by consciousness.
 
-	protected Hashtable<Behavior, ArrayList<Memory>> predecessors = new Hashtable<Behavior, ArrayList<Memory>>();
-	protected Hashtable<Behavior, ArrayList<Memory>> successors = new Hashtable<Behavior, ArrayList<Memory>>();
-	protected Hashtable<Behavior, ArrayList<Memory>> conflicters = new Hashtable<Behavior, ArrayList<Memory>>();
+	protected Hashtable<Behavior, ArrayList<Memory>> predecessors = new Hashtable<>();
+	protected Hashtable<Behavior, ArrayList<Memory>> successors = new Hashtable<>();
+	protected Hashtable<Behavior, ArrayList<Memory>> conflicters = new Hashtable<>();
 
-	private ArrayList<Memory> permanentGoals = new ArrayList<Memory>();
-	private ArrayList<Memory> onceOnlyGoals = new ArrayList<Memory>();
-	private ArrayList<Memory> protectedGoals = new ArrayList<Memory>();
-	private ArrayList<Memory> goals = new ArrayList<Memory>();
-	private ArrayList<Memory> worldState = new ArrayList<Memory>();
-	private ArrayList<Object> listOfWorldBeliefStates=new ArrayList<Object>();
-	private ArrayList<Object> listOfPreviousWorldBeliefStates=new ArrayList<Object>();
+	private ArrayList<Memory> permanentGoals = new ArrayList<>();
+	private ArrayList<Memory> onceOnlyGoals = new ArrayList<>();
+	private ArrayList<Memory> protectedGoals = new ArrayList<>();
+	private ArrayList<Memory> goals = new ArrayList<>();
+	private ArrayList<Memory> worldState = new ArrayList<>();
+	private ArrayList<Object> listOfWorldBeliefStates=new ArrayList<>();
+	private ArrayList<Object> listOfPreviousWorldBeliefStates=new ArrayList<>();
 
 	private GlobalVariables globalVariables; //Behavior network global variables
 
@@ -73,23 +71,32 @@ public abstract class Behavior extends Codelet
 	private double maxA=1; // maximum activation for normalization
 	
 	//TODO resourceList is a list of all the action buffers this behavior needs to complete its actions.
-	private ArrayList<String> resourceList=new ArrayList<String>();
+	private ArrayList<String> resourceList=new ArrayList<>();
 	private boolean setToZeroWhenActivated=true;
 	private double activationMA=0;
 	
 	private WorkingStorage ws;
+        
+        //For test variables
+        private double inputfromstate;
+        private double inputfromgoals;
+        private double spreadbw;
+        private double spreadfw;
+        private double activationWhenActive;
 
 	public Behavior(WorkingStorage ws,GlobalVariables globalVariables)
 	{
 		this.ws = ws;
 		this.globalVariables = globalVariables;
 		
-		//All behaviors subscribe their input list to receive news from Working Storage about WORLD_STATE, and goals memory objects.
-		int io=0; //Input list
-		ws.registerCodelet(this, "WORLD_STATE", io);
-		ws.registerCodelet(this, "ONCE_ONLY_GOAL", io);
-		ws.registerCodelet(this, "PERMANENT_GOAL", io);
-		ws.registerCodelet(this, "PERMANENT_GOAL", io);
+                if (ws != null) {
+                    //All behaviors subscribe their input list to receive news from Working Storage about WORLD_STATE, and goals memory objects.
+                    int io=0; //Input list
+                    ws.registerCodelet(this, "WORLD_STATE", io);
+                    ws.registerCodelet(this, "ONCE_ONLY_GOAL", io);
+                    ws.registerCodelet(this, "PERMANENT_GOAL", io);
+                    ws.registerCodelet(this, "PERMANENT_GOAL", io);
+                }
 
 		this.setExecutable(false); // Every competence starts as non-executable
 		this.setActive(false); // Every competence starts as inactive
@@ -99,7 +106,7 @@ public abstract class Behavior extends Codelet
 		} catch (CodeletActivationBoundsException e) 
 		{
 			e.printStackTrace();
-		}// Initial activation should be zero;
+		}
 		
 		this.setFirstTime(true);
 
@@ -121,7 +128,7 @@ public abstract class Behavior extends Codelet
 	 */
 	public void proc()
 	{
-
+                activationWhenActive = this.getActivation(); 
 		retrieveGoals(); // This should be done often because goals might change over time
 		retrieveState(); // This should be done often because world state might change over time
 		spreadActivation();
@@ -135,14 +142,11 @@ public abstract class Behavior extends Codelet
 
 	}
 
-
 	/**
 	 * 
 	 * @return list of resources used by this behavior
 	 */
 	private ArrayList<String> getResourceList() {//TODO must develop this idea further
-
-
 		return this.resourceList;
 	}
 	/**
@@ -179,8 +183,6 @@ public abstract class Behavior extends Codelet
 				}
 			}
 		}
-		//		System.out.println("====> "+this.getId()+" worldState: "+worldState);
-
 	}
 
 	/**
@@ -197,29 +199,15 @@ public abstract class Behavior extends Codelet
 		successors.clear();
 		predecessors.clear();
 		conflicters.clear();
-
-//		if(this.getId().contains("TV")){
-//			int a=4;
-//			System.out.println(this.getId());
-//			
-//		}
-		
-
 		ArrayList<Memory> intersection = new ArrayList<Memory>();
 		for (Behavior competence : coalition)
 		{
-//			if(competence.getId().contains("ROOM13")){
-//				int a=4;
-//				System.out.println(competence.getId());
-//				
-//			}
 			if (impendingAccess(competence))
 			{
 				try
 				{
 					if (competence != this)
 					{
-						//------
 						intersection = getIntersectionSet(this.getAddList(), competence.getListOfPreconditions()); 
 						if (!intersection.isEmpty())
 						{
@@ -231,7 +219,6 @@ public abstract class Behavior extends Codelet
 						{
 							this.successors.put(competence, intersection);
 						}
-						//------
 						intersection = getIntersectionSet(this.getListOfPreconditions(), competence.getAddList());
 						if (!intersection.isEmpty())
 						{
@@ -243,7 +230,6 @@ public abstract class Behavior extends Codelet
 						{
 							this.predecessors.put(competence, intersection);
 						}
-						//------
 						intersection = getIntersectionSet(competence.getListOfPreconditions(), this.getDeleteList()); // because we are looking for how this module messes up others preconditions, and thats why it must be inhibited by them
 						if (!intersection.isEmpty())
 						{
@@ -311,53 +297,6 @@ public abstract class Behavior extends Codelet
 
 		return 	(!temp1.equals(temp2));
 	}
-
-	/**
-	 *  Checks if there is a current behavior proposition in working storage that is using the resources this behavior needs
-	 * @return if there is conflict of resources
-	 */
-	private boolean resourceConflict() {//TODO must develop this idea further
-		boolean resourceConflict=false;
-		ArrayList<Memory> allOfType=new ArrayList<Memory>();
-
-		if(ws!=null)
-			allOfType.addAll(ws.getAllOfType("BEHAVIOR_PROPOSITION"));
-
-		ArrayList<String> usedResources=new ArrayList<String>();
-
-
-		if(allOfType!=null){
-
-			for(Memory bp:allOfType){
-				try {
-					JSONObject jsonBp=new JSONObject(bp.getI());
-					//System.out.println("=======> bp.getInfo(): "+bp.getInfo());
-					boolean performed=jsonBp.getBoolean("PERFORMED");
-					if(!performed){//otherwise it is not consuming those resources
-
-						JSONArray resourceList=jsonBp.getJSONArray("RESOURCELIST");
-
-						for(int i=0;i<resourceList.length();i++){
-							usedResources.add(resourceList.getString(i));
-						}
-					}
-				} catch (JSONException e) {e.printStackTrace();}
-			}
-		}
-		//		System.out.println("%%% usedResources: "+usedResources);
-		//		System.out.println("%%% getResourceList: "+getResourceList());
-		int sizeBefore=usedResources.size();
-		usedResources.removeAll(this.getResourceList());
-		int sizeLater=usedResources.size();
-
-		if(sizeLater!=sizeBefore){
-			resourceConflict=true;
-			//			System.out.println("%%%%%%%%%%%%%%%%%%%%% There was a conflict here");
-		}
-
-		return resourceConflict;
-	}
-
 	/**
 	 * A behavior module is executable at time t when all of its preconditions are observed to be true at time t.
 	 *
@@ -367,7 +306,6 @@ public abstract class Behavior extends Codelet
 		listOfWorldBeliefStates = new ArrayList<Object>();
 		for(Memory mo:this.getInputsOfType("WORLD_STATE")){
 			listOfWorldBeliefStates.add(mo.getI());
-			//				System.out.println("###########adding world state");
 		}
 		ArrayList<Memory> tempPreconList=new ArrayList<Memory>();
 		//Comparison between two MOs is performed between their infos
@@ -375,8 +313,8 @@ public abstract class Behavior extends Codelet
 
 		for(Memory precon:preconList){ 
 
-			for(Object ws:listOfWorldBeliefStates){
-				if(precon.getI().equals(ws)){
+			for(Object beliefState:listOfWorldBeliefStates){
+				if(precon.getI().equals(beliefState)){
 					tempPreconList.remove(precon);
 					break;
 				}
@@ -405,11 +343,11 @@ public abstract class Behavior extends Codelet
 		if(!this.isActive()){ //If active, it should remain at zero
 			double activation = 0;
 			// TODO this can be optimized, I could get all this information with only one method (this would iterate only once through the coalition list
-			double inputfromstate = inputFromState();
-			double inputfromgoals = inputFromGoals();
-			double takenawaybyprotectedgoals = takenAwayByProtectedGoals();
-			double spreadbw = spreadBw();
-			double spreadfw = spreadFw();
+			inputfromstate = inputFromState();
+			inputfromgoals = inputFromGoalsOfType(ALL_GOALS);
+			double takenawaybyprotectedgoals = inputFromGoalsOfType(PROTECTED_GOALS);
+			spreadbw = spreadBw();
+			spreadfw = spreadFw();
 			double takenaway = takenAway();
 
 			activation = inputfromstate + inputfromgoals - takenawaybyprotectedgoals + (spreadbw + spreadfw - takenaway);
@@ -420,18 +358,9 @@ public abstract class Behavior extends Codelet
 
 			if (!this.isActive())
 			{
-				//						activation = activation + this.getValue(); //TODO Without normalization
 				activation=activation*(1-this.getActivation())/maxA+this.getActivation(); //With Normalization
 			}
 
-
-
-			//TODO I'm trying to migrate this decay property to BehaviorsWTA.java
-			// decay();//TODO Decay process that scales the mean level of energy to pi  
-
-
-			//		//		activation=activation-globalVariables.getDecay(); //TODO Test with subtractive decay
-			//
 			if(globalVariables!=null)
 				activation=activation*globalVariables.getDecay(); //TODO test with multiplicative decay
 
@@ -457,34 +386,6 @@ public abstract class Behavior extends Codelet
 				e.printStackTrace();
 			}
 		}
-	}
-
-	/**
-	 * Decay function. Hypothesis: each time activation is spread from/towards a module this same module inhibits/excites the activation of all other modules making the mean activation level constant.
-	 */
-	private void decay()
-	{
-		// TODO this could be optimized
-		double activation = 0;
-		if (!this.coalition.isEmpty())
-		{
-			for (Behavior module : this.coalition)
-			{
-				if (impendingAccess(module))
-				{
-					try
-					{
-						activation = activation + module.getActivation();
-						activation = activation / this.coalition.size();
-					} finally
-					{
-						lock.unlock();
-						module.lock.unlock();
-					}
-				}
-			}
-		}
-
 	}
 
 	/**
@@ -671,63 +572,7 @@ public abstract class Behavior extends Codelet
 	public void setCoalition(ArrayList<Behavior> coalition)
 	{
 		this.coalition = coalition;
-		updateLinks(); // Isto soh deve ser feito quando a coalizao muda
-		if(showCoalitionLinks){
-			System.out.println("************* " + getName() + "'s Links ************");
-			System.out.println("* successors ------");
-			Enumeration e = this.successors.keys();
-			while (e.hasMoreElements())
-			{
-				Behavior module = (Behavior) e.nextElement();
-				if (impendingAccess(module))
-				{
-					try
-					{
-						System.out.println("Name: " + module.getName() + " |Props: " + this.successors.get(module));
-					} finally
-					{
-						lock.unlock();
-						module.lock.unlock();
-					}
-				}
-			}
-			System.out.println("* predecessors ----");
-			e = this.predecessors.keys();
-			while (e.hasMoreElements())
-			{
-				Behavior module = (Behavior) e.nextElement();
-				if (impendingAccess(module))
-				{
-					try
-					{
-						System.out.println(module.getName() + " |Props: " + this.predecessors.get(module));
-					} finally
-					{
-						lock.unlock();
-						module.lock.unlock();
-					}
-				}
-			}
-			System.out.println("* conflicters -----");
-			e = this.conflicters.keys();
-			while (e.hasMoreElements())
-			{
-				Behavior module = (Behavior) e.nextElement();
-				if (impendingAccess(module))
-				{
-					try
-					{
-						System.out.println(module.getName() + " |Props: " + this.conflicters.get(module));
-					} finally
-					{
-						lock.unlock();
-						module.lock.unlock();
-					}
-				}
-			}
-			System.out.println("************************************************");
-		}   
-
+		updateLinks(); 
 	}
 
 	/**
@@ -797,7 +642,6 @@ public abstract class Behavior extends Codelet
 	public String getName()
 	{
 		return name;
-		// return Thread.currentThread().getId();
 	}
 
 	/**
@@ -830,10 +674,12 @@ public abstract class Behavior extends Codelet
 							MODULE_softPrecon_and_ClassicPrecon.addAll(module.getListOfPreconditions());
 							MODULE_softPrecon_and_ClassicPrecon.addAll(module.getSoftPreconList());
 							
-							if (MODULE_softPrecon_and_ClassicPrecon.contains(j))
-							{
-								sharpM = sharpM + 1;
-							}
+                                                        for(Memory item : MODULE_softPrecon_and_ClassicPrecon) {
+                                                            if (item.getI().equals(j.getI()))
+                                                            {
+                                                                sharpM = sharpM + 1;
+                                                            }
+                                                        }
 						} finally
 						{
 							lock.unlock();
@@ -843,23 +689,13 @@ public abstract class Behavior extends Codelet
 				}
 				// What if sharpM or listOfPreconditions.size == zero?
 				// sharpM could zero because j comes from the intersection of S and c, so if no preconditions from the module is found in world state, the intersection shall be zero
-				// synchronized(listOfPreconditions){
 				if ((sharpM > 0) && (THIS_softPrecon_and_ClassicPrecon.size() > 0))
 				{
 					double activationfromstate = globalVariables.getPhi() * (1 / sharpM) * (1 / (double) THIS_softPrecon_and_ClassicPrecon.size());
-					if (showActivationSpread)
-					{
-						System.out.println(this.getName() + " got " + activationfromstate + " energy from the world state");
-					}
 					activation = activation + activationfromstate;
-				} else
-				{
-					if(printNoActivationCases){System.out.println("No activation in the case [" + this.getName() + " getting energy from the world state]: either the number of satisfying modules is zero or there are no preconditions in this module.");}
-				}
-				// }//end synch
+				} 
 			}
 		}
-		// }//coalitionIsBusy=false;
 		return activation;
 	}
 
@@ -876,165 +712,152 @@ public abstract class Behavior extends Codelet
 		this.allBehaviors = allBehaviors;
 	}
 	/**
-	 * @return the amount of activation from goalsthis.coalition.lock();
+         * @param goalType the type of goals selected to be calculated in the activation
+	 * @return the amount of activation to be removed by the goals selected
 	 */
-	public double inputFromGoals()
-	{
-		double activation = 0;
-		ArrayList<Behavior> tempCodelets = new ArrayList<Behavior>(); //TODO Should we get this input from the coalition or from the full set of codelets?
-		tempCodelets.addAll(this.getAllBehaviors());
-		if (!tempCodelets.isEmpty())
-		{
-			ArrayList<Memory> intersection = getIntersectionSet(this.getGoals(), this.getAddList());
-			for (Memory j : intersection)
-			{
-				double sharpA = 0;
-				for (Behavior module : tempCodelets)
-				{
-					if (impendingAccess(module))
-					{
-						try
-						{
-							if (module.getAddList().contains(j))
-							{
-								sharpA = sharpA + 1;
-							}
-						} finally
-						{
-							lock.unlock();
-							module.lock.unlock();
-						}
-					}
-				}
-				// synchronized(this.addList){
-				if ((sharpA > 0) && (this.getAddList().size() > 0))
-				{
-					double othermoduleActivation = globalVariables.getGamma() * ((1 / sharpA) * (1 / (double) this.getAddList().size()));
-					if (showActivationSpread)
-					{
-						System.out.println(this.getName() + " receives " + othermoduleActivation + " energy from goal " + j);
-					}
-					activation = activation + othermoduleActivation;
-				} else
-				{
-					if (showActivationSpread)
-					{
-						System.out.println("No activation from situation [" + this.getName() + " getting activation from goals]: either the number of satisfying modules is zero or there are no preconditions in this module.");
-					}
-				}
-				// }//end synch
-			}
-		}
-		// activation=activation*globalVariables.getGamma();
-		return activation;
-	}
+	public double inputFromGoalsOfType(Goals goalType) {
+            ArrayList<Behavior> tempCodelets = getRelevantBehaviors(goalType);
+            ArrayList<Memory> intersection = getGoalIntersection(goalType);
+            if (tempCodelets.isEmpty() || intersection.isEmpty()) {
+                return 0;
+            }
+            return calculateActivationFromGoals(tempCodelets, intersection, goalType);
+        }
+        
+        private ArrayList<Behavior> getRelevantBehaviors(Goals goalType) {
+            ArrayList<Behavior> behaviors = new ArrayList<>();
+            if (goalType.equals(ALL_GOALS)) {
+                behaviors.addAll(this.getAllBehaviors());
+            } else {
+                behaviors.addAll(this.getCoalition());
+            }
+            return behaviors;
+        }
+        
+        private ArrayList<Memory> getGoalIntersection(Goals goalType) {
+            ArrayList<Memory> AList = new ArrayList<>();
+            ArrayList<Memory> BList = new ArrayList<>();
 
-	/**
-	 * @return the amount of activation to be removed by the goals that are protected
-	 */
-	public double takenAwayByProtectedGoals()
-	{
-		double activation = 0;
-		// synchronized(this.coalition){
-		if (!this.getCoalition().isEmpty())
-		{
-			ArrayList<Memory> intersection = getIntersectionSet(this.getProtectedGoals(), this.getDeleteList());
-			for (Memory j : intersection)
-			{
-				double sharpU = 0;
-				for (Behavior module : this.getCoalition())
-				{
-					if (impendingAccess(module))
-					{
-						try
-						{
-							if (module.getDeleteList().contains(j))
-							{
-								sharpU = sharpU + 1;
-							}
-						} finally
-						{
-							lock.unlock();
-							module.lock.unlock();
-						}
-					}
-				}
-				// synchronized(this.deleteList){
-				if ((sharpU > 0) && (this.getDeleteList().size() > 0))
-				{
-					double takenEnergy = (1 / sharpU) * (1 / (double) this.getDeleteList().size()) * globalVariables.getDelta();
-					if (showActivationSpread)
-					{
-						System.out.println(this.getName() + " has " + takenEnergy + " taken away from it by protected goals.");
-					}
-					activation = activation + takenEnergy;
-				} else
-				{
-					if (showActivationSpread)
-					{
-						System.out.println("No activation from situation [" + this.getName() + " having energy taken away by protected goals]: either the number of satisfying modules is zero or there are no preconditions in this module.");
-					}
-				}
-				// }//end synch
-			}
-		}
-		// }//end synch
-		return activation;
-	}
+            if (goalType.equals(ALL_GOALS)) {
+                AList.addAll(this.getGoals());
+                BList.addAll(this.getAddList());
+            } else {
+                AList.addAll(this.getProtectedGoals());
+                BList.addAll(this.getDeleteList());
+            }
+
+            return getIntersectionSet(AList, BList);
+        }
+        
+        private double calculateActivationFromGoals(ArrayList<Behavior> tempCodelets, ArrayList<Memory> intersection, Goals goalType) {
+            double activation = 0;
+
+            for (Memory j : intersection) {
+                double sharp = calculateSharp(tempCodelets, j, goalType);
+                ArrayList<Memory> relevantList = getRelevantList(goalType);
+
+                if (sharp > 0 && !relevantList.isEmpty()) {
+                    activation += calculateEnergyGoalType(sharp, goalType, relevantList);
+                }
+            }
+
+            return activation;
+        }
+
+        private ArrayList<Memory> getRelevantList(Goals goalType) {
+            if (goalType.equals(ALL_GOALS)) {
+                return new ArrayList<>(this.getAddList());
+            } else {
+                return new ArrayList<>(this.getDeleteList());
+            }
+        }
+
+        
+        private double calculateSharp(ArrayList<Behavior> tempCodelets, Memory j, Goals goalType) {
+            double sharp = 0;
+            for (Behavior module : tempCodelets) {
+                if(shouldIncrementSharp(module, j, goalType)) {
+                    sharp++;
+                }
+            }
+            return sharp;
+        }
+        
+        private Boolean shouldIncrementSharp(Behavior module, Memory j, Goals goalType) {
+            if (impendingAccess(module)) {
+                try {
+                    return listContainsMemory(getListToIterateGoalType(module, goalType), j);
+                } finally {
+                    module.lock.unlock();
+                    lock.unlock(); 
+                }
+            }
+            return false;
+        }
+        
+        private Boolean listContainsMemory(ArrayList<Memory> listToIterate, Memory j) {
+            for(Memory item : listToIterate) {
+                if (item.getI().equals(j.getI())) {
+                    return true;
+                }
+            }
+            return false;
+        }
+        
+        private double calculateEnergyGoalType(double sharp, Goals goalType, ArrayList<Memory> BList) {
+            double energy;
+            if (goalType.equals(ALL_GOALS)) {
+                energy = globalVariables.getGamma() * ((1 / sharp) * (1 / (double) BList.size()));
+            } else {
+                energy = (1 / sharp) * (1 / (double) BList.size()) * globalVariables.getDelta();
+            }
+            return energy;
+        }
+        
+        private ArrayList<Memory> getListToIterateGoalType(Behavior module, Goals goalType) {
+            ArrayList<Memory> listToIterate = new ArrayList<>();
+            if (goalType.equals(ALL_GOALS)) {
+                listToIterate.addAll(getListToIterate(module, ListType.ADD));
+            } else {
+                listToIterate.addAll(getListToIterate(module, ListType.DELETE));
+            }
+            return listToIterate;
+        }
 
 	/**
 	 * @return the amount of activation that is spread backwards from other modules in the direction of this module
 	 * 
 	 *         Note: this approach is slightly different from the one proposed at the article by [Maes 1989] since here we try to avoid meddling with another codelet's states.
 	 */
-	public double spreadBw()
-	{
-		
-		// In this case x= other modules, y= this module
-		double activation = 0;
-		// synchronized(this.successors){
-		if (!this.getSuccessors().isEmpty())
-		{
-			Enumeration e = this.getSuccessors().keys();
-			// iterate through Hashtable keys Enumeration
-			while (e.hasMoreElements())
-			{
-				Behavior module = (Behavior) e.nextElement();
-				if (impendingAccess(module))
-				{
-					try
-					{
-						double amount = 0;
-						if (!module.isExecutable())
-						{// A competence module x that is not executable spreads activation backward.
+	public double spreadBw() {
+            double activation = 0;
+		if (!this.getSuccessors().isEmpty()) {
+                    Enumeration e = this.getSuccessors().keys();
+                    while (e.hasMoreElements()) {
+                        Behavior module = (Behavior) e.nextElement();
+                        if (impendingAccess(module)){
+                            try{
+                                double amount = 0;
+                                if (!module.isExecutable()) {// A competence module x that is not executable spreads activation backward.
 
-							ArrayList<Memory> intersection = new ArrayList<Memory>();
-							ArrayList<Memory> preconPlusSoftPrecon=new ArrayList<Memory>();
+                                        ArrayList<Memory> intersection = new ArrayList<>();
+                                        ArrayList<Memory> preconPlusSoftPrecon=new ArrayList<>();
 
-							preconPlusSoftPrecon.addAll(module.getListOfPreconditions());
+                                        preconPlusSoftPrecon.addAll(module.getListOfPreconditions());
 
-							intersection.addAll(getIntersectionSet(preconPlusSoftPrecon, this.getAddList()));
-							intersection.removeAll(worldState);
-							for (Memory item : intersection)
-							{
-								amount = amount + ((1.0 / this.competencesWithPropInAdd(item)) * (1.0 / (double) this.getAddList().size()));
-							}
-							amount = amount * module.getActivation() * (globalVariables.getPhi() / globalVariables.getGamma());
-							if (showActivationSpread)
-							{
-								System.out.println(this.getName() + " receives " + amount + " backwarded energy from " + module.getName() + " [which has A= " + module.getActivation() + " ]");
-							}
-
-						}
-						// --------------------------
-						activation = activation + amount;
-					} finally
-					{
-						lock.unlock();
-						module.lock.unlock();
-					}
-				}
-			}
+                                        intersection.addAll(getIntersectionSet(preconPlusSoftPrecon, this.getAddList()));
+                                        intersection.removeAll(worldState);
+                                        double size = (double) this.getAddList().size();
+                                        amount = calculateAmountOfType(size, intersection, ListType.ADD, module);
+                                }
+                                activation = activation + amount;
+                            } finally
+                            {
+                                lock.unlock();
+                                module.lock.unlock();
+                            }
+                        }
+                    }
 		}
 
 		return activation;
@@ -1047,132 +870,103 @@ public abstract class Behavior extends Codelet
 	 */
 	public double spreadFw()
 	{
-		// In this case x= other modules, y= this module
-		double activation = 0;
-		// synchronized(this.predecessors){
-		if (!this.getPredecessors().isEmpty())
-		{
-			Enumeration e = this.getPredecessors().keys();
-			// iterate through Hashtable keys Enumeration
-			while (e.hasMoreElements())
-			{
-				Behavior module = (Behavior) e.nextElement();
-				if (impendingAccess(module))
-				{
-					try
-					{
-						double amount = 0;
-						if (module.isExecutable())
-						{// An executable competence module x spreads activation forward.
-							ArrayList<Memory> intersection = new ArrayList<Memory>();
+            double activation = 0;
+            if (!this.getPredecessors().isEmpty()) {
+                Enumeration e = this.getPredecessors().keys();
+                while (e.hasMoreElements()) {
+                    Behavior module = (Behavior) e.nextElement();
+                    if (impendingAccess(module)) {
+                        try {
+                            double amount = 0;
+                            if (module.isExecutable())
+                            {// An executable competence module x spreads activation forward.
+                                ArrayList<Memory> intersection = new ArrayList<Memory>();
 
-							ArrayList<Memory> preconPlusSoftPrecon=new ArrayList<Memory>();
+                                ArrayList<Memory> preconPlusSoftPrecon=new ArrayList<Memory>();
 
-							preconPlusSoftPrecon.addAll(this.getListOfPreconditions());
-							preconPlusSoftPrecon.addAll(this.getSoftPreconList());
+                                preconPlusSoftPrecon.addAll(this.getListOfPreconditions());
+                                preconPlusSoftPrecon.addAll(this.getSoftPreconList());
+                                intersection.addAll(getIntersectionSet(module.getAddList(), preconPlusSoftPrecon));
+                                intersection.removeAll(worldState);
+                                double size = (double) preconPlusSoftPrecon.size();
+                                amount = calculateAmountOfType(size, intersection, ListType.PRECONDITION, module);
 
-
-							intersection.addAll(getIntersectionSet(module.getDeleteList(), preconPlusSoftPrecon));
-							intersection.removeAll(worldState);
-							for (Memory item : intersection)
-							{
-								amount = amount + ((1.0 / this.competencesWithPropInPrecon(item)) * (1.0 / (double) preconPlusSoftPrecon.size()));
-							}
-							amount = amount * module.getActivation() * (globalVariables.getPhi() / globalVariables.getGamma());
-							if (showActivationSpread)
-							{
-								System.out.println(this.getName() + " receives " + amount + " forwarded energy from " + module.getName() + " [which has A= " + module.getActivation() + " ]");
-							}
-
-						}
-						// ------------------------------------------------
-						activation = activation + amount;
-					} finally
-					{
-						lock.unlock();
-						module.lock.unlock();
-					}
-				}
-			}
-		}
-		// }//end synch
-		return activation;
+                            }
+                            activation = activation + amount;
+                        } finally {
+                            lock.unlock();
+                            module.lock.unlock();
+                        }
+                    }
+                }
+            }
+            return activation;
 	}
+        
+        private double calculateAmount(double size, double competencesWithPropInListOfType) {
+            double amount = 0;
+            if(size!=0  && competencesWithPropInListOfType != 0) {
+                amount = ((1.0 / competencesWithPropInListOfType) * (1.0 / size));
+            }
+            return amount;
+        }
 
 	/**
 	 * @return the amount of activation that is taken away from this module by other modules through conflict links
 	 * 
 	 *         Note: this approach is slightly different from the one proposed at the article by [Maes 1989] since here we try to avoid meddling with another codelet's states. Note: I am not using the "max" strategy described by maes
 	 */
-	public double takenAway()
-	{
-		// In this case x= other modules, y= this module
-		double activation = 0;
-		// synchronized(this.conflicters){
-		if (!this.getConflicters().isEmpty())
-		{
-			Enumeration e = this.getConflicters().keys();
-			// iterate through Hashtable keys Enumeration
-			while (e.hasMoreElements())
-			{
-				Behavior module = (Behavior) e.nextElement();
-				if (impendingAccess(module))
-				{
-					try
-					{
-						// ---------------------------------
-						double amount = 0;
-						ArrayList<Memory> intersection = new ArrayList<Memory>();
+	public double takenAway() {
+            double activation = 0;
+            if (!this.getConflicters().isEmpty()) {
+                Enumeration e = this.getConflicters().keys();
+                while (e.hasMoreElements()) {
+                    Behavior module = (Behavior) e.nextElement();
+                    if (impendingAccess(module)) {
+                        try {
+                            double amount = 0;
+                            ArrayList<Memory> intersection = new ArrayList<>();
 
-						ArrayList<Memory> preconPlusSoftPrecon=new ArrayList<Memory>();						
-						preconPlusSoftPrecon.addAll(this.getListOfPreconditions());
-						preconPlusSoftPrecon.addAll(this.getSoftPreconList());
+                            ArrayList<Memory> preconPlusSoftPrecon=new ArrayList<>();						
+                            preconPlusSoftPrecon.addAll(this.getListOfPreconditions());
+                            preconPlusSoftPrecon.addAll(this.getSoftPreconList());
 
-						intersection=getIntersectionSet(preconPlusSoftPrecon, module.getDeleteList());
-						intersection=getIntersectionSet(intersection, worldState);
+                            intersection=getIntersectionSet(preconPlusSoftPrecon, module.getDeleteList());
+                            intersection=getIntersectionSet(intersection, worldState);
 
-						if (!((module.getActivation() < this.getActivation()) && (!intersection.isEmpty())))
-						{ // this is the else case due to !
-							preconPlusSoftPrecon=new ArrayList<Memory>();						
-							preconPlusSoftPrecon.addAll(module.getListOfPreconditions());
-							preconPlusSoftPrecon.addAll(module.getSoftPreconList());
+                            if (!((module.getActivation() < this.getActivation()) && (!intersection.isEmpty()))) { // this is the else case due to !
+                                preconPlusSoftPrecon=new ArrayList<Memory>();						
+                                preconPlusSoftPrecon.addAll(module.getListOfPreconditions());
+                                preconPlusSoftPrecon.addAll(module.getSoftPreconList());
 
-							intersection = getIntersectionSet(this.getDeleteList(), preconPlusSoftPrecon);
-							intersection = getIntersectionSet(intersection, worldState);
-							for (Memory item : intersection)
-							{
-								amount = amount + ((1.0 / this.competencesWithPropInDel(item)) * (1.0 / (double) this.getDeleteList().size()));
-							}
-							// amount = (b1.activation[0] *
-							// (self.conf_energy / self.goal_energy) *
-							// amount)
-							amount = module.getActivation() * (globalVariables.getDelta() / globalVariables.getGamma()) * amount;
-							ArrayList<Memory> modulos = this.getConflicters().get(module);
-							double numberOfConflicters = 0;
-							if (modulos != null)
-							{
-								numberOfConflicters = (double) modulos.size();
-							}// TODO  Eu nao deveria precisar fazer este teste!
-							double moduleActivation = module.getActivation();
-							double activationFromModule = (globalVariables.getDelta() / globalVariables.getGamma()) * numberOfConflicters * moduleActivation;
-							if (showActivationSpread)
-							{
-								System.out.println(this.getName() + " has " + amount + " of its energy decreased by " + module.getName() + " [which has A= " + module.getActivation() + " ]");
-							}
-						}
-						// ------------------------------------
-						activation = activation + amount;
-					} finally
-					{
-						lock.unlock();
-						module.lock.unlock();
-					}
-				}
-			}
-		}
+                                intersection = getIntersectionSet(this.getDeleteList(), preconPlusSoftPrecon);
+                                intersection = getIntersectionSet(intersection, worldState);
+                                double size = (double) this.getDeleteList().size();
+                                amount = calculateAmountOfType(size, intersection, ListType.DELETE, module);
+                            }
+                            activation = activation + amount;
+                        } finally {
+                                lock.unlock();
+                                module.lock.unlock();
+                        }
+                    }
+                }
+            }
 
-		return activation;
+            return activation;
 	}
+        
+        private double calculateAmountOfType(double size, ArrayList<Memory> intersection, ListType listType, Behavior module) {
+            double amount = 0;
+            
+            for (Memory item : intersection) {
+                double comp = this.competencesWithPropInListOfType(item, listType);
+                amount = amount + calculateAmount(size, comp);
+            }
+
+            amount = module.getActivation() * (globalVariables.getDelta() / globalVariables.getGamma()) * amount;
+            return amount;
+        }
 
 	/**
 	 * 
@@ -1213,17 +1007,11 @@ public abstract class Behavior extends Codelet
 		if((A.isEmpty()||B.isEmpty())||(A==null||B==null)){
 			return intersection;
 		}
-		//		System.out.println(B);
-		//		System.out.println(B.get(0));
 		//Gives preference to returning PROPOSITIONs
 		if(A.get(0).getName().equalsIgnoreCase("PROPOSITION")){
 			currentList.addAll(B);
 			intersection.addAll(A);	
-		}else if((B.get(0).getName().equalsIgnoreCase("PROPOSITION"))){ 
-			currentList.addAll(A);
-			intersection.addAll(B);
 		}else{
-			//			return null; //Should throw an exception?
 			currentList.addAll(A);
 			intersection.addAll(B);
 
@@ -1236,7 +1024,7 @@ public abstract class Behavior extends Codelet
 			if (!removeByInfo(currentList,mo.getI()))
 				removeByInfo(intersection,mo.getI());
 		}
-		return intersection;
+                return intersection;
 	}
 
 	public boolean removeByInfo(ArrayList<Memory> moList, Object target){
@@ -1398,8 +1186,8 @@ public abstract class Behavior extends Codelet
 		String[] actionDecomposition=action.split(" ");
 		JSONObject jsonAction=new JSONObject();
 		try {
-			if(!this.resourceList.contains(actionDecomposition[0])){
-				this.resourceList.add(actionDecomposition[0]); //Stores this resource in this behavior's resource list
+			if(!this.getResourceList().contains(actionDecomposition[0])){
+				this.resourceList.add(actionDecomposition[0]); 
 			}
 
 			jsonAction.put("RESOURCE", actionDecomposition[0]);
@@ -1413,7 +1201,6 @@ public abstract class Behavior extends Codelet
 
 
 		this.jsonActionList.put(jsonAction);
-		//		System.out.println("---JSON ACTION: "+jsonAction);
 	}
 	/**
 	 * Clears this behavior's action list
@@ -1423,85 +1210,53 @@ public abstract class Behavior extends Codelet
 		this.actionList.clear();
 	}
 
-	/**
-	 * Returns the number of competences in coalition with the given proposition in their precondition lists
-	 */
-	private double competencesWithPropInPrecon(Memory proposition)
-	{
-		double compWithProp = 0;
-		for (Behavior comp : this.getCoalition())
-		{
-			if (impendingAccess(comp))
-			{
-				try
-				{
-					if (comp.getListOfPreconditions().contains(proposition)||comp.getSoftPreconList().contains(proposition))
-					{
-						compWithProp = compWithProp + 1;
-					}
-				} finally
-				{
-					lock.unlock();
-					comp.lock.unlock();
-				}
-			}
-		}
-		return compWithProp;
-	}
-
 
 	/**
-	 * Returns the list of competences from coalition with the given proposition in their add lists
+	 * Returns the list of competences from coalition with the given proposition in their lists of type specified
 	 */
-	private double competencesWithPropInAdd(Memory proposition)
-	{
-		double compWithProp = 0;
-		for (Behavior comp : this.getCoalition())
-		{
-			if (impendingAccess(comp))
-			{
-				try
-				{
-					if (comp.getAddList().contains(proposition))
-					{
-						compWithProp = compWithProp + 1;
-					}
-				} finally
-				{
-					lock.unlock();
-					comp.lock.unlock();
-				}
-			}
-		}
-		return compWithProp;
+	private double competencesWithPropInListOfType(Memory j, ListType listType) {
+            double compWithProp = 0;
+            ArrayList<Behavior> tempCodelets = this.getCoalition();
+            for (Behavior module : tempCodelets) {
+                if(shouldIncrementComp(module, j, listType)) {
+                    compWithProp++;
+                }
+                
+            }
+            return compWithProp;
 	}
-
-
-	/**
-	 * Returns the list of competences from coalition with the given proposition in its del lists
-	 */
-	private double competencesWithPropInDel(Memory proposition)
-	{
-		double compWithProp = 0;
-		for (Behavior comp : this.getCoalition())
-		{
-			if (impendingAccess(comp))
-			{
-				try
-				{
-					if (comp.getDeleteList().contains(proposition))
-					{
-						compWithProp = compWithProp + 1;
-					}
-				} finally
-				{
-					lock.unlock();
-					comp.lock.unlock();
-				}
-			}
-		}
-		return compWithProp;
-	}
+        
+        private Boolean shouldIncrementComp(Behavior module, Memory j, ListType listType) {
+            if (impendingAccess(module)) {
+                try {
+                    return listContainsMemory(getListToIterate(module, listType), j);
+                } finally {
+                    module.lock.unlock();
+                    lock.unlock();
+                }
+            }
+            return false;
+        }
+        
+        private ArrayList<Memory> getListToIterate(Behavior module, ListType listType) {
+            ArrayList<Memory> listToIterate = new ArrayList<>();
+            switch(listType){
+                case ADD:
+                    listToIterate = module.getAddList();
+                    break;
+                case DELETE:
+                    listToIterate = module.getDeleteList();
+                    break;
+                case PRECONDITION:
+                    listToIterate.addAll(module.getListOfPreconditions());
+                    listToIterate.addAll(module.getSoftPreconList());
+                    break;
+                default:
+                    break;
+            }
+            
+            return listToIterate;
+        }
 
 	/**
 	 * Sets the list of actions constituting this behavior
@@ -1561,4 +1316,38 @@ public abstract class Behavior extends Codelet
 	public void setSoftPreconList(ArrayList<Memory> softPreconList) {
 		this.softPreconList = softPreconList;
 	}
+        /**
+	 * @return the inputfromstate
+	 */
+        public double getInputfromstate() {
+            return inputfromstate;
+        }
+        /**
+	 * @return the inputfromgoals
+	 */
+        public double getInputfromgoals() {
+            return inputfromgoals;
+        }
+        /**
+	 * @return the spreadbw
+	 */
+        public double getSpreadbw() {
+            return spreadbw;
+        }
+        /**
+	 * @return the spreadfw
+	 */
+        public double getSpreadfw() {
+            return spreadfw;
+        }
+        /**
+	 * @return the activationWhenActive
+	 */
+        public double getActivationWhenActive(){
+            return activationWhenActive;
+        }
+
+
+        
+        
 }
