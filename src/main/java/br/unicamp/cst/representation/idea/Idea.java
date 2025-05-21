@@ -30,6 +30,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.TimeZone;
+import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArrayList;
 import org.slf4j.LoggerFactory;
@@ -41,7 +42,7 @@ import org.slf4j.LoggerFactory;
  * @author rgudwin
  */
 public class Idea implements Category,Habit {
-    private long id;
+    private String id;
     private String name;
     private Object value;
     private List<Idea> l= new CopyOnWriteArrayList<>();
@@ -64,7 +65,7 @@ public class Idea implements Category,Habit {
     /**
      * This variable stores the last Id used while creating new Ideas. 
      */
-    public static long lastId = 0;
+    public static String lastId = "";
     
     private static final String CDOUBLE = "java.lang.Double";
     private static final String CFLOAT = "java.lang.Float";
@@ -80,13 +81,13 @@ public class Idea implements Category,Habit {
     
     /**
      * This function generates a new id to be assigned to a new Idea being created. 
-     * This id is generated in a serialized format, being the first one with value 0 
-     * and incrementally increased by one for each new created Idea. The value of the 
+     * This id is generated with UUID(universally unique and reduces risk of conflicts). The value of the 
      * last id created so far is stored in the <i>lastId</i> static variable. 
      * @return the generated new id
      */
-    public static long genId() {
-        return(lastId++);
+    public static String genId() {
+        lastId = UUID.randomUUID().toString();
+        return lastId;
     }
     /**
      * This is the simpler constructor for an Idea. Basically, it finds a new id and creates an empty Idea. 
@@ -343,7 +344,7 @@ public class Idea implements Category,Habit {
      * This method returns the id associated to the current Idea
      * @return the id of the current Idea
      */
-    public long getId() {
+    public String getId() {
         return(id);
     }
 

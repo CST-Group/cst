@@ -356,7 +356,7 @@ public class TestIdea {
     public void cloneTest() {
         Object value = new EntityCategory();
         Idea i = new Idea("test",value,12,"category",0.0,0.5);
-        long n1,n2,n3,n4,n5,n6;
+        String n1,n2,n3,n4,n5,n6;
         n1 = i.getId();
         Idea sub1 = new Idea("sub","value1",13,"category1",1.0,0.5);
         n2 = sub1.getId();
