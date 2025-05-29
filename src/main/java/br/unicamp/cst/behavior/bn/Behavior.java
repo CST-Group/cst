@@ -128,6 +128,7 @@ public abstract class Behavior extends Codelet
 	 */
 	public void proc()
 	{
+                //TODO: criar uma variácel com última ativação e deixar essa pra quando entrar no isActive()
                 activationWhenActive = this.getActivation(); 
 		retrieveGoals(); // This should be done often because goals might change over time
 		retrieveState(); // This should be done often because world state might change over time
@@ -289,14 +290,17 @@ public abstract class Behavior extends Codelet
 	}
 
 	public synchronized boolean changedWorldBeliefState() {
-		ArrayList<Object> temp1= new ArrayList<Object>();
-		ArrayList<Object> temp2= new ArrayList<Object>();
+            ArrayList<Object> temp1= new ArrayList<Object>();
+            ArrayList<Object> temp2= new ArrayList<Object>();
 
-		temp1.addAll(listOfWorldBeliefStates);
-		temp2.addAll(listOfPreviousWorldBeliefStates);
+            temp1.addAll(listOfWorldBeliefStates);
+            temp2.addAll(listOfPreviousWorldBeliefStates);
 
-		return 	(!temp1.equals(temp2));
-	}
+            System.out.println("Conteúdo de listOfWorldBeliefStates: " + temp1);
+            System.out.println("Conteúdo de listOfPreviousWorldBeliefStates: " + temp2);
+
+            return (!temp1.equals(temp2));
+        }
 	/**
 	 * A behavior module is executable at time t when all of its preconditions are observed to be true at time t.
 	 *

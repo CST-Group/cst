@@ -55,122 +55,102 @@ public class BehaviorsWTA extends Codelet
 
 	@Override
 	public void proc() {
-		synchronized(this){
-			//Just in case:
-			codeletsActivation.clear();
-			codeletsActive.clear();
-			ArrayList<String> tempListOfExecutableCodelets = new ArrayList<String>();
+            synchronized(this) {
+                //Just in case:
+                codeletsActivation.clear();
+                codeletsActive.clear();
+                ArrayList<String> tempListOfExecutableCodelets = new ArrayList<String>();
+                if(chosenBehavior==null) {//If there are no active behavior codelet
+                    //GET A LIST OF CODELETS THAT ARE CANDIDATES FOR ACTIVATION
+                    boolean there_is_already_one_active=false;
+                    for (Behavior competence : behaviorList) {
+                        if (impendingAccess(competence)) {
+                            try {
+//                                      Using the loop to also perform activation decay
+//                                      competence.setValue(competence.getValue()*globalVariables.getPi());		
+                                if(competence.isActive()) {
+                                    there_is_already_one_active=true;
+                                }else {
+                                    if(behaviorsStillActive.contains(competence)){
+                                        behaviorsStillActive.remove(competence);
+                                    }
+                                }
 
-			
-			
-			
-			if(chosenBehavior==null){//If there are no active behavior codelet
-				//GET A LIST OF CODELETS THAT ARE CANDIDATES FOR ACTIVATION
-				boolean there_is_already_one_active=false;
-				for (Behavior competence : behaviorList)
-				{
-					if (impendingAccess(competence)){
-						try
-						{
-//							//Using the loop to also perform activation decay
-//							competence.setValue(competence.getValue()*globalVariables.getPi());
-							
-							if(competence.isActive()){
-								there_is_already_one_active=true;
-							}else{
-								if(behaviorsStillActive.contains(competence)){
-									behaviorsStillActive.remove(competence);
-								}
-							}
+                                if(competence.isExecutable()&&competence.getActivation()>=globalVariables.getThetaTemp()) {
 
-							if(competence.isExecutable()&&competence.getActivation()>=globalVariables.getThetaTemp()){
-								
-								codeletsActivation.put(competence, competence.getActivation());
+                                    codeletsActivation.put(competence, competence.getActivation());
 
-								tempListOfExecutableCodelets.add(competence.getName());//Assumes each behavior has a particular name
-							}
+                                    tempListOfExecutableCodelets.add(competence.getName());//Assumes each behavior has a particular name
+                                }
 
-						} finally
-						{
-							lock.unlock();
-							competence.lock.unlock();
-						}
-					}
-				}
+                            } finally {
+                                lock.unlock();
+                                competence.lock.unlock();
+                            }
+                        }
+                    }
 
-				//FINDS OUT WHICH ONE IS THE CODELET WITH THE HIGHEST ACTIVATION LEVEL
-				if(there_is_already_one_active){
-					System.out.println("Error at KWTANetwork.java: More than one behavior active at the same time.");
-				}
+                    //FINDS OUT WHICH ONE IS THE CODELET WITH THE HIGHEST ACTIVATION LEVEL
+                    if(there_is_already_one_active) {
+                        System.out.println("Error at KWTANetwork.java: More than one behavior active at the same time.");
+                    }
 
 
-				double highestAct=Double.MIN_VALUE;
-				for (Entry<Codelet, Double> o : codeletsActivation.entrySet()) {
-					Behavior competence =(Behavior) o.getKey();
-					if (impendingAccess(competence)){
-						try
-						{
-							double activation=(Double) o.getValue();
-							if(activation>=highestAct){
-								chosenBehavior=competence;
-								highestAct=activation;
-							}
-						} finally
-						{
-							lock.unlock();
-							competence.lock.unlock();
-						}
-					}
-
-				}
+                    double highestAct=Double.MIN_VALUE;
+                    for (Entry<Codelet, Double> o : codeletsActivation.entrySet()) {
+                        Behavior competence =(Behavior) o.getKey();
+                        if (impendingAccess(competence)) {
+                            try {
+                                double activation=(Double) o.getValue();
+                                if(activation>=highestAct) {
+                                    chosenBehavior=competence;
+                                    highestAct=activation;
+                                }
+                            } finally {
+                                lock.unlock();
+                                competence.lock.unlock();
+                            }
+                        }
+                    }
 
 
-				//ACTIVATES EXECUTABLE CODELET WITH HIGHEST ACTIVATION LEVEL
+                    //ACTIVATES EXECUTABLE CODELET WITH HIGHEST ACTIVATION LEVEL
+                    //System.out.println("I believe this guy should become active (A="+chosen_codelet.getValue()+"): "+chosen_codelet.getId());
+                    if(chosenBehavior!=null) {//otherwise, it means it could not find a suitable behavior for activation
+                        if (impendingAccess(chosenBehavior)) {
+                            try {
+                                chosenBehavior.setActive(true);
+                            } finally {
+                                lock.unlock();
+                                chosenBehavior.lock.unlock();
+                            }
+                        }
 
-				//				System.out.println("I believe this guy should become active (A="+chosen_codelet.getValue()+"): "+chosen_codelet.getId());
-				if(chosenBehavior!=null){//otherwise, it means it could not find a suitable behavior for activation
-					if (impendingAccess(chosenBehavior)){
-						try
-						{
-							chosenBehavior.setActive(true);
-						} finally
-						{
-							lock.unlock();
-							chosenBehavior.lock.unlock();
-						}
-					}
+                        // All thetatemps must be reset back to their original values
+                        globalVariables.setThetaTemp(globalVariables.getTheta());
+                    } else { // no active behavior yet
+                        globalVariables.decreaseThetaTemps(); //  only in case no behavior is used						
+                    }
 
-					// All thetatemps must be reset back to their original values
-					globalVariables.setThetaTemp(globalVariables.getTheta());
-				}else{ // no active behavior yet
-					globalVariables.decreaseThetaTemps(); //  only in case no behavior is used						
-				}
-
-			}else{//If there is already an active behavior codelet
-				//Check if its world belief state has changed
-				boolean mustSetNull=false;
-				if (impendingAccess(chosenBehavior)){
-					try
-					{
-						if(chosenBehavior.changedWorldBeliefState()){
-							chosenBehavior.setActive(false);		
-							mustSetNull=true;
-						}
-
-					} finally
-					{
-						lock.unlock();
-						chosenBehavior.lock.unlock();
-					}
-				}
-
-				if(mustSetNull){
-					chosenBehavior=null;
-				}
-
-			}
-			
-		}//end synchronized
+                } else {//If there is already an active behavior codelet
+                    //Check if its world belief state has changed
+                    boolean mustSetNull=false;
+                    if (impendingAccess(chosenBehavior)) {
+                        try {
+                            if(chosenBehavior.changedWorldBeliefState()) {
+                                chosenBehavior.setActive(false);		
+                                mustSetNull=true;
+                            }
+                        } finally {
+                            lock.unlock();
+                            chosenBehavior.lock.unlock();
+                        }
+                    }
+                    if(mustSetNull) {
+                        chosenBehavior=null;
+                    }
+                }
+            }//end synchronized
 	}//end proc
 
 
