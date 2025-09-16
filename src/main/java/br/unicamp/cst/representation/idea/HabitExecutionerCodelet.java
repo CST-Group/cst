@@ -12,6 +12,8 @@ package br.unicamp.cst.representation.idea;
 
 import br.unicamp.cst.core.entities.Codelet;
 import br.unicamp.cst.core.entities.Memory;
+import br.unicamp.cst.core.entities.MemoryContainer;
+
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -41,12 +43,12 @@ public class HabitExecutionerCodelet extends Codelet {
                 }
             }
         }
-        if (root.isLeaf()) {
-            Logger.getAnonymousLogger().log(Level.INFO, "I was not able to find any valid Idea at inputs");
-        }
-        if (h == null) {
-            Logger.getAnonymousLogger().log(Level.INFO, "I found no habit to execute");
-        }
+        // if (root.isLeaf() && this.inputs.size() > 1) {
+        //     Logger.getAnonymousLogger().log(Level.INFO, "I was not able to find any valid Idea at inputs");
+        // }
+        // if (h == null) {
+        //     Logger.getAnonymousLogger().log(Level.INFO, "I found no habit to execute");
+        // }
     }
 
     @Override
@@ -58,8 +60,18 @@ public class HabitExecutionerCodelet extends Codelet {
     public void proc() {
         if (h != null) {
             Idea ois = h.exec(root);
-            for (Memory m : outputs)
-               m.setI(ois);
+            if (ois != null) {
+                for (Idea sub_ois : ois.getL()) {
+                    for (Memory m : outputs) {
+                        if (m instanceof MemoryContainer) {
+                            MemoryContainer mc = (MemoryContainer) m;
+                            if (sub_ois.getName().equals(mc.getName())) {
+                                mc.setI(ois, -1.0d, mc.getName());
+                            }
+                        }
+                    }
+                }
+            }
         }
     }
 }
