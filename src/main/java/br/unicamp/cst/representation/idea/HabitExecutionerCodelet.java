@@ -29,7 +29,7 @@ public class HabitExecutionerCodelet extends Codelet {
     
     @Override
     public void accessMemoryObjects() {
-        root = new Idea("root");
+        root = new Idea("root", "");
         for (Memory m : this.inputs) {
             Object o = m.getI();
             if (o instanceof Idea) {
@@ -66,7 +66,7 @@ public class HabitExecutionerCodelet extends Codelet {
                         if (m instanceof MemoryContainer) {
                             MemoryContainer mc = (MemoryContainer) m;
                             if (sub_ois.getName().equals(mc.getName())) {
-                                mc.setI(ois, -1.0d, mc.getName());
+                                mc.setI(sub_ois, -1.0d, mc.getName());
                             }
                         }
                     }
