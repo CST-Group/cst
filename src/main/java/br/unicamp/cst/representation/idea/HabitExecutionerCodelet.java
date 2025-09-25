@@ -23,15 +23,23 @@ import java.util.logging.Logger;
  * @author rgudwin
  */
 public class HabitExecutionerCodelet extends Codelet {
-
+    private volatile double inputActivation = 0.0d;
+    MemoryContainer mc;
     Habit h;
     Idea root;
+
+    public HabitExecutionerCodelet(String name) {
+        this.name = name;
+    }
     
     @Override
     public void accessMemoryObjects() {
         root = new Idea("root", "");
         for (Memory m : this.inputs) {
-            Object o = m.getI();
+            if (m instanceof MemoryContainer) {
+                mc = (MemoryContainer) m;
+            }
+            Object o = mc.getI();
             if (o instanceof Idea) {
                 Idea id = (Idea)o;
                 Object value = id.getValue();
@@ -43,12 +51,12 @@ public class HabitExecutionerCodelet extends Codelet {
                 }
             }
         }
-        // if (root.isLeaf() && this.inputs.size() > 1) {
-        //     Logger.getAnonymousLogger().log(Level.INFO, "I was not able to find any valid Idea at inputs");
-        // }
-        // if (h == null) {
-        //     Logger.getAnonymousLogger().log(Level.INFO, "I found no habit to execute");
-        // }
+        if (root.isLeaf() && this.inputs.size() > 1) {
+            Logger.getAnonymousLogger().log(Level.INFO, "I was not able to find any valid Idea at inputs");
+        }
+        if (h == null) {
+            Logger.getAnonymousLogger().log(Level.INFO, "I found no habit to execute");
+        }
     }
 
     @Override
@@ -66,7 +74,11 @@ public class HabitExecutionerCodelet extends Codelet {
                         if (m instanceof MemoryContainer) {
                             MemoryContainer mc = (MemoryContainer) m;
                             if (sub_ois.getName().equals(mc.getName())) {
-                                mc.setI(sub_ois, -1.0d, mc.getName());
+                                Idea activationIdea = sub_ois.get("activation");
+                                if (activationIdea != null && activationIdea.getValue() instanceof Double) {
+                                    inputActivation = (double) activationIdea.getValue();
+                                }
+                                mc.setI(sub_ois, inputActivation, mc.getName());
                             }
                         }
                     }
