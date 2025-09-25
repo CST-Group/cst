@@ -23,10 +23,13 @@ import java.util.logging.Logger;
  * @author rgudwin
  */
 public class HabitExecutionerCodelet extends Codelet {
-    private volatile double inputActivation = 0.0d;
-    MemoryContainer mc;
+    //private volatile double inputActivation = 0.0d;
     Habit h;
     Idea root;
+
+    public HabitExecutionerCodelet() {
+        this.name = "Default";
+    }
 
     public HabitExecutionerCodelet(String name) {
         this.name = name;
@@ -36,14 +39,11 @@ public class HabitExecutionerCodelet extends Codelet {
     public void accessMemoryObjects() {
         root = new Idea("root", "");
         for (Memory m : this.inputs) {
-            if (m instanceof MemoryContainer) {
-                mc = (MemoryContainer) m;
-            }
-            Object o = mc.getI();
+            Object o = m.getI();
             if (o instanceof Idea) {
                 Idea id = (Idea)o;
                 Object value = id.getValue();
-                if (value instanceof Habit) {
+                if (m.getName().equalsIgnoreCase(this.getName()+"Habits") && value instanceof Habit) {
                     h = (Habit) value;
                 }    
                 else {
@@ -66,6 +66,7 @@ public class HabitExecutionerCodelet extends Codelet {
 
     @Override
     public void proc() {
+        double act = 0.0d;
         if (h != null) {
             Idea ois = h.exec(root);
             if (ois != null) {
@@ -76,14 +77,15 @@ public class HabitExecutionerCodelet extends Codelet {
                             if (sub_ois.getName().equals(mc.getName())) {
                                 Idea activationIdea = sub_ois.get("activation");
                                 if (activationIdea != null && activationIdea.getValue() instanceof Double) {
-                                    inputActivation = (double) activationIdea.getValue();
+                                    act = (double) activationIdea.getValue();
                                 }
-                                mc.setI(sub_ois, inputActivation, mc.getName());
+                                mc.setI(sub_ois, act, this.getName());
                             }
                         }
                     }
                 }
             }
+            try{setActivation(act);}catch(Exception e){};
         }
     }
 }
