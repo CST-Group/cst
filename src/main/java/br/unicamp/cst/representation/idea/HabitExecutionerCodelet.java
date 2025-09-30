@@ -14,7 +14,9 @@ import br.unicamp.cst.core.entities.Codelet;
 import br.unicamp.cst.core.entities.Memory;
 import br.unicamp.cst.core.entities.MemoryContainer;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -23,7 +25,6 @@ import java.util.logging.Logger;
  * @author rgudwin
  */
 public class HabitExecutionerCodelet extends Codelet {
-    //private volatile double inputActivation = 0.0d;
     Habit h;
     Idea root;
 
@@ -66,26 +67,41 @@ public class HabitExecutionerCodelet extends Codelet {
 
     @Override
     public void proc() {
-        double act = 0.0d;
-        if (h != null) {
-            Idea ois = h.exec(root);
-            if (ois != null) {
-                for (Idea sub_ois : ois.getL()) {
-                    for (Memory m : outputs) {
-                        if (m instanceof MemoryContainer) {
-                            MemoryContainer mc = (MemoryContainer) m;
-                            if (sub_ois.getName().equals(mc.getName())) {
-                                Idea activationIdea = sub_ois.get("activation");
-                                if (activationIdea != null && activationIdea.getValue() instanceof Double) {
-                                    act = (double) activationIdea.getValue();
-                                }
-                                mc.setI(sub_ois, act, this.getName());
-                            }
-                        }
-                    }
-                }
+        if (h == null) return;
+
+        // Get the ideas from the habit execution
+        Idea outputRoot = h.exec(root);
+        if (outputRoot == null) return;
+
+        // Set the activation of the output root idea in this codelet
+        double outputRootActivation = getActivationValue(outputRoot);
+        try{setActivation(outputRootActivation);}catch(Exception e){};
+
+        // Create a map of output memories for quick access
+        Map<String, Memory> outputsMap = new HashMap<>();
+        for (Memory mem : outputs) outputsMap.put(mem.getName(), mem);
+
+        // Iterate through the output ideas and update corresponding memories
+        for (Idea outputIdea : outputRoot.getL()) { 
+            Memory m = outputsMap.get(outputIdea.getName());
+            if (m == null) continue; // Skip to the next idea if no match is found
+
+            if (m instanceof MemoryContainer) {
+                MemoryContainer mc = (MemoryContainer) m;
+                mc.setI(outputIdea, getActivationValue(outputIdea), this.getName());
             }
-            try{setActivation(act);}catch(Exception e){};
+            else {
+                m.setI(outputIdea);
+            }
         }
+    }
+
+    private double getActivationValue(Idea idea) {
+        double act = 0.0d;
+        Idea actIdea = idea.get("activation");
+        if (actIdea != null && actIdea.getValue() instanceof Double) {
+            act = (double) actIdea.getValue();
+        }
+        return act;
     }
 }
