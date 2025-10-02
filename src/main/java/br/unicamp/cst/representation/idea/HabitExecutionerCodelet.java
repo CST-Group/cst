@@ -69,19 +69,15 @@ public class HabitExecutionerCodelet extends Codelet {
     public void proc() {
         if (h == null) return;
 
-        // Get the ideas from the habit execution
         Idea outputRoot = h.exec(root);
         if (outputRoot == null) return;
 
-        // Set the activation of the output root idea in this codelet
         double outputRootActivation = getActivationValue(outputRoot);
         try{setActivation(outputRootActivation);}catch(Exception e){};
 
-        // Create a map of output memories for quick access
         Map<String, Memory> outputsMap = new HashMap<>();
         for (Memory mem : outputs) outputsMap.put(mem.getName(), mem);
-
-        // Iterate through the output ideas and update corresponding memories
+        
         for (Idea outputIdea : outputRoot.getL()) { 
             Memory m = outputsMap.get(outputIdea.getName());
             if (m == null) continue; // Skip to the next idea if no match is found
