@@ -75,6 +75,10 @@ public class HabitExecutionerCodelet extends Codelet {
         double outputRootActivation = getActivationValue(outputRoot);
         try{setActivation(outputRootActivation);}catch(Exception e){};
 
+        setTimeStepValue(outputRoot);
+
+        setPublishSubscribeValue(outputRoot);
+
         Map<String, Memory> outputsMap = new HashMap<>();
         for (Memory mem : outputs) outputsMap.put(mem.getName(), mem);
         
@@ -99,5 +103,21 @@ public class HabitExecutionerCodelet extends Codelet {
             act = (double) actIdea.getValue();
         }
         return act;
+    }
+
+    private void setTimeStepValue(Idea idea) {
+        Idea timeStepIdea = idea.get("timeStep");
+        if (timeStepIdea != null && timeStepIdea.getValue() instanceof Long) {
+            long timeStep = (long) timeStepIdea.getValue();
+            try{setTimeStep(timeStep);}catch(Exception e){};
+        }
+    }
+
+    private void setPublishSubscribeValue(Idea idea) {
+        Idea publishSubscribeIdea = idea.get("publishSubscribe");
+        if (publishSubscribeIdea != null && publishSubscribeIdea.getValue() instanceof Boolean) {
+            boolean publishSubscribe = (boolean) publishSubscribeIdea.getValue();
+            try{setPublishSubscribe(publishSubscribe);}catch(Exception e){};
+        }
     }
 }
