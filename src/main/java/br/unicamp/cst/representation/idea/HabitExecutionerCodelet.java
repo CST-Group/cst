@@ -53,7 +53,7 @@ public class HabitExecutionerCodelet extends Codelet {
             }
         }
         if (root.isLeaf() && this.inputs.size() > 1) {
-            Logger.getAnonymousLogger().log(Level.INFO, "I was not able to find any valid Idea at inputs");
+            Logger.getAnonymousLogger().log(Level.FINE, "I was not able to find any valid Idea at inputs");
         }
         if (h == null) {
             Logger.getAnonymousLogger().log(Level.INFO, "I found no habit to execute");
