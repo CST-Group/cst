@@ -18,13 +18,24 @@ import org.junit.jupiter.api.Test;
  * @author rgudwin
  */
 public class HabitExecutionerCodeletTest {
-    
+    double act;
+    long timeStep;
+
+    Habit summer;
+    Habit decrementer;
+    Habit actSetter;
+    Habit timeStepSetter;
+
     Mind m;
     MemoryContainer mc;
     MemoryObject moi;
     MemoryObject moo;
     
-    public HabitExecutionerCodeletTest() {
+    private void setUp() {
+        MockHabits mh = new MockHabits();
+        summer = mh.summer;
+        decrementer = mh.decrementer;
+
         m = new Mind();
         mc = m.createMemoryContainer("testHabits");
         Idea sh = new Idea("Summer");
@@ -45,46 +56,19 @@ public class HabitExecutionerCodeletTest {
         m.insertCodelet(hec);
         m.start();
     }
+
+    private void setUp2() {
+        act = 0.75d;
+        MockHabits mh = new MockHabits();
+        actSetter = mh.actSetter;
+    }
     
-    Habit summer = new Habit() { 
-        @Override 
-        public Idea exec(Idea idea) {
-             Idea root = new Idea("root", "");
-             Idea adder = idea.get("value.add");
-             int valuetoadd=0;
-             if (adder != null && adder.getValue() instanceof Integer) {
-                 valuetoadd = (int) adder.getValue();
-             }
-             if (idea.get("value").getValue() instanceof Integer) {
-                  int number = (int) idea.get("value").getValue();
-                  Idea modifiedIdea = new Idea("OutputIdeasMemory",number+valuetoadd);
-                  root.add(modifiedIdea);
-                  return root;
-             }
-             System.out.println("Something wrong happened");
-             return(null);
-        }
-        };
-    Habit decrementer = new Habit() { 
-        @Override 
-        public Idea exec(Idea idea) {
-             Idea root = new Idea("root", "");
-             Idea adder = idea.get("value.add");
-             int valuetodec=0;
-             if (adder != null && adder.getValue() instanceof Integer) {
-                 valuetodec = (int) adder.getValue();
-             }
-             if (idea.get("value").getValue() instanceof Integer) {
-                  int number = (int) idea.get("value").getValue();
-                  Idea modifiedIdea = new Idea("OutputIdeasMemory",number-valuetodec);
-                  root.add(modifiedIdea);
-                  return root;
-             }
-             System.out.println("Something wrong happened");
-             return(null);
-        }
-        };
-    
+    private void setUp3() {
+        timeStep = 500;
+        MockHabits mh = new MockHabits();
+        timeStepSetter = mh.timeStepSetter;
+    }
+
     private void doTest() {
         Object oo;
         Random r = new Random();
@@ -131,7 +115,7 @@ public class HabitExecutionerCodeletTest {
     
     @Test 
     public void testHabitExecutionerCodeletMAX() {
-        HabitExecutionerCodeletTest test = new HabitExecutionerCodeletTest();
+        setUp();
         mc.setPolicy(MemoryContainer.Policy.MAX);
         System.out.println("\nTesting the MAX Policy - Sums for < 50 Decs for > 50");
         doTest();
@@ -139,7 +123,7 @@ public class HabitExecutionerCodeletTest {
 
     @Test 
     public void testHabitExecutionerCodeletMIN() {
-        HabitExecutionerCodeletTest test = new HabitExecutionerCodeletTest();
+        setUp();
         mc.setPolicy(MemoryContainer.Policy.MIN);
         System.out.println("\nTesting the MIN Policy - Sums for > 50 Decs for < 50");
         doTest();
@@ -147,7 +131,7 @@ public class HabitExecutionerCodeletTest {
     
     @Test 
     public void testHabitExecutionerCodeletIterate() {
-        HabitExecutionerCodeletTest test = new HabitExecutionerCodeletTest();
+        setUp();
         mc.setPolicy(MemoryContainer.Policy.ITERATE);
         System.out.println("\nTesting the ITERATE Policy - Iterate Sums and Decs");
         doTest(); 
@@ -155,10 +139,106 @@ public class HabitExecutionerCodeletTest {
     
     @Test 
     public void testHabitExecutionerCodeletRandom() {
-        HabitExecutionerCodeletTest test = new HabitExecutionerCodeletTest();
+        setUp();
         mc.setPolicy(MemoryContainer.Policy.RANDOM_FLAT);
         System.out.println("\nTesting the RANDOM_FLAT Policy - Sums and Decs at Random");
         doTest(); 
     }
-    
+
+    @Test
+    public void testActivation() {
+        setUp2();
+        HabitExecutionerCodelet hec = new HabitExecutionerCodelet("Name");
+        hec.h = actSetter;
+        hec.proc();
+
+        assertEquals(act, hec.getActivation());
+    }
+
+    @Test
+    public void testTimeStep() {
+        setUp3();
+        HabitExecutionerCodelet hec = new HabitExecutionerCodelet("Name");
+        hec.h = timeStepSetter;
+        hec.proc();
+
+        assertEquals(timeStep, hec.getTimeStep());
+    }
+
+    // @Test
+    // public void testPublishSubscribe() {
+    //     setUp4();
+    //     HabitExecutionerCodelet hec = new HabitExecutionerCodelet("Name");
+    //     hec.h = publishSubscribeSetter;
+    //     hec.proc();
+
+    //     assertEquals(publishSubscribe, hec.get);
+    // }
+
+    class MockHabits {
+        public MockHabits() {
+        }
+
+        Habit summer = new Habit() { 
+            @Override 
+            public Idea exec(Idea idea) {
+                Idea root = new Idea("root", "");
+                Idea adder = idea.get("value.add");
+                int valuetoadd=0;
+                if (adder != null && adder.getValue() instanceof Integer) {
+                    valuetoadd = (int) adder.getValue();
+                }
+                if (idea.get("value").getValue() instanceof Integer) {
+                    int number = (int) idea.get("value").getValue();
+                    Idea modifiedIdea = new Idea("OutputIdeasMemory",number+valuetoadd);
+                    root.add(modifiedIdea);
+                    return root;
+                }
+                System.out.println("Something wrong happened");
+                return(null);
+            }
+        };
+
+        Habit decrementer = new Habit() { 
+            @Override 
+            public Idea exec(Idea idea) {
+                Idea root = new Idea("root", "");
+                Idea adder = idea.get("value.add");
+                int valuetodec=0;
+                if (adder != null && adder.getValue() instanceof Integer) {
+                    valuetodec = (int) adder.getValue();
+                }
+                if (idea.get("value").getValue() instanceof Integer) {
+                    int number = (int) idea.get("value").getValue();
+                    Idea modifiedIdea = new Idea("OutputIdeasMemory",number-valuetodec);
+                    root.add(modifiedIdea);
+                    return root;
+                }
+                System.out.println("Something wrong happened");
+                return(null);
+            }
+        };
+
+        Habit actSetter = new Habit() { 
+            @Override 
+            public Idea exec(Idea idea) {
+                Idea root = new Idea("root", "");
+                root.add(new Idea("activation", act));
+                root.add(new Idea("someIdea", 123));
+                root.add(new Idea("anotherIdea", "abc"));
+                return root;
+            }
+        };
+
+        Habit timeStepSetter = new Habit() { 
+            @Override 
+            public Idea exec(Idea idea) {
+                Idea root = new Idea("root", "");
+                root.add(new Idea("timeStep", timeStep));
+                root.add(new Idea("someIdea", 123));
+                root.add(new Idea("anotherIdea", "abc"));
+                return root;
+            }
+        };
+    }
 }
