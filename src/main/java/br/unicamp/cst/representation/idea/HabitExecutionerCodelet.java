@@ -72,28 +72,13 @@ public class HabitExecutionerCodelet extends Codelet {
         Idea outputRoot = h.exec(root);
         if (outputRoot == null) return;
 
-        double outputRootActivation = getActivationValue(outputRoot);
-        try{setActivation(outputRootActivation);}catch(Exception e){};
+        try{this.setActivation(getActivationValue(outputRoot));}catch(Exception e){};
 
         setTimeStepValue(outputRoot);
 
         setPublishSubscribeValue(outputRoot);
 
-        Map<String, Memory> outputsMap = new HashMap<>();
-        for (Memory mem : outputs) outputsMap.put(mem.getName().toLowerCase(), mem);
-        
-        for (Idea outputIdea : outputRoot.getL()) { 
-            Memory m = outputsMap.get(outputIdea.getName().toLowerCase());
-            if (m == null) continue; // Skip to the next idea if no match is found
-
-            if (m instanceof MemoryContainer) {
-                MemoryContainer mc = (MemoryContainer) m;
-                mc.setI(outputIdea, getActivationValue(outputIdea), this.getName());
-            }
-            else {
-                m.setI(outputIdea);
-            }
-        }
+        setIdeasToOutputMemories(outputRoot);
     }
 
     private double getActivationValue(Idea idea) {
@@ -109,7 +94,7 @@ public class HabitExecutionerCodelet extends Codelet {
         Idea timeStepIdea = idea.get("timeStep");
         if (timeStepIdea != null && timeStepIdea.getValue() instanceof Long) {
             long timeStep = (long) timeStepIdea.getValue();
-            try{setTimeStep(timeStep);}catch(Exception e){};
+            try{this.setTimeStep(timeStep);}catch(Exception e){};
         }
     }
 
@@ -117,7 +102,25 @@ public class HabitExecutionerCodelet extends Codelet {
         Idea publishSubscribeIdea = idea.get("publishSubscribe");
         if (publishSubscribeIdea != null && publishSubscribeIdea.getValue() instanceof Boolean) {
             boolean publishSubscribe = (boolean) publishSubscribeIdea.getValue();
-            try{setPublishSubscribe(publishSubscribe);}catch(Exception e){};
+            try{this.setPublishSubscribe(publishSubscribe);}catch(Exception e){};
+        }
+    }
+
+    private void setIdeasToOutputMemories(Idea outputRoot) {
+        Map<String, Memory> outputsMap = new HashMap<>();
+        for (Memory mem : this.outputs) outputsMap.put(mem.getName().toLowerCase(), mem);
+        
+        for (Idea outputIdea : outputRoot.getL()) { 
+            Memory m = outputsMap.get(outputIdea.getName().toLowerCase());
+            if (m == null) continue; // Skip to the next idea if no match is found
+
+            if (m instanceof MemoryContainer) {
+                MemoryContainer mc = (MemoryContainer) m;
+                mc.setI(outputIdea, getActivationValue(outputIdea), this.getName());
+            }
+            else {
+                m.setI(outputIdea);
+            }
         }
     }
 }
