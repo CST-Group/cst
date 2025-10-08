@@ -80,10 +80,10 @@ public class HabitExecutionerCodelet extends Codelet {
         setPublishSubscribeValue(outputRoot);
 
         Map<String, Memory> outputsMap = new HashMap<>();
-        for (Memory mem : outputs) outputsMap.put(mem.getName(), mem);
+        for (Memory mem : outputs) outputsMap.put(mem.getName().toLowerCase(), mem);
         
         for (Idea outputIdea : outputRoot.getL()) { 
-            Memory m = outputsMap.get(outputIdea.getName());
+            Memory m = outputsMap.get(outputIdea.getName().toLowerCase());
             if (m == null) continue; // Skip to the next idea if no match is found
 
             if (m instanceof MemoryContainer) {

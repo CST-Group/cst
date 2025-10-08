@@ -26,7 +26,7 @@ public class HabitExecutionerCodeletTest {
     
     public HabitExecutionerCodeletTest() {
         m = new Mind();
-        mc = m.createMemoryContainer("HabitsMemory");
+        mc = m.createMemoryContainer("testHabits");
         Idea sh = new Idea("Summer");
         sh.setValue(summer);
         sh.setScope(2);
@@ -37,7 +37,7 @@ public class HabitExecutionerCodeletTest {
         mc.setI(dh);
         moi = m.createMemoryObject("InputIdeasMemory");
         moo = m.createMemoryObject("OutputIdeasMemory");
-        HabitExecutionerCodelet hec = new HabitExecutionerCodelet();
+        HabitExecutionerCodelet hec = new HabitExecutionerCodelet("test");
         hec.addInput(mc);
         hec.addInput(moi);
         hec.addOutput(moo);
@@ -49,6 +49,7 @@ public class HabitExecutionerCodeletTest {
     Habit summer = new Habit() { 
         @Override 
         public Idea exec(Idea idea) {
+             Idea root = new Idea("root", "");
              Idea adder = idea.get("value.add");
              int valuetoadd=0;
              if (adder != null && adder.getValue() instanceof Integer) {
@@ -56,8 +57,9 @@ public class HabitExecutionerCodeletTest {
              }
              if (idea.get("value").getValue() instanceof Integer) {
                   int number = (int) idea.get("value").getValue();
-                  Idea modifiedIdea = new Idea("incremented",number+valuetoadd);
-                  return(modifiedIdea);
+                  Idea modifiedIdea = new Idea("OutputIdeasMemory",number+valuetoadd);
+                  root.add(modifiedIdea);
+                  return root;
              }
              System.out.println("Something wrong happened");
              return(null);
@@ -66,6 +68,7 @@ public class HabitExecutionerCodeletTest {
     Habit decrementer = new Habit() { 
         @Override 
         public Idea exec(Idea idea) {
+             Idea root = new Idea("root", "");
              Idea adder = idea.get("value.add");
              int valuetodec=0;
              if (adder != null && adder.getValue() instanceof Integer) {
@@ -73,8 +76,9 @@ public class HabitExecutionerCodeletTest {
              }
              if (idea.get("value").getValue() instanceof Integer) {
                   int number = (int) idea.get("value").getValue();
-                  Idea modifiedIdea = new Idea("decremented",number-valuetodec);
-                  return(modifiedIdea);
+                  Idea modifiedIdea = new Idea("OutputIdeasMemory",number-valuetodec);
+                  root.add(modifiedIdea);
+                  return root;
              }
              System.out.println("Something wrong happened");
              return(null);
