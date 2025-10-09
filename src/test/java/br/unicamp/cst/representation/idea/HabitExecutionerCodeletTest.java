@@ -143,6 +143,7 @@ public class HabitExecutionerCodeletTest {
         hec.setPublishSubscribe(true);
         m.insertCodelet(hec);
         m.start();
+        while (outputSetter.)
     }
 
     private void doTest() {
@@ -187,6 +188,16 @@ public class HabitExecutionerCodeletTest {
             }
             else fail("The output memory object is null");
         } 
+    }
+    
+    abstract class CountableHabit implements Habit {
+        int count = 0;
+        
+        //@Override
+        //public Idea exec(Idea idea) {
+        //    sup
+        //}
+        
     }
 
     class MockHabits {
@@ -255,12 +266,14 @@ public class HabitExecutionerCodeletTest {
             }
         };
 
-        Habit outputSetter = new Habit() { 
+        Habit outputSetter = new Habit() {
+            public int counter = 0;
             @Override 
             public Idea exec(Idea idea) {
                 Idea root = new Idea("root", "");
                 root.add(new Idea("someIdea", 123));
                 root.add(new Idea("anotherIdea", "abc"));
+                counter++;
                 return root;
             }
         };

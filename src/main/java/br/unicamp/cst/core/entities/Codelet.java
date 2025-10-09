@@ -803,6 +803,21 @@ public abstract class Codelet implements Runnable, MemoryObserver {
 		this.isMemoryObserver = isMemoryObserver;
 	}
         
+        /**
+	 * Check if this Codelet is in publish-subscribe mode.
+	 * 
+	 */
+	public synchronized boolean isPublishSubscribe() {
+		return isMemoryObserver;
+	}
+        
+        
+        /**
+	 * Sets and unsets publish-subscribe mode.
+	 * 
+         * @param enable
+	 *            sets publish-subscribe mode on true or false
+	 */
         @SuppressWarnings("empty-statement")
         public synchronized void setPublishSubscribe(boolean enable) {
             if (enable) {
