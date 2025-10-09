@@ -143,7 +143,7 @@ public class HabitExecutionerCodeletTest {
         hec.setPublishSubscribe(true);
         m.insertCodelet(hec);
         m.start();
-        while (outputSetter.)
+        // while (outputSetter.)
     }
 
     private void doTest() {
