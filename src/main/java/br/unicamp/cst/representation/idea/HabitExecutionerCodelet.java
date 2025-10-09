@@ -21,7 +21,21 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 /**
- *
+ * This codelet executes a habit found in its input memories.
+ * 
+ * It looks for a habit in a memory whose name is the
+ * same as the name of the codelet plus "Habits".
+ * 
+ * It also looks for ideas in the other input memories and adds them
+ * to a root idea, which is passed as a parameter to the habit execution.
+ * 
+ * If there is another habit in the input memories without the "Habits"
+ * suffix, it is added to the root idea as well, but not executed.
+ * 
+ * The habit returns a root idea, which may contain several ideas inside it.
+ * The codelet looks for ideas inside the root idea whose names match (case insensitive)
+ * the names of its output memories, and sets those ideas to the respective memories.
+ * 
  * @author rgudwin
  */
 public class HabitExecutionerCodelet extends Codelet {
@@ -106,6 +120,17 @@ public class HabitExecutionerCodelet extends Codelet {
         }
     }
 
+    /**
+	 * Gets the ideas from the outputRoot and sets them to the output memories
+     * that match by name (case insensitive).
+     * 
+     * If the memory is a MemoryContainer, it sets the MemoryObjects inside it
+     * with the name of the HabitExecutionerCodelet itslef. It does so to
+     * differentiate between different HECs writing to the same MemoryContainer.
+	 * 
+	 * @param outputRoot
+	 *            the root idea that comes from the habit execution
+	 */
     private void setIdeasToOutputMemories(Idea outputRoot) {
         Map<String, Memory> outputsMap = new HashMap<>();
         for (Memory mem : this.outputs) outputsMap.put(mem.getName().toLowerCase(), mem);
