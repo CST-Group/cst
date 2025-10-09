@@ -25,6 +25,7 @@ public class HabitExecutionerCodeletTest {
     Habit decrementer;
     Habit actSetter;
     Habit timeStepSetter;
+    Habit outputSetter;
 
     Mind m;
     MemoryContainer mc;
@@ -56,17 +57,92 @@ public class HabitExecutionerCodeletTest {
         m.insertCodelet(hec);
         m.start();
     }
+    
+    @Test 
+    public void testHabitExecutionerCodeletMAX() {
+        setUp();
+        mc.setPolicy(MemoryContainer.Policy.MAX);
+        System.out.println("\nTesting the MAX Policy - Sums for < 50 Decs for > 50");
+        doTest();
+    }
 
-    private void setUp2() {
-        act = 0.75d;
-        MockHabits mh = new MockHabits();
-        actSetter = mh.actSetter;
+    @Test 
+    public void testHabitExecutionerCodeletMIN() {
+        setUp();
+        mc.setPolicy(MemoryContainer.Policy.MIN);
+        System.out.println("\nTesting the MIN Policy - Sums for > 50 Decs for < 50");
+        doTest();
     }
     
-    private void setUp3() {
-        timeStep = 500;
+    @Test 
+    public void testHabitExecutionerCodeletIterate() {
+        setUp();
+        mc.setPolicy(MemoryContainer.Policy.ITERATE);
+        System.out.println("\nTesting the ITERATE Policy - Iterate Sums and Decs");
+        doTest(); 
+    }
+    
+    @Test 
+    public void testHabitExecutionerCodeletRandom() {
+        setUp();
+        mc.setPolicy(MemoryContainer.Policy.RANDOM_FLAT);
+        System.out.println("\nTesting the RANDOM_FLAT Policy - Sums and Decs at Random");
+        doTest(); 
+    }
+
+    @Test
+    public void testActivation() {
+        System.out.println("\nTesting Activation Setting through Habits");
+        Random r = new Random();
+        for (int k=0;k<100;k++) {
+            act = r.nextDouble();
+            MockHabits mh = new MockHabits();
+            actSetter = mh.actSetter;
+            HabitExecutionerCodelet hec = new HabitExecutionerCodelet("Name");
+            hec.h = actSetter;
+            hec.proc();
+
+            assertEquals(act, hec.getActivation());
+        }
+    }
+
+    @Test
+    public void testTimeStep() {
+        Random r = new Random();
+        for (int k=0;k<100;k++) {
+            timeStep = r.nextInt(1000);
+            MockHabits mh = new MockHabits();
+            timeStepSetter = mh.timeStepSetter;
+            HabitExecutionerCodelet hec = new HabitExecutionerCodelet("Name");
+            hec.h = timeStepSetter;
+            hec.proc();
+
+            assertEquals(timeStep, hec.getTimeStep());
+        }
+
+    }
+
+    // @Test
+    // public void testPublishSubscribe() {
+    //     boolean f = false, t = true;
+    //     MockHabits mh = new MockHabits();
+    // }
+
+    @Test
+    public void testNoOutputMemory() {
         MockHabits mh = new MockHabits();
-        timeStepSetter = mh.timeStepSetter;
+        outputSetter = mh.outputSetter;
+        m = new Mind();
+        mc = m.createMemoryContainer("testHabits");
+        Idea osh = new Idea("OutputSetter");
+        osh.setValue(outputSetter);
+        osh.setScope(2);
+        mc.setI(osh);
+        HabitExecutionerCodelet hec = new HabitExecutionerCodelet("test");
+        hec.addInput(mc);
+        hec.setPublishSubscribe(true);
+        m.insertCodelet(hec);
+        m.start();
     }
 
     private void doTest() {
@@ -112,68 +188,6 @@ public class HabitExecutionerCodeletTest {
             else fail("The output memory object is null");
         } 
     }
-    
-    @Test 
-    public void testHabitExecutionerCodeletMAX() {
-        setUp();
-        mc.setPolicy(MemoryContainer.Policy.MAX);
-        System.out.println("\nTesting the MAX Policy - Sums for < 50 Decs for > 50");
-        doTest();
-    }
-
-    @Test 
-    public void testHabitExecutionerCodeletMIN() {
-        setUp();
-        mc.setPolicy(MemoryContainer.Policy.MIN);
-        System.out.println("\nTesting the MIN Policy - Sums for > 50 Decs for < 50");
-        doTest();
-    }
-    
-    @Test 
-    public void testHabitExecutionerCodeletIterate() {
-        setUp();
-        mc.setPolicy(MemoryContainer.Policy.ITERATE);
-        System.out.println("\nTesting the ITERATE Policy - Iterate Sums and Decs");
-        doTest(); 
-    }
-    
-    @Test 
-    public void testHabitExecutionerCodeletRandom() {
-        setUp();
-        mc.setPolicy(MemoryContainer.Policy.RANDOM_FLAT);
-        System.out.println("\nTesting the RANDOM_FLAT Policy - Sums and Decs at Random");
-        doTest(); 
-    }
-
-    @Test
-    public void testActivation() {
-        setUp2();
-        HabitExecutionerCodelet hec = new HabitExecutionerCodelet("Name");
-        hec.h = actSetter;
-        hec.proc();
-
-        assertEquals(act, hec.getActivation());
-    }
-
-    @Test
-    public void testTimeStep() {
-        setUp3();
-        HabitExecutionerCodelet hec = new HabitExecutionerCodelet("Name");
-        hec.h = timeStepSetter;
-        hec.proc();
-
-        assertEquals(timeStep, hec.getTimeStep());
-    }
-
-    // @Test
-    // public void testPublishSubscribe() {
-    //     setUp4();
-    //     HabitExecutionerCodelet hec = new HabitExecutionerCodelet("Name");
-    //     hec.h = publishSubscribeSetter;
-    //     hec.proc();
-
-    //     assertEquals(publishSubscribe, hec.get);
-    // }
 
     class MockHabits {
         public MockHabits() {
@@ -235,6 +249,16 @@ public class HabitExecutionerCodeletTest {
             public Idea exec(Idea idea) {
                 Idea root = new Idea("root", "");
                 root.add(new Idea("timeStep", timeStep));
+                root.add(new Idea("someIdea", 123));
+                root.add(new Idea("anotherIdea", "abc"));
+                return root;
+            }
+        };
+
+        Habit outputSetter = new Habit() { 
+            @Override 
+            public Idea exec(Idea idea) {
+                Idea root = new Idea("root", "");
                 root.add(new Idea("someIdea", 123));
                 root.add(new Idea("anotherIdea", "abc"));
                 return root;
