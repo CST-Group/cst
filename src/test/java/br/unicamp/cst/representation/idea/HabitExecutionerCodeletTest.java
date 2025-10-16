@@ -576,6 +576,56 @@ public class HabitExecutionerCodeletTest {
         else fail("The output memory container is empty");
     }
 
+    @Test
+    public void testSettingTwoIdeasTwoMemories() {
+        System.out.println("\nTesting the case where the habit sets two ideas to two output memories");
+
+        exec_counter = 0;
+
+        MockHabits mh = new MockHabits();
+        outputSetter = mh.outputSetter;
+        m = new Mind();
+        mc = m.createMemoryContainer("testHabits");
+        Idea osh = new Idea("OutputSetter");
+        osh.setValue(outputSetter);
+        osh.setScope(2);
+        mc.setI(osh);
+        moi = m.createMemoryObject("InputIdeasMemory");
+        MemoryContainer moc = m.createMemoryContainer("OutputIdeasMemory");
+        moo = m.createMemoryObject("anotherIdea");
+        HabitExecutionerCodelet hec = new HabitExecutionerCodelet("test");
+        hec.addInput(mc);
+        hec.addInput(moi);
+        hec.addOutput(moc);
+        hec.addOutput(moo);
+
+        m.insertCodelet(hec);
+        m.start();
+
+        try {
+            while(exec_counter < 5) { System.out.print("."); Thread.sleep(1); }
+        } catch (Exception e) {
+            fail("An error occurred: " + e.getMessage());
+        }
+        assertEquals(5, exec_counter, "The habit should have been executed 5 times without errors");
+
+        Object oo = moc.getLastI();
+        if (oo != null) {
+            Idea ooi = (Idea) oo;
+            int val = (int) ooi.getValue();
+            assertEquals(13, val, "The value set in the first output memory container should be 13");
+        }
+        else fail("The first output memory container is empty");
+
+        oo = moo.getI();
+        if (oo != null) {
+            Idea ooi = (Idea) oo;
+            String val = (String) ooi.getValue();
+            assertEquals("abc", val, "The value set in the second output memory object should be 'abc'");
+        }
+        else fail("The second output memory object is null");
+    }
+
     class MockHabits {
         public MockHabits() {
         }
