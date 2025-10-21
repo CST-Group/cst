@@ -41,6 +41,7 @@ import java.util.logging.Logger;
 public class HabitExecutionerCodelet extends Codelet {
     Habit h;
     Idea root;
+    String habitName;
 
     public HabitExecutionerCodelet() {
         this.name = "Default";
@@ -60,6 +61,7 @@ public class HabitExecutionerCodelet extends Codelet {
                 Object value = id.getValue();
                 if (m.getName().equalsIgnoreCase(this.getName()+"Habits") && value instanceof Habit) {
                     h = (Habit) value;
+                    habitName = id.getName();
                 }    
                 else {
                     root.add((Idea)o);
@@ -141,7 +143,7 @@ public class HabitExecutionerCodelet extends Codelet {
 
             if (m instanceof MemoryContainer) {
                 MemoryContainer mc = (MemoryContainer) m;
-                mc.setI(outputIdea, getActivationValue(outputIdea), this.getName());
+                mc.setI(outputIdea, getActivationValue(outputIdea), habitName);
             }
             else {
                 m.setI(outputIdea);
