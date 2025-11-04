@@ -36,6 +36,9 @@ import java.util.logging.Logger;
  * The codelet looks for ideas inside the root idea whose names match (case insensitive)
  * the names of its output memories, and sets those ideas to the respective memories.
  * 
+ * If the output memory is a MemoryContainer, it sets the MemoryObjects inside it
+ * with the name of the Habit being executed by the HabitExecutionerCodelet itslef.
+ * 
  * @author rgudwin
  */
 public class HabitExecutionerCodelet extends Codelet {
@@ -127,8 +130,8 @@ public class HabitExecutionerCodelet extends Codelet {
      * that match by name (case insensitive).
      * 
      * If the memory is a MemoryContainer, it sets the MemoryObjects inside it
-     * with the name of the HabitExecutionerCodelet itslef. It does so to
-     * differentiate between different HECs writing to the same MemoryContainer.
+     * with the name of the Habit being executed by the HabitExecutionerCodelet itslef.
+     * It does so to differentiate between different Habits writing to the same MemoryContainer.
 	 * 
 	 * @param outputRoot
 	 *            the root idea that comes from the habit execution
