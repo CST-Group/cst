@@ -878,4 +878,39 @@ public class TestIdea {
         assertTrue(a.equals(a1));
     }
     
+    static class TestIdeaClass {
+        public double[] mirPose;
+        public TestIdeaClass() {
+            mirPose = null;
+        }
+    }
+    
+    @Test public void testComplexConvertObject() {
+        
+        Idea i0 = new Idea("root");
+        Idea i1 = new Idea("var");
+        Idea i = new Idea("mirPose");
+        i.add(new Idea("mirPose[0]",-5.800001621246338));
+        i.add(new Idea("mirPose[1]", -8.575002670288086));
+        i.add(new Idea("mirPose[2]", 0.2993086874485016));
+        i.add(new Idea("mirPose[3]", -0.0));
+        i.add(new Idea("mirPose[4]", 0.0));
+        i.add(new Idea("mirPose[5]",-0.0));
+        i0.add(i1);
+        i1.add(i);
+        System.out.println(i0.toStringFull());
+        TestIdeaClass n = new TestIdeaClass();     
+        System.out.println(n);
+        Idea ii = i0.get("mirPose");
+        Idea ii2 = i.get("mirPose");
+        TestIdeaClass x = (TestIdeaClass) i0.getObject("var", "br.unicamp.cst.representation.idea.TestIdea$TestIdeaClass");
+        for (int k=0;k<6;k++) {
+            double vv = (double)i.get("mirPose["+k+"]").getValue();
+            System.out.println("class: "+x.mirPose[k]+" idea: "+vv);
+            assertEquals(x.mirPose[k],vv);
+        }   
+        System.out.println(x);
+
+    } 
+    
 }
