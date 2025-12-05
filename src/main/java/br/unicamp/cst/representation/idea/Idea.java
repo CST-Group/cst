@@ -763,7 +763,7 @@ public class Idea implements Category,Habit {
         try {
             returnValue = Float.parseFloat(value);
         } catch (Exception ex) {
-            returnValue = null;
+            returnValue = 0f;
         }
 
         return returnValue;
@@ -775,7 +775,7 @@ public class Idea implements Category,Habit {
         try {
             returnValue = Double.parseDouble(value);
         } catch (Exception ex) {
-            returnValue = null;
+            returnValue = 0.0;
         }
 
         return returnValue;
@@ -787,7 +787,7 @@ public class Idea implements Category,Habit {
         try {
             returnValue = Integer.parseInt(value);
         } catch (Exception ex) {
-            returnValue = null;
+            returnValue = 0;
         }
 
         return returnValue;
@@ -799,7 +799,7 @@ public class Idea implements Category,Habit {
         try {
             returnValue = Long.parseLong(value);
         } catch (Exception ex) {
-            returnValue = null;
+            returnValue = 0L;
         }
 
         return returnValue;
@@ -811,7 +811,7 @@ public class Idea implements Category,Habit {
         try {
             returnValue = Short.parseShort(value);
         } catch (Exception ex) {
-            returnValue = null;
+            returnValue = 0;
         }
 
         return returnValue;
@@ -822,7 +822,7 @@ public class Idea implements Category,Habit {
         try {
             returnValue = Byte.parseByte(value,16);
         } catch (Exception ex) {
-            returnValue = null;
+            returnValue = 0x0;
         }
         return returnValue;
     }
