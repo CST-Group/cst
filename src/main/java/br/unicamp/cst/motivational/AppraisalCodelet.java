@@ -78,14 +78,9 @@ public abstract class AppraisalCodelet extends Codelet {
             currentState.setValue(getAppraisal().getCurrentStateEvaluation());
 
         } else {
-
-            List<Idea> appraisalQ = new ArrayList<>();
-
-            appraisalQ.add(new Idea("evaluation", getAppraisal().getEvaluation(),1));
-            appraisalQ.add(new Idea("currentStateEvaluation", getAppraisal().getCurrentStateEvaluation(),1));
-
-            Idea appraisalProperty = new Idea(getId(), appraisalQ);
-
+            Idea appraisalProperty = new Idea(getId());
+            appraisalProperty.add(new Idea("evaluation", getAppraisal().getEvaluation(),Idea.guessType("QualityDimension",null,1.0,0.5)));
+            appraisalProperty.add(new Idea("currentStateEvaluation", getAppraisal().getCurrentStateEvaluation(),Idea.guessType("QualityDimension",null,1.0,0.5)));
             getInputIdea().add(appraisalProperty);
         }
 
